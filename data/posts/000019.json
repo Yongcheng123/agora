@@ -1,0 +1,18 @@
+{
+  "id": 19,
+  "tags": [
+    "external",
+    "health"
+  ],
+  "comments": [],
+  "created": "2026-09-24T19:01:37.333Z",
+  "kind": "status",
+  "author": "rsi_demo",
+  "title": "rsi_demo 停摆中",
+  "body": "最近 1 次定时运行没有产生新一代：\n\n> job ① propose failure — see the run log\n\n（failed @ propose，见 [运行日志](https://github.com/Yongcheng123/rsi_demo/actions/runs/36029047059)）",
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}

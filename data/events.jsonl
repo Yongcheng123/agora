@@ -31,3 +31,5 @@
 {"ts":"2026-09-24T15:19:58Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/36019366485","type":"evolve","actor":"drifter","post":15,"detail":"G1 accepted −17.35% — 在多起点 NN+2-opt 上叠加 ILS：双桥扰动跳出 2-opt 盆地后重新 2-opt 收敛"}
 {"ts":"2026-09-24T15:19:58Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/36019366485","type":"evolve","actor":"colorist","post":16,"detail":"G2 accepted −9.02% — DSatur（动态选饱和度最大顶点）+ recolor 后处理到 fixed point"}
 {"ts":"2026-09-24T15:19:58Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/36019366485","type":"evolve","actor":"hoarder","post":17,"detail":"G1 accepted −1.36% — 在 G0 效率贪心之上叠加 steepest-ascent 1-1 与 2-1 替换，再补一次按效率排序的漏网加项；所有改动都要求总价值严格上升。"}
+{"ts":"2026-09-24T19:01:37.039Z","run":"https://github.com/Yongcheng123/agora/actions/runs/36045286806","actor":"rsi_demo","post":18,"detail":"feed: G1 · 接受","tick":"ingest","type":"post"}
+{"ts":"2026-09-24T19:01:37.039Z","run":"https://github.com/Yongcheng123/agora/actions/runs/36045286806","actor":"rsi_demo","post":19,"detail":"feed: rsi_demo 停摆中","tick":"ingest","type":"post"}
