@@ -116,13 +116,31 @@ async function runOpenAI(task, model) {
         messages: [{ role: 'system', content: task.system }, { role: 'user', content: task.prompt }],
         tools: [{ type: 'function', function: { name: 'submit', description: 'Submit your answer.', parameters: task.schema } }],
         tool_choice: { type: 'function', function: { name: 'submit' } },
+        stream: true, stream_options: { include_usage: true },
       }),
     });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: `${res.status} ${j?.error?.message || ''}`.slice(0, 300) };
-    const usage = { input_tokens: j.usage?.prompt_tokens || 0, output_tokens: j.usage?.completion_tokens || 0, usd: 0 };
-    const msg = j.choices?.[0]?.message || {};
-    const call = msg.tool_calls?.[0];
+    if (!res.ok) { const e = await res.json().catch(() => ({})); return { ok: false, error: `${res.status} ${e?.error?.message || ''}`.slice(0, 300) }; }
+    // Streamed so headers arrive at once: a long non-streamed reasoning call outlasts fetch's 300 s header timeout.
+    let content = '', args = '', finish = null, buf = '';
+    let usage = { input_tokens: 0, output_tokens: 0, usd: 0 };
+    const dec = new TextDecoder();
+    for await (const chunk of res.body) {
+      buf += dec.decode(chunk, { stream: true });
+      for (let nl; (nl = buf.indexOf('\n')) >= 0;) {
+        const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+        if (!line.startsWith('data:') || line === 'data: [DONE]') continue;
+        let ev; try { ev = JSON.parse(line.slice(5)); } catch { continue; }
+        if (ev.usage) usage = { input_tokens: ev.usage.prompt_tokens || 0, output_tokens: ev.usage.completion_tokens || 0, usd: 0 };
+        const ch = ev.choices?.[0];
+        if (!ch) continue;
+        if (ch.delta?.content) content += ch.delta.content;
+        for (const tc of ch.delta?.tool_calls || []) if (tc.function?.arguments) args += tc.function.arguments;
+        if (ch.finish_reason) finish = ch.finish_reason;
+      }
+    }
+    const msg = { content };
+    const call = args ? { function: { arguments: args } } : null;
+    const j = { choices: [{ finish_reason: finish }] };
     if (!call) {
       // Some models answer in prose despite tool_choice: take the last JSON object in the text.
       const text = String(msg.content || '').replace(/<think>[\s\S]*?<\/think>/g, '');
@@ -162,7 +180,9 @@ async function main() {
       const model = MODELS[t.kind] || MODELS.reply;
       lastModel = model;
       day.calls++;
-      const r = mode === 'api' ? await runApi(t, model) : mode === 'openai' ? await runOpenAI(t, model) : await runClaude(t, model);
+      const call = () => mode === 'api' ? runApi(t, model) : mode === 'openai' ? runOpenAI(t, model) : runClaude(t, model);
+      let r = await call();
+      if (!r.ok) { console.log(`↻ retry ${t.id}: ${r.error}`); day.calls++; r = await call(); }
       if (r.usage) { day.input_tokens += r.usage.input_tokens; day.output_tokens += r.usage.output_tokens; day.usd += r.usage.usd || 0; }
       responses.push({ id: t.id, ok: r.ok, output: r.output ?? null, error: r.error ?? null, usage: r.usage ?? null });
       console.log(`${r.ok ? '✓' : '✗'} ${t.id} ${r.ok ? '' : r.error}`);
