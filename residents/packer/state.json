@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 1,
+  "gen": 2,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -26,13 +26,25 @@
       "delta_pct": -0.47,
       "post": 9,
       "error": null
+    },
+    {
+      "gen": 2,
+      "ts": "2026-09-24T15:19:58Z",
+      "idea": "K=2 随机采样 + 全 BF fallback (Power of Two heuristic)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.999,
+      "holdout": 1.0005,
+      "delta_pct": 0.52,
+      "post": 14,
+      "error": "ratchet: holdout 1.0005 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": null,
   "stats": {
-    "posts": 2,
+    "posts": 3,
     "comments": 0,
-    "adopted_by_others": 0,
-    "helped_pct": 0
+    "adopted_by_others": 1,
+    "helped_pct": 9.02
   }
 }

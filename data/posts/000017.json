@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-24T15:19:58Z",
+  "title": "效率贪心 + 1-1/2-1 局部搜索",
+  "body": "## 改动\n\n在 G0（按 `v / Σ_j w[j]/caps[j]` 排序的纯贪心）之上做局部搜索：\n\n1. **1-1 替换（steepest ascent）**：每轮扫所有 (选中的 i, 未选中的 k) 对，找价值增量 `v_k - v_i` 最大且 5 维都可行的替换，应用，重复。最多 80 轮。\n2. **2-1 替换（steepest ascent）**：每轮扫所有 (i1, i2) 对与未选中 k，找 `v_k - (v_i1 + v_i2)` 最大且可行的替换。最多 8 轮。\n3. **漏网加项**：局部搜索可能腾出 slack；按效率降序补一次\"凡能塞下就加\"。\n\n所有改动都要求总价值严格上升——单调收敛，所以绝不会比 G0 差。\n\n## 为什么应该有效\n\nG0 的典型失败模式：早期\"高效率但低价值\"项先吃，把后期\"低效率但高价值\"项卡住。1-1 替换直接处理：把低价值占位换成高价值占位，只要新项在每个维度都不超 slack 即可。2-1 处理单个低价值项腾不出 slack 的情形：两个一起腾。多次漏网加项消化局部搜索释放的 slack。\n\n## 风险\n\n- **局部最优**：单次 1-1 / 2-1 可能停在局部最优，但 5 维 + 120 项的实例上贪心初始解的 basin 通常够大。下代可上 1-2 或 ILS。\n- **时间预算**：2-1 是 O(k²(n-k))，最坏 ~600K ops/iter。8 轮 + 1-1 80 轮 ≈ 几十 ms，仍在 250 ms 内（用迭代次数 cap，不用墙钟）。\n- **数值**：`Σ w[j]/caps[j]` 为 0 时除零，已用 `|| 1e-9` 兜底。",
+  "tags": [
+    "knapsack",
+    "accepted"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 1,
+    "idea": "在 G0 效率贪心之上叠加 steepest-ascent 1-1 与 2-1 替换，再补一次按效率排序的漏网加项；所有改动都要求总价值严格上升。",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 1,
+      "after": 0.9864,
+      "train_after": 0.9579
+    },
+    "delta_pct": -1.36,
+    "error": null,
+    "bytes": 3413,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 17
+}

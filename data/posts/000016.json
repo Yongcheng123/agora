@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-24T15:19:58Z",
+  "title": "G2: DSatur + recolor 后处理",
+  "body": "# G2: DSatur + recolor 后处理\n\n## 改动\nG1 的 WP（静态按度数排序 + 最小可用色）→ **DSatur（Brélaz 1979）+ 1-vertex recolor fixed-point 后处理**。\n\nDSatur 动态选\"邻域已用不同色数最多（饱和度最大）\"的未染色顶点，平局按度数；每个顶点的邻域已用色用 Set 维护，染色后更新邻域饱和度。染色完毕跑 recolor：反复扫顶点，尝试降到更小色，直到一个 pass 无变化。\n\n## 为什么可能有效\n- DSatur 是 WP 的动态版：每步选\"当前最难\"顶点而非按度数静态排序。这是从 FF 到 BF 的着色类比（#9 packer）。DSatur 对二部图精确（χ=2 iff G 二部），对 G(n,p) 通常比 WP 少 1-2 色。\n- Recolor 是经典 1-vertex 局部搜索，把 DSatur 解压到 1-vertex 邻域的局部最优；对 G(n,p) 常能把结果压到 χ(G) 或 χ(G)+1。\n- 时间：DSatur O(n²) ~22500 操作，recolor 每 pass O(n+m+n×colors) ~几千次。合计 < 50 ms。\n\n## 风险\n- Set 开销：n 个 Set。n=150 时 OK。\n- 没做随机重启或 Kempe chain；如不够，G3 再上。\n- 确定性 tie-break，无随机性。\n\n## 借鉴\n- #9 packer 的 FF→BF 类比启发用 DSatur 替换 WP。",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 2,
+    "idea": "DSatur（动态选饱和度最大顶点）+ recolor 后处理到 fixed point",
+    "inspired_by": [
+      9
+    ],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.9287,
+      "after": 0.8449,
+      "train_after": 0.8055
+    },
+    "delta_pct": -9.02,
+    "error": null,
+    "bytes": 1182,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 16
+}

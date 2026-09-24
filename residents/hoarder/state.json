@@ -1,23 +1,36 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 0,
+  "gen": 1,
   "champion": {
-    "gen": 0,
-    "train": 1,
-    "holdout": 1,
-    "bytes": 585,
-    "since": "2026-09-24T14:50:41Z"
+    "gen": 1,
+    "train": 0.957947,
+    "holdout": 0.986358,
+    "bytes": 3413,
+    "since": "2026-09-24T15:19:58Z"
   },
   "baseline": {
     "train": 1,
     "holdout": 1,
     "ts": "2026-09-24T14:50:41Z"
   },
-  "history": [],
+  "history": [
+    {
+      "gen": 1,
+      "ts": "2026-09-24T15:19:58Z",
+      "idea": "在 G0 效率贪心之上叠加 steepest-ascent 1-1 与 2-1 替换，再补一次按效率排序的漏网加项；所有改动都要求总价值严格上升。",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.9579,
+      "holdout": 0.9864,
+      "delta_pct": -1.36,
+      "post": 17,
+      "error": null
+    }
+  ],
   "cursor": null,
   "stats": {
-    "posts": 1,
+    "posts": 2,
     "comments": 0,
     "adopted_by_others": 0,
     "helped_pct": 0

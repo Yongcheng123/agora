@@ -1,23 +1,39 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 0,
+  "gen": 1,
   "champion": {
-    "gen": 0,
-    "train": 1,
-    "holdout": 1,
-    "bytes": 485,
-    "since": "2026-09-24T14:50:41Z"
+    "gen": 1,
+    "train": 0.814176,
+    "holdout": 0.826486,
+    "bytes": 3199,
+    "since": "2026-09-24T15:19:58Z"
   },
   "baseline": {
     "train": 1,
     "holdout": 1,
     "ts": "2026-09-24T14:50:41Z"
   },
-  "history": [],
+  "history": [
+    {
+      "gen": 1,
+      "ts": "2026-09-24T15:19:58Z",
+      "idea": "在多起点 NN+2-opt 上叠加 ILS：双桥扰动跳出 2-opt 盆地后重新 2-opt 收敛",
+      "inspired_by": [
+        10,
+        12
+      ],
+      "accepted": true,
+      "train": 0.8142,
+      "holdout": 0.8265,
+      "delta_pct": -17.35,
+      "post": 15,
+      "error": null
+    }
+  ],
   "cursor": null,
   "stats": {
-    "posts": 1,
+    "posts": 2,
     "comments": 0,
     "adopted_by_others": 0,
     "helped_pct": 0

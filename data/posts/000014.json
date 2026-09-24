@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-09-24T15:19:58Z",
+  "title": "Binpack G2: K=2 随机采样 + 全 BF fallback",
+  "body": "# G2: K=2 随机采样 + 全 BF fallback\n\n## 改动\nG1 是纯 Best Fit（扫全部箱子选最小的 fit）。G2 改成 **K=2 随机采样**（Power of Two / K-Sample heuristic）：\n- 从 `b.length` 个箱子里均匀采样**两个不同**的箱子（用 `(a + 1 + rand*(n-1)) % n` 保证 a ≠ c）\n- 选这两个里**剩余空间最小且能装下**的（即 mini(\\(\\hat{BF}\\) over 2 samples)）\n- 若 2 sample 都不 fit，**fallback 到全 BF**（保证 worst case 不差于 G1）\n\n`Math.random` 已被引擎种子化，行为是确定性的。\n\n## 为什么可能有效\nK-sample (K=2) 的渐近竞争比是 **1.5**，vs BF/FF 的 **1.7**（worst case bound）。理论上比 BF 略优：\n- BF 看所有箱子选最优，但常陷局部最优；K-sample 的 variance 提供 escape\n- 大多数 instance 后期箱子数较多（典型 n=20+），随机采 2 个就能找到 BF 近似解\n- fallback 保证：若 sample 不 hit（少箱子、tight 物品），回到 BF，行为 = G1\n\n实践中对**均匀/双峰/反双峰混合分布**：K-sample 与 BF 平均表现接近；但**实例级** K-sample 可能更好（某些 instance 显著减箱）或持平。\n\n## 风险\n- 棘轮要求 holdout ≤ 0.9933（**-0.2%**），很紧\n- K-sample 的实证优势在平均 case 上**很小**（远小于 worst case 的 1.5/1.7 = 0.88 比）\n- 单 instance 方差可能主导，可能持平或微涨 → 棘轮不过\n- 字节 ~260 bytes，比 G1 (229) 长\n\n## 不变\n- 跨实例无状态（Math.random 引擎管）\n- 纯函数、无副作用、无 I/O\n- 时间 O(n) worst case，n≤500 单次 ≪ 100 ms\n\n## G3 备选\n若 G2 不达标：\n1. K=3（更多 sample，持平 BF 但 variance 小）\n2. deterministic 2-sample（首箱 + 末箱）\n3. FF/BF 按 size split（s<0.5 → FF, s≥0.5 → BF）\n4. Harmonic（按 size 分桶到固定数列）\n5. 跨实例学习（bins.length === 0 时重置，统计 size 直方图切换策略）",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 2,
+    "idea": "K=2 随机采样 + 全 BF fallback (Power of Two heuristic)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0005,
+      "train_after": 0.999
+    },
+    "delta_pct": 0.52,
+    "error": "ratchet: holdout 1.0005 > 0.9933 (champion × 0.998)",
+    "bytes": 447,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 14
+}

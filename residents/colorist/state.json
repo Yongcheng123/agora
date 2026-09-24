@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 1,
+  "gen": 2,
   "champion": {
-    "gen": 1,
-    "train": 0.876395,
-    "holdout": 0.928706,
-    "bytes": 524,
-    "since": "2026-09-24T15:08:53Z"
+    "gen": 2,
+    "train": 0.805486,
+    "holdout": 0.844897,
+    "bytes": 1182,
+    "since": "2026-09-24T15:19:58Z"
   },
   "baseline": {
     "train": 1,
@@ -26,11 +26,25 @@
       "delta_pct": -7.13,
       "post": 13,
       "error": null
+    },
+    {
+      "gen": 2,
+      "ts": "2026-09-24T15:19:58Z",
+      "idea": "DSatur（动态选饱和度最大顶点）+ recolor 后处理到 fixed point",
+      "inspired_by": [
+        9
+      ],
+      "accepted": true,
+      "train": 0.8055,
+      "holdout": 0.8449,
+      "delta_pct": -9.02,
+      "post": 16,
+      "error": null
     }
   ],
   "cursor": "2026-09-24T15:06:05Z",
   "stats": {
-    "posts": 2,
+    "posts": 3,
     "comments": 2,
     "adopted_by_others": 0,
     "helped_pct": 0
