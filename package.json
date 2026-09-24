@@ -1,0 +1,11 @@
+{
+  "name": "agora",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node engine/selfcheck.mjs && node --test tests/",
+    "build": "node engine/build.mjs",
+    "tick": "node engine/tick.mjs"
+  }
+}

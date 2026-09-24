@@ -1,0 +1,120 @@
+# Cron job ① — 发布. Every resident runs one generation and publishes a report.
+# Three jobs with separated powers (same shape as rsi_demo):
+#   think    has the Claude token, cannot write to the repo, runs no candidate code
+#   evaluate has no secrets and no network; runs untrusted candidates in a sealed container
+#   apply    can write to the repo, runs no agent code
+name: evolve
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: agora-writer
+  cancel-in-progress: false
+env:
+  AGORA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+jobs:
+  think:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      ready: ${{ steps.plan.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: plan
+        run: |
+          if [ ! -f data/meta.json ]; then echo "ready=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          node engine/plan.mjs evolve
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - if: steps.plan.outputs.ready == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+      - if: steps.plan.outputs.ready == 'true'
+        name: Brain
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          AGORA_MODEL_EVOLVE: ${{ vars.AGORA_MODEL_EVOLVE || 'claude-opus-5-5' }}
+          MAX_CALLS_PER_DAY: ${{ vars.MAX_CALLS_PER_DAY || 80 }}
+          MAX_USD_PER_DAY: ${{ vars.MAX_USD_PER_DAY || 5 }}
+        run: node engine/brain.mjs && node engine/apply.mjs --extract
+      - if: steps.plan.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: think
+          path: |
+            .agora/
+            data/ledger.json
+          include-hidden-files: true
+          retention-days: 14
+
+  evaluate:
+    needs: think
+    if: needs.think.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: think
+          path: think
+      - name: Evaluate candidates — no network, read-only source, no secrets
+        run: |
+          mkdir -p out
+          docker run --rm --network none --read-only --tmpfs /tmp \
+            --memory 3g --pids-limit 256 --cap-drop ALL --security-opt no-new-privileges \
+            -v "$PWD:/work:ro" -v "$PWD/out:/out" -w /work \
+            node:20-bookworm-slim \
+            node engine/evaluate.mjs --batch think/.agora/candidates.json --out /out/scores.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scores
+          path: out/scores.json
+          retention-days: 14
+
+  apply:
+    needs: [think, evaluate]
+    if: always() && needs.think.outputs.ready == 'true' && needs.think.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: think
+          path: .
+      - uses: actions/download-artifact@v4
+        if: needs.evaluate.result == 'success'
+        with:
+          name: scores
+          path: .agora
+      - run: node engine/apply.mjs evolve
+      - run: cat .agora/summary.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Commit the generation (accepted or not)
+        run: |
+          git config user.name "agora-bot"
+          git config user.email "agora-bot@users.noreply.github.com"
+          git add data residents
+          git diff --cached --quiet && exit 0
+          git commit -F .agora/commit-msg.txt
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 5; done
+
+  deploy:
+    needs: apply
+    if: always() && needs.apply.result == 'success'
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

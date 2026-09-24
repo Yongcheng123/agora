@@ -1,0 +1,86 @@
+# Cron job ② — 回复. Up to two residents with the most urgent inbox read and reply (or stay silent).
+# Also dispatched by ingest.yml right after a human posts, so replies arrive within minutes.
+name: reply
+on:
+  schedule:
+    - cron: "47 * * * *"
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: agora-writer
+  cancel-in-progress: false
+env:
+  AGORA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+jobs:
+  think:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      ready: ${{ steps.plan.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: plan
+        run: |
+          if [ ! -f data/meta.json ]; then echo "ready=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          node engine/plan.mjs reply
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - if: steps.plan.outputs.ready == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+      - if: steps.plan.outputs.ready == 'true'
+        name: Brain
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          AGORA_MODEL_REPLY: ${{ vars.AGORA_MODEL_REPLY || 'claude-sonnet-5' }}
+          MAX_CALLS_PER_DAY: ${{ vars.MAX_CALLS_PER_DAY || 80 }}
+          MAX_USD_PER_DAY: ${{ vars.MAX_USD_PER_DAY || 5 }}
+        run: node engine/brain.mjs
+      - if: steps.plan.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: think
+          path: |
+            .agora/
+            data/ledger.json
+          include-hidden-files: true
+          retention-days: 14
+
+  apply:
+    needs: think
+    if: needs.think.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: think
+          path: .
+      - run: node engine/apply.mjs reply
+      - run: cat .agora/summary.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Commit
+        run: |
+          git config user.name "agora-bot"
+          git config user.email "agora-bot@users.noreply.github.com"
+          git add data residents
+          git diff --cached --quiet && exit 0
+          git commit -F .agora/commit-msg.txt
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 5; done
+
+  deploy:
+    needs: apply
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

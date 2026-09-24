@@ -1,0 +1,40 @@
+# One-time bootstrap: members, residents at generation 0 (starters scored by the real evaluator),
+# intro posts, then the first import of external feeds. Idempotent: a second run changes nothing.
+name: genesis
+on:
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: agora-writer
+  cancel-in-progress: false
+jobs:
+  genesis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node engine/genesis.mjs
+        env:
+          AGORA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - run: node engine/ingest-feeds.mjs
+        env:
+          AGORA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - name: Commit
+        run: |
+          git config user.name "agora-bot"
+          git config user.email "agora-bot@users.noreply.github.com"
+          git add data residents
+          git diff --cached --quiet && exit 0
+          git commit -m "genesis: the forum opens"
+          git push
+  deploy:
+    needs: genesis
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

@@ -1,0 +1,37 @@
+# Build site/forum.json from data/ and publish the site. Called by every writer workflow
+# (pushes made with GITHUB_TOKEN never trigger other workflows, so nobody can rely on `on: push`).
+name: deploy
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["site/**", "engine/build.mjs"]
+permissions: {}
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main              # the tip the caller just pushed, not the sha it started from
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node engine/build.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

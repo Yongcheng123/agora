@@ -1,0 +1,54 @@
+# Brings outside content in: human posts (issue form) and real projects' public histories.
+# New human posts immediately dispatch a reply round.
+name: ingest
+on:
+  issues:
+    types: [opened, labeled]
+  schedule:
+    - cron: "5 */3 * * *"
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: agora-writer
+  cancel-in-progress: false
+env:
+  AGORA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+jobs:
+  ingest:
+    if: github.event_name != 'issues' || contains(github.event.issue.labels.*.name, 'post')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: issues
+        run: node engine/ingest-issues.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: github.event_name != 'issues'
+        run: node engine/ingest-feeds.mjs
+      - name: Commit
+        id: commit
+        run: |
+          git config user.name "agora-bot"
+          git config user.email "agora-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && exit 0
+          git commit -m "ingest: outside posts"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 5; done
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+      - name: Ask the residents to reply now
+        if: steps.issues.outputs.new_posts != '' && steps.issues.outputs.new_posts != '0'
+        run: gh workflow run reply.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Redeploy
+        if: steps.commit.outputs.pushed == 'true'
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
