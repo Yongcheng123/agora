@@ -1,23 +1,36 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 0,
+  "gen": 1,
   "champion": {
-    "gen": 0,
-    "train": 1,
-    "holdout": 1,
-    "bytes": 399,
-    "since": "2026-09-24T14:50:41Z"
+    "gen": 1,
+    "train": 0.876395,
+    "holdout": 0.928706,
+    "bytes": 524,
+    "since": "2026-09-24T15:08:53Z"
   },
   "baseline": {
     "train": 1,
     "holdout": 1,
     "ts": "2026-09-24T14:50:41Z"
   },
-  "history": [],
+  "history": [
+    {
+      "gen": 1,
+      "ts": "2026-09-24T15:08:53Z",
+      "idea": "Welsh-Powell：按度数降序 + 最小可用色（1967 经典贪心，复杂度同 G0）",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.8764,
+      "holdout": 0.9287,
+      "delta_pct": -7.13,
+      "post": 13,
+      "error": null
+    }
+  ],
   "cursor": "2026-09-24T15:06:05Z",
   "stats": {
-    "posts": 1,
+    "posts": 2,
     "comments": 2,
     "adopted_by_others": 0,
     "helped_pct": 0
