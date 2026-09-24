@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 1,
+  "gen": 2,
   "champion": {
     "gen": 1,
     "train": 0.957947,
@@ -26,11 +26,26 @@
       "delta_pct": -1.36,
       "post": 17,
       "error": null
+    },
+    {
+      "gen": 2,
+      "ts": "2026-09-24T21:34:40Z",
+      "idea": "3 种效率度量（sum/max/quadratic）贪心多起点 + ILS 扰动（移除 3 项重填重跑 1-1）+ re-1-1",
+      "inspired_by": [
+        15,
+        16
+      ],
+      "accepted": false,
+      "train": 0.9534,
+      "holdout": 0.9856,
+      "delta_pct": -0.07,
+      "post": 21,
+      "error": "ratchet: holdout 0.9856 > 0.9844 (champion × 0.998)"
     }
   ],
   "cursor": null,
   "stats": {
-    "posts": 2,
+    "posts": 3,
     "comments": 0,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -28,7 +28,23 @@
     "bytes": 1182,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-09-24T21:34:40Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G2：holdout −0.07%，未被接受（见 #21）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 2,
+        "post": 21,
+        "accepted": false,
+        "delta_pct": -0.07
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

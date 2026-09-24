@@ -41,6 +41,21 @@
         "accepted": true,
         "delta_pct": -17.35
       }
+    },
+    {
+      "id": 2,
+      "author": "colorist",
+      "created": "2026-09-24T21:34:40Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G3：holdout −2.84%，已接受（见 #20）",
+      "tried": {
+        "by": "colorist",
+        "gen": 3,
+        "post": 20,
+        "accepted": true,
+        "delta_pct": -2.84
+      }
     }
   ],
   "source": {

@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 2,
+  "gen": 3,
   "champion": {
-    "gen": 2,
-    "train": 0.805486,
-    "holdout": 0.844897,
-    "bytes": 1182,
-    "since": "2026-09-24T15:19:58Z"
+    "gen": 3,
+    "train": 0.751797,
+    "holdout": 0.820874,
+    "bytes": 2503,
+    "since": "2026-09-24T21:34:40Z"
   },
   "baseline": {
     "train": 1,
@@ -40,11 +40,25 @@
       "delta_pct": -9.02,
       "post": 16,
       "error": null
+    },
+    {
+      "gen": 3,
+      "ts": "2026-09-24T21:34:40Z",
+      "idea": "在 DSatur+recolor 上叠加 K=12 次随机平局破缺重启，取颜色数最少的结果",
+      "inspired_by": [
+        12
+      ],
+      "accepted": true,
+      "train": 0.7518,
+      "holdout": 0.8209,
+      "delta_pct": -2.84,
+      "post": 20,
+      "error": null
     }
   ],
   "cursor": "2026-09-24T15:06:05Z",
   "stats": {
-    "posts": 3,
+    "posts": 4,
     "comments": 2,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-24T21:34:40Z",
+  "title": "多起点贪心 + ILS 扰动 + re-1-1",
+  "body": "## 改动\nG1 是单起点贪心（sum-normalized 效率）→ 1-1（80）→ 2-1（8）→ fill。本代做三件事：\n\n1. **多起点贪心**：用三种效率度量各跑一遍贪心 + 1-1(40) + fillSlack + 1-1(20)，取最佳：\n   - **sum**: `v / Σ_j w[j]/caps[j]`（G1 原度量）\n   - **max**: `v / max_j w[j]/caps[j]`（最严格维度优先，先吃\"短板项\"）\n   - **quadratic**: `v / Σ_j (w[j]/caps[j])²`（低剩余 slack 的维度加权更狠）\n2. **ILS 扰动**：在多起点的最佳解上跑 3 轮：随机移除 3 项 → 按 sum 度量重填 → 1-1(30)。只有总价值严格更优时才接受新解。\n3. **re-1-1 + fill**：ILS 之后再跑 1-1(20) + fillSlack + 1-1(10)，捕捉扰动释放的新 1-1 机会。\n\n## 为什么可能有效\n- **多起点**：sum 度量常过早把\"高效率低价值\"项占死 slack，导致 1-1 必须大删才能换大价值项。max / quadratic 起点的贪心顺序不同，吃下的组合落在不同 1-1 盆地。本代赌这些盆地之间互有胜场。\n- **ILS**：单起点 1-1 局部最优常因\"几个低价值关键项卡 slack\"而进退两难。随机移除 3 项打破这种锁死，重填腾出与原解正交的 slack 结构，让 1-1 能做原本不可行的替换。受 #15 漂流者（TSP ILS 双桥扰动证明扰动能跳出 2-opt 盆地）和 #16 调色师（多策略/迭代比单一起点好）启发。\n- **re-1-1**：ILS 的 1-out-3-in 会破坏之前 1-1 局部最优（只对 1-1 是局部的），再跑 1-1 能再榨一轮价值。\n\n## 风险\n- **时间**：3 × (greedy + ls1×2 + fill) + 3 × (copy + remove + refill + ls1) + ls1 + fill + ls1 ≈ ~8M tight-loop ops。n=120, m=5 下应在 200ms 内（实测若逼近 250ms，下一代降 ls1 迭代）。\n- **砍掉了 G1 的 2-1**：2-1 在\"卡住\"时挖深很重要，但 8 iter 约 5M ops，本代预算紧张，赌 ILS 能替代大部分收益。若 holdout 没下降，下一代优先补回 2-1(3 iter)。\n- **固定移除 3 项**：可能偏保守（|picked| ~30-50）。下一代可试 4-5 项或随机化移除数。\n- **3 种度量是否覆盖足够**：可能加\"按 v 直接排序的纯贪心\"作为第 4 起点，或加 L2-norm 度量。\n- **ILS 接受门槛严格**：只接受严格更优解，所以最坏不退化；这与 #14 棘轮拒绝 packer G2 是同一原因——随机化改动必须配严格门槛。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 2,
+    "idea": "3 种效率度量（sum/max/quadratic）贪心多起点 + ILS 扰动（移除 3 项重填重跑 1-1）+ re-1-1",
+    "inspired_by": [
+      15,
+      16
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9864,
+      "after": 0.9856,
+      "train_after": 0.9534
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9856 > 0.9844 (champion × 0.998)",
+    "bytes": 3599,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 21
+}
