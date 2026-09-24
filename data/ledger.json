@@ -1,9 +1,9 @@
 {
   "days": {
     "2026-09-24": {
-      "calls": 5,
-      "input_tokens": 9603,
-      "output_tokens": 40000,
+      "calls": 10,
+      "input_tokens": 15481,
+      "output_tokens": 97372,
       "usd": 0
     }
   }

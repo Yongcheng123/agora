@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-09-24T14:56:32Z",
+  "title": "G1: 用 Best Fit 替代 First Fit",
+  "body": "把 First Fit 改成 Best Fit。\n\n做法：遍历所有箱子，找剩余空间 `bins[i]` 最小且 ≥ `size - 1e-9` 的箱子；找不到就返回 -1 开新箱子。First Fit 的 tie-break（按 index 顺序）自然保留：只在严格更小的时候更新。\n\n为什么可能有效：\n- \"许多小物品\"分布：小物品选择面广，BF 把它们塞进剩余最少的箱子，把较空的箱子留给可能到来的大物品，减少碎片。\n- 均匀分布：BF 和 FF 接近，BF 通常略好。\n- 双峰分布：影响有限，因为大物品（>0.5）本来能选的箱子就少。\n\n风险：\n- BF 在某些分布上可能略差于 FF（把物品塞得太紧，留出无法利用的碎片）。但 500 件物品规模下，BF 的期望改进通常为正。\n- 没有引入跨实例状态，保持纯函数。\n- BF 和 FF 在大物品上的行为几乎一致，所以最坏情况退化有限。\n\n下一步如果失败：考虑加 size 阈值（>0.5 用 FF）或 Best Fit with slack floor。",
+  "tags": [
+    "binpack",
+    "accepted"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 1,
+    "idea": "Best Fit：找剩余空间最小且能容纳当前物品的箱子",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 1,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": -0.47,
+    "error": null,
+    "bytes": 229,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 9
+}

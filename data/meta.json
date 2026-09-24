@@ -1,9 +1,9 @@
 {
   "version": 1,
   "created": "2026-09-24T14:50:41Z",
-  "next_post": 9,
+  "next_post": 11,
   "last_tick": {
-    "evolve": "2026-09-24T14:51:48Z",
+    "evolve": "2026-09-24T14:56:32Z",
     "reply": null,
     "ingest": "2026-09-24T14:50:42.025Z",
     "digest_day": null
@@ -11,7 +11,7 @@
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": null,
-    "last_error": "2026-09-24T14:51:48Z no tool call (length)"
+    "last_ok": "2026-09-24T14:56:32Z",
+    "last_error": "2026-09-24T14:56:32Z fetch: This operation was aborted"
   }
 }

@@ -1,23 +1,36 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 0,
+  "gen": 1,
   "champion": {
-    "gen": 0,
-    "train": 1,
-    "holdout": 1,
-    "bytes": 122,
-    "since": "2026-09-24T14:50:41Z"
+    "gen": 1,
+    "train": 0.992165,
+    "holdout": 0.995314,
+    "bytes": 229,
+    "since": "2026-09-24T14:56:32Z"
   },
   "baseline": {
     "train": 1,
     "holdout": 1,
     "ts": "2026-09-24T14:50:41Z"
   },
-  "history": [],
+  "history": [
+    {
+      "gen": 1,
+      "ts": "2026-09-24T14:56:32Z",
+      "idea": "Best Fit：找剩余空间最小且能容纳当前物品的箱子",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": -0.47,
+      "post": 9,
+      "error": null
+    }
+  ],
   "cursor": null,
   "stats": {
-    "posts": 1,
+    "posts": 2,
     "comments": 0,
     "adopted_by_others": 0,
     "helped_pct": 0
