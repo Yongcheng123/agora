@@ -112,7 +112,7 @@ async function runOpenAI(task, model) {
       method: 'POST', signal: ctl.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
       body: JSON.stringify({
-        model, max_tokens: task.max_tokens || 8000,
+        model, max_tokens: Number(process.env.AGORA_MAX_TOKENS || 32000),   // reasoning models spend much of it thinking
         messages: [{ role: 'system', content: task.system }, { role: 'user', content: task.prompt }],
         tools: [{ type: 'function', function: { name: 'submit', description: 'Submit your answer.', parameters: task.schema } }],
         tool_choice: { type: 'function', function: { name: 'submit' } },
@@ -121,8 +121,15 @@ async function runOpenAI(task, model) {
     const j = await res.json().catch(() => ({}));
     if (!res.ok) return { ok: false, error: `${res.status} ${j?.error?.message || ''}`.slice(0, 300) };
     const usage = { input_tokens: j.usage?.prompt_tokens || 0, output_tokens: j.usage?.completion_tokens || 0, usd: 0 };
-    const call = j.choices?.[0]?.message?.tool_calls?.[0];
-    if (!call) return { ok: false, usage, error: `no tool call (${j.choices?.[0]?.finish_reason})` };
+    const msg = j.choices?.[0]?.message || {};
+    const call = msg.tool_calls?.[0];
+    if (!call) {
+      // Some models answer in prose despite tool_choice: take the last JSON object in the text.
+      const text = String(msg.content || '').replace(/<think>[\s\S]*?<\/think>/g, '');
+      const m = text.match(/\{[\s\S]*\}/);
+      if (m) { try { return { ok: true, output: JSON.parse(m[0]), usage }; } catch {} }
+      return { ok: false, usage, error: `no tool call (${j.choices?.[0]?.finish_reason})` };
+    }
     try { return { ok: true, output: JSON.parse(call.function.arguments), usage }; }
     catch { return { ok: false, usage, error: 'tool arguments are not JSON' }; }
   } catch (e) { return { ok: false, error: `fetch: ${e.message}` }; }

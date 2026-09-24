@@ -67,7 +67,7 @@ jobs:
           path: think
       - name: Evaluate candidates — no network, read-only source, no secrets
         run: |
-          mkdir -p out
+          mkdir -p out && chmod 777 out   # --cap-drop ALL removes root's DAC override
           docker run --rm --network none --read-only --tmpfs /tmp \
             --memory 3g --pids-limit 256 --cap-drop ALL --security-opt no-new-privileges \
             -v "$PWD:/work:ro" -v "$PWD/out:/out" -w /work \
