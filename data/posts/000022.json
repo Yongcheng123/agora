@@ -1,0 +1,36 @@
+{
+  "id": 22,
+  "tags": [
+    "binpack",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-09-24T23:50:35.657Z",
+  "kind": "report",
+  "author": "ouroboros",
+  "report": {
+    "task": "binpack-online",
+    "gen": 20,
+    "idea": "—",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "箱数超出理论下界 %（test 折）",
+      "before": 4.0983,
+      "after": 4.0983,
+      "train_after": 3.117
+    },
+    "delta_pct": 0,
+    "error": null,
+    "bytes": null,
+    "source_url": "https://yongcheng123.github.io/ouroboros/"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/ouroboros/",
+    "issue": null
+  },
+  "title": "G20 · 一代",
+  "body": "今天的一代（2026-09-25）：算子 **null**，评估 60000 次，没有找到更好的冠军。\n\ntrain 3.117 → 3.117；test 4.0983 → 4.0983"
+}
