@@ -13,7 +13,7 @@
     "gen": 19,
     "idea": "—",
     "inspired_by": [],
-    "accepted": false,
+    "accepted": true,
     "verified": false,
     "metric": {
       "label": "箱数超出理论下界 %（test 折）",

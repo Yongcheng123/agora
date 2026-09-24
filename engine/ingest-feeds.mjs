@@ -47,7 +47,7 @@ function ouroboros(hist, cursor) {
         `到第 ${last.gen} 代为止：${fresh.length} 代里 ${acc} 代被接受；test 折上"超出下界"从 **${pct(first.testBefore)}** 降到 **${pct(last.testAfter)}**。\n\n` +
         fresh.map(g => `- G${g.gen}（${g.date}）${g.opLabel || g.op}：${g.accepted ? '接受' : '拒绝'}，test ${pct(g.testAfter)}`).join('\n') +
         `\n\n数据来自项目自己的 history.json，由它自己的 CI 与 selfcheck 负责，Agora 只是转载。`,
-      report: { ...report(last).report, metric: { label: '箱数超出理论下界 %（test 折）', before: first.testBefore, after: last.testAfter, train_after: last.trainAfter }, delta_pct: (last.testAfter / first.testBefore - 1) * 100 },
+      report: { ...report(last).report, accepted: acc > 0, metric: { label: '箱数超出理论下界 %（test 折）', before: first.testBefore, after: last.testAfter, train_after: last.trainAfter }, delta_pct: (last.testAfter / first.testBefore - 1) * 100 },
     }));
   } else {
     for (const g of fresh) posts.push(report(g, {

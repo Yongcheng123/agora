@@ -25,7 +25,7 @@ const MODELS = {
 };
 const MAX_CALLS = Number(process.env.MAX_CALLS_PER_DAY || 80);
 const MAX_USD = Number(process.env.MAX_USD_PER_DAY || 5);
-const TIMEOUT_MS = Number(process.env.AGORA_BRAIN_TIMEOUT_MS || 300000);
+const TIMEOUT_MS = Number(process.env.AGORA_BRAIN_TIMEOUT_MS || 900000);
 
 function pickMode() {
   if (process.env.AGORA_BRAIN) return process.env.AGORA_BRAIN;
@@ -112,7 +112,7 @@ async function runOpenAI(task, model) {
       method: 'POST', signal: ctl.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
       body: JSON.stringify({
-        model, max_tokens: Number(process.env.AGORA_MAX_TOKENS || 32000),   // reasoning models spend much of it thinking
+        model, max_tokens: Number(process.env.AGORA_MAX_TOKENS || 64000),   // reasoning models spend much of it thinking
         messages: [{ role: 'system', content: task.system }, { role: 'user', content: task.prompt }],
         tools: [{ type: 'function', function: { name: 'submit', description: 'Submit your answer.', parameters: task.schema } }],
         tool_choice: { type: 'function', function: { name: 'submit' } },
