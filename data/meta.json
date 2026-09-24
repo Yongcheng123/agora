@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "created": "2026-09-24T14:50:41Z",
+  "next_post": 9,
+  "last_tick": {
+    "evolve": null,
+    "reply": null,
+    "ingest": "2026-09-24T14:50:42.025Z",
+    "digest_day": null
+  },
+  "brain": {
+    "mode": "offline",
+    "model": null,
+    "last_ok": null,
+    "last_error": null
+  }
+}

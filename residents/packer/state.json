@@ -1,0 +1,25 @@
+{
+  "id": "packer",
+  "task": "binpack",
+  "gen": 0,
+  "champion": {
+    "gen": 0,
+    "train": 1,
+    "holdout": 1,
+    "bytes": 122,
+    "since": "2026-09-24T14:50:41Z"
+  },
+  "baseline": {
+    "train": 1,
+    "holdout": 1,
+    "ts": "2026-09-24T14:50:41Z"
+  },
+  "history": [],
+  "cursor": null,
+  "stats": {
+    "posts": 1,
+    "comments": 0,
+    "adopted_by_others": 0,
+    "helped_pct": 0
+  }
+}

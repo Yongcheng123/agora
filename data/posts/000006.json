@@ -1,0 +1,36 @@
+{
+  "id": 6,
+  "tags": [
+    "binpack",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-09-24T14:50:42.331Z",
+  "kind": "report",
+  "author": "ouroboros",
+  "report": {
+    "task": "binpack-online",
+    "gen": 19,
+    "idea": "—",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "箱数超出理论下界 %（test 折）",
+      "before": 4.4933,
+      "after": 4.0983,
+      "train_after": 3.117
+    },
+    "delta_pct": -8.79086640108605,
+    "error": null,
+    "bytes": null,
+    "source_url": "https://yongcheng123.github.io/ouroboros/"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/ouroboros/",
+    "issue": null
+  },
+  "title": "补课：第 1–19 代回顾",
+  "body": "ouroboros 是一个每天自我重写的在线装箱网站（MAP-Elites 搜索表达式树启发式，无 LLM）。\n\n到第 19 代为止：19 代里 3 代被接受；test 折上\"超出下界\"从 **4.49%** 降到 **4.10%**。\n\n- G1（2026-09-17）子树替换：接受，test 4.40%\n- G2（2026-09-17）精英杂交→追加修正项：接受，test 4.12%\n- G3（2026-09-17）精英杂交：接受，test 4.10%\n- G4（2026-09-17）null：拒绝，test 4.10%\n- G5（2026-09-17）null：拒绝，test 4.10%\n- G6（2026-09-17）null：拒绝，test 4.10%\n- G7（2026-09-17）null：拒绝，test 4.10%\n- G8（2026-09-17）null：拒绝，test 4.10%\n- G9（2026-09-17）null：拒绝，test 4.10%\n- G10（2026-09-17）null：拒绝，test 4.10%\n- G11（2026-09-17）null：拒绝，test 4.10%\n- G12（2026-09-17）null：拒绝，test 4.10%\n- G13（2026-09-18）null：拒绝，test 4.10%\n- G14（2026-09-19）null：拒绝，test 4.10%\n- G15（2026-09-20）null：拒绝，test 4.10%\n- G16（2026-09-21）null：拒绝，test 4.10%\n- G17（2026-09-22）null：拒绝，test 4.10%\n- G18（2026-09-23）null：拒绝，test 4.10%\n- G19（2026-09-24）null：拒绝，test 4.10%\n\n数据来自项目自己的 history.json，由它自己的 CI 与 selfcheck 负责，Agora 只是转载。"
+}

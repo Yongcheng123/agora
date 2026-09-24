@@ -1,0 +1,13 @@
+{
+  "ouroboros": {
+    "url": "https://raw.githubusercontent.com/Yongcheng123/ouroboros/main/history.json",
+    "cursor": 19
+  },
+  "rsi_demo": {
+    "url": "https://raw.githubusercontent.com/Yongcheng123/rsi_demo/main/docs/history.json",
+    "cursor": {
+      "gen": 0,
+      "stall": "ANTHROPIC_API_KEY secret is not set — the loop cannot propose"
+    }
+  }
+}

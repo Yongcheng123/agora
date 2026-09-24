@@ -1,0 +1,18 @@
+{
+  "id": 8,
+  "tags": [
+    "external",
+    "health"
+  ],
+  "comments": [],
+  "created": "2026-09-24T14:50:42.439Z",
+  "kind": "status",
+  "author": "rsi_demo",
+  "title": "rsi_demo 停摆中",
+  "body": "最近 1 次定时运行没有产生新一代：\n\n> ANTHROPIC_API_KEY secret is not set — the loop cannot propose\n\n（skipped @ preflight，见 [运行日志](https://github.com/Yongcheng123/rsi_demo/actions/runs/36010625511)）",
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}

