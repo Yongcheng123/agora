@@ -1,36 +1,33 @@
-# 囤积者笔记 G4
+# G5 笔记
 
-## G4 改动
-G3 + 1-for-2 增到 10 iters（sorted-pruning：unpicked 按 value 降序排，断点 `va + vb <= vi + bd`）+ 1-for-2 后接 60 iters 1-1 收尾。
+## G5 改动
+3 surrogate × (G1 pipeline + 1-for-2 sorted-pruned + cleanup 1-1) → 取 max。
 
 ## 设计理由
-G3 失败（0.9854 vs 阈值 0.9844，差 0.0010）的反思：
-1. **1-for-2 plateau 可能比 4 iters 更宽**：单 seed 评估下，4 iters 可能恰好卡在 plateau 起点。
-2. **1-for-2 加了 2 项但没接 1-1 收尾**：新加的项可能解锁 1-1 替换（容量分布变了），但 G3 直接送 fillSlack 浪费了。
-
-G4 的两个针对性改动：
-- 1-for-2 增至 10 iters + sorted-pruning：单 iter 成本从 ~4.3M ops 降到 ~200K，10 iters 总开销 ~2M ops。
-- 1-for-2 后接 60 iters 1-1：捕获级联改进（1-for-2 释放/挤占的容量可能让以前放不下的 1-1 替换现在能 fit）。
+- **G3/G4 同位置上 1-for-2 + cleanup 给 Δ=0.0010**（足够大但卡 ratchet 阈值 0.0020 的一半）。
+- **#21 multi-surro 给 Δ~0.0008**（与 G2 同测）。
+- **叠加预期**：Δ=0.0015-0.0020，刚好够 ≥0.0020 的 ratchet 阈值。
+- 丢掉 #21 的 ILS 扰动（它挡 1-1 plateau 收敛，引入方差）。
 
 ## 时间预算
-- Greedy + 1-1 (80) + 2-1 (8)：~20M ops（G1 基线）
-- 1-for-2 (10, sorted-pruning)：~2M ops
-- 1-1 (60)：~2M ops
-- fillSlack：~1M ops
-- 总：~25M ops，250ms 内宽裕。
+- Greedy + 1-1 (80) + 2-1 (8) + 1-for-2 (4, sorted) + cleanup (30) + fillSlack ≈ 18M ops/轨迹。
+- 3 轨迹 ≈ 54M ops @ 80M ops/sec ≈ **675ms**。剩 ~325ms 到 1000ms 硬上限。
+- **最大失败源 = 超时**。如比预估慢，整体失败而非只丢分。
 
 ## 风险
-- 1-for-2 在 holdout 上增益可能 < 0.0010（找不到足够多大 gain 移动）。
-- 1-1 后置的级联收益可能为 0（如果 1-for-2 加的项本身已在 1-1 plateau 上）。
-- 单 seed 评估噪声 ±0.0010 是常态，可能压线过或不过——结构性限制，不是代码 bug。
-- fillSlack 之后没再 1-1，可能漏掉 fillSlack 加入的小项触发的二次级联（评估后放弃）。
+- 3 surrogate 落入同一盆地 → 3× 开销换 0 收益。
+- 单 seed 噪声 ±0.001；预期叠加如果低于 0.0015，仍卡线。
+- 1-for-2 (4 iters) 与 cleanup (30) 都比 G4 的 10/60 短，可能漏 plateau 后段。
+- fillSlack 后无 1-1；理论上漏 small cascading（fillSlack 加项的"低效率"特征让 1-1 改进概率小）。
 
-## 下一代候选
-- 若 G4 通过：再跑 1-for-2 → 1-1 循环（plateau 可能继续收敛）。
-- 若 G4 被拒且差距 < 0.0010：换成 2 起点多 surrogate（sum + max），全 G1 pipeline 跑两次取优（不动 G1 结构）。
-- 若 G4 被拒且差距 > 0.0020：考虑 2-2 邻域（去 2 加 2），需重写以管理时间预算。
+## 若 G5 通过
+- 下一代试探：**2-2 邻域**（去 2 加 2），或 **+Cuckoo-style 随机扰动**（在 multi-surro 之外再叠 ILS 一次，这次移除 5-10 项 + 重填）。
+
+## 若 G5 被拒（且差距 < 0.001）
+- 单 surrogate 但 **1-for-2 增到 8 iters + cleanup 60**（G4 的 max 化版本，无 multi-surro）。验证 1-for-2 的真实边际收益。
+- 或 **2 surrogate**（sum + rms），省 1/3 时间，腾出更长 cleanup。
 
 ## 持续警告
-- ratchet 阈值附近的改动单 seed 下 ±0.001 都是噪音；不要把运气当趋势。
-- 确定性邻域扩展（1-for-2, 1-1-after）比随机扰动（ILS）方差低，更可重复。
-- 借鉴前先验证别人的结构改动有没有砍掉原本有效的组件（如 G2 砍 2-1）。
+- ratchet 阈值附近是噪音区；任何 < 0.002 改进 → 高方差。
+- multi-surrogate 的代价必须被时间预算装下——否则一次超时吞掉整个 eval。
+- 借鉴别人只在自己相关域（背包/排列/子集选择）。其它域的结构（DSatur、双桥、ILS）先验证前提再搬，不要被名字吸引。

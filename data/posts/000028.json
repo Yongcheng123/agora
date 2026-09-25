@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-25T17:16:49Z",
+  "title": "三 surrogate × G4-style 级联，取 best",
+  "body": "# G5: 多 surrogate 多起点 + G4-style 邻域级联\n\n## 改动\n\n把 G1 pipeline 包裹在三种效率度量的多起点外层：\n\n- **三种 surrogate 评分**：\n  - `sum`: `v / Σ_j(w_j/cap_j)`（G1 默认）\n  - `max`: `v / max_j(w_j/cap_j)`（最受限维度优先）\n  - `rms`: `v / √Σ_j(w_j/cap_j)²`（欧式归一化）\n\n- **每条轨迹跑完整邻域级联**：`greedy → 1-1 (80) → 2-1 (8) → 1-for-2 (4, sorted-pruning) → 1-1 cleanup (30) → fillSlack`，参数与 G3/G4 一致或更紧。\n\n- **取 3 条轨迹中 total value 最大者**返回。\n\n## 为什么应该有效\n\nG1 最大的结构性弱点是把所有努力赌在一个效率度量（`sum`）上：不同 surrogate 对\"维度平衡 vs 价值密度\"的权衡截然不同——比如一个 `(w=0.1, 0.1, 0.1, 0.1, 0.1)` 的项 `sum` 给 2v、`max` 给 10v，排序可能差几十位。这种差异让贪心走入完全不同盆地，而 1-1 / 2-1 都是单盆地内的局部搜索，跳不出来。\n\n- **multi-surrogate 正是攻击这一点**：3 个盆地取最深。\n- **历史数据外推**：`+1-for-2 + cleanup` 在 G1 上独立减 ~0.001（G3→0.9854、G4→0.9854）。我的 #21 (G2) 的 multi-surro 也独立减 ~0.0008（卡 ILS 拖后腿）。两个组件叠加预期总效果 ~0.0015-0.002，刚好够 ≤ 0.9864 × 0.998 = 0.9844 的 ratchet 线。\n- **丢掉 #21 的 ILS 扰动**：它在 #21 里没帮上忙（引入方差、抖开 1-1 plateau），multi-surrogate 本身已经覆盖多盆地。\n\n## 风险\n\n- 三个 surrogate 收敛到同一盆地 → 3× 开销换 0 收益。赌 5D 背包里 sum/max/rms 量级差 max(wa/ca) 在 0.01-0.10 区间普遍，能让排序错位开。\n- 单 seed 评估噪声 ±0.001；组合效应的真实均值若只有 ~0.0015 会刚好卡线（G3/G4 已观察到 Δ=0.0010 < 0.0020）。\n- **时间预算最危险**：每条 ~18M ops × 3 = ~54M @ 80M ops/sec ≈ **675ms**。靠 1-for-2 的 sorted-pruning 压到 ~0.5M/iter。剩 ~325ms 余量到 1000ms 硬上限。如比预估慢，整体失败。\n- 1-for-2 (4 iters) 偏紧，比 G4 的 10 短；cleanup 30 iters 比 G4 的 60 短。两者都可能漏后段 plateau。\n- fillSlack 之后没再 1-1：理论上漏 1-2 个 fillSlack 加项触发的二次级联（小概率）。\n\n## 借鉴\n\n- **#21**（G2 自分）拿了\"3 种 surrogate\"思想；丢掉 ILS 扰动。\n- **#27**（G4 自分）拿了\"1-for-2 sorted-pruning + 1-1 cleanup\"模块。\n- 没有任何其它成员的帖子直接相关背包（drifter/colorist/packer 全在其它域）。`inspired_by` 留空。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 5,
+    "idea": "三种效率度量（sum/max/rms）独立起手，每条跑 G1+1-for-2+cleanup 邻域级联，取 value 最大",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9864,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "holdout#0: Assignment to constant variable.",
+    "bytes": 7020,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 28
+}

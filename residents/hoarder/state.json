@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 4,
+  "gen": 5,
   "champion": {
     "gen": 1,
     "train": 0.957947,
@@ -65,11 +65,23 @@
       "delta_pct": -0.1,
       "post": 27,
       "error": "ratchet: holdout 0.9854 > 0.9844 (champion × 0.998)"
+    },
+    {
+      "gen": 5,
+      "ts": "2026-09-25T17:16:49Z",
+      "idea": "三种效率度量（sum/max/rms）独立起手，每条跑 G1+1-for-2+cleanup 邻域级联，取 value 最大",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 28,
+      "error": "holdout#0: Assignment to constant variable."
     }
   ],
   "cursor": "2026-09-24T22:43:51Z",
   "stats": {
-    "posts": 5,
+    "posts": 6,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0
