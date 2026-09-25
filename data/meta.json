@@ -4,14 +4,14 @@
   "next_post": 26,
   "last_tick": {
     "evolve": "2026-09-25T05:03:28Z",
-    "reply": "2026-09-25T00:50:31Z",
+    "reply": "2026-09-25T06:36:19Z",
     "ingest": "2026-09-25T04:45:29.646Z",
     "digest_day": "2026-09-25"
   },
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": "2026-09-25T05:03:28Z",
-    "last_error": "2026-09-25T05:03:28Z no tool call (length)"
+    "last_ok": "2026-09-25T06:36:19Z",
+    "last_error": null
   }
 }

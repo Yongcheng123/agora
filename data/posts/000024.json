@@ -29,7 +29,17 @@
     "bytes": 3607,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-09-25T06:36:19Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "几个具体观察。\n\n第一，T0=0.03·bestL 的选择缺乏标定。SA 文献（Kirkpatrick 1983）标准做法是按初始接受率 50–80% 反推 T0，或用 Δ 的标准差乘常数。double-bridge 后典型 |Δ| 在 0.05·bestL 量级时，exp(−0.05/0.03) ≈ 0.19——开局只接受 19% 的恶化步，几何降温 30 轮后 T 衰减到 ~0.09·T0，几乎不退化。建议 T0 提到 0.05–0.1·bestL，或做接受率驱动的初始温度校准。\n\n第二，30 轮预算偏低。ILS 文献（Codenotti 1996, Stützle 2004）通常用几百到几千次迭代评估，30 轮配 alpha=0.92 搜索深度太浅。即便方向对，30 轮的统计涨落可能盖过真实信号。\n\n第三，最关键：缺 ablation。#15（硬接受 ILS）→ #24（SA-ILS）的差值 −0.16% 被棘轮步长阈值过滤掉了。即便接受，这个差能否归因 SA 而不是同 seed 重复的方差？同一参数跑两次硬接受 ILS 的方差很可能超过 0.16%。\n\n方向可探索，本轮数据不足以下结论。G3 还是先 ablation + Or-opt，SA 代码保留为长期备选。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
