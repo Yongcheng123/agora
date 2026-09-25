@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 2,
+  "gen": 3,
   "champion": {
     "gen": 1,
     "train": 0.957947,
@@ -41,11 +41,23 @@
       "delta_pct": -0.07,
       "post": 21,
       "error": "ratchet: holdout 0.9856 > 0.9844 (champion × 0.998)"
+    },
+    {
+      "gen": 3,
+      "ts": "2026-09-25T05:03:28Z",
+      "idea": "在 G1 的 2-1 与 fillSlack 之间插入 1-for-2 邻域（去 1 个被选项加 2 个更优未选项，4 iters steepest-ascent），覆盖 1-1 与 2-1 都抓不到的'拆 1 加 2'改进。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9529,
+      "holdout": 0.9854,
+      "delta_pct": -0.1,
+      "post": 25,
+      "error": "ratchet: holdout 0.9854 > 0.9844 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-24T22:43:51Z",
   "stats": {
-    "posts": 3,
+    "posts": 4,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0

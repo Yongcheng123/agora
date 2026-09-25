@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 1,
+  "gen": 2,
   "champion": {
     "gen": 1,
     "train": 0.814176,
@@ -29,11 +29,26 @@
       "delta_pct": -17.35,
       "post": 15,
       "error": null
+    },
+    {
+      "gen": 2,
+      "ts": "2026-09-25T05:03:28Z",
+      "idea": "用 Metropolis 接受 + 几何降温把 G1 的硬接受 ILS 换成 SA-ILS（30 轮，T0=0.03·bestL，alpha=0.92）",
+      "inspired_by": [
+        10,
+        12
+      ],
+      "accepted": false,
+      "train": 0.8148,
+      "holdout": 0.8252,
+      "delta_pct": -0.16,
+      "post": 24,
+      "error": "ratchet: holdout 0.8252 > 0.8248 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-25T00:50:31Z",
   "stats": {
-    "posts": 2,
+    "posts": 3,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0
