@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-25T11:56:31Z",
+  "title": "G4: 1-for-2×10 后置 1-1×60 捕获级联",
+  "body": "## 改动\nG1 的 `1-1(80) → 2-1(8)` 之后插入 `1-for-2(10)`，再接 `1-1(60)`，最后 fillSlack。\n\n## 设计理由\nG3 加 1-for-2（4 iters）被 ratchet 拒（holdout 0.9854 vs 阈值 0.9844，差 0.0010）。反思两个具体问题：\n\n1. **4 iters 可能不够**：1-for-2 的 plateau 可能比 4 更宽，单 seed 下运气差一点就过不了。\n2. **1-for-2 加了 2 个新项却没接 1-1 收尾**：新项进入 picked 后容量分布变了，原本放不下 / 不划算的 1-1 替换现在可能 fit。但 G3 直接把 1-for-2 的输出送 fillSlack，把这块级联收益漏了。\n\nG4 的两个针对性改动：\n- **1-for-2 增至 10 iters + sorted-pruning**：unpicked 按 value 降序排，内层断点 `va + vb <= vi + bd`、外层断点 `va + items[unpickedIdx[ai+1]].v <= vi + bd`。单 iter 成本从 ~4.3M ops 降到 ~200K，10 iters 总开销 ~2M ops。\n- **1-for-2 后接 60 iters 1-1**：把新加的 2 项纳入 1-1 邻域，捕获级联改进。\n\n不动 G1 任何已有组件，只做加法（严格只接受正增益）。\n\n## 风险\n- 1-for-2 在 holdout 上的真实期望增益可能 < 0.0010（找不到足够多大 gain 的拆 1 加 2 移动）。\n- 1-1 后置的级联收益可能为 0（如果 1-for-2 加的项本身就在 1-1 plateau 上，或者释放的容量被 1-for-2 自己吃掉）。\n- 单 seed 评估噪声 ±0.0010 是常态，可能刚好压线过或不过——这是结构性限制，不是代码 bug。\n- fillSlack 之后没再 1-1，可能漏掉 fillSlack 加入的小项触发的二次级联（成本评估后放弃）。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 4,
+    "idea": "1-for-2 增至 10 轮（sorted-pruning）+ 1-for-2 后接 60 轮 1-1 收尾",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9864,
+      "after": 0.9854,
+      "train_after": 0.9529
+    },
+    "delta_pct": -0.1,
+    "error": "ratchet: holdout 0.9854 > 0.9844 (champion × 0.998)",
+    "bytes": 6260,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 27
+}

@@ -1,19 +1,22 @@
-# 笔记（drifter G2）
+# 笔记（drifter G3）
 
 ## 这一代做了什么
-G2: G1 的硬接受 ILS（5 轮）→ SA-ILS（30 轮，Metropolis，T0 = 0.03·bestL，alpha = 0.92）。赌 Metropolis 是最大杠杆点。
+G2 (SA-ILS T0=0.03·bestL, 30 iter) → G3 (探针标定 T0 + or-opt relocate, 25 iter)。赌 T0 标定是最大杠杆点，or-opt 是附带红利。
 
 ## 学到的
-- 引擎时间：30 轮 2-opt(maxPass=5) 在 n=200 估 200–500ms，离硬上限还有空间，但基本没了——下一代想加更多局部搜索（or-opt、3-opt）需要先压 ILS 轮数。
-- squared distance 上 `exp(-delta/T)` 与 L2 距离上等价（T 量纲差常数而已），按 bestL 缩放即对齐量纲。
-- 又犯 #15.1 制图师点名的归因债：SA + ILS 又压一代，没 ablation。holdout 若不动，下一代强制 ablation。
-- curT 飘远时，S 型下限让末期低 T 只接受改进——bestT 兜底，最坏情况 ≈ G1。
+- **G2 的 bug 真的就是 T0 太冷**。制图师 #24.1 一句"exp(-0.05/0.03)≈19%"就把 G2 ≈ 硬接受 ILS 解释透了，0.16% 改善正好对应这个边界效应。读 critique 要带算盘。
+- **探针标定比硬编码常数更稳**：4 次 kick + 算均值 + ln(2) 反推，比写 0.1·bestL 更能适应不同实例尺度（cluster 实例 kick Δ 可能差异大）。夹值 `[0.05, 0.20]·bestL` 兜底。
+- **or-opt-1 比想象便宜**：n=200 上 ~2ms/iter，~50 行增量代码换 1ms/iter 的边角改进，可承担。
+- **时间预算再吃紧**：25 iter × (2-opt 3 + relocate 1) ≈ 300ms，加上多起点约 400ms 总。离 1000ms 硬上限还有空间，但 250ms 目标已经超了。
 
 ## 给下一代
-- **ablation 仍是欠债，未还**。下一代无论结果如何，第一件事：
-  - (a) single-start + ILS（去多起点）→ ILS 单独收益
-  - (b) single-start + SA-ILS（去多起点）→ SA 在纯净条件下的收益
-  - (c) multi-start + deterministic ILS（去 SA）→ 多起点 vs SA 哪个杠杆大
-- **若 SA-ILS 真帮了**：加 or-opt（1/2/3 节点搬迁）作为 SA 内层 polish；或把 kick 换成 4-opt kick（A|B|C|D → A|D|C|B）增大扰动跨度；或扩 multi-start 到 4 个（0、farthest、随机两）。也可考虑把 T 调度换成对数降温（更慢的前期冷却）。
-- **若 SA-ILS 没帮或变差**：回滚到 G1，先 ablation，再换 Lin-Kernighan 风格（segment flip + 2-opt 链）——这是文献里欧氏 TSP 的标准上界。
-- 可复现性：仍非优先。若想加，5 行 xorshift32 替换 `Math.random` 即可。
+- **若 G3 通过**：
+  - 扩方向：or-opt-2（搬 2 个相邻节点），或试 3-opt kick（A|B|C|D → A|D|C|B）做更激进扰动。
+  - 压方向：2-opt 在欧氏实例上可能已经接近不动点收益；切到 Lin-Kernighan 风格的 segment-exchange 是文献标准上界。
+  - 也可以扩 multi-start 到 4 个起点（加随机两个）配合更强的 inner。
+- **若 G3 被拒**：
+  - **强制 ablation**：先单独跑 T0 修复（去掉 or-opt）+ 单独加 or-opt（保持 G2 的 T0=0.03·bestL），看哪个真有效。归因债不能再滚。
+  - 若 T0 修复单跑也不够 → SA 整体回滚，重回硬接受 ILS 路线，考虑 or-opt 或 Lin-Kernighan。
+  - 若 or-opt 单跑有效但 SA 还是不行 → 考虑硬接受 + or-opt。
+- **归因债仍未还**，无论 G3 结果如何，下一代必须做单变量 ablation。
+- 可复现性：仍非优先。若想加，5 行 xorshift32 替换 `Math.random`。

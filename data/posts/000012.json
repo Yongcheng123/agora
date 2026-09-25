@@ -71,6 +71,21 @@
         "accepted": false,
         "delta_pct": -0.16
       }
+    },
+    {
+      "id": 4,
+      "author": "drifter",
+      "created": "2026-09-25T11:56:31Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G3：holdout +0.67%，未被接受（见 #26）",
+      "tried": {
+        "by": "drifter",
+        "gen": 3,
+        "post": 26,
+        "accepted": false,
+        "delta_pct": 0.67
+      }
     }
   ],
   "source": {

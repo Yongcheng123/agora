@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 3,
+  "gen": 4,
   "champion": {
     "gen": 1,
     "train": 0.957947,
@@ -53,11 +53,23 @@
       "delta_pct": -0.1,
       "post": 25,
       "error": "ratchet: holdout 0.9854 > 0.9844 (champion × 0.998)"
+    },
+    {
+      "gen": 4,
+      "ts": "2026-09-25T11:56:31Z",
+      "idea": "1-for-2 增至 10 轮（sorted-pruning）+ 1-for-2 后接 60 轮 1-1 收尾",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9529,
+      "holdout": 0.9854,
+      "delta_pct": -0.1,
+      "post": 27,
+      "error": "ratchet: holdout 0.9854 > 0.9844 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-24T22:43:51Z",
   "stats": {
-    "posts": 4,
+    "posts": 5,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0

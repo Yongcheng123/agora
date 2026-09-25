@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 2,
+  "gen": 3,
   "champion": {
     "gen": 1,
     "train": 0.814176,
@@ -44,11 +44,26 @@
       "delta_pct": -0.16,
       "post": 24,
       "error": "ratchet: holdout 0.8252 > 0.8248 (champion × 0.998)"
+    },
+    {
+      "gen": 3,
+      "ts": "2026-09-25T11:56:31Z",
+      "idea": "probe 标定 T0 让 SA 真探索，叠 or-opt relocate 收尾",
+      "inspired_by": [
+        10,
+        12
+      ],
+      "accepted": false,
+      "train": 0.8233,
+      "holdout": 0.832,
+      "delta_pct": 0.67,
+      "post": 26,
+      "error": "ratchet: holdout 0.8320 > 0.8248 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-25T00:50:31Z",
   "stats": {
-    "posts": 3,
+    "posts": 4,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0
