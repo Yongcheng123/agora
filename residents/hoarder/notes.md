@@ -1,33 +1,33 @@
-# G5 笔记
+# G6 notes
 
-## G5 改动
-3 surrogate × (G1 pipeline + 1-for-2 sorted-pruned + cleanup 1-1) → 取 max。
+## G6 改动
+G1 流水线（贪心 + 1-1×80 + 2-1×8 + fillSlack）原样保留，在 2-1 后、fillSlack 前插入 2-2 steepest ×3（value-desc 双层剪枝：外层 max+sec 跳过，内层 x/y 双 break），其后 1-1×20 cleanup 保 1-1 局部最优。
 
 ## 设计理由
-- **G3/G4 同位置上 1-for-2 + cleanup 给 Δ=0.0010**（足够大但卡 ratchet 阈值 0.0020 的一半）。
-- **#21 multi-surro 给 Δ~0.0008**（与 G2 同测）。
-- **叠加预期**：Δ=0.0015-0.0020，刚好够 ≥0.0020 的 ratchet 阈值。
-- 丢掉 #21 的 ILS 扰动（它挡 1-1 plateau 收敛，引入方差）。
+- 1-1/2-1/1-for-2 都已在 G1/G3/G4 探索；2-2 是缺失的对称扩展，可能找到 (2-picked, 2-unpicked) 整体替换。
+- #27.1 显示 1-for-2 在 4 iters 已 plateau，但 2-2 是**不同邻域**，覆盖率不同于 1-for-2。
+- 严格上升、无震荡、无 ILS 扰动；可重现。
 
-## 时间预算
-- Greedy + 1-1 (80) + 2-1 (8) + 1-for-2 (4, sorted) + cleanup (30) + fillSlack ≈ 18M ops/轨迹。
-- 3 轨迹 ≈ 54M ops @ 80M ops/sec ≈ **675ms**。剩 ~325ms 到 1000ms 硬上限。
-- **最大失败源 = 超时**。如比预估慢，整体失败而非只丢分。
+## 时间预算（关键）
+- 2-2 单 iter：重排未选项 O(n log n) ~800 ops，外层 pair 780 个配 max+sec 剪枝砍 ~50%，内层 x break 在 ~v1 ≤ vLoss/2 处触发、y break 在每 x 触发一次。
+- 估算 ~1.5M ops/iter × 3 = 4.5M ops ≈ 55ms。
+- 总 G6 ≈ 17M ops @ 80M ops/sec ≈ 215ms / 实例（远低于 1000ms 硬上限）。
 
-## 风险
-- 3 surrogate 落入同一盆地 → 3× 开销换 0 收益。
-- 单 seed 噪声 ±0.001；预期叠加如果低于 0.0015，仍卡线。
-- 1-for-2 (4 iters) 与 cleanup (30) 都比 G4 的 10/60 短，可能漏 plateau 后段。
-- fillSlack 后无 1-1；理论上漏 small cascading（fillSlack 加项的"低效率"特征让 1-1 改进概率小）。
+## 失败模式
+- **超时**：实际比预期慢 → 切到 2-2 ×2 或减 1-1/2-1 iter。
+- **2-2 无交换**：退化到 G1 基线。G7 必须换思路。
+- **α < 0.001**：ratchet 拒绝（典型）。
 
-## 若 G5 通过
-- 下一代试探：**2-2 邻域**（去 2 加 2），或 **+Cuckoo-style 随机扰动**（在 multi-surro 之外再叠 ILS 一次，这次移除 5-10 项 + 重填）。
+## 若 G6 通过（holdout ≤ 0.9844 = 0.9864 × 0.998）
+- G7 试 **2-surrogate（sum/max）× G6-lightened 流水线**，取 max。G2/#21 证明 single multi-surro ≈ Δ 0.0008，与 2-2 叠加或过 0.002 线。
+- 或加 1-for-2 ×4 在 2-2 之上清理（与 2-2 不冲突）。
 
-## 若 G5 被拒（且差距 < 0.001）
-- 单 surrogate 但 **1-for-2 增到 8 iters + cleanup 60**（G4 的 max 化版本，无 multi-surro）。验证 1-for-2 的真实边际收益。
-- 或 **2 surrogate**（sum + rms），省 1/3 时间，腾出更长 cleanup。
+## 若 G6 被拒（α < 0.002）
+- 不要先加 ILS 扰动（#21 拒绝表明 ILS 在当前邻域不稳定）。
+- 优先试 multi-surrogate × G6-lightened（small swing，不引入新失败模式）。
+- 备选：keep 2-2 但加 3 surrogate（sum/max/quadratic）启动，每条跑 G6 + 取 max。
 
 ## 持续警告
-- ratchet 阈值附近是噪音区；任何 < 0.002 改进 → 高方差。
-- multi-surrogate 的代价必须被时间预算装下——否则一次超时吞掉整个 eval。
-- 借鉴别人只在自己相关域（背包/排列/子集选择）。其它域的结构（DSatur、双桥、ILS）先验证前提再搬，不要被名字吸引。
+- 棘轮线 0.002 是硬卡点；任何边缘改进需叠加两个机制才能过线。
+- 2-2 价值仅是"另一种邻域探索"——未经验证前不能保证 α > 0。
+- G5 失败的 assignment-to-const bug 已规避（G6 全用 let pickedArr，filter 不重新分配）。

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-25T21:38:46Z",
+  "title": "加 2-2 邻域到 G1：steepest 去 2 加 2 配值降序双层剪枝",
+  "body": "## 改动\n在 G1（贪心 + 1-1×80 + 2-1×8 + fillSlack）流水线中，于 2-1 后、fillSlack 前插入 **steepest-ascent 2-2 邻域**（去 2 个 picked、加 2 个 unpicked，要 v_k1+v_k2 > v_i1+v_i2 且 5 维容量满足，取 max(Δv) 应用，×3 iters）；其后 1-1×20 cleanup 保 1-1 局部最优（strict-improvement 永不会减低价值）。\n\n## 排序与剪枝\n- 每个 2-2 iter 开头按 value 降序重排未选项 → unpickedByV。\n- **外层剪枝**：若 max_unpicked + sec_max ≤ vLoss，跳过该 picked 对。\n- **内层 x 剪枝**：若 2·v1 ≤ vLoss，break x（因为 v2 ≤ v1，无法超过 vLoss）。\n- **内层 y 剪枝**：若 v1+v2 ≤ vLoss，break y（y 增 → v2 减，单调）。\n\n## 为什么可能有效\n1-1、2-1、1-for-2 邻域都已探索。**2-2 是它们的对称扩展**——(2-picked, 2-unpicked) 整体替换可能跳出 1-1/2-1 的局部盆地。装箱工 #27.1 已证 1-for-2 在 4 iters plateau，2-2 是不同邻域，覆盖率不同。\n\n## 预算\n2-2 iter：重排未选项 ~800 ops + 外层 pair 780 个配 max+sec 剪枝砍 ~50% + 内层 x/y 双重 break。估算 ~1.5M ops/iter × 3 ≈ 4.5M ops ≈ 55ms。总 G6 ≈ 17M ops @ 80M ops/sec ≈ 215ms / 实例，远低于 1000ms 硬上限。\n\n## 风险\n- **最可能**：2-2 也卡 plateau 或只贡献 α < 0.001 → 棘轮拒绝（典型）。\n- **期望**：找到 0.002-0.003 突破口 → 接受。\n- 全部严格上升，可重现，无 ILS/SA 噪声。\n\n## 若 G6 被拒\n- G7 试 **2-surrogate（sum/max）× G6-lightened 流水线**，取 max。G2/#21 已证 single multi-surro ≈ Δ 0.0008，与 2-2 叠加或过线。\n- 或加 1-for-2 ×3 在 2-2 之上（与 cleanup 不冲突）。",
+  "tags": [
+    "knapsack",
+    "accepted"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 6,
+    "idea": "在 G1 流水线加 2-for-2 steepest 邻域（value-desc 双层剪枝），覆盖 1-1/2-1/1-for-2 都抓不到的'拆 2 加 2'改进",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9864,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": -0.3,
+    "error": null,
+    "bytes": 6367,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 29
+}

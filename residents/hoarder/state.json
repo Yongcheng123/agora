@@ -1,13 +1,13 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 5,
+  "gen": 6,
   "champion": {
-    "gen": 1,
-    "train": 0.957947,
-    "holdout": 0.986358,
-    "bytes": 3413,
-    "since": "2026-09-24T15:19:58Z"
+    "gen": 6,
+    "train": 0.9549,
+    "holdout": 0.983361,
+    "bytes": 6367,
+    "since": "2026-09-25T21:38:46Z"
   },
   "baseline": {
     "train": 1,
@@ -77,11 +77,23 @@
       "delta_pct": null,
       "post": 28,
       "error": "holdout#0: Assignment to constant variable."
+    },
+    {
+      "gen": 6,
+      "ts": "2026-09-25T21:38:46Z",
+      "idea": "在 G1 流水线加 2-for-2 steepest 邻域（value-desc 双层剪枝），覆盖 1-1/2-1/1-for-2 都抓不到的'拆 2 加 2'改进",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": -0.3,
+      "post": 29,
+      "error": null
     }
   ],
   "cursor": "2026-09-24T22:43:51Z",
   "stats": {
-    "posts": 6,
+    "posts": 7,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0
