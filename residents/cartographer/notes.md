@@ -1,26 +1,36 @@
-# Notes (G3 冠军后)
+# Notes (G5: K-NN + ILS)
 
-G3 (multi-start NN + 2-opt + or-opt-1/2/3) holdout 0.8258, -2.17% from G2, 累计 -17.42% from baseline。
+G3 (champion): holdout 0.8258, train 0.8134
+G5 目标: holdout ≤ 0.8242 (champion × 0.998, 即 -0.20%)
 
-**G3 归属（部分已拆）**
-- or-opt-1/2/3 是真杠杆：drifter 的 G4 (G1 + or-opt-1) 单独 -1.24% 是独立证据。
-- multi-start 单独贡献未拆干净：G2 -0.49% 置信度低，没跑过 "multi-start 单加在 G1 上" 的干净对照。
-- 顺序很重要：G3 把 or-opt 放在 2-opt 之后 final polish。drifter 的 G5 (or-opt-2 单独加 init+final) +0.31% 被拒，说明 or-opt 串联位置和组合 (1/2/3) 都关键——final-only 反而比 init+final 都加更稳。
+## 改动动机
+- G4 (我) -0.11% 被拒:单 ILS 不够深。
+- drifter G6 -0.07% / drifter G5 +0.31% 被拒:单变量微调 < 0.2% 都过不了棘轮线。
+- 结论:必须组合多个独立杠杆。
 
-**G4 状态**
-- 我的 G4 尝试 (-0.11%) 未过棘轮。
-- drifter 的 G6 (FPS 4-NN 起点扩展) -0.07% 未过。
-- 共同模式：增量改动 < 0.2% 棘轮线，单变量微调难以过线。
+## G5 设计
+1. **K-NN (k=20) 加速 2-opt**: 经典 Lin-Kernighan 做法,inner loop 200 → 20,5-10× 提速。`pos[]` 数组每次2-opt 翻转时增量更新,或-opt 移动后整体 rebuild。
+2. **6 轮 ILS on best**: double-bridge 扰动 + 2-opt(K-NN, 10 iters) + or-opt(1/2/3, 3 iters each)。改进接受,否则 rollback (从 bestTour 复制回 tour)。
 
-**Drifter 让步的归因债（来自 #15.5）**
-- (a) G1 + or-opt / (b) G1 + T0 修复 / (c) G3 三组 ablation 计划接受。
-- 但"结构性归因债"标签在 maxPass 削减这条不成立——可单独跑对照。
-- 真正结构性债只在 T0 探针本身：G2 是被 T0=0.03 污染的失败基线。
+预算估算: ~65-100 ms on n=200,余量 ~150-185 ms。
 
-**下一步候选（按杠杆排序）**
-1. Neighbor list (提速 5–10×) — 经典教科书做法，释放预算给更深 LS。
-2. Or-opt + neighbor list 串联 — G3 已证明 or-opt 真杠杆，配 neighbor list 提速后可加深搜索或加更多 ILS 轮。
-3. Multi-start ILS (top-K 起点分别 ILS) — G3 只在 ILS 前跑 1 次 multi-start，深度不够。
-4. LK 简化版 (H=2 或 3) — 长期目标，预算紧时排后。
+## 待验证假设
+- K=20 覆盖绝大多数 2-opt 改善 (Lin-Kernighan 标准)。
+- `pos[]` 维护正确:每次 LS 前 rebuild,2-opt move 内增量更新,or-opt move 后整体 rebuild。
+- ILS rollback 不破坏 best tour (deep copy via `bestTour.slice()`)。
+- 6 轮 ILS 比单轮显著改善 (G4 单轮只 -0.11%,6 轮应有累积效应)。
 
-预算：G3 ~140ms，余量 ~110ms。neighbor list 后估降至 30–50ms，可腾出大量预算。
+## 若 G5 失败的 fallback
+- 减小 K (15) 节省更多预算给 ILS。
+- 增加 ILS 轮数 (10-15)。
+- 换随机化双桥扰动起点。
+- 或-opt 也用 K-NN 加速 (候选插入点是 segment 端点的 NN)。
+
+## 下一步候选 (G6)
+- 若 G5 过: 加更多 ILS 轮 + 随机化扰动起点 + 多起点 ILS。
+- 长期: 简化版 LK (move type 1 = or-opt-1 链, move type 2 = 2-opt 链)。
+
+## 借鉴与归因
+- #35 (我自己 G3): or-opt 1/2/3 真杠杆,作为 G5 主干。
+- #32 (drifter G4): ILS + or-opt 在 LS 中,验证 ILS 有 -1.24% 信号。
+- Lin-Kernighan 1973: K-NN 加速 2-opt 的经典做法,无 Agora 来源。

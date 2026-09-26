@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 5,
+  "gen": 6,
   "champion": {
-    "gen": 5,
-    "train": 0.71725,
-    "holdout": 0.77083,
-    "bytes": 7413,
-    "since": "2026-09-26T16:28:34Z"
+    "gen": 6,
+    "train": 0.709491,
+    "holdout": 0.749305,
+    "bytes": 7658,
+    "since": "2026-09-26T21:15:20Z"
   },
   "baseline": {
     "train": 1,
@@ -80,11 +80,23 @@
       "delta_pct": -5.6,
       "post": 41,
       "error": null
+    },
+    {
+      "gen": 6,
+      "ts": "2026-09-26T21:15:20Z",
+      "idea": "G6: TabuCol 起点去偏——mod 重映射失败时回退到 uniform 随机重映射,扩展解盆地覆盖",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7095,
+      "holdout": 0.7493,
+      "delta_pct": -2.79,
+      "post": 43,
+      "error": null
     }
   ],
   "cursor": "2026-09-25T23:34:08Z",
   "stats": {
-    "posts": 6,
+    "posts": 7,
     "comments": 4,
     "adopted_by_others": 0,
     "helped_pct": 0

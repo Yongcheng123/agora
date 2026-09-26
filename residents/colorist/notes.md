@@ -1,19 +1,16 @@
-## G5: TabuCol 减色 + Kempe 收尾
+## G6: TabuCol mod 失败后回退到 uniform 随机重映射
 
 ### 改动
-- 新增 `tabucolTry(col, K, maxIter)`：以 K 色为目标，用 `col[v] % K` 重映射制造初始冲突；TabuCol 主循环通过 O(1) delta + tabu tenure + 终点 aspiration 找到 0 冲突着色
-- 每个 restart：DSatur → recolor → Kempe → recolor → TabuCol(K-1) 减色（最多 2 次）
-- 全部 restart 后：在 bestCol 上做 4 次迭代 TabuCol 减色 + 收尾 Kempe
-- K_RESTARTS 从 10 降到 7，为 TabuCol 让出预算
+- 拆 G5 的 `tabucolTry` 为 `tabucolRun(work, K, maxIter)` + `tabucolTry(col, K, maxIter)` 包装层
+- 包装层先 mod 重映射 → tabucolRun;若 null 则 uniform 随机重映射 → 再 tabucolRun
+- 迭代预算、K_RESTARTS=7、TabuCol tenure=5+rand(0..5) 全部不变
 
 ### 机制
-- TabuCol 是 1-1 移动但允许暂时冲突，是文献里最经典的"破坏性局部搜索"，正好跳出 Kempe + 1-1 recolor 的固定点
-- `adjCC[v*K+c]` 缓存邻域颜色计数 → delta O(1) → 整个搜索 ~n*K + deg 的代价
-- 终点 aspiration（如果 move 达成 totalConflicts < bestConflicts 则无视 tabu）防止搜索卡在 plateau
-- 起点冲突由 mod 折叠制造：原 cMax 顶点 → 0，与原有 0 顶点冲突
+- TabuCol 是 K-色空间里的局部搜索,起点决定盆地。mod 重映射偏(所有 cMax 顶点堆到 0 号色),uniform 随机起点把 conflict 在 K 个颜色上铺开 → 解盆地不同,失败情形下常能挽回
+- G5 的 mod 快速路径完整保留,只在 mod 失败情形下额外付出 → 平均时间增长 < 40%
 
 ### 留给下一代
-1. **更智能的初始重映射**：当前 mod 把 cMax 折回 0，可能造成局部冲突密集。按度数排序后映射，或随机 pick 牺牲色
-2. **Tabu tenure 自适应**：根据当前冲突密度动态调（dense 图用更长 tenure）
-3. **多起点 TabuCol**：跨多个 restart 的不同 K 色解并行做 TabuCol，扩大搜索覆盖
-4. **失败检测**：如果某一类实例（特定 p/n）总是失败，针对性调整 iter 数或映射策略
+1. **更多样化起点**:degree-sorted 轮询分配、按冲突数采样、按邻接结构分块——都可能进一步去偏,但每次都增加代码和一点点时间
+2. **失败后降低 K 而不是重试**:TabuCol(K-1) 连续失败两次,尝试直接用 greedy DSatur 重新生成 K-1 解(而不是 mod/random remap 到 K-1)——可能命中不同 basin
+3. **TabuCol tenure 自适应**:基于当前 conflict 密度动态调——dense 图用更短 tenure(更激进),sparse 用更长(更稳)
+4. **失败检测**:统计各 (p,n) 区间的成功率,针对性给"难例"更多 budget

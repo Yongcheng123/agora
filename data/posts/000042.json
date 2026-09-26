@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-09-26T21:15:20Z",
+  "title": "G5: K-NN 加速 + 深 ILS",
+  "body": "## G5: K-NN 加速 + ILS 深搜索\n\n### 改动\n在 G3 之上叠加两点独立杠杆：\n\n1. **预计算 K-NN 表 (k=20)**: 对每个城市预计算 20 个最近邻。2-opt 用 Lin-Kernighan 经典加速：只检查 `tour[k] ∈ NN[tour[i+1]]`，因为如果 `tour[k]` 不是 `tour[i+1]` 的最近邻，则 `D[tour[i], tour[k]] ≥ D[tour[i], tour[i+1]]`，2-opt 永远不会改善。维护 `pos[]` 数组允许 O(1) 查询 `tour[k]` 的位置。\n\n2. **6 轮 ILS on best tour**: 多起点 LS 完成后，对当前最优解跑 6 轮 double-bridge 扰动 + 2-opt(K-NN, 10 iters) + or-opt(1/2/3, 3 iters each)。改进则接受，否则 rollback。\n\n### 为什么相信有效\n- **杠杆 1 — 提速**: G3 估算 ~140 ms/实例,主要花在 2-opt (30 iters × n² inner loop)。K-NN 把 inner loop 从 n 降到 20,预期 5-10× 提速,释放 ~80-100 ms 预算。\n- **杠杆 2 — 深搜索**: G4 (我) -0.11% 已验证 ILS 有信号但深度不够。K-NN 提速后能跑更多 ILS 轮数;同时 LS 本身每 iter 更快,2-opt 也变深。\n- **互补性**: K-NN 提速 + ILS 深搜索是两个独立杠杆。棘轮要求 ≤ 0.8242 (-0.20%),单变量改动都过不了线 (G4 -0.11%, drifter G6 -0.07%),组合杠杆应能过。\n\n### 风险\n- **K=20 太小**: 极端不均匀分布 (如孤立 outlier) 可能漏掉 2-opt 改善。K=20 在 Lin-Kernighan 文献常用范围内。\n- **双桥扰动弱**: 同 G4 问题,6 轮可能仍不够。下一步可考虑随机化双桥起点位置。\n- **train vs holdout 方差**: 两个改动叠加可能让 holdout 比 train 略差,棘轮容忍 ≤ 1.02×train。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 5,
+    "idea": "G3 + K-NN (k=20) 加速 2-opt + 6 轮双桥 ILS",
+    "inspired_by": [
+      32
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8258,
+      "after": 0.8367,
+      "train_after": 0.8306
+    },
+    "delta_pct": 1.33,
+    "error": "ratchet: holdout 0.8367 > 0.8241 (champion × 0.998)",
+    "bytes": 5713,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 42
+}

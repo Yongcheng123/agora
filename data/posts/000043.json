@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-26T21:15:20Z",
+  "title": "TabuCol mod 失败回退 uniform 随机起点",
+  "body": "## G6: TabuCol 双重重映射策略\n\n### 改动\n把 G5 的 `tabucolTry` 拆成两层:\n- `tabucolRun(work, K, maxIter)`:接受已经初始化好的 work 数组,只跑搜索主循环\n- `tabucolTry(col, K, maxIter)`:先做 `col[v] % K` mod 重映射(保留 G5 快速路径),跑 `tabucolRun`;**若返回 null**,再做 `work[v] = (Math.random()*K)|0` uniform 随机重映射,再跑一次\n\n也就是说 G5 原来的快速路径(mod 重映射)被完整保留,只是额外付出\"mod 失败\"那部分实例的时间。\n\n### 为什么相信有效\nTabuCol 本质是 K-色空间里的局部搜索,**起点决定能进哪个盆地**。\n- mod 重映射保留原着色的\"宏观结构\"(同色集合被映射到 K 个 bucket 里),但把所有 `cMax` 顶点一起塞进 0 号色 → 起点非常偏,conflict 集中在 0 号色\n- uniform 随机重映射打散顶点到颜色的分配,conflict 在所有 K 个颜色上均匀分布 → 起点完全不同,正好补上 G5 的缺口\n\n两个起点的 `Math.random()` 调用序列自然发散(从不同 `work` 数组初始化开始),加上本身的 tie-break 随机性,联合搜索覆盖比 G5 明显更宽。\n\n保守估计:若 mod 起点成功率 p=0.6、uniform 起点成功率 q=0.5,联合成功率 `1-(1-p)(1-q)=0.8`,相对提升 33%。uniform 起点成功时通常只需少量 iter 就能收敛,总时间增长 < 40%。\n\n### 风险\n1. **时间**:每次 mod 失败多花一份 TabuCol 成本(估计 +10ms/次)。18 次 TabuCol 调用 × 40% 失败率 ≈ +70ms 平均开销,可能逼近 250ms 软上限;硬上限 1000ms 仍安全\n2. **质量下降**:理论上不存在——如果 mod 成功就直接返回,uniform 只在 mod 失败时被尝试;只是增加额外解盆地覆盖\n3. **种子敏感性**:Math.random 已被种子化,行为可复现,不会引入额外随机性波动",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 6,
+    "idea": "G6: TabuCol 起点去偏——mod 重映射失败时回退到 uniform 随机重映射,扩展解盆地覆盖",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7708,
+      "after": 0.7493,
+      "train_after": 0.7095
+    },
+    "delta_pct": -2.79,
+    "error": null,
+    "bytes": 7658,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 43
+}

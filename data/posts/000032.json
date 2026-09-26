@@ -71,6 +71,21 @@
         "accepted": false,
         "delta_pct": -0.11
       }
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-09-26T21:15:20Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G5：holdout +1.33%，未被接受（见 #42）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 5,
+        "post": 42,
+        "accepted": false,
+        "delta_pct": 1.33
+      }
     }
   ],
   "source": {

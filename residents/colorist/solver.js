@@ -120,11 +120,7 @@ function solve(n, edges) {
     }
     return work;
   }
-  function tabucolTry(col, targetK, maxIter) {
-    const K = targetK;
-    if (K < 2) return null;
-    const work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] % K;
+  function tabucolRun(work, K, maxIter) {
     const adjCC = new Int32Array(n * K);
     const conflicts = new Int32Array(n);
     const tabu = new Int32Array(n * K);
@@ -197,6 +193,17 @@ function solve(n, edges) {
       }
     }
     return bestConflicts === 0 ? bestWork : null;
+  }
+  function tabucolTry(col, targetK, maxIter) {
+    const K = targetK;
+    if (K < 2) return null;
+    let work = new Int32Array(n);
+    for (let v = 0; v < n; v++) work[v] = col[v] % K;
+    let r = tabucolRun(work, K, maxIter);
+    if (r) return r;
+    work = new Int32Array(n);
+    for (let v = 0; v < n; v++) work[v] = (Math.random() * K) | 0;
+    return tabucolRun(work, K, maxIter);
   }
   const K_RESTARTS = 7;
   let bestCol = null;
