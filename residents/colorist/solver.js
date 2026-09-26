@@ -36,7 +36,7 @@ function solve(n, edges) {
       const cm = 1 << c;
       for (const u of adj[b]) {
         if (inRem[u] && !(mask[u] & cm)) {
- mask[u] |= cm;
+          mask[u] |= cm;
           sat[u]++;
         }
       }
@@ -120,23 +120,126 @@ function solve(n, edges) {
     }
     return work;
   }
-  const K_RESTARTS = 10;
+  function tabucolTry(col, targetK, maxIter) {
+    const K = targetK;
+    if (K < 2) return null;
+    const work = new Int32Array(n);
+    for (let v = 0; v < n; v++) work[v] = col[v] % K;
+    const adjCC = new Int32Array(n * K);
+    const conflicts = new Int32Array(n);
+    const tabu = new Int32Array(n * K);
+    let totalConflicts = 0;
+    for (let v = 0; v < n; v++) {
+      const wv = work[v];
+      const baseV = v * K;
+      for (const u of adj[v]) {
+        const wu = work[u];
+        adjCC[baseV + wu]++;
+        if (wu === wv) conflicts[v]++;
+      }
+    }
+    for (let v = 0; v < n; v++) totalConflicts += conflicts[v];
+    totalConflicts >>= 1;
+    if (totalConflicts === 0) return work;
+    let bestWork = new Int32Array(work);
+    let bestConflicts = totalConflicts;
+    const tenureBase = 5;
+    for (let iter = 0; iter < maxIter; iter++) {
+      let bestV = -1, bestC = -1;
+      let bestDelta = Infinity;
+      let ties = 0;
+      for (let v = 0; v < n; v++) {
+        if (conflicts[v] === 0) continue;
+        const cv = work[v];
+        const baseV = v * K;
+        const confV = adjCC[baseV + cv];
+        for (let c = 0; c < K; c++) {
+          if (c === cv) continue;
+          const newC = adjCC[baseV + c];
+          const delta = newC - confV;
+          const newTotal = totalConflicts + delta;
+          const isTabu = iter < tabu[v * K + c];
+          if (isTabu && newTotal >= bestConflicts) continue;
+          if (delta < bestDelta) {
+            bestDelta = delta;
+            bestV = v;
+            bestC = c;
+            ties = 1;
+          } else if (delta === bestDelta) {
+            ties++;
+            if (Math.random() * ties < 1) {
+              bestV = v;
+              bestC = c;
+            }
+          }
+        }
+      }
+      if (bestV < 0) break;
+      const v = bestV;
+      const cOld = work[v];
+      const cNew = bestC;
+      work[v] = cNew;
+      const tenure = tenureBase + ((Math.random() * tenureBase) | 0);
+      tabu[v * K + cOld] = iter + tenure;
+      for (const u of adj[v]) {
+        const baseU = u * K;
+        adjCC[baseU + cOld]--;
+        adjCC[baseU + cNew]++;
+        if (work[u] === cOld) conflicts[u]--;
+        else if (work[u] === cNew) conflicts[u]++;
+      }
+      conflicts[v] = adjCC[v * K + cNew];
+      totalConflicts += bestDelta;
+      if (totalConflicts < bestConflicts) {
+        bestConflicts = totalConflicts;
+        bestWork = new Int32Array(work);
+        if (bestConflicts === 0) break;
+      }
+    }
+    return bestConflicts === 0 ? bestWork : null;
+  }
+  const K_RESTARTS = 7;
   let bestCol = null;
   let bestK = Infinity;
   for (let k = 0; k < K_RESTARTS; k++) {
     const rng = k === 0 ? null : Math.random;
     const col = dsatur(rng);
     recolorFixed(col);
-    const kemped = kempeReduce(col);
-    recolorFixed(kemped);
-    const ck = numColors(kemped);
+    let cur = kempeReduce(col);
+    recolorFixed(cur);
+    let ck = numColors(cur);
+    for (let attempt = 0; attempt < 2 && ck > 2; attempt++) {
+      const reduced = tabucolTry(cur, ck - 1, 100);
+      if (!reduced) break;
+      recolorFixed(reduced);
+      const ck2 = numColors(reduced);
+      if (ck2 >= ck) break;
+      cur = reduced;
+      ck = ck2;
+    }
     if (ck < bestK) {
-      bestCol = new Int32Array(kemped);
+      bestCol = new Int32Array(cur);
       bestK = ck;
     }
   }
-  const finalKemped = kempeReduce(bestCol);
-  recolorFixed(finalKemped);
-  if (numColors(finalKemped) < bestK) bestCol = finalKemped;
+  let cur = new Int32Array(bestCol);
+  let curK = bestK;
+  for (let attempt = 0; attempt < 4 && curK > 2; attempt++) {
+    const reduced = tabucolTry(cur, curK - 1, 200);
+    if (!reduced) break;
+    recolorFixed(reduced);
+    const newK = numColors(reduced);
+    if (newK >= curK) break;
+    cur = reduced;
+    curK = newK;
+  }
+  const kemped = kempeReduce(cur);
+  recolorFixed(kemped);
+  const finalK = numColors(kemped);
+  if (finalK < curK) {
+    cur = kemped;
+    curK = finalK;
+  }
+  bestCol = cur;
   return Array.from(bestCol);
 }

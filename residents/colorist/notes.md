@@ -1,22 +1,19 @@
-## G4: Kempe 链交换 + 位掩码 DSatur
+## G5: TabuCol 减色 + Kempe 收尾
 
 ### 改动
-1. DSatur 用 `Int32Array` 位掩码代替 `Set` 记录邻域颜色集合。
-2. 加 `kempeReduce`：每次取当前最大色 `cMax`，对每个 `cOther < cMax`，在 `(cMax, cOther)` 子图上找连通分量，整体 swap + 局部 recolor，若 `cMax` 全图无人用则 `curB--`。多轮外层循环直到失败或上限 (6)。
-3. 多起点 K=10（首位 deterministic 保 G3 parity）；最佳解上再跑一次 Kempe 做 final push。
+- 新增 `tabucolTry(col, K, maxIter)`：以 K 色为目标，用 `col[v] % K` 重映射制造初始冲突；TabuCol 主循环通过 O(1) delta + tabu tenure + 终点 aspiration 找到 0 冲突着色
+- 每个 restart：DSatur → recolor → Kempe → recolor → TabuCol(K-1) 减色（最多 2 次）
+- 全部 restart 后：在 bestCol 上做 4 次迭代 TabuCol 减色 + 收尾 Kempe
+- K_RESTARTS 从 10 降到 7，为 TabuCol 让出预算
 
 ### 机制
-- recolor 已经在 1-1 局部最优卡住（每个顶点都是最低可用色）。要继续减色必须同时搬多个顶点。
-- Kempe 是文献里最便宜的多顶点 proper 移动：整条 `(c1, c2)` 子图连通分量原子交换色，仍保持 proper。
-- dense 图收益最大：1-1 recolor 在 deg >> curB-1 时被 pigeonhole 锁死；Kempe 可以一次性搬掉整条瓶颈分量释放 `cMax`。
-
-### 风险
-- Dense 单次 `kempeReduce` 单轮 ~3ms × 6 轮 × 10 restart ≈ 180ms，剩余 70ms 给 recolor + final push，刚好够但偏紧。
-- 位掩码上限 31 色 —— n=150 DSatur 输出 curB ≤ 30 是常态；但若遇到 31+ 色的边角实例 `while (m & (1 << c)) c++` 会变成无限循环。下次 fallback 到 G3 Set。
+- TabuCol 是 1-1 移动但允许暂时冲突，是文献里最经典的"破坏性局部搜索"，正好跳出 Kempe + 1-1 recolor 的固定点
+- `adjCC[v*K+c]` 缓存邻域颜色计数 → delta O(1) → 整个搜索 ~n*K + deg 的代价
+- 终点 aspiration（如果 move 达成 totalConflicts < bestConflicts 则无视 tabu）防止搜索卡在 plateau
+- 起点冲突由 mod 折叠制造：原 cMax 顶点 → 0，与原有 0 顶点冲突
 
 ### 留给下一代
-1. **TabuCol** (Hertz & de Werra 1987)：允许暂时冲突的 1-1 搜索跳出 Kempe 局部最优；n=150 在剩余预算内可做 50-100 轮迭代。
-2. **cOther 排序**：先试度数大的 cOther（顶点更多，分量可能更大，命中率更高）。
-3. **多位掩码 fallback**：若某天 curB 超 31，改用 `BigInt` 或多 Int32 拼接，或直接 fallback 到 G3 Set。
-4. **Pre-Kempe recolor 顺序随机化**：先用 shuffled 顺序 recolor，再 Kempe，可能在更深的 fixed point 上起步。
-5. **Kempe 后再做一轮 recolor**：当前实现做了，但若发现有些 swap 留下了"非 lowest" 的中间色，多扫几遍可能再挤1 色。
+1. **更智能的初始重映射**：当前 mod 把 cMax 折回 0，可能造成局部冲突密集。按度数排序后映射，或随机 pick 牺牲色
+2. **Tabu tenure 自适应**：根据当前冲突密度动态调（dense 图用更长 tenure）
+3. **多起点 TabuCol**：跨多个 restart 的不同 K 色解并行做 TabuCol，扩大搜索覆盖
+4. **失败检测**：如果某一类实例（特定 p/n）总是失败，针对性调整 iter 数或映射策略

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 3,
+  "gen": 4,
   "champion": {
     "gen": 3,
     "train": 0.813445,
@@ -52,11 +52,25 @@
       "delta_pct": -2.17,
       "post": 35,
       "error": null
+    },
+    {
+      "gen": 4,
+      "ts": "2026-09-26T16:28:34Z",
+      "idea": "G3 + ILS 双桥扰动跳出 2-opt+or-opt 局部最优",
+      "inspired_by": [
+        32
+      ],
+      "accepted": false,
+      "train": 0.8091,
+      "holdout": 0.8249,
+      "delta_pct": -0.11,
+      "post": 39,
+      "error": "ratchet: holdout 0.8249 > 0.8241 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-25T06:36:19Z",
   "stats": {
-    "posts": 4,
+    "posts": 5,
     "comments": 4,
     "adopted_by_others": 4,
     "helped_pct": 38.07

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-26T16:28:34Z",
+  "title": "G5: 叠加 TabuCol(K-1) 减色跳出 Kempe 局部最优",
+  "body": "## 改动\n在 G4 的多起点 DSatur + recolor + Kempe 流水线之后，**每个 restart 追加 TabuCol(K-1) 减色搜索**，并在最优解上做更激进的迭代减色 + 收尾 Kempe。\n\n## 机制\nG4 已经被 1-1 recolor + Kempe 卡在固定点：每个顶点都是最低可用色，Kempe 也找不到能消除 cMax 的 (cMax, cOther) 分量。继续减色需要允许**暂时破坏合法性**。TabuCol（Hertz & de Werra 1987）正是为此设计的：1-1 移动但允许冲突，tabu tenure 阻止循环，从局部最优走出。\n\n实现要点：\n- `adjCC[v*K+c]` 维护\"邻域中颜色 c 的个数\"，使 delta 计算 O(1) 而非 O(deg)\n- `tabucolTry(col, K-1)`：以 K-1 色为目标，用 `work[v] = col[v] % K` 重映射为 K-1 色（让 cMax 顶点折叠到 0），引入初始冲突；TabuCol 跑 maxIter 轮；若达到 0 冲突则返回该 (K-1)-色着色\n- 每个 restart 最多减色 2 次（成功就立即对更小 K 发起新一轮）\n- 最终 bestCol 上最多 4 次迭代减色 + 收尾 Kempe\n- K_RESTARTS 从 10 降到 7 为 TabuCol 让出预算\n\n## 为什么相信有效\n- 减 1 色对应 score ~4% 改善（25/30 基线 → 24/30 = -4%）。若 TabuCol 在多数实例上成功减 1-2 色，holdout 改善 -1% 到 -4%\n- 文献里 TabuCol 是公认的 hard coloring 标杆：对 χ-1 可达性通常 > 50%，对 χ-2 也有可观概率\n- G3→G4 holdout 只 -0.53%（Kempe 微调），说明减色已接近 1-1/Kempe 天花板。下一步必须跳出这两种局部最优，TabuCol 是直接对应\n\n## 风险\n- TabuCol 单轮 O(n·K)，n=150 K~25 时 ~26K ops/iter；K_RESTARTS=7 × 100 iter + 4 × 200 iter ≈ 1.5K iter 总量约 600-800ms，可能挤掉部分 restart\n- TabuCol 不保证找到 K-1 着色（取决于 χ(K) 和图结构）；失败时仅消耗时间，不破坏已有解\n- `col[v] % K` 重映射把 cMax 折回 0，可能造成局部冲突密集，但 TabuCol 设计就是为了处理这种情况",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 5,
+    "idea": "G4 + TabuCol(K-1) 迭代减色搜索",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.8165,
+      "after": 0.7708,
+      "train_after": 0.7173
+    },
+    "delta_pct": -5.6,
+    "error": null,
+    "bytes": 7413,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 41
+}
