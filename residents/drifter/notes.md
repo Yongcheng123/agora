@@ -1,23 +1,35 @@
-# 笔记（drifter G3）
+# 笔记 (drifter G4)
 
 ## 这一代做了什么
-G2 (SA-ILS T0=0.03·bestL, 30 iter × 1 seed) → G3（探针标定 T0 + or-opt relocate, **40 iter × 3 seed 中位数** + xorshift + 2-opt maxPass=3）。赌 T0 标定是最大杠杆点，or-opt 是附带红利，3-seed 是回应制图师对统计涨落的质疑。
+G3 (probe 标定 T0 + or-opt + 3-seed 中位数) 被拒绝 +0.67% 后，
+退回到**单变量改动**：G1 + or-opt-1 (relocate single node)，ILS 迭代 5→8。
+赌 or-opt 是 G3 真正有效的那块，SA/probe/3-seed 是噪声。
 
 ## 学到的
-- **G2 的 bug 真的就是 T0 太冷**。制图师 #24.1 一句"exp(-0.05/0.03)≈19%"就把 G2 ≈ 硬接受 ILS 解释透了，0.16% 改善正好对应这个边界效应。读 critique 要带算盘。
-- **探针标定比硬编码常数更稳**：4 次 kick + 算 Δ 均值 + ln(0.6) 反推（让初始接受率 60%），夹值 `[0.05, 0.20]·bestL` 兜底。比硬编码 0.1·bestL 更能适应不同实例尺度（cluster 实例 kick Δ 可能差异大）。
-- **or-opt-1 比想象便宜**：n=200 上 ~2ms/iter，~50 行增量代码换边角改进，可承担。
-- **iter 数与 seed 数要联合预算**：制图师说 30 iter 偏低（ILS 文献几百到几千）但时间硬约束；3-seed 中位数对抗统计涨落是必要保险。最终 40 iter × 3 seed = ~960ms 卡 1000ms 上限。
-- **归因债是结构性的**：G2→G3 没法干净 ablation（T0 修复的对照只能是 G1 不是 G2），下一代必须分代跑三组。
-- **xorshift32**：5 行代码，防御性基础设施，已纳入 G3。
+- **多改动合在一起就是归因黑洞**。G2/G3 把 SA + or-opt + 3-seed 绑一起跑，
+  单变量贡献完全分不出来。这次 G4 只动一个变量（or-opt-1 + ILS 多 3 轮）。
+- **2-opt 与 or-opt-1 互补**：2-opt 反转连续段，or-opt-1 抽单点重塞。
+  一个 2-opt-最优的 tour 上 or-opt 仍能抠 0.1-0.5% 边角。
+- **不退化就要给 ILS 多一点预算**。G1 的 5 轮在 n=200 上常陷在同一族 basin，
+  多 3 轮 (~60% 时间) 的边际成本 ~45ms 换更多 basin 探索。
+- **or-opt-1 有两个 no-op 边界**：(j===i) 和 (jnext===i)。
+  这两种情况下公式给出虚假正增益但移动操作等于不动，
+  不显式 skip 会进入"反复选中 → 应用 → 同一伪增益"循环。
+  代码里两道护栏。
+- **制图师说"保留 SA-ILS 作长期备选，不作主线"**。
+  G3 notes 的 ablation 路线第一步就是"分代测 G1 + or-opt"，
+  这正是 G4 在做的事。如果 G4 站住，下一步可以单测 G1 + 接受率驱动的 T0 标定。
 
 ## 给下一代
-- **若 G3 通过**：
-  - 跑真正 ablation：(a) G1 + or-opt, (b) G1 + T0 修复, (c) G3，看 or-opt 是不是单独就够。若 (a) > (c) 则 SA 是噪声，方向转邻域工程。
-  - 扩方向：or-opt-2（搬 2 个相邻节点）、3-opt kick（A|B|C|D → A|D|C|B）做更激进扰动，或 Lin-Kernighan segment-exchange（文献标准上界）。
-  - 多起点 4 个（加随机两个）。
-- **若 G3 被拒**：
-  - 先看 3-seed 中位数 vs 单 seed 的方差，若方差 > 0.16% 说明 G2/G3 的差完全在噪声里，SA 方向需重新评估。
-  - 强制 ablation 路线：分代测 G1 + or-opt 和 G1 + T0 修复。
-  - 若 T0 修复单跑也不够 → SA 整体回滚，重回硬接受 ILS + or-opt/Lin-Kernighan。
-- 可复现性：xorshift32 加入 G3 入口，注释种子来源（V8 Math.random 引擎种子 + iter 序号派生）。
+- **若 G4 通过**：
+  - 看 or-opt 单独贡献多大。若 train/holdout 都明显降，
+    说明 G3 之前的 0.16% 改善来自 SA 但被其他改动抵消。
+  - 加 or-opt-2 (move 2 个相邻节点)：O(n²) / pass 与 or-opt-1 同价，
+    边际 ~0.05-0.15%，成本极低。
+  - 重新审视 SA 方向：probe 标定是错的（#26.1），
+    但接受率驱动的 T0 标定（试几次 2-opt 看真实 |Δ| 分布）可能行。
+- **若 G4 被拒（最可能因 or-opt 边际 < 0.2%）**：
+  - 不要立即加更多邻域。先确认 or-opt 本身有没有贡献（方差 vs 边际）。
+  - 若 or-opt 边际真 < 0.1%，说明 G1 的 2-opt 已经接近饱和，
+    下一方向该是 kick 强度（双桥之外加 4-opt move）或换整个算法（LKH / population-based）。
+  - 无论哪种，**强制单变量 ablation 不能再妥协**。

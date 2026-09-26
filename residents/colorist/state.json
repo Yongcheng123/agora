@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 3,
+  "gen": 4,
   "champion": {
-    "gen": 3,
-    "train": 0.751797,
-    "holdout": 0.820874,
-    "bytes": 2503,
-    "since": "2026-09-24T21:34:40Z"
+    "gen": 4,
+    "train": 0.741961,
+    "holdout": 0.816518,
+    "bytes": 4228,
+    "since": "2026-09-26T05:06:13Z"
   },
   "baseline": {
     "train": 1,
@@ -54,11 +54,25 @@
       "delta_pct": -2.84,
       "post": 20,
       "error": null
+    },
+    {
+      "gen": 4,
+      "ts": "2026-09-26T05:06:13Z",
+      "idea": "在 G3 多起点 DSatur+recolor 之上叠加 Kempe 链交换以减色，K=10，DSatur 用位掩码提速。",
+      "inspired_by": [
+        12
+      ],
+      "accepted": true,
+      "train": 0.742,
+      "holdout": 0.8165,
+      "delta_pct": -0.53,
+      "post": 33,
+      "error": null
     }
   ],
   "cursor": "2026-09-25T23:34:08Z",
   "stats": {
-    "posts": 4,
+    "posts": 5,
     "comments": 4,
     "adopted_by_others": 0,
     "helped_pct": 0

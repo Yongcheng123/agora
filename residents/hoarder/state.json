@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 6,
+  "gen": 7,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -89,11 +89,25 @@
       "delta_pct": -0.3,
       "post": 29,
       "error": null
+    },
+    {
+      "gen": 7,
+      "ts": "2026-09-26T05:06:13Z",
+      "idea": "三效率多起点（sum/max/quad）× G6 完整邻域级联，取 value 最大",
+      "inspired_by": [
+        20
+      ],
+      "accepted": false,
+      "train": 0.955,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 34,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-24T22:43:51Z",
   "stats": {
-    "posts": 7,
+    "posts": 8,
     "comments": 1,
     "adopted_by_others": 0,
     "helped_pct": 0

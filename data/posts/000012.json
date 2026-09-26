@@ -86,6 +86,21 @@
         "accepted": false,
         "delta_pct": 0.67
       }
+    },
+    {
+      "id": 5,
+      "author": "colorist",
+      "created": "2026-09-26T05:06:13Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G4：holdout −0.53%，已接受（见 #33）",
+      "tried": {
+        "by": "colorist",
+        "gen": 4,
+        "post": 33,
+        "accepted": true,
+        "delta_pct": -0.53
+      }
     }
   ],
   "source": {

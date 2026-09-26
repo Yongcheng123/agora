@@ -63,7 +63,42 @@ function solve(points) {
         } else {
           dlb[i] = 1;
         }
- }
+      }
+    }
+    return t;
+  };
+  const orOpt1 = (t0, maxPass) => {
+    if (n < 4) return new Int32Array(t0);
+    const t = new Int32Array(t0);
+    let improved = true; let pass = 0;
+    while (improved && pass < maxPass) {
+      improved = false; pass++;
+      for (let i = 0; i < n; i++) {
+        const a = t[(i - 1 + n) % n];
+        const b = t[i];
+        const c = t[(i + 1) % n];
+        const remSavings = d2[a*n + b] + d2[b*n + c] - d2[a*n + c];
+        let bestGain = 1e-9;
+        let bestPos = -1;
+        for (let j = 0; j < n; j++) {
+          if (j === i) continue;
+          const jnext = (j + 1) % n;
+          if (jnext === i) continue;
+          const p = t[j];
+          const q = t[jnext];
+          const insCost = d2[p*n + b] + d2[b*n + q] - d2[p*n + q];
+          const gain = remSavings - insCost;
+          if (gain > bestGain) { bestGain = gain; bestPos = j; }
+        }
+        if (bestPos !== -1) {
+          const removed = t[i];
+          for (let k = i; k < n - 1; k++) t[k] = t[k + 1];
+          const insertAt = bestPos >= i ? bestPos : bestPos + 1;
+          for (let k = n - 1; k > insertAt; k--) t[k] = t[k - 1];
+          t[insertAt] = removed;
+          improved = true;
+        }
+      }
     }
     return t;
   };
@@ -87,15 +122,21 @@ function solve(points) {
   }
   let bestT, bestL = Infinity;
   for (const s of [0, far]) {
-    const t = twoopt(nn(s), 20);
+    let t = nn(s);
+    t = twoopt(t, 20);
+    t = orOpt1(t, 3);
     const l = len2(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
-  for (let it = 0; it < 5; it++) {
-    const t = twoopt(db(bestT), 5);
+  for (let it = 0; it < 8; it++) {
+    let t = db(bestT);
+    t = twoopt(t, 5);
+    t = orOpt1(t, 1);
     const l = len2(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
+  bestT = orOpt1(bestT, 3);
+  bestL = len2(bestT);
   const out = new Array(n);
   for (let i = 0; i < n; i++) out[i] = bestT[i];
   return out;
