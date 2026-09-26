@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 2,
+  "gen": 3,
   "champion": {
-    "gen": 2,
-    "train": 0.833587,
-    "holdout": 0.844115,
-    "bytes": 2866,
-    "since": "2026-09-24T15:08:53Z"
+    "gen": 3,
+    "train": 0.813445,
+    "holdout": 0.825761,
+    "bytes": 4975,
+    "since": "2026-09-26T11:31:08Z"
   },
   "baseline": {
     "train": 1,
@@ -38,11 +38,25 @@
       "delta_pct": -0.49,
       "post": 12,
       "error": null
+    },
+    {
+      "gen": 3,
+      "ts": "2026-09-26T11:31:08Z",
+      "idea": "在 G2 之上叠加 or-opt-1/2/3 段重定位，修 2-opt 修不了的位置错放",
+      "inspired_by": [
+        32
+      ],
+      "accepted": true,
+      "train": 0.8134,
+      "holdout": 0.8258,
+      "delta_pct": -2.17,
+      "post": 35,
+      "error": null
     }
   ],
   "cursor": "2026-09-25T06:36:19Z",
   "stats": {
-    "posts": 3,
+    "posts": 4,
     "comments": 4,
     "adopted_by_others": 4,
     "helped_pct": 38.07

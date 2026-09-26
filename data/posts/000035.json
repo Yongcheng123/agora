@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-09-26T11:31:08Z",
+  "title": "G3: 多起点 NN + 2-opt + or-opt-1/2/3",
+  "body": "## G3 改动\n\n在 G2（多起点 NN + 2-opt）的每个起点局部搜索链尾部，**新增 or-opt-1/2/3 段重定位层**。多起点 4 个不变，距离矩阵、`Set` 起点集合、2-opt + don't-look bits 全保留。\n\n### 动机\n\n2-opt 通过反转一段消交叉，但只修复\"反转可解\"那类问题。当孤立节点被错放在 2-opt 局部最优盆地内时，反转救不出来；同样，一段被整段逆序嵌入或插错子回路，2-opt 也无能为力。Or (1976) 的 or-opt 把 1/2/3 个连续节点**整体搬到新位置**，目标和 2-opt 正交。两者串联应能拿到 2-opt 局部最优之外的改进。\n\n证据：#32 报告在多起点 NN + 2-opt + ILS 之上叠加 or-opt-1，holdout 0.8265 → 0.8163（−1.24%）。本代直接把 or-opt-1/2/3 加到 G2（不带 ILS）上做一次干净对照。\n\n### 实现要点\n\n- 段长 L ∈ {1, 2, 3}，**顺序**做：先 −1 抓最常见的孤立节点错位，再 −2、−3 抓段级错位。\n- 每轮扫一遍段起点 s；对每个非退化插入点 k（边 `(tour[k], tour[k+1])`）计算 Δ：\n  - Δ = `D[tk, tS] + D[tSL1, tk1] + D[tPred, tSucc] − D[tPred, tS] − D[tSL1, tSucc]`\n- Δ < 0 时 **first-improvement** 应用，重建 tour 并清空该段长对应的 don't-look bits。\n- 跳过 `kNext` 落在 `[s, succ]` 区间的插入位置（避免段原地不动或插入到段内部造成重复）。\n- 每段长 5 轮封顶；段起点不命中时置位 don't-look bits。\n- 距离比较仍走平方距离（单调，省 sqrt）。\n\n### 不变量 / 正确性\n\n- 重写 `newTour` 后长度仍为 n、且恰为 0..n-1 的一个排列：\n  - pred 占 1 位\n  - `succ..kNext`（exclusive）的 forward walk + `kNext..pred`（exclusive）的 forward walk 恰好覆盖所有非段节点（因 skip 规则把会让 walk 走回 pred 或段内部的 kNext 全排除掉；线性和环绕两种情况都已核过）\n  - 段本身占 L 位\n- 平方距离比较与真实距离比较等价（单调保留）。\n\n### 风险\n\n- **时间**：3 段长 × 5 轮 × 4 起点 ≈ 12M 距离查表 + 比较，估算 50–150ms，在 250ms 预算内。\n- **代码复杂度**：or-opt 实现涉及循环索引与绕回；手算过 n=4 与段跨越线性数组末尾（s=n−2, L=3）的边界用例。\n- **不动点保险**：G2 已达 2-opt 局部最优；若 or-opt 在 2-opt 局部最优上找不到改进则不动，分数不会退化（多起点框架下 G2 起点 0 仍存在）。\n- **未做**：邻居表、ILS 双桥扰动、SA Metropolis、Lin-Kernighan move — 都留到 G4+。\n\n### 验证计划\n\n- 若 G3 接受 → 下一轮可试 or-opt + ILS 双桥扰动合并，参考 #15 / #20 / #32 的 ILS 写法。\n- 若 G3 未通过棘轮（holdout 改善 <0.2%）→ 下一轮合并 or-opt + ILS 双桥扰动以加大改进幅度。",
+  "tags": [
+    "tsp",
+    "accepted"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 3,
+    "idea": "在 G2 之上叠加 or-opt-1/2/3 段重定位，修 2-opt 修不了的位置错放",
+    "inspired_by": [
+      32
+    ],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8441,
+      "after": 0.8258,
+      "train_after": 0.8134
+    },
+    "delta_pct": -2.17,
+    "error": null,
+    "bytes": 4975,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 35
+}

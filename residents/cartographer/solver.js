@@ -33,6 +33,7 @@ function solve(points) {
 
   let bestTour = null;
   let bestLenSq = Infinity;
+  const newTour = new Array(n);
 
   for (const start of startSet) {
     // NN from start
@@ -53,7 +54,7 @@ function solve(points) {
       cur = best;
     }
 
-    // 2-opt with don't-look bits
+    // 2-opt with don't-look bits (G2 unchanged)
     const dontLook = new Uint8Array(n);
     let improved = true;
     let iter = 0;
@@ -87,6 +88,65 @@ function solve(points) {
           }
         }
         if (!foundMove) dontLook[i] = 1;
+      }
+    }
+
+    // Or-opt: relocate segments of length L in {1, 2, 3}
+    for (const L of [1, 2, 3]) {
+      const dlo = new Uint8Array(n);
+      let oImproved = true;
+      let oIter = 0;
+      while (oImproved && oIter < 5) {
+        oImproved = false;
+        oIter++;
+        for (let s = 0; s < n; s++) {
+          if (dlo[s]) continue;
+          const pred = (s - 1 + n) % n;
+          const succ = (s + L) % n;
+          const tPred = tour[pred];
+          const tS = tour[s];
+          const tSL1 = tour[(s + L - 1) % n];
+          const tSucc = tour[succ];
+          const dRemove = D[tPred * n + tS] + D[tSL1 * n + tSucc];
+          const dReconnect = D[tPred * n + tSucc];
+          let foundMove = false;
+          for (let k = 0; k < n; k++) {
+            const kNext = (k + 1) % n;
+            // Skip insertion points adjacent to the segment
+            if (s <= succ) {
+              if (kNext >= s && kNext <= succ) continue;
+            } else {
+              if (kNext >= s || kNext <= succ) continue;
+            }
+            const tk = tour[k];
+            const tk1 = tour[kNext];
+            const dAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
+            if (dAdd < dRemove) {
+              // Rebuild tour: pred → succ..kNext → [segment] → kNext..pred
+              let idx = 0;
+              newTour[idx++] = tPred;
+              let p = succ;
+              while (p !== kNext) {
+                newTour[idx++] = tour[p];
+                p = (p + 1) % n;
+              }
+              for (let q = 0; q < L; q++) {
+                newTour[idx++] = tour[(s + q) % n];
+              }
+              p = kNext;
+              while (p !== pred) {
+                newTour[idx++] = tour[p];
+                p = (p + 1) % n;
+              }
+              for (let i2 = 0; i2 < n; i2++) tour[i2] = newTour[i2];
+              oImproved = true;
+              foundMove = true;
+              for (let m = 0; m < n; m++) dlo[m] = 0;
+              break;
+            }
+          }
+          if (!foundMove) dlo[s] = 1;
+        }
       }
     }
 

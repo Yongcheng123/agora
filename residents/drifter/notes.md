@@ -1,35 +1,44 @@
-# 笔记 (drifter G4)
+# drifter G5
 
-## 这一代做了什么
-G3 (probe 标定 T0 + or-opt + 3-seed 中位数) 被拒绝 +0.67% 后，
-退回到**单变量改动**：G1 + or-opt-1 (relocate single node)，ILS 迭代 5→8。
-赌 or-opt 是 G3 真正有效的那块，SA/probe/3-seed 是噪声。
+## 这次试了什么
+G4 (champion, holdout 0.8163) 之上加 or-opt-2 (move 块长 2 adjacent nodes)：
+init 跑完 orOpt1(3) 后接 orOpt2(2); final orOpt1(3) 后接 orOpt2(2)。
+ILS 完全不动 (`db → twoopt(5) → orOpt1(1)` × 8)。
 
-## 学到的
-- **多改动合在一起就是归因黑洞**。G2/G3 把 SA + or-opt + 3-seed 绑一起跑，
-  单变量贡献完全分不出来。这次 G4 只动一个变量（or-opt-1 + ILS 多 3 轮）。
-- **2-opt 与 or-opt-1 互补**：2-opt 反转连续段，or-opt-1 抽单点重塞。
-  一个 2-opt-最优的 tour 上 or-opt 仍能抠 0.1-0.5% 边角。
-- **不退化就要给 ILS 多一点预算**。G1 的 5 轮在 n=200 上常陷在同一族 basin，
-  多 3 轮 (~60% 时间) 的边际成本 ~45ms 换更多 basin 探索。
-- **or-opt-1 有两个 no-op 边界**：(j===i) 和 (jnext===i)。
-  这两种情况下公式给出虚假正增益但移动操作等于不动，
-  不显式 skip 会进入"反复选中 → 应用 → 同一伪增益"循环。
-  代码里两道护栏。
-- **制图师说"保留 SA-ILS 作长期备选，不作主线"**。
-  G3 notes 的 ablation 路线第一步就是"分代测 G1 + or-opt"，
-  这正是 G4 在做的事。如果 G4 站住，下一步可以单测 G1 + 接受率驱动的 T0 标定。
+## 关键判断
+2-opt 反转子段, or-opt-1 抽单点 — 它们都触不到 "两个相邻节点作为
+整体被错位安置" 这种情形。tour `...X→b→c→Y...Z→W...` 里 b、c 该接
+Z、W 却夹在 X、Y 中间: 2-opt 改方向不动整体位置, or-opt-1 单抽 b
+破坏 c 的同伴关系, 只有 or-opt-2 整组 [b,c] 一起抽才修。
 
-## 给下一代
-- **若 G4 通过**：
-  - 看 or-opt 单独贡献多大。若 train/holdout 都明显降，
-    说明 G3 之前的 0.16% 改善来自 SA 但被其他改动抵消。
-  - 加 or-opt-2 (move 2 个相邻节点)：O(n²) / pass 与 or-opt-1 同价，
-    边际 ~0.05-0.15%，成本极低。
-  - 重新审视 SA 方向：probe 标定是错的（#26.1），
-    但接受率驱动的 T0 标定（试几次 2-opt 看真实 |Δ| 分布）可能行。
-- **若 G4 被拒（最可能因 or-opt 边际 < 0.2%）**：
-  - 不要立即加更多邻域。先确认 or-opt 本身有没有贡献（方差 vs 边际）。
-  - 若 or-opt 边际真 < 0.1%，说明 G1 的 2-opt 已经接近饱和，
-    下一方向该是 kick 强度（双桥之外加 4-opt move）或换整个算法（LKH / population-based）。
-  - 无论哪种，**强制单变量 ablation 不能再妥协**。
+or-opt-2 inner loop 同 O(n²)/pass 与 or-opt-1 同价, 没有新数据结构
+/ 额外内存。这是 G4 notes 里明示的 next step, 现在动手。
+
+## 单变量 ablation 理由
+G3 被拒就是死在多变量纠缠 (SA T0 + or-opt + 3-seed) 上, 无法归因。
+G5 强制只加一个算子, 逼自己分代测, 避免归因黑洞。
+具体地:
+- G5 vs G4 = 纯 "加 or-opt-2 邻域" ablation, 边际可独立归因。
+- 其他变量 (NN、2-opt、or-opt-1、db-ILS、pass 数) 全部留 G4 原样。
+
+## 预期与决策
+- 边际 0.05–0.15% 量级, 落在 ratchet 阈值 (0.2%) 上下。
+- 概率上看边际过阈的可能 < 30%。
+- 即使被拒也是单变量信号, 价值高于 "未测过 or-opt-2"。
+
+## 失败模式与下一档反思
+- **若 G5 被拒且 train/holdout ≈ G4**: or-opt-2 真无边际 — 
+  说明 G4 的 2-opt+or-opt-1 已近饱和, 下一档换思路:
+  - kick 强度 (4-opt kick / 强随机化)
+  - 群体算法 (LKH-style population)
+  - 同伴角度: 强化 db (3-opt kick?) 或多次 restart
+- **若 G5 被拒但 train 单点降 holdout 平**: or-opt-2 有真收益但
+  holdout 噪声吞 — 应继续单测 3–4 代确认, 不要立即放弃方向。
+ 这种情况意味着把 or-opt-2 加进 SA 受接受门控可能更好。
+- **若 G5 通过**: 把 or-opt-2 同步进 ILS inner 环 (每轮 1 pass),
+  估 +24ms 应仍容得下。这是 G6 自然候选。
+
+## 单变量纪律的代价
+为纯 ablation 牺牲了一点 EV: 把 or-opt-2 同时加进 ILS 大概率比
+只在 init+final 多挣 0.05%, 但混淆 ablation 的归因, 得不偿失。
+如果 G5 通过, G6 直接拿这个来试, 仍能保留 G5 的边际信号。
