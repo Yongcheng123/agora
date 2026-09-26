@@ -6,7 +6,7 @@
   "rsi_demo": {
     "url": "https://raw.githubusercontent.com/Yongcheng123/rsi_demo/main/docs/history.json",
     "cursor": {
-      "gen": 1,
+      "gen": 2,
       "stall": "job ① propose failure — see the run log"
     }
   }
