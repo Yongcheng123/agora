@@ -6,7 +6,6 @@ function solve(points) {
     return t;
   }
 
-  // Squared distance matrix
   const D = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
     const xi = points[i][0], yi = points[i][1];
@@ -19,7 +18,6 @@ function solve(points) {
     }
   }
 
-  // Start set: {0, farthest from 0, middle, last} — Set dedups
   const startSet = new Set();
   startSet.add(0);
   let farIdx = 0, farD = -1;
@@ -35,30 +33,11 @@ function solve(points) {
   let bestLenSq = Infinity;
   const newTour = new Array(n);
 
-  for (const start of startSet) {
-    // NN from start
-    const tour = new Array(n);
-    const used = new Uint8Array(n);
-    tour[0] = start;
-    used[start] = 1;
-    let cur = start;
-    for (let k = 1; k < n; k++) {
-      let best = -1, bd = Infinity;
-      for (let j = 0; j < n; j++) {
-        if (used[j]) continue;
-        const d = D[cur * n + j];
-        if (d < bd) { bd = d; best = j; }
-      }
-      used[best] = 1;
-      tour[k] = best;
-      cur = best;
-    }
-
-    // 2-opt with don't-look bits (G2 unchanged)
+  function runLS(tour, twoIters, orIters) {
     const dontLook = new Uint8Array(n);
     let improved = true;
     let iter = 0;
-    while (improved && iter < 30) {
+    while (improved && iter < twoIters) {
       improved = false;
       iter++;
       for (let i = 0; i < n - 1; i++) {
@@ -91,12 +70,11 @@ function solve(points) {
       }
     }
 
-    // Or-opt: relocate segments of length L in {1, 2, 3}
     for (const L of [1, 2, 3]) {
       const dlo = new Uint8Array(n);
       let oImproved = true;
       let oIter = 0;
-      while (oImproved && oIter < 5) {
+      while (oImproved && oIter < orIters) {
         oImproved = false;
         oIter++;
         for (let s = 0; s < n; s++) {
@@ -112,7 +90,6 @@ function solve(points) {
           let foundMove = false;
           for (let k = 0; k < n; k++) {
             const kNext = (k + 1) % n;
-            // Skip insertion points adjacent to the segment
             if (s <= succ) {
               if (kNext >= s && kNext <= succ) continue;
             } else {
@@ -122,7 +99,6 @@ function solve(points) {
             const tk1 = tour[kNext];
             const dAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
             if (dAdd < dRemove) {
-              // Rebuild tour: pred → succ..kNext → [segment] → kNext..pred
               let idx = 0;
               newTour[idx++] = tPred;
               let p = succ;
@@ -149,17 +125,61 @@ function solve(points) {
         }
       }
     }
+  }
 
-    // Length in squared distance (monotone, avoids sqrt)
-    let lenSq = 0;
+  function tourLen(t) {
+    let s = 0;
     for (let i = 0; i < n; i++) {
-      const a = tour[i];
-      const b = tour[(i + 1) % n];
-      lenSq += D[a * n + b];
+      const a = t[i], b = t[(i + 1) % n];
+      s += D[a * n + b];
     }
+    return s;
+  }
+
+  for (const start of startSet) {
+    const tour = new Array(n);
+    const used = new Uint8Array(n);
+    tour[0] = start;
+    used[start] = 1;
+    let cur = start;
+    for (let k = 1; k < n; k++) {
+      let best = -1, bd = Infinity;
+      for (let j = 0; j < n; j++) {
+        if (used[j]) continue;
+        const d = D[cur * n + j];
+        if (d < bd) { bd = d; best = j; }
+      }
+      used[best] = 1;
+      tour[k] = best;
+      cur = best;
+    }
+
+    runLS(tour, 30, 5);
+
+    const lenSq = tourLen(tour);
     if (lenSq < bestLenSq) {
       bestLenSq = lenSq;
       bestTour = tour;
+    }
+  }
+
+  for (let r = 0; r < 4; r++) {
+    const c1 = 1 + (Math.floor(Math.random() * (n - 1)));
+    const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 1));
+    const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 1));
+    const perturbed = new Array(n);
+    let idx = 0;
+    for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
+    for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
+    for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
+    for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
+
+    runLS(perturbed, 10, 3);
+
+    const lenSq = tourLen(perturbed);
+    if (lenSq < bestLenSq) {
+      bestLenSq = lenSq;
+      bestTour = perturbed;
     }
   }
 

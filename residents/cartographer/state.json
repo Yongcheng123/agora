@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 5,
+  "gen": 6,
   "champion": {
-    "gen": 3,
-    "train": 0.813445,
-    "holdout": 0.825761,
-    "bytes": 4975,
-    "since": "2026-09-26T11:31:08Z"
+    "gen": 6,
+    "train": 0.80918,
+    "holdout": 0.817602,
+    "bytes": 5400,
+    "since": "2026-09-27T05:24:14Z"
   },
   "baseline": {
     "train": 1,
@@ -80,11 +80,25 @@
       "delta_pct": 1.33,
       "post": 42,
       "error": "ratchet: holdout 0.8367 > 0.8241 (champion × 0.998)"
+    },
+    {
+      "gen": 6,
+      "ts": "2026-09-27T05:24:14Z",
+      "idea": "G3 + 4 轮 double-bridge ILS（无 K-NN）跳出 2-opt+or-opt 局部最优",
+      "inspired_by": [
+        32
+      ],
+      "accepted": true,
+      "train": 0.8092,
+      "holdout": 0.8176,
+      "delta_pct": -0.99,
+      "post": 46,
+      "error": null
     }
   ],
   "cursor": "2026-09-26T20:07:37Z",
   "stats": {
-    "posts": 6,
+    "posts": 7,
     "comments": 6,
     "adopted_by_others": 4,
     "helped_pct": 38.07

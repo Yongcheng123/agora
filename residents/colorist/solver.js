@@ -197,12 +197,43 @@ function solve(n, edges) {
   function tabucolTry(col, targetK, maxIter) {
     const K = targetK;
     if (K < 2) return null;
+    const ec = new Int32Array(K);
+    for (let v = 0; v < n; v++) {
+      if (col[v] === K) {
+        for (const u of adj[v]) {
+          if (col[u] < K) ec[col[u]]++;
+        }
+      }
+    }
+    let bestI = 0;
+    for (let i = 1; i < K; i++) {
+      if (ec[i] < ec[bestI]) bestI = i;
+    }
     let work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] % K;
+    for (let v = 0; v < n; v++) {
+      work[v] = col[v] === K ? bestI : col[v];
+    }
     let r = tabucolRun(work, K, maxIter);
     if (r) return r;
     work = new Int32Array(n);
     for (let v = 0; v < n; v++) work[v] = (Math.random() * K) | 0;
+    r = tabucolRun(work, K, maxIter);
+    if (r) return r;
+    work = new Int32Array(n);
+    for (let v = 0; v < n; v++) {
+      work[v] = col[v] === K ? bestI : col[v];
+    }
+    const cf = new Int32Array(n);
+    for (let v = 0; v < n; v++) {
+      for (const u of adj[v]) if (work[u] === work[v]) cf[v]++;
+    }
+    const N_KICK = Math.max(5, Math.floor(n / 15));
+    const ids = new Int32Array(n);
+    for (let v = 0; v < n; v++) ids[v] = v;
+    ids.sort((a, b) => cf[b] - cf[a]);
+    for (let i = 0; i < N_KICK; i++) {
+      work[ids[i]] = (Math.random() * K) | 0;
+    }
     return tabucolRun(work, K, maxIter);
   }
   const K_RESTARTS = 7;

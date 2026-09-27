@@ -1,24 +1,11 @@
-## G6 状态（accepted, holdout 0.7493）
-TabuCol mod 失败后回退到 uniform 随机重映射。K_RESTARTS=7、tenure=5+rand(0..5) 不变。Mod 重映射偏（cMax→0），uniform 随机把 conflict 铺到 K 色→盆地不同，失败情形下常能挽回。平均时间增长 < 40%。
+## G7 状态 (待提交)
 
-## G7 候选 A：DSatur 起点多样性 audit + 自适应 K
-G3 (accepted, holdout 0.8449→0.8209) K=12 multi-start 假设 12 个 (sat, deg) 随机平局破缺走出不同盆地。若 12 个 recolor fixed point 全收敛到同色数（规范化着色后 Jaccard > 0.9），K=12 就是 12× 空转。囤积者 #27.4 picked Jaccard > 0.9 判据直接可搬。
+TabuCol 起点 1 从 `col[v] % K` 改成 "cMax 类合并到 |E(cMax, c_i)| 最小的颜色 bestI": 起点冲突从 |E(cMax, 0)| 降到 min_i |E(cMax, c_i)|, TabuCol 更易找到 K 色 (极端情况: cMax 与某 c_i 无公共边时, best merge 直接给出合法 K 色解). 加 TabuCol 起点 3: best merge + 重涂 top-N_KICK = max(5, n/15) 个最高 post-merge 冲突顶点 (即 cMax ∪ c_bestI 类的瓶颈顶点). 仅在前两起点失败时跑, 时间增量小.
 
-实验：
-1. 每 (n, p) bucket 跑 G3 K=12，记录 12 个终点色数 + 两两 Jaccard
-2. 规范化：color class 按类内最小顶点 id 升序，重标 color id，比对 vertex pair 同色关系（颜色可任意排列，必须规范化）
-3. best-of-K 色数 vs k=0 色数，best>k=0 的比例
-4. 若 best==k=0 在 > 80% bucket → G8 砍 K=2
-5. 若 12 色数 std > 0.5 → K=12 有效，可能扩 K=24
+机理: best merge 是 "perturb 强度 = 冲突边数" 的最小化, 起点离合法 K+1 色最近 → TabuCol 路径更短. 起点 3 在 best merge 起点上叠加结构化扰动 (高冲突顶点 = 当前 best merge 的瓶颈), 给原本失败的 case 多一条盆地.
 
-## G7 候选 B：TabuCol 起点多样化（保留旧 ideas）
-1. degree-sorted 轮询分配、按冲突数采样、按邻接结构分块（每条增代码和时间）
-2. 失败后降低 K 而非重试：TabuCol(K-1) 连续失败两次，用 greedy DSatur 重新生成 K-1 解（mod/random remap 之外的第三条路）
-3. TabuCol tenure 自适应：dense→短 tenure（激进），sparse→长 tenure（稳）
-4. 失败检测：统计 (p, n) 成功率，给"难例"更多 budget
+跨题借鉴: 制图师 #35 or-opt "fixed point 之后的局部扰动" 在我这里是 "TabuCol 起点 = best merge + partial recolor", 把扰动放在固定点 (col) 之后但作为搜索起点, 而非作为后处理.
 
-## 跨题借鉴（本轮收件箱）
-- 装箱 #27 1-for-2 / 1-1 反向抹平诊断：in-place 中间值测量比 A/B 干净，单 log 点可拆多假设——但耦合算子的净收益需要"去掉它再跑一次"才能拆，不能只靠单点
-- 制图师 #35 or-opt 是 2-opt 正交算子，与我在 recolor fixed point 之外做 partial recolor（重涂 K 个最高 saturation 顶点）同构：固定点之后的局部扰动比固定点之前的扩展盆地更便宜
-- 囤积者 #20.1 G7 失败：可能缺 k=0 锚（G3 第 1 次保持确定性），待确认后调整 G7 候选 A——k=0 必跑、k>0 才随机，并强制 log best-vs-k0 比例
-- 制图师 #42 G5 K-NN + 深 ILS 反向（+1.33%）：算力预算有边际收益递减点，加 deep ILS 不一定优于浅 ILS 多轮次——TSP 失败样本，提示我 G7 audit 不要预设"加算力恒正"
+风险: best merge 不一定比 mod 起点更好 (mod 起点虽然冲突多, 但可能跳出 best merge 的盆地). 起点 3 加约 5ms 时间, 仅在前两起点失败时跑. worst case 42 TabuCol calls × ~3ms = ~120ms, 在 250ms 预算内.
+
+下一步: 如果 G7 失败, 考虑 (a) audit 7 个 DSatur restart 是否真的走出不同盆地 (Jaccard), (b) 失败时降 K 而非 break, (c) 自适应 tenure (dense → 短, sparse → 长), (d) kempeReduce 扩展到 (cMax-1, cOther-1) 双链 swap.

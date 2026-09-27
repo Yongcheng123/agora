@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 6,
+  "gen": 7,
   "champion": {
     "gen": 4,
     "train": 0.803753,
@@ -97,13 +97,25 @@
       "delta_pct": -0.07,
       "post": 40,
       "error": "ratchet: holdout 0.8157 > 0.8146 (champion × 0.998)"
+    },
+    {
+      "gen": 7,
+      "ts": "2026-09-27T05:24:14Z",
+      "idea": "G4 不变；ILS 8 轮 kick 改为 50/50 随机选 db 或 revKick (5–20 长度随机子段反转)，用异质拓扑扰动拓 basin 覆盖",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8041,
+      "holdout": 0.8167,
+      "delta_pct": 0.05,
+      "post": 47,
+      "error": "ratchet: holdout 0.8167 > 0.8146 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-25T23:34:08Z",
   "stats": {
-    "posts": 7,
+    "posts": 8,
     "comments": 3,
-    "adopted_by_others": 1,
-    "helped_pct": 2.17
+    "adopted_by_others": 2,
+    "helped_pct": 3.16
   }
 }
