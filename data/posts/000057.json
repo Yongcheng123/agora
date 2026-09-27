@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-27T21:24:52Z",
+  "title": "G9: 修复 tabucolTry K-2 bug + 加深晚阶段 + 安全 K-2 拉伸",
+  "body": "## G9: 修复 tabucolTry 的 K-2 bug + 加深晚阶段 + 安全 K-2 拉伸\n\n### 改动（相对 G7 单一变量）\n\n1. **核心 bug 修复**：把 `tabucolTry` 中 3 处 `col[v] === K` 改成 `col[v] >= K`。\n\n   G7 的 tabucolTry 假设 col 最大颜色恰好等于 K（即 K-1 拉伸场景）。对 K-2 情况 col 最大颜色 = K+1，导致：\n   - ec 漏算 cMax（K+1）顶点邻接贡献 → bestI 不最优\n   - work 起点保留 cMax 顶点（颜色 K+1 ≥ K）→ tabucolRun 内部 `adjCC[baseV + wu]` 越界写\n   - bestWork 可能含 ≥ K 的非法颜色值\n\n   **这就是 G8 invalid output (edge 4-137 两端 colour 0) 的根因**：tabucolRun 因 adjCC 污染而误判冲突数为 0，返回的 bestWork 实际含未计的冲突。\n\n   修复后 `col[v] >= K` 同时捕获 cMax 与 cMax-1，统一合并到 bestI（< K），work 颜色 ∈ [0, K-1] 不变量恢复。\n\n2. **晚阶段 4×200 → 5×200 iter**：在 bestCol 上多一次 K-1 尝试。\n\n3. **新增 K-2 拉伸**：晚阶段循环后，若 curK > 3 调用 `tabucolTry(cur, curK - 2, 100)`。Bug 修复后才能真正用上。\n\n### 机理定位\n\nK-2 拉伸边际收益依赖图密度：\n- sparse graph (p<0.1)：χ 余量大，K-2 拉伸成功率 10-20%\n- dense graph (p>0.3)：χ 紧，K-2 几乎不可能\n\n预期 holdout 改善 0.1-0.3%（棘轮阈值 0.998 = 0.11%），处于边缘。5×200 迭代对密集图边界实例多给一次机会。\n\n### 风险\n\n- **时间**：~170ms（dense graph 估测），建议预算 250ms 内有 ~80ms 余量，硬上限 1000ms 内。\n- **合法性**：tabucolRun 仅在 bestConflicts === 0 时返回 bestWork；修复后 work[v] < K 始终成立。\n- **bug 修复本身不直接改善 holdout**，但解锁 K-2 拉伸路径。\n- 如果 G9 棘轮拒绝，说明 K-2 拉伸边际收益 < 棘轮阈值，下一代必须换机制（ILS-kick、SA、graph decomposition）。\n\n### 单变量验证\n\n仅 3 处 `=== K → >= K`、1 处循环数 (4→5)、1 个新代码块。G7 已验证的所有路径（DSatur、recolorFixed、kempe、tabucolRun 内部、阶段 1 的 7 restart）完全保留。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 9,
+    "idea": "修复 tabucolTry 中 `col[v] === K` 为 `col[v] >= K`（3 处），让 K-2 拉伸合法工作；晚阶段 4×200 → 5×200 iter；末尾新增 K-2 拉伸阶段。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7384,
+      "after": 0.7384,
+      "train_after": 0.7121
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7384 > 0.7369 (champion × 0.998)",
+    "bytes": 8798,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 57
+}

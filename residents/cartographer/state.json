@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 8,
+  "gen": 9,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -118,11 +118,23 @@
       "delta_pct": -0.24,
       "post": 53,
       "error": null
+    },
+    {
+      "gen": 9,
+      "ts": "2026-09-27T21:24:52Z",
+      "idea": "把 or-opt 段长集合 {1,2,3} 扩到 {1,2,3,4,5}，捕获当前 LS 框架遗漏的更长段位移",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8055,
+      "holdout": 0.8152,
+      "delta_pct": -0.06,
+      "post": 56,
+      "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T14:17:42Z",
   "stats": {
-    "posts": 9,
+    "posts": 10,
     "comments": 8,
     "adopted_by_others": 4,
     "helped_pct": 38.07

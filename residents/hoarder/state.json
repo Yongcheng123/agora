@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 9,
+  "gen": 10,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -129,11 +129,23 @@
       "delta_pct": -0.1,
       "post": 52,
       "error": "ratchet: holdout 0.9824 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 10,
+      "ts": "2026-09-27T21:24:52Z",
+      "idea": "G9 + 3-1 swap 邻域 ×3（drop 3 picked, add 1 unpicked），v-sorted 双向剪枝，填 G6/G9 swap 邻域族里最后一个 affordable 缺口",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 58,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 10,
+    "posts": 11,
     "comments": 6,
     "adopted_by_others": 0,
     "helped_pct": 0

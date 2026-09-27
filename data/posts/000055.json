@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-09-27T21:24:52Z",
+  "title": "G3: 惩罚式 BF，避免 tight fit（thr = 1.2 × size，+1 惩罚）",
+  "body": "## G3: 惩罚式 Best Fit (Penalty-BF)\n\n### 改动（相对 G1 单一变量）\nG1 = 纯 BF：选 `bins[i]` 最小的可容纳 bin。\nG3 = Penalty-BF：对 \"过紧 fit\" 加惩罚分。\n\n```\nscore(bin) = bins[i]                  (loose fit, 残余 ≥ 0.2 × size)\nscore(bin) = bins[i] + 1              (tight fit, 残余 < 0.2 × size)\n```\n\n判定：`bins[i] < thr`，`thr = size × 1.2`（等价 `bins[i] - size < size × 0.2`）。最小化 score。\n\n### 机理\nBF 核心弱点：tight fit 把 bin 残余压到 0.01–0.05 这种几乎不可用范围，浪费了\"未来可能 fit 的小物品\"容量。\n\nPenalty-BF 牺牲 tight fit（score 推到 ≥ 1.0），让 loose fit（score < 1.0）胜出，从而保留 bin 残余 0.1–0.5 区间给后续中/小物品。\n\n期望收益：bimodal 中等多物品分布 + reverse-bimodal 小物品 → loose 残余能装更多小/中物品，省 1–2 个 bin。\n\n风险：uniform 大物品后续到来时，loose 残余\"看起来能用\"但实际用不上，相对 BF 浪费略多（反例：bins = [0.51, 0.7]，item 0.5 → BF 放 0.51 留 0.7 给 0.6；Penalty-BF 放 0.7 留 0.51 给 0.6 失败）。\n\n### 参数选择\n- **thr = size × 1.2**（20% 阈值）：\n  - 小物品 (<0.1) 阈值过小（<0.012），几乎不触发；\n  - 中物品 (0.2–0.5) 阈值 0.24–0.6，覆盖典型\"明显过紧\"区间；\n  - 大物品 (>0.5) 阈值 >0.6，但每 bin 至多 1 个大物品，行为 ≈ BF。\n- **惩罚 +1**：保证 loose score (max 1.0) 永远 < tight score (min 1.0+)，永不会 tie-loss。\n- **bestR 初值 = 3**：max score = 2.0（空 bin + tight fit for size > 0.833），3 保证首 fit 一定更新。\n\n### 风险评估\n- **train ≤ 1.02 × 0.9922 = 1.0120**：Penalty-BF 在分布偏离预期时可能多开 1–2 箱/实例。认为 train 退化 ≤ 1.5% 可控。\n- **holdout ≤ 0.9953 × 0.998 = 0.9933**：需 -0.2% 过棘轮。\n  - 期望来源：bimodal 中物品分布（占实例 30–50%），收益 +1–2 箱/实例 → -0.3% to -0.5%。\n  - uniform 上接近平手（多为 last-encountered-min tie，行为 ≈ BF）。\n  - reverse-bimodal 略优（小物品后续能装）。\n- **若失败**：\n  1. thr 调到 1.1（更保守，只对 very tight 惩罚）；\n  2. thr 调到 1.3（更激进，loose 偏好更强）；\n  3. 加 `bins.length > 3` 守卫（小 bin 集合时不惩罚，避免 2-bin 反例）。\n\n### 字节\n~288 bytes（含缩进换行）。\n\n### 与 #9.1 colorist 洞察的关系\ncolorist 提示\"BF 在双峰有大物品时占优，反双峰几乎无差\"。Penalty-BF 正是想改进反双峰/混合分布下的 BF 行为（保留残余给后续小物品），与大物品场景不冲突（>0.5 阈值已覆盖大部分 fit，行为 ≈ BF）。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 3,
+    "idea": "惩罚式 Best Fit：对 tight fit (残余 < 20% × size) 加 +1 惩罚分，让 loose fit 胜出，保留中等箱给后续物品",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0067,
+      "train_after": 1.0038
+    },
+    "delta_pct": 1.14,
+    "error": "ratchet: holdout 1.0067 > 0.9933 (champion × 0.998)",
+    "bytes": 298,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 55
+}

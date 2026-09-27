@@ -1,43 +1,48 @@
-# G9 notes
+# G10 notes
 
 ## 改动
-G6 + 在 2-for-1 与 2-for-2 之间插入 **1-for-2 swap 邻域 ×5**（steepest descent + sorted-pruning）。
+G9 + 在 2-for-2 与 1-for-2 之间插入 **3-1 swap 邻域 ×3**（drop 3 picked + add 1 unpicked，v-sorted 双向剪枝）。
 
 ## 设计动机
-G6 覆盖 {1-1, 2-1, 2-2}，**1-for-2 是唯一缺失的 affordable 邻域**：
-- 1-1: 1 个替 1 个（最弱）
-- 2-1: drop 2 个换 1 个（合并低效 picked）
-- 1-for-2: drop 1 个换 2 个（拆分大头）
-- 2-for-2: 2 个替 2 个（最复杂）
+完整 swap 邻域族 (drop_d, add_a) 在 d≤3, a≤2 子集里的 affordable 6 项：
 
-后两者（3-1, 3-2, 3-3, 2-for-3）成本爆炸，p^3·u^2 或 p^2·u^3 都超 30ms 预算上限。可行邻域只剩 1-for-2。
+| drop \ add | 1 | 2 | 3 |
+|----|---|---|---|
+| 1  | G6 ✓ | G9 ✓ | 太贵 |
+| 2  | G6 ✓ | G6 ✓ | 太贵 |
+| 3  | G10 ✓ | 太贵 | 太贵 |
 
-## G8 教训
-G8 ILS（random kick-4 + refill + LS）holdout 0.9828，离 ratchet 0.9814 还差 0.0014。kick 随机、回到 G6 basin 概率高，没跳出。
+3-1 是 G6/G9 还**没覆盖**的唯一 affordable 邻域。
 
-→ G9 改方向：**不扰动、扩邻域**。让 hill climb 在更广邻域内收敛，找 G6 在原邻域内卡死的改进。
+## 何时 3-1 能找到 G6 2-1 漏的？
+- 单 unpicked v_k 极高，大到任何 picked 对 (v_i+v_j) 都比不过
+- 但 drop 2 picked 仍 fit 不了 k（k 占容量太大）
+- 必须 drop 3 picked 才能 fit
+
+## 剪枝
+- outer k (unpicked by v desc)：`if (vk <= bd) break`
+- inner c (picked by v asc)：`if (vLoss >= vk) break`（pickedByV 升序，c 增 vLoss 单调增）
+
+## 风险
+- 3-1 实际触发次数可能很少（2-1 覆盖大部分 'collapse' 场景）
+- 若完全没触发，holdout 与 G9 持平 0.9824，过不了棘轮 0.9814
+- 30-50ms 预算占用
 
 ## 时间预算
-- 1-for-2 iter: 30 picked × ~2k 有效 (k1,k2) 对 × 5 dim ≈ 300k ops/iter。~3ms/iter。
-- 5 iters + G6 base ~150ms ≈ ~165ms 总计，安全。
+- 每 iter ~10ms，×3 = ~30-50ms
+- G10 总：~180ms < 250ms ✓
 
-## 诊断执行（packer #27.9 后修正）
-- **首要**：V_start = G6 baseline vs V_mid = G6 + 1-for-2×10 + 1-1(60) + fillSlack。Δ 是否过 ratchet 是 G9 决策唯一依据。
-- **次要**（仅 V_mid 过线后）：V_no_1_1（跳 1-1(60)）用来定 G10 是堆 1-for-2 还是堆 1-1。
-- V_no_for2 受起点污染（1-1(60) 从不同 picked 启始，basin 不同），不干净；真拆得 reseed 1-1(60) RNG 到同位置。
-- 同 seed 跑三 value 避免漂移。
-- V_mid_pre 的 picked 长度作为 sanity check：同长度下 V 大降 = 真实结构改善，不是单纯换 item。
-- 改进量分桶：1-for-2 实际找到多少 delta、几个 iter 收敛、train vs holdout 分布。
-- 逐实例分析：哪些实例上 1-for-2 找到大改进、哪些完全没动。
+## 备选（若 G10 卡棘轮）
+- 1-for-3（drop 1 + add 3）cost ~35ms/iter 太贵
+- 加深 1-for-2（×5→×10）边际小，已收敛
+- 元启发式（SA/LAHC）G8 已证对当前 G6 帮助有限
+- 路径杂交：双 basin LS 后做 cross
 
 ## 失败模式 / 下一步
-- 若 G9 卡 ratchet：
-  - 1-for-2 加深（×10）+ 1-for-3（cost ~10ms/iter）
-  - 切换 metaheuristic：LAHC / SA / Tabu
-  - 路径杂交：多个 hill-climbed 解做 blend
-- 若 G9 退步：收回 1-for-2，回 G6。
+- 若 G10 退步：收回 3-1，回 G9
+- 若 G10 卡棘轮但3-1 找到小幅改进：再加深 3-1 iters（5-10）
 
 ## 警告
 - ratchet 0.002 硬卡点（holdout ≤ 0.9814）
-- G7/G8 已验证 multi-start 和 ILS 路线对当前 G6 帮助有限
-- 1-for-2 是剩下的最自然扩展，G6 唯一可负担的缺失邻域
+- G7/G8/G9 已验证多起点和 ILS 路线对当前 G6 帮助有限
+- 3-1 是 G6 邻域集合里最后一个 affordable 的洞；若仍卡，下一步必须跳出 hill-climb 框架（metaheuristic / basin hybridization）

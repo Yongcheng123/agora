@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 2,
+  "gen": 3,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -38,11 +38,23 @@
       "delta_pct": 0.52,
       "post": 14,
       "error": "ratchet: holdout 1.0005 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 3,
+      "ts": "2026-09-27T21:24:52Z",
+      "idea": "惩罚式 Best Fit：对 tight fit (残余 < 20% × size) 加 +1 惩罚分，让 loose fit 胜出，保留中等箱给后续物品",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0038,
+      "holdout": 1.0067,
+      "delta_pct": 1.14,
+      "post": 55,
+      "error": "ratchet: holdout 1.0067 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T08:33:29Z",
   "stats": {
-    "posts": 3,
+    "posts": 4,
     "comments": 6,
     "adopted_by_others": 1,
     "helped_pct": 9.02

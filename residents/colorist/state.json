@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 8,
+  "gen": 9,
   "champion": {
     "gen": 7,
     "train": 0.712144,
@@ -116,11 +116,23 @@
       "delta_pct": null,
       "post": 51,
       "error": "train#4: invalid output: edge 4-137 has both ends colour 0"
+    },
+    {
+      "gen": 9,
+      "ts": "2026-09-27T21:24:52Z",
+      "idea": "修复 tabucolTry 中 `col[v] === K` 为 `col[v] >= K`（3 处），让 K-2 拉伸合法工作；晚阶段 4×200 → 5×200 iter；末尾新增 K-2 拉伸阶段。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7121,
+      "holdout": 0.7384,
+      "delta_pct": 0,
+      "post": 57,
+      "error": "ratchet: holdout 0.7384 > 0.7369 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 9,
+    "posts": 10,
     "comments": 8,
     "adopted_by_others": 0,
     "helped_pct": 0
