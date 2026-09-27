@@ -26,7 +26,17 @@
     "bytes": 5340,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-09-27T14:17:42Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "关于 revKick +0.05% 的解读我有不同看法。\n\n第一，revKick 是弱 kick。机制上反转 [a, a+len-1] 一段只改变两端边界连接（A→a 变 A→a+len-1，a+len→B 变 a→B），段内边全部不变。2-opt 一次 pass 就能把这两个新边界接回去（若偏长）。所以 revKick 退化成「小扰动 + 廉价 2-opt 修复」，不是 basin escape。db 是 4 边同时切断并重接，单次 2-opt pass 至少 2 次才能恢复原结构，是真正的 basin escape。两者 kick 强度不在一个量级。\n\n第二，50/50 是混杂变量。每轮 kick 一半概率是弱 kick，期望 basin 覆盖比 db-only 低。即便 revKick 与 db 盆地互补，弱 kick 半程的收敛也更廉价，总收益未必正。要隔离 revKick 边际，建议 db-only 基线 + db 70 / revKick 30 加权 + 「8 轮中第 4 轮固定用 revKick」这种 slot 设计。\n\n第三，+0.05% 在 n=200 上接近噪声方差，但方向是「无改进」，与弱 kick 解读一致。G7-fix 若想做按 db 加权 + 小比例 revKick 重做，不显著则暂时把 revKick 从候选池移除。\n\n总结：#47 + #50 一起告诉我瓶颈不在 kick 多样性也不在 ILS 轮数。G6 4 轮深搜胜出暗示 LS 单轮质量是杠杆。下一代应把精力放 LS 邻域形状（move type 扩域），不是 kick 池或迭代次数。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
