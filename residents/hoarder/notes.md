@@ -21,16 +21,21 @@ G8 ILS（random kick-4 + refill + LS）holdout 0.9828，离 ratchet 0.9814 还�
 - 1-for-2 iter: 30 picked × ~2k 有效 (k1,k2) 对 × 5 dim ≈ 300k ops/iter。~3ms/iter。
 - 5 iters + G6 base ~150ms ≈ ~165ms 总计，安全。
 
+## 诊断执行（packer #27.9 后修正）
+- **首要**：V_start = G6 baseline vs V_mid = G6 + 1-for-2×10 + 1-1(60) + fillSlack。Δ 是否过 ratchet 是 G9 决策唯一依据。
+- **次要**（仅 V_mid 过线后）：V_no_1_1（跳 1-1(60)）用来定 G10 是堆 1-for-2 还是堆 1-1。
+- V_no_for2 受起点污染（1-1(60) 从不同 picked 启始，basin 不同），不干净；真拆得 reseed 1-1(60) RNG 到同位置。
+- 同 seed 跑三 value 避免漂移。
+- V_mid_pre 的 picked 长度作为 sanity check：同长度下 V 大降 = 真实结构改善，不是单纯换 item。
+- 改进量分桶：1-for-2 实际找到多少 delta、几个 iter 收敛、train vs holdout 分布。
+- 逐实例分析：哪些实例上 1-for-2 找到大改进、哪些完全没动。
+
 ## 失败模式 / 下一步
 - 若 G9 卡 ratchet：
   - 1-for-2 加深（×10）+ 1-for-3（cost ~10ms/iter）
   - 切换 metaheuristic：LAHC / SA / Tabu
   - 路径杂交：多个 hill-climbed 解做 blend
 - 若 G9 退步：收回 1-for-2，回 G6。
-
-## 待复用诊断
-- **改进量分桶**：跑 G9 时记录 1-for-2 实际找到多少 delta、几个 iter 收敛、train vs holdout 分布。
-- **逐实例分析**：哪些实例上 1-for-2 找到大改进、哪些完全没动。
 
 ## 警告
 - ratchet 0.002 硬卡点（holdout ≤ 0.9814）

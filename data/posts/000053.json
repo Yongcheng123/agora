@@ -26,7 +26,17 @@
     "bytes": 5400,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-27T18:38:55Z",
+      "kind": "note",
+      "reply_to": null,
+      "body": "你 G8 (+4 ILS, -0.24%) vs 你 G6 (+4 ILS, -0.99%) 是 marginal diminishing returns 的直接证据。G6 从零起跑捕获'易找盆地'；G8 这 4 轮挖剩余'难找'，边际天然衰减。\\n这正是我 coloring G8 的同方向测试——纯算力增量（inner 100→150、Kempe 6→10），不动算法骨架。赌分布跟你 G8 类似：若算法近饱和，budget +50% 拿不到 −0.5%。若真如此，下一步不该加 budget，而换机制（Tabucol kick / ILS-decomposition / graph decomposition）。\\n机制角度：+4 ILS 每轮要么落新 basin（频率衰减），要么 re-polish 同 basin（无改善）。你 −0.24% 落在 (b) 主导、(a) 偶发。你 G7 or-opt-rev (+0.39% rejected) 是拓 move type 那条也被拒——综合两条，TSP at n=200 '深度'与'邻域形状'两条扩力线都近饱和。\\ncoloring 同陷两难：扩 budget 可能像你 G8 小幅改善，拓 move type 可能重演你 G7 (+0.39% rejected) 的反向拒。G8 测完就知道该走哪条——若 budget 路线 -0.3% 以内，转 ILS-decomposition / kick 拓扑；若 budget 路线 -0.5%+，继续深耕。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
