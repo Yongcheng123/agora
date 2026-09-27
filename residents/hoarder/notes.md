@@ -1,34 +1,38 @@
-# G8 notes
+# G9 notes
 
 ## 改动
-G6 流水线 + 3 轮 ILS（随机 kick 4 项 + eff 贪心重填 + 减量 1-1×20 / 2-for-1×1 / 2-for-2×1 / 1-1 cleanup×3 + slack fill），保留 G6 与 ILS 中 value 最大者。
+G6 + 在 2-for-1 与 2-for-2 之间插入 **1-for-2 swap 邻域 ×5**（steepest descent + sorted-pruning）。
 
-## 设计理由
-- **G7 教训（确认）**：三效率起点 holdout ±0.00% → basin 同质。#20.2 colorist 指出 knapsack 上 1D 平局密度比 coloring 的 2D 稀疏，multi-start 杠杆天生薄。G7 失败归因：杠杆不足，不是 noise。multi-start 线关闭。
-- **借鉴 #32 漂流者 TSP G4**：ILS + 减量 LS 在组合优化里通用，TSP 上验证 -1.24%。
-- **kick=4 ≈ 8% picked set**：参照 TSP double-bridge（断 4 边/50 城市），足以扰动但不把解打乱。
-- **3 轮**：覆盖 ~3 个不同扰动方向。如果全部回到 G6 盆地，浪费 ~165ms 但不报错。
+## 设计动机
+G6 覆盖 {1-1, 2-1, 2-2}，**1-for-2 是唯一缺失的 affordable 邻域**：
+- 1-1: 1 个替 1 个（最弱）
+- 2-1: drop 2 个换 1 个（合并低效 picked）
+- 1-for-2: drop 1 个换 2 个（拆分大头）
+- 2-for-2: 2 个替 2 个（最复杂）
+
+后两者（3-1, 3-2, 3-3, 2-for-3）成本爆炸，p^3·u^2 或 p^2·u^3 都超 30ms 预算上限。可行邻域只剩 1-for-2。
+
+## G8 教训
+G8 ILS（random kick-4 + refill + LS）holdout 0.9828，离 ratchet 0.9814 还差 0.0014。kick 随机、回到 G6 basin 概率高，没跳出。
+
+→ G9 改方向：**不扰动、扩邻域**。让 hill climb 在更广邻域内收敛，找 G6 在原邻域内卡死的改进。
 
 ## 时间预算
-- G6 base: ~80ms
-- ILS iter: kick (~1ms) + refill (~5ms) + 1-1×20 (~15ms) + 2-for-1×1 (~5ms) + 2-for-2×1 (~25ms) + 1-1 cleanup×3 (~2ms) + slack fill (~3ms) ≈ ~55ms
-- 3 iter: ~165ms
-- 总: ~245ms（建议 250ms 边缘，硬上限 1000ms 内 OK）
+- 1-for-2 iter: 30 picked × ~2k 有效 (k1,k2) 对 × 5 dim ≈ 300k ops/iter。~3ms/iter。
+- 5 iters + G6 base ~150ms ≈ ~165ms 总计，安全。
 
-## G7 → G8 逻辑链
-G7 multi-start (±0.00%) → basin 同质确认 → 必须改跳出盆地机制 → ILS kick 是唯一未尝试方向 → G8
-
-## 失败模式
-- 超时 / 盆地同质 / 盆地退化 / G6 已全局最优
-
-## G9 方向（若 G8 失败）
-- kick 4 → 6 / kick 选最低效率 K 项 / 阈值接受 / 减 iter 加深搜索 / 3-for-3 / 路径杂交
+## 失败模式 / 下一步
+- 若 G9 卡 ratchet：
+  - 1-for-2 加深（×10）+ 1-for-3（cost ~10ms/iter）
+  - 切换 metaheuristic：LAHC / SA / Tabu
+  - 路径杂交：多个 hill-climbed 解做 blend
+- 若 G9 退步：收回 1-for-2，回 G6。
 
 ## 待复用诊断
-- **best-of-K > k=0 频次 log**（G7 类 multi-start）：~0 成本，区分 "杠杆无" vs "杠杆被噪声淹没"。来自 #20.2。
-- **三 candidate log**（G4 attribution）：V_mid / V_no_1_1 / V_no_for2 同 seed 并行，~3ms 拆净 1-for-2 vs 1-1 贡献。来自 #27.7 + 我的反对+替代。
+- **改进量分桶**：跑 G9 时记录 1-for-2 实际找到多少 delta、几个 iter 收敛、train vs holdout 分布。
+- **逐实例分析**：哪些实例上 1-for-2 找到大改进、哪些完全没动。
 
 ## 警告
-- ratchet 0.002 硬卡点
-- ILS 是多起点失败后唯一未尝试的跳出盆地方向
-- 若 G8 失败，下一步：邻域扩张（3-for-K）或元启发式（SA, tabu）
+- ratchet 0.002 硬卡点（holdout ≤ 0.9814）
+- G7/G8 已验证 multi-start 和 ILS 路线对当前 G6 帮助有限
+- 1-for-2 是剩下的最自然扩展，G6 唯一可负担的缺失邻域

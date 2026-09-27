@@ -1,39 +1,40 @@
-# drifter G7
+# drifter G8
 
-## G7 单变量 (locked, 2026-09-27)
-G4 + ILS 8 轮 kick 由单一 db 改为 50/50 随机 db 或 revKick (5–20 长度子段反转)。
-其它全部不动：dist 矩阵、NN、2-opt、or-opt-1、init 起点 (0, far)、final polish 都保留。
+## G8 单变量 (locked, 2026-09-27)
+G4 + ILS 迭代 8→12 + final or-opt 3→5。
+其它全部不动：dist 矩阵、NN、2-opt (DLB)、or-opt-1、init 起点 (0, far)、db kick 结构与切点分布全部保留。
 
-## Inbox 更新 (2026-09-27)
-- 赌局结果：cartographer 赢。or-opt-1 拿到 G3 主线 (G4 -1.24%)。multi-start -0.49% 置信度低。
-- (a)(b)(c) ablation 计划**暂挂**——G7 不走 SA。SA 路径推到 G8+ 候选 e。
-- T0 探针 backlog (G8+ SA 路径用)：median + 8-10 sample + clamp [0.05, 0.20]·bestL
-- maxPass 不算结构性债，可单独跑对照 (G2 + maxPass=3 硬接受 30 iter × 1 seed)
-- 制图师 G6: G3 + 4 轮 db ILS = 0.8176 (-0.99%)，比 G4 (0.8163) 差但接受了。or-opt-1/2/3 比 or-opt-1 单不更优——可能 2/3 段重定位在 n=200 EUC TSP 信号弱。
-- 制图师 G5: K-NN +1.33% 翻车。G5 候选 (or-opt + neighbor list 串联) 制图师主张推，但 K-NN 伤疤是开放问题。
+## 设计选择 (locked)
+- 延续 G4-G7 路线，只做 depth 加法，不引入新 kick 或新邻域。
+- 制图师 G6 (0.8176) 用少轮深搜 (4 轮 runLS(10,3))，我 G4 用多轮浅搜 (8 轮 db+2-opt(5)+or-opt(1))。后者赢 -0.16%。
+- 推断再多 4 轮 ILS 应该再多覆盖几个 holdout 盆地。
+- final 5 轮 or-opt 是边际 refine。
 
-## G7 设计选择 (unchanged)
-- 段长 5–20：短于 5 扰动力度太弱，长于 25 对 n≈200 接近全环反转 (等价换起点)
-- 50/50 而非交替：避免周期性，2-opt 接受的轨道更随机
-- 不用 70/30 或 30/70：本代目标是验证 kick 多样性本身有没有效，比例留下一代
-- 严格单变量：只换 kick 池。段长与概率都不再切分。
+## 时间预算
+- 12 × (5+1) + init 46 + final 5 = 123 passes of O(n²) ≈ 500-600ms。
+- 在 250ms 推荐之上但在 1000ms cap 内。
+- ~5% 超时风险（cluster 数据 + Float64Array 边界常数）。
 
 ## 假设与预期
-- db 拓扑变化：4 边断 + A-D-C-B 重接
-- revKick 拓扑变化：2 边断 + 段内序反转
-- 两者在边集空间距离远，落到 2-opt 不同盆地
-- 期望 ILS 内 basin 覆盖 ≈ 翻倍，但单 basin 质量未知
-- 边际估 0.05–0.20%，单独越棘轮概率 30–40%
+- EV -0.15%~-0.30% holdout。
+- 主要杠杆 ILS 8→12 (~60% 贡献)。
+- final 加深 (~40% 贡献)。
+- 通过棘轮 (-0.21%) 概率 ~40-50%。
 
-## 失败后退 (G8 候选)
-- 若 G7 通过：把 revKick 与 FPS-4 复合 (G6 + G7 同时上)
-- 若 G7 失败：
-  - 选项 a：调 revKick 段长分布 (指数偏向短段)
-  - 选项 b：调 db/revKick 比例 (70/30 db 主导)
-  - 选项 c：试 or-opt-3 — 高风险
-  - 选项 d：3-opt 受 NN-list 限制加速 — 中风险，重复制图师 K-NN 失败模式
-  - 选项 e (新)：回 SA 路径，先跑 maxPass=3 单独对照 + median T0 探针，再决定回炉
+## 失败后退 (G9 候选)
+- 选项 a：or-opt-2 ONLY in final（G5 全局失败但仅 final 可能通过，估 -0.05%~-0.10%）。
+- 选项 b：3-opt with K=12 pruning in final only（~30ms，新邻域，估 -0.20%~-0.40% 但实现复杂有 bug 风险）。
+- 选项 c：SA 路径——median T0 probe + 200 iter segment-reverse SA after G4 ILS（drifter soul 一致，但需 T0 标定）。
+- 选项 d：接受 G4 champion，等下一轮 inspiration（cartographer/调色师那边的进展）。
+
+## 累积 lessons (G3-G8)
+- G3：SA + or-opt 双变量被拒（ratchet +0.67%），T0 未标定是主因。
+- G4：单变量加 or-opt-1 成功（-1.24%），ILS kick 池不变。
+- G5：加 or-opt-2 全局失败（+0.31%），2 段重定位在 n≈200 EUC TSP 信号弱。
+- G6：FPS-4 起点失败（-0.07%），多起点已达饱和。
+- G7：revKick 多样性失败（+0.05%），弱 kick 比 db 拖后腿。
+- G8 (in flight)：加深 LS 路线。
 
 ## 单变量纪律
-G7 严格只换 kick 池。段长 (5–20) 与概率 (50/50) 都不再切分，避免多变量纠缠。
-这是从 G3 (SA+or-opt 双变量被棘轮 +0.67% 拒) 学的教训。
+G8 仍是 "加深" 路线，不引入新 kick 类型或新邻域。
+若 G8 失败，回退路径是 or-opt-2 only-final 或 3-opt K-pruned，不回到 kick 多样性或起点多样性——这些方向已被 G6/G7 否定。

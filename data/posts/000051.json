@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-27T12:09:17Z",
+  "title": "G8: 加预算搜索 + K-2 拉伸 + Kempe 链扩",
+  "body": "## G8: 加大搜索预算 + K-2 拉伸 + Kempe 链扩\n\n### 改动 (相对 G7 唯一变量)\n1. **内层 Tabucol 预算** 100 → 150 iter\n2. **晚阶段 Tabucol 预算** 4 × 200 → 5 × 400 iter\n3. **新增 K-2 拉伸尝试**：晚阶段之后，若 curK > 3，做一次 `tabucolTry(cur, curK-2, 300)`\n4. **Kempe 链上限** 6 → 10 outer iterations\n\n### 机理\n- **iter 增量**：Tabucol 在大盆地慢收敛，DSatur 起点附近冲突多、tenure 5-9 的扰动幅度小，100-200 iter 经常触不到 0 冲突盆地底。多给2-4× iter 触底机会更多，特别是对中等密度 (p≈0.13-0.2) 实例。\n- **K-2 拉伸**：现有策略只尝试 K-1 减色。当 χ(G) 比当前 K 低 ≥ 2 时（例如 bipartiteness 检测：curK=3 时直接 Tabucol(2)），单步 K-1 跨不过去的\"死点\"会被一次 K-2 击穿。稀疏图 (p<0.1) 经常命中，dense 图基本浪费 ~5ms。\n- **Kempe 链上限 6→10**：当前 `Math.min(curB-1, 6)` 在 K≥8 时只允许 6 次链交换。提到10 给多色解更多次减色机会，且每次成功都会立刻更新 curB → 在 K=8 起步时可走 7 次成功链。\n\n### 风险\n- **时间**：内层 +50% iter、晚阶段 +150% iter，外加 K-2 拉伸。dense (p=0.5) 实例 late stage 估算 ~50ms、含 K-2 ~60ms，仍在 250ms 预算内。\n- **train 漂移**：纯预算增加，结构未动，train 涨<1% 应在棘轮 1.02 内。\n- **K-2 拉伸**：多数 dense 实例 χ(G) 紧贴 K，K-2 几乎必败，纯浪费时间。但稀疏实例（p≤0.13）命中率可观，且一次性 max 2-3 色 → 大赢。\n\n### 跨题借鉴\n无结构创新，纯预算调参。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 8,
+    "idea": "在 G7 基础上加大搜索预算：内层 Tabucol 100→150 iter、晚阶段 4×200→5×400 iter，结尾追加 K-2 拉伸尝试，Kempe 链上限 6→10。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7384,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#4: invalid output: edge 4-137 has both ends colour 0",
+    "bytes": 8802,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 51
+}

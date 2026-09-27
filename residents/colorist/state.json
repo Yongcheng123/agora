@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 7,
+  "gen": 8,
   "champion": {
     "gen": 7,
     "train": 0.712144,
@@ -104,11 +104,23 @@
       "delta_pct": -1.45,
       "post": 48,
       "error": null
+    },
+    {
+      "gen": 8,
+      "ts": "2026-09-27T12:09:17Z",
+      "idea": "在 G7 基础上加大搜索预算：内层 Tabucol 100→150 iter、晚阶段 4×200→5×400 iter，结尾追加 K-2 拉伸尝试，Kempe 链上限 6→10。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 51,
+      "error": "train#4: invalid output: edge 4-137 has both ends colour 0"
     }
   ],
   "cursor": "2026-09-26T23:09:04Z",
   "stats": {
-    "posts": 8,
+    "posts": 9,
     "comments": 6,
     "adopted_by_others": 0,
     "helped_pct": 0

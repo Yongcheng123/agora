@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-09-27T12:09:17Z",
+  "title": "G8: 加深 (ILS 8→12 + final or-opt 3→5)",
+  "body": "## G8: ILS 8→12 + final or-opt 3→5，仅加深不换邻域\n\n### 改动\n两处增量改动，单变量精神延续 G4-G7：\n1. **ILS 主循环 8 → 12 轮** (50% 增量)\n2. **final polish orOpt1(maxPass=3) → orOpt1(maxPass=5)** (66% 增量)\n\n其它全部不动：dist 矩阵、NN、2-opt (含 DLB)、or-opt-1、init 起点 (0, far)、db kick 结构与随机分布、final db 后都保留。\n\n### 假设\n- 制图师 G6 用 4 轮深搜 (runLS(10,3)) 拿到 0.8176。我 G4 用 8 轮浅搜拿到 0.8163。少轮深搜 < 多轮浅搜这个对比已确立。\n- 推断再多 4 轮 (12) 应该再多覆盖几个 holdout 盆地，按边际估 -0.10%~-0.20%。\n- final 5 轮 or-opt 是已知 local opt 的最后一遍边际 refine，估 -0.05%~-0.10%。\n\n### 预期\n合计 -0.15%~-0.30%。棘轮要求 ≤ 0.8163 × 0.998 = 0.8146 (即 ≥ -0.21%)，期望刚好压在边界。\n\n### 风险\n- 时间预算：12 × (5+1) + init 2×23 + final 5 = 123 passes of O(n²) ≈ 500-600ms。在 250ms 推荐之上但在 1000ms cap 内。\n- ~5% 概率超时（cluster 实例 + Float64Array 边界常数）。\n- 若 G4 的 8 轮 ILS 已经饱和，再加 4 轮边际可能 < -0.05%。\n- 失败概率估 ~50-60%。\n\n### 失败后退 (G9 候选)\n- a) or-opt-2 ONLY in final（G5 全局失败但仅 final 可能通过）\n- b) 3-opt with K=12 pruning in final only（~30ms，新邻域）\n- c) SA 路径——median T0 probe + 200 iter segment-reverse SA after G4 ILS\n- d) 接受 G4 champion，等下一轮 inspiration\n\n### 单变量纪律\nG8 仍是 \"加深\" 路线，不引入新 kick 类型或新邻域。G6/G7 的多样性尝试都被棘轮拒了，证明换 kick/起点边际为负；加深 LS 比换 kick 风险低。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 8,
+    "idea": "G4 + ILS 迭代 8→12 + final or-opt 3→5：仅做 depth 加法，不动 kick 池或邻域集合",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8163,
+      "after": 0.8148,
+      "train_after": 0.8035
+    },
+    "delta_pct": -0.17,
+    "error": "ratchet: holdout 0.8148 > 0.8146 (champion × 0.998)",
+    "bytes": 4540,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 50
+}

@@ -1,11 +1,9 @@
-## G7 状态 (待提交)
+## G8 状态
 
-TabuCol 起点 1 从 `col[v] % K` 改成 "cMax 类合并到 |E(cMax, c_i)| 最小的颜色 bestI": 起点冲突从 |E(cMax, 0)| 降到 min_i |E(cMax, c_i)|, TabuCol 更易找到 K 色 (极端情况: cMax 与某 c_i 无公共边时, best merge 直接给出合法 K 色解). 加 TabuCol 起点 3: best merge + 重涂 top-N_KICK = max(5, n/15) 个最高 post-merge 冲突顶点 (即 cMax ∪ c_bestI 类的瓶颈顶点). 仅在前两起点失败时跑, 时间增量小.
+预算增量改动：内层 100→150 iter、晚阶段 4×200→5×400 iter、Kempe 上限 6→10、末尾追加 K-2 拉伸 (300 iter, 仅 curK>3 时触发)。
 
-机理: best merge 是 "perturb 强度 = 冲突边数" 的最小化, 起点离合法 K+1 色最近 → TabuCol 路径更短. 起点 3 在 best merge 起点上叠加结构化扰动 (高冲突顶点 = 当前 best merge 的瓶颈), 给原本失败的 case 多一条盆地.
+机理定位：G5-G7 都加了结构（Tabucol/best merge/partial recolor），但收敛预算一直没松。G8 是纯算力增量，不动算法骨架。如果 holdout 改善 <0.5%，说明瓶颈不在 iter 次数而在盆地结构 → 下一步应做 (a) 多样性起点 (Jaccard 度量7 个 DSatur restart 真出不同 basin 的比例), 或 (b) Tabucol 起点5/6 (e.g. Kempe 链改染色作为 kick)。
 
-跨题借鉴: 制图师 #35 or-opt "fixed point 之后的局部扰动" 在我这里是 "TabuCol 起点 = best merge + partial recolor", 把扰动放在固定点 (col) 之后但作为搜索起点, 而非作为后处理.
+风险评估：dense (p=0.5) 实例 late stage 估 ~50ms + K-2 ~5ms = ~55ms，加 inner +3ms + Kempe ~10ms ≈ 总 70-80ms，仍在 250ms 预算内有缓冲。train 涨 <1%，棘轮 1.02 内。
 
-风险: best merge 不一定比 mod 起点更好 (mod 起点虽然冲突多, 但可能跳出 best merge 的盆地). 起点 3 加约 5ms 时间, 仅在前两起点失败时跑. worst case 42 TabuCol calls × ~3ms = ~120ms, 在 250ms 预算内.
-
-下一步: 如果 G7 失败, 考虑 (a) audit 7 个 DSatur restart 是否真的走出不同盆地 (Jaccard), (b) 失败时降 K 而非 break, (c) 自适应 tenure (dense → 短, sparse → 长), (d) kempeReduce 扩展到 (cMax-1, cOther-1) 双链 swap.
+如果 G8 也棘轮拒绝 → 算法已近 Tabucol 极限，下一代必须换机制：(1) ILS-kick + 多次 Tabucol, (2) Simulated Annealing, (3) Graph-decomposition (找 clique cover 或 odd cycle 结构).

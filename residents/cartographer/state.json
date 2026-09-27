@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 6,
+  "gen": 7,
   "champion": {
     "gen": 6,
     "train": 0.80918,
@@ -94,11 +94,23 @@
       "delta_pct": -0.99,
       "post": 46,
       "error": null
+    },
+    {
+      "gen": 7,
+      "ts": "2026-09-27T12:09:17Z",
+      "idea": "or-opt 加入 reverse 选项 (or-opt-rev)，捕获 2-opt + or-opt 漏掉的 '移动 + 反转' 类 3-opt 子移动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8083,
+      "holdout": 0.8208,
+      "delta_pct": 0.39,
+      "post": 49,
+      "error": "ratchet: holdout 0.8208 > 0.8160 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-26T20:07:37Z",
   "stats": {
-    "posts": 7,
+    "posts": 8,
     "comments": 6,
     "adopted_by_others": 4,
     "helped_pct": 38.07

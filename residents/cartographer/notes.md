@@ -1,40 +1,30 @@
-# Notes (G6: clean ILS, no K-NN)
+# Notes (G7: or-opt-rev as 3-opt subset)
 
-G3 (champion): holdout 0.8258, train 0.8134
-G4 (−0.11%): holdout 0.8249, rejected at ratchet 0.8241
-G5 (+1.33%): holdout 0.8367, rejected — K-NN (k=20) 漏掉关键 2-opt 对
-G6 target: holdout ≤ 0.8242 (−0.20%)
+G6 (champion): holdout 0.8176, train 0.8092
 
-## G5 失败复盘
-- K=20 把 2-opt 邻域缩到 10%，n=200 Euclidean 改善常来自非 NN，跳过太多。
-- LKH 文献里 K=5–15 才稳；K=20 偏激进。
-- 即使没漏掉，G5 跑 6 轮也无意义：每轮 LS 都不收敛（K-NN + iter cap），perturbed 不短也不长，扰动 + 部分 LS 净效果可疑。
+## G7 single-variable change
+G6 or-opt L=1/2/3 不动；但 L=2,3 时对每个 (s, k) 对多算一个 dAddR = D[tk,tSL1]+D[tS,tk1]+dReconnect（段反向插入），与原 dAddN 取小；若中选 reverse，新数组构造按 q = L-1, ..., 0 倒序插入段。L=1 跳过（单点反向恒等）。
 
-## G6 设计
-- G3 multi-start NN + 2-opt + or-opt 不变（4 starts：0、最远、中点、最后）。
-- 选 bestTour 后跑 **4 轮 double-bridge ILS**：
-  - 3 cut point 严格递增，重排 ACDB（注意是 A→C→D→B，不是 A→D→C→B）
-  - `runLS(10, 3)`：2-opt 10 轮 + or-opt 1/2/3 各 3 轮
-  - 接受条件 `lenSq < bestLenSq`，否则丢弃 perturbed
-- 全程无 K-NN，don't-look bits 在每轮内独立重建。
+## 动机
+2-opt 覆盖 3 种单反转；or-opt 覆盖"移动不反转"。剩下"移动并反转"是 3-opt 的天然子集（or-opt-rev，Lin 1965 之后常见，Helsgaun LKH 里也大量用）。G3/G6 的 or-opt 把"不反转"路径封顶了，反向这条路径还没碰过。
 
-## 预算分配
-- D 矩阵：O(n²) ≈ 40K ops
-- 4 × (NN + runLS_30_5) ≈ 7.2M ops
-- 4 × ILS round (perturb + runLS_10_3) ≈ 3.1M ops
-- 总：~10.3M ops，估 200–280ms @ JS（vs 250ms target, 1000ms 硬上限）
+## 代价
+or-opt 对 L=2,3 每对 (s,k) 多 3 个 D 查找 + 2 加。or-opt 总工作量从 1+1+1 升到 1+2+2，≈ ×1.67。预算 ~10.5M → ~13M，仍在 250ms 目标内（hard cap 1s 宽裕）。
 
-## 待验证假设
-- 4 轮 ILS 比 G4 单轮的 −0.11% 显著放大（无证据，纯推测）。
-- don't-look bits 让 LS 在 10 轮内基本收敛（n=200 一般 5–10 轮到不动点）。
-- 多样性由 4 个 ILS 起点（每轮扰动都重新生成）保证。
+## wrap-around 手 trace
+s=0, s=n-1, s 与 L 的 wrap 组合都过了一遍：overlap 集合对 reverse 与 normal 相同（因为 pred/succ 是段在原 tour 的边界，移除段后两端空隙与新位置无关）；新数组构造时 walk succ→kNext 和 walk kNext→pred都不经过原段位置（已在前面 trace 过）。
 
-## 若 G6 失败
-- 缩减 G3 的 LS 迭代（2-opt 30→20），腾预算给更多 ILS 轮。
-- 多起点 ILS：把每个 G3 起点的局部最优都送进 ILS 池（4 × 4 = 16 个 LS 调用，预算紧）。
-- Or-opt 反向（or-opt-{2,3}-rev）作为 3-opt 子集，正反各做一遍。
-- 真正的 3-opt 单遍收尾（O(n³)，对 n=200 单遍 ~80ms，可行但挤预算）。
+## 风险
+- 反转让 LS 收敛更深，ILS 扰动起点更优，basin 改变但整体应更好。
+- 如果 G6 的 or-opt 已经没什么空间，reverse 也加不出东西。我赌不是。
+
+## 若 G7 失败
+- 缩 ILS 轮 (4→2) 把预算给 2-opt iters (10→15)，让 reverse 收益有时间滚出来。
+- 真正 3-opt 单遍收尾（O(n³) ≈ 80ms @ n=200），作为 LS 末尾单独加一次。
+- LK-style sequence-of-2-opt 搜索（贪心连找几个2-opt 直到不缩短）。
+- 多起点 ILS（每个 G6 起点的局部最优都送进 ILS 池，4×4 = 16 LS calls，预算紧）。
+- LK-H：限制候选 2-opt 边数为 k=5 或 15，按距离剪枝。
 
 ## 借鉴
-- #32 drifter G4：ILS + or-opt in LS 的整体结构，直接影响 G6 的 ILS 设计（双桥扰动 + 接受判定模式）。
-- #35（我自己 G3）虽写进了 or-opt，但 inspired_by 限外部成员故略。
+- G6 (#46, 我) 的 4 轮 db ILS + or-opt in LS 结构直接保留
+- #32 (drifter G4) ILS + or-opt in LS 的整体思路 → 经 G6 传到 G7

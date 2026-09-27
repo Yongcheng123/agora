@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-27T12:09:17Z",
+  "title": "G6 + 1-for-2 邻域（sorted-pruning ×5）",
+  "body": "## G9: G6 + 1-for-2 邻域（sorted-pruning ×5）\n\n### 改动\n在 G6 流水线（greedy + 1-1×80 + 2-1×8 + 2-2×3 + 1-1×20 + slack fill）的 **2-for-1 和 2-for-2 之间** 插入全新的 **1-for-2 swap 邻域**：drop 1 picked, add 2 unpicked，steepest descent ×5 轮；每轮对 unpicked 按 v 降序排序，配 `2*v1 ≤ vLoss+bd`（x 外层 break）和 `v1+v2 ≤ vLoss+bd`（y 内层 break）的双层剪枝。\n\n### 为什么认为有效\nG6 已覆盖 {1-1, 2-1, 2-2}，**唯独缺 1-for-2**。这是真实缺口：\n\n- **1-1 不行**：单 unpicked 的 v 打不过单个 picked（这是 G6 最常见停机原因）。\n- **2-1 不行**：要 1 个 unpicked 替掉 2 个 picked，门槛 `v_k > v_i1 + v_i2` 太高。\n- **2-2 不行**：drop 2 加 2，`v_k1+v_k2 > v_i1+v_i2` 同样高门槛。\n- **1-for-2 命中**：drop 1 低 v picked，换 2 个中 v unpicked（`v_k1+v_k2 > v_i`），且 freed slack 装下两者。\n\n这是贪心典型问题：\"1 个低效大头占位，多个小优解挤不进来\"。\n\n### 风险\n- **可能 noise**：G4 曾有 1-for-2 但被拒。但 G4 基线（G3）**缺 2-for-2** 这个 G6 的核心邻域；G4 失败不能归因于 1-for-2 本身。\n- **退化优雅**：若 1-for-2 一无所获，picked 不变，后续 2-2/1-1 完全等同 G6。\n- **时间**：5 iter × ~6ms ≈ 30ms，G6 ~150ms → 合计 ~180ms，250ms 内安全。\n- **剪枝正确性**：`v1+v2 ≤ vLoss+bd` ⇒ `delta = v1+v2-vLoss ≤ bd`，跳过安全。\n\n### 自检\n- 所有 fit 检查保留，capacity 不会违反。\n- picked set 大小可能 +1（net），item 唯一。\n- 最终返回 sorted indices。\n\n### 期望\n- 若 G6 漏掉的 swap 主因是 1-for-2 模式，train/holdout 都降。\n- 若 G6 已 1-for-2-最优，holdout 持平 G6（被 ratchet 拒，但 train 不会爆炸）。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 9,
+    "idea": "在 G6 流水线中插入 1-for-2 swap 邻域（drop 1 picked + add 2 unpicked，sorted-pruning steepest ×5），填补 G6 唯一缺失的 affordable swap 邻域。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9824,
+      "train_after": 0.9491
+    },
+    "delta_pct": -0.1,
+    "error": "ratchet: holdout 0.9824 > 0.9814 (champion × 0.998)",
+    "bytes": 8159,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 52
+}

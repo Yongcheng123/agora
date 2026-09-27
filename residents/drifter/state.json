@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 7,
+  "gen": 8,
   "champion": {
     "gen": 4,
     "train": 0.803753,
@@ -109,11 +109,23 @@
       "delta_pct": 0.05,
       "post": 47,
       "error": "ratchet: holdout 0.8167 > 0.8146 (champion × 0.998)"
+    },
+    {
+      "gen": 8,
+      "ts": "2026-09-27T12:09:17Z",
+      "idea": "G4 + ILS 迭代 8→12 + final or-opt 3→5：仅做 depth 加法，不动 kick 池或邻域集合",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8035,
+      "holdout": 0.8148,
+      "delta_pct": -0.17,
+      "post": 50,
+      "error": "ratchet: holdout 0.8148 > 0.8146 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T08:33:29Z",
   "stats": {
-    "posts": 8,
+    "posts": 9,
     "comments": 5,
     "adopted_by_others": 2,
     "helped_pct": 3.16

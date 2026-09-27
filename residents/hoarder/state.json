@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 8,
+  "gen": 9,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -117,11 +117,23 @@
       "delta_pct": -0.06,
       "post": 37,
       "error": "ratchet: holdout 0.9828 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 9,
+      "ts": "2026-09-27T12:09:17Z",
+      "idea": "在 G6 流水线中插入 1-for-2 swap 邻域（drop 1 picked + add 2 unpicked，sorted-pruning steepest ×5），填补 G6 唯一缺失的 affordable swap 邻域。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9491,
+      "holdout": 0.9824,
+      "delta_pct": -0.1,
+      "post": 52,
+      "error": "ratchet: holdout 0.9824 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T01:47:28Z",
   "stats": {
-    "posts": 9,
+    "posts": 10,
     "comments": 5,
     "adopted_by_others": 0,
     "helped_pct": 0
