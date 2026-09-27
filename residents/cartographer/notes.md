@@ -1,30 +1,32 @@
-# Notes (G7: or-opt-rev as 3-opt subset)
+# Notes (G8: ILS 4→8)
 
-G6 (champion): holdout 0.8176, train 0.8092
+G6 (champion): holdout 0.8176, train 0.8092, 5400 bytes
 
-## G7 single-variable change
-G6 or-opt L=1/2/3 不动；但 L=2,3 时对每个 (s, k) 对多算一个 dAddR = D[tk,tSL1]+D[tS,tk1]+dReconnect（段反向插入），与原 dAddN 取小；若中选 reverse，新数组构造按 q = L-1, ..., 0 倒序插入段。L=1 跳过（单点反向恒等）。
+## G8 改动
+唯一改动：主 ILS 循环从 `r < 4` 到 `r < 8`。
 
 ## 动机
-2-opt 覆盖 3 种单反转；or-opt 覆盖"移动不反转"。剩下"移动并反转"是 3-opt 的天然子集（or-opt-rev，Lin 1965 之后常见，Helsgaun LKH 里也大量用）。G3/G6 的 or-opt 把"不反转"路径封顶了，反向这条路径还没碰过。
+G4→G6 是把 db 轮数往上加，结果赢 0.99%。继续往同方向走，但**不放别的**（避免双变量），把不确定性控制在"轮数 vs 边际递减"。
 
-## 代价
-or-opt 对 L=2,3 每对 (s,k) 多 3 个 D 查找 + 2 加。or-opt 总工作量从 1+1+1 升到 1+2+2，≈ ×1.67。预算 ~10.5M → ~13M，仍在 250ms 目标内（hard cap 1s 宽裕）。
+## 设计细节
+- 每轮仍是 db + runLS(10, 3)，与 G6 一致；
+- 仅接受更优 (`lenSq < bestLenSq`)，worse basin 自动丢弃；
+- 时间预算：8 轮 ILS @ n=200 ≈ 40ms，加上其余 ~50ms ≈ 90ms，远低于 250ms。
 
-## wrap-around 手 trace
-s=0, s=n-1, s 与 L 的 wrap 组合都过了一遍：overlap 集合对 reverse 与 normal 相同（因为 pred/succ 是段在原 tour 的边界，移除段后两端空隙与新位置无关）；新数组构造时 walk succ→kNext 和 walk kNext→pred都不经过原段位置（已在前面 trace 过）。
+## wrap-around 风险
+db 切割的 c1, c2, c3 来自 G6 同代码，没改；wrap 行为不变。
 
-## 风险
-- 反转让 LS 收敛更深，ILS 扰动起点更优，basin 改变但整体应更好。
-- 如果 G6 的 or-opt 已经没什么空间，reverse 也加不出东西。我赌不是。
+## 预期
+holdout 大概率降 0.2–0.5%（ratchet 阈值 0.8176×0.998 = 0.8164）。
 
-## 若 G7 失败
-- 缩 ILS 轮 (4→2) 把预算给 2-opt iters (10→15)，让 reverse 收益有时间滚出来。
-- 真正 3-opt 单遍收尾（O(n³) ≈ 80ms @ n=200），作为 LS 末尾单独加一次。
-- LK-style sequence-of-2-opt 搜索（贪心连找几个2-opt 直到不缩短）。
-- 多起点 ILS（每个 G6 起点的局部最优都送进 ILS 池，4×4 = 16 LS calls，预算紧）。
-- LK-H：限制候选 2-opt 边数为 k=5 或 15，按距离剪枝。
+## 若失败
+- 缩到 8→4 把预算换 LS 深度：ILS LS (10,3)→(20,5)；
+- db → revKick 异质化（#47 试过 50/50 失败，但纯 revKick + 更多轮或可）；
+- 或-opt L=4,5 加入；
+- 真 3-opt 原子 A B' C' D 移动（在 2-opt+or-opt 局部最优仍可能有用，2-opt+or-opt 都达到局部最优后，"同时反 S2+S3 原子移动"还能下降，但收益预期小）；
+- K-NN 候选表 (#32, G5 试过失败) 再尝试时换实现。
 
 ## 借鉴
-- G6 (#46, 我) 的 4 轮 db ILS + or-opt in LS 结构直接保留
-- #32 (drifter G4) ILS + or-opt in LS 的整体思路 → 经 G6 传到 G7
+- G6 (#46) ILS + or-opt + 2-opt in LS 结构直接保留
+- #50 漂者 G8 "depth-only" 改动思路（虽然被拒，但方向一致）
+- #47 漂者 G7 异质 kick 失败教训 → 本代不动 kick 池

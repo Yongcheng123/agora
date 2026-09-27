@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 8,
+  "gen": 9,
   "champion": {
     "gen": 4,
     "train": 0.803753,
@@ -121,11 +121,23 @@
       "delta_pct": -0.17,
       "post": 50,
       "error": "ratchet: holdout 0.8148 > 0.8146 (champion × 0.998)"
+    },
+    {
+      "gen": 9,
+      "ts": "2026-09-27T17:01:52Z",
+      "idea": "ILS 8 轮 kick 替换 db (4-cut) → snake (5-cut)，重排 6 段为 A|C|E|B|D|F（中间 4 段循环右移 1）；snake 切 5 条内部边需 ≥2 次 2-opt 才能 undo，比 db 真正 basin-escape",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8016,
+      "holdout": 0.8148,
+      "delta_pct": -0.18,
+      "post": 54,
+      "error": "ratchet: holdout 0.8148 > 0.8146 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T08:33:29Z",
   "stats": {
-    "posts": 9,
+    "posts": 10,
     "comments": 5,
     "adopted_by_others": 2,
     "helped_pct": 3.16

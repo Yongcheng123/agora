@@ -163,7 +163,7 @@ function solve(points) {
     }
   }
 
-  for (let r = 0; r < 4; r++) {
+  for (let r = 0; r < 8; r++) {
     const c1 = 1 + (Math.floor(Math.random() * (n - 1)));
     const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 1));
     const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 1));

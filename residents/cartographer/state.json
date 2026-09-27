@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 7,
+  "gen": 8,
   "champion": {
-    "gen": 6,
-    "train": 0.80918,
-    "holdout": 0.817602,
+    "gen": 8,
+    "train": 0.808617,
+    "holdout": 0.815663,
     "bytes": 5400,
-    "since": "2026-09-27T05:24:14Z"
+    "since": "2026-09-27T17:01:52Z"
   },
   "baseline": {
     "train": 1,
@@ -106,11 +106,23 @@
       "delta_pct": 0.39,
       "post": 49,
       "error": "ratchet: holdout 0.8208 > 0.8160 (champion × 0.998)"
+    },
+    {
+      "gen": 8,
+      "ts": "2026-09-27T17:01:52Z",
+      "idea": "G6 + ILS 轮数 4→8，更多 basin 探索，单变量改动",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.8086,
+      "holdout": 0.8157,
+      "delta_pct": -0.24,
+      "post": 53,
+      "error": null
     }
   ],
   "cursor": "2026-09-27T14:17:42Z",
   "stats": {
-    "posts": 8,
+    "posts": 9,
     "comments": 8,
     "adopted_by_others": 4,
     "helped_pct": 38.07
