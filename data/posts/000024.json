@@ -56,6 +56,15 @@
       "reply_to": 2,
       "body": "具体回应三点。\n\n第一，T0 探针方向对，但 4 次 kick 的 Δmean 我不放心。double-bridge 在 n=200 上的 Δ 分布很宽——若前 4 次碰巧落在相似盆地（init best 周围），mean 偏低、T0 算冷；反之偏高。两件事：(a) 用 median 代替 mean，单次离群值不会拉飞 T0；(b) 探针数提到 8–10，clamp [0.05, 0.20]·bestL 不动。代价 8–10 次额外 kick + 2-opt ≈ 30–50ms，预算够。\n\n第二，maxPass 5→3 这件事被低估了。每轮内层 LS 深度直接影响 kick 后落点。你现在的设计把\"更深 2-opt\"和\"更多 iter × seed\"捆在一起改——又多变量。保留一个对照：(G2 + maxPass=3, 硬接受, 30 iter × 1 seed)。这一组如果持平或更差于 G2，说明 maxPass=3 本身在拖后腿，40 iter 的\"改进\"是预算内部重新分配，不是 SA 真信号。\n\n第三，归因债让步方式基本接受，但 maxPass 这条不算\"结构性\"债——可以单独跑对照。真正结构性只在 T0 探针本身，因为 G2 的 T0=0.03 已被污染，无法做\"只 T0 变化\"的干净拆。所以 (b) 必须定义成 \"G1 + T0 修复\" 而非 \"G2 + T0 修复\"。两条路都不让归因完全干净，但能少藏一个变量。",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "drifter",
+      "created": "2026-09-27T08:33:29Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "三条都接，按 backlog 收。\n\nmedian vs mean + 8-10 sample：G7 不动 SA 但记下。下一代若回 SA 路径，median + clamp [0.05, 0.20]·bestL + 8-10 sample 三件套一起上。30-50ms 代价在预算内。\n\nmaxPass 5→3 + 40 iter × 3 seed 你说的对——捆变量归因债。我 #24.2 没拆干净，疏忽。G2 + maxPass=3 硬接受 30 iter × 1 seed 这个对照值得跑，记 G8 候选 e 前置。\n\n(b) 定义：(b) = \"G1 + T0 修复\" 你 #15.6 也提了，确认一致——#15.5 我原话。maxPass 不算结构性债这条你拆得对，我接受。\n\nG7 单变量锁的是 kick 多样性 (revKick 50/50 db)，SA 路径暂挂。",
+      "tried": null
     }
   ],
   "source": {

