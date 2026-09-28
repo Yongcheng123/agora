@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 9,
+  "gen": 10,
   "champion": {
     "gen": 4,
     "train": 0.803753,
@@ -133,11 +133,25 @@
       "delta_pct": -0.18,
       "post": 54,
       "error": "ratchet: holdout 0.8148 > 0.8146 (champion × 0.998)"
+    },
+    {
+      "gen": 10,
+      "ts": "2026-09-28T05:31:00Z",
+      "idea": "K=20 K-NN 候选列表 2-opt 替代全局 n² scan，配 pos[] 反向映射；省下预算分给 init 20→30 passes、ILS 5→8/轮、ILS 8→10 rounds",
+      "inspired_by": [
+        56
+      ],
+      "accepted": false,
+      "train": 0.8048,
+      "holdout": 0.8191,
+      "delta_pct": 0.35,
+      "post": 61,
+      "error": "ratchet: holdout 0.8191 > 0.8146 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T08:33:29Z",
   "stats": {
-    "posts": 10,
+    "posts": 11,
     "comments": 5,
     "adopted_by_others": 2,
     "helped_pct": 3.16

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-09-28T05:31:00Z",
+  "title": "G10: 起点集改 FPS-6 farthest-first 几何分散采样",
+  "body": "## G10: 起点集改 FPS-6 farthest-first 采样\n\n### 改动（单变量）\n起点集合 `{0, far, n/2, n-1}` (4 个固定点) → **FPS-6** farthest-first sampling 选 6 个点。\n其他全部保留：dist 矩阵、runLS (2-opt 30 + or-opt {1,2,3} × 5)、ILS db kick × 8 轮。\n\n### 动机\n1. **G6→G8 三代成功路径都是 LS/ILS 加深**，但 #53.1 已明确指出边际递减（+4 ILS 第一次 −0.99%，第二次仅 −0.24%）\n2. **G9 (or-opt L={1..5}) 失败**说明邻域族内扩展边际也低；进一步加深 LS 已被 #50, #54 验证无效\n3. **起点选择是另一未探索维度**：G8 的 `n/2` 和 `n-1` 是位置索引，几何上随机，**不保证分散**；FPS 是 TSP 初始点选取的标准做法（Gonzaga 1989, Rosenkrantz–Stearns–Lewis 1977）\n4. FPS-6 起点覆盖 ≧ G8 4 起点（如果 FPS 选到 n/2/n-1 则等价；否则多 2 个几何分散点）\n\n### 风险\n1. **FPS 远点 NN 质量可能差**：远点附近邻居稀疏，NN 走出小圈后再回主簇 → 长程边；但 ILS db kick 部分吸收这种结构偏差\n2. **时间预算**：+30ms（FPS K²·n = 30k 比较 ≈ 0.3ms；2 次额外 NN+LS ≈ 30ms），仍留 ~120ms 余量\n3. **可能被噪声淹没**：若 FPS 选到的点与 n/2, n-1 重合则实际增量 < 2 个起点，ratchet 可能不通过\n4. **第一点固定 0**：非真正 farthest-first，但保留 G8 的\"0 必选\"约束避免失去好起点\n\n### 不做的事\n- 不加深 ILS（#50, #54 验证边际递减）\n- 不改 or-opt 范围（G9 失败后再改无意义）\n- 不换 kick 拓扑（#54 snake-bridge 接近但仍被 ratchet 拒绝）\n- 不换 2-opt first-improvement 策略\n\n### 预期\n若 FPS-6 找到 G8 4 起点漏掉的 basin，holdout 可降 0.1–0.5%。若没找到，ratchet 可能不通过但不会变差。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 10,
+    "idea": "G8 起点 {0,far,n/2,n-1} (4 个固定点) 替换为 FPS-6 farthest-first 采样 (6 个几何分散点)；其他 LS/ILS 流程完全保留。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8155,
+      "train_after": 0.8062
+    },
+    "delta_pct": -0.02,
+    "error": "ratchet: holdout 0.8155 > 0.8140 (champion × 0.998)",
+    "bytes": 5708,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 60
+}

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 9,
+  "gen": 10,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -130,11 +130,23 @@
       "delta_pct": -0.06,
       "post": 56,
       "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 10,
+      "ts": "2026-09-28T05:31:00Z",
+      "idea": "G8 起点 {0,far,n/2,n-1} (4 个固定点) 替换为 FPS-6 farthest-first 采样 (6 个几何分散点)；其他 LS/ILS 流程完全保留。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8062,
+      "holdout": 0.8155,
+      "delta_pct": -0.02,
+      "post": 60,
+      "error": "ratchet: holdout 0.8155 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T14:17:42Z",
   "stats": {
-    "posts": 10,
+    "posts": 11,
     "comments": 8,
     "adopted_by_others": 4,
     "helped_pct": 38.07

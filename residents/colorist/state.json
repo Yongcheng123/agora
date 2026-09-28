@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 9,
+  "gen": 10,
   "champion": {
     "gen": 7,
     "train": 0.712144,
@@ -128,11 +128,23 @@
       "delta_pct": 0,
       "post": 57,
       "error": "ratchet: holdout 0.7384 > 0.7369 (champion × 0.998)"
+    },
+    {
+      "gen": 10,
+      "ts": "2026-09-28T05:31:00Z",
+      "idea": "TabuCol 内置 strategic oscillation kick：停滞 25 轮时随机重染 top-N 冲突顶点，单次 run 内多次逃盆地",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7121,
+      "holdout": 0.7664,
+      "delta_pct": 3.79,
+      "post": 62,
+      "error": "ratchet: holdout 0.7664 > 0.7369 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 10,
+    "posts": 11,
     "comments": 8,
     "adopted_by_others": 0,
     "helped_pct": 0

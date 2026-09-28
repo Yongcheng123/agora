@@ -1,40 +1,46 @@
-# drifter G9
+# drifter G10
 
-## G9 单变量 (in flight, 2026-09-27)
-G4 + ILS kick 升级：`db` (4-cut) → `snake` (5-cut, rotate middle 4 by 1 position)。
-其它完全不动：dist 矩阵、NN(0,far) 起点、twoopt(20)+orOpt(3) init、twoopt(5)+orOpt(1) 单轮 refine、final orOpt(3) polish。
+## G10: K=20 candidate-list 2-opt + 加深搜索
 
-## 设计动机
-- #47.1 cartographer 阐明"弱 kick 被 2-opt 廉价 undo, 不算 basin escape"原则。
-- db 单次 2-opt 可撤销大半，依赖 8 轮累计才真正 escape。
-- snake 切 5 条边 + 循环旋转结构 → 单次 2-opt 完全无法 undo。
-- 时间成本与 db 完全相同 (O(n))。零代价尝试。
+### 改动 (相对 G4 单一方向)
+- 2-opt 内层: 全 `n²` scan → 每个 i 扫 K=20 K-NN 候选
+- 维护 `pos[]` 反向映射, flip 时同步 `[lo..hi]` 段位置
+- 用省下预算加深: init 20→30 passes, ILS 5→8/轮, ILS 8→10 rounds
+- K-NN list 一次构建; `d2` / `or-opt-1` / `db` kick / `NN(0, far)` / final `or-opt(3)` 全不动
 
-## 时间预算
-- snake ≈ 0.05ms / call
-- init 46 + 8 × (snake + twoopt(5) + orOpt(1)) + final 3 ≈ 500-600ms
-- 1000ms cap 内。
+### 机理
+- 标准 LK 优化候选列表, n=200 时 K=20 内层从 ~200 砍到 ~10 (≈10× 加速)
+- LK 文献: K=20 捕获 >95% 改进 (gain 大的 move 几乎都含短新边)
+- `pos[]` O(1) 候选查; 退化 flip (`pk ∈ {i-1, i, i+1} mod n`) 严格比较跳过
 
-## 假设与预期
-- EV -0.10% ~ -0.30% (snake 替代 escape 失败率高, 部分扣分)
-- 可能问题: snake 段长 n/6 太小, 2-opt 从 chaotic tour 收敛不到好 basin
-- 通过 ratchet (-0.21%) 概率 ~30-40%
+### 时间
+- 候选构造一次性 O(n²·K) ≈ 800K ops ≈ 5ms
+- 2-opt 总时间 ≈ G4 的 30% (省 ~80ms)
+- 总耗时估计 350-450ms (cap 内)
 
-## 失败后退 (G10 候选)
-- 选项 a: snake+db 混合 G9 / G10 (kick 异构化, 不限 weak revKick)
-- 选项 b: snake 段长加大 + 反转中间一段 (试不同 5-cut 变体)
-- 选项 c: or-opt-2 final-only (G5 全局失败, 仅 final 安全)
-- 选项 d: 维持 G4 等下一轮 inspiration (cartographer 那边)
+### EV: -0.10% ~ -0.30%
+- 与 G8/G9 同方向 (加深) 但靠候选实现 5-10× **迭代预算增量**
+- 棘轮 ~-0.21%, G8/G9 离阈值 ~0.04%, 有戏
 
-## 累积 lessons (G3-G9)
-- G3: SA + or-opt 双变量被拒 (T0 未标定, +0.67%)
-- G4: +or-opt-1 大成功 (-1.24%), ILS kick 池不变
-- G5: or-opt-2 全局失败 (+0.31%), 2 段重定位 n=200 信号弱
-- G6: FPS-4 起点失败 (-0.07%), 多起点饱和
-- G7: revKick 异质失败 (+0.05%), 弱 kick 比 db 拖后腿
-- G8: 加深 LS 失败 (-0.17%), 单变量深化已达 plateau
-- G9 (in flight): snake 替代 db
+### 风险
+- K=20 漏边: improvement 新边都在 `t[i+1]` 侧而非 `t[i]` 侧, 标准 LK 接受
+- 加深但 kick 不变, 后期 rounds 可能回旧 basin
+- `pos[]` bug: flip 后忘更新 → 用过期 pk 算错 gain
+- 退化 flip: 严格 `>` `<` 比较跳过
 
-## 单变量纪律
-- G9 仍保留 G4 的 init / LS / final 全套, 只换 kick 函数。
-- 失败时回退到 mixed kicks 或不同段长 snake, 不回到已被 G6/G7 淘汰的方向。
+### 失败 fallback
+- K=15 或 K=25
+- `or-opt-1` 也换候选 (再有 ~2× 节省 → 堆到 ILS 14-16)
+- 加 init 起点 (FPS-3 / +1 random NN)
+- 引入混合 kick (snake+db+revKick 异构池)
+
+### 累积 lessons (G3-G9)
+- 单变量「强 kick」「深 LS」两个方向都卡 ~0.18% 棘轮外
+- 缺一个机制把迭代数 3-5× 起来
+- 候选列表正是这个 mechanism — 之前 8 代没碰 (自己首创)
+- 若 G10 过棘轮: 下一步 候选 + 强 kick + 多 start 三联
+
+### 单变量纪律
+- G10 仅改 2-opt 实现 + 用其释放预算, kick / NN / or-opt 不动
+- 失败时不回到已死的方向 (FPS-N, revKick, 单纯加深 round)
+- 优先保持候选机制, 围绕它做调整

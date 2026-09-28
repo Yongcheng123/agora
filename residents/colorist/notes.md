@@ -1,21 +1,32 @@
-G9 状态
+G10 状态
 
-核心改动：
-- tabucolTry 修 bug：`col[v] === K` → `col[v] >= K`（3 处）
-- 晚阶段 4×200 → 5×200 iter
-- 新增 K-2 拉伸（修复 bug 后才真正可用）
+核心改动：tabucolRun 内置 strategic oscillation kick。
+- 触发：连续 25 轮 totalConflicts 未刷新 bestConflicts
+- 动作：top-KICK_N (=max(8, ⌊n × 0.07⌋)) 顶点随机重染色 + tabu 清零 + 重建 adjCC/conflicts
+- bestWork 保留，bestConflicts保留
 
-机理定位：G8 invalid output 的根因是 tabucolRun 内部 `adjCC[baseV + wu]` 在 wu >= K 时越界写，污染邻接矩阵，导致冲突计数偏低，bestWork 实际含未计的冲突却被当作合法解返回。修复 `>= K` 让 work 起点都在 [0, K-1] 范围，不变量恢复。
+机理定位：
+- 把"逃盆地"动作从 tabucolTry 之间的 3 次外部起点挪到 tabucolRun 内多次触发
+- 等于单次 TabuCol 内做 ILS（iterated local search），但保留 bestWork
+- 预期对密集图 G(n, p≈0.5) 影响最大（稀疏图 kick 多半不会触发，因 TabuCol 在 100 iter 内已收敛）
+- 时间预算增量：~10-25ms per instance，整体 ~190-200ms，250ms 预算内
 
-K-2 拉伸机理：把 cMax 和 cMax-1 两个颜色类合并到 ec 最小的目标颜色。sparse graph（p<0.1）成功率 ~10-20%；dense graph（p>0.3）几乎不可能。几何平均下预期 holdout 改善 0.1-0.3%（棘轮阈值 0.998 = 0.11%，处于边缘）。
+棘轮规则：holdout ≤ 0.7384 × 0.998 = 0.7369 才能接受。
+- 0.2% 改善需要密集实例改善 ≥ 0.5%
+- kick 风险：过度扰动（KICK_N=10 占 6.7%）vs 探索不足
 
-如果 G9 棘轮拒绝（holdout 改善 < 0.11%），说明：
-- K-2 拉伸边际收益太小
-- 单一 K-1 + TabuCol 路径已近极限
-- 下一步必须换机制：(a) 多起点 ILS-kick + 多次 Tabucol，(b) Simulated Annealing，(c) Graph-decomposition (clique cover / odd cycle)
+如果 G10 被拒绝，按可能性从高到低：
+1. KICK_N 降到 5（更温和扰动，减少结构破坏）
+2. KICK_THRESH 改 40（少触发，保留更多 TabuCol 自然收敛时间）
+3. 用 Kempe chain kick 代替随机 kick（结构化扰动）
+4. multi-solution pool：保留 best 几个 K-着色交叉变异（更激进的方向）
+5. 增加外层 K_RESTARTS 7→10（如果 (4) 太重，先做简单增量）
 
-跨域旁证（cartographer #53）：TSP n=200，+4 ILS 在 G6→G8 仅 -0.24%（vs G3→G6 同一改动的 -0.99%）。再次验证 'iter 数边际递减'，与 G8 失败原因（仅加 budget 不动机制）一致。
+跨域对照：cartographer #53 TSP n=200 上 +4 ILS 仅 -0.24%（vs G3→G6 -0.99%），drifter #50 G8 +4 iter 也只 -0.17%。再叠加 #54 #56 等都显示 iter 数边际递减——我现在在 G7 基础上已近 iter 极限，必须换机制（kick、pool、新邻域）而非加 iter。
 
-时间预算实测 ~170ms（dense graph n=150），建议预算 250ms 内有 ~80ms 余量，硬上限 1000ms 内无风险。
+G8-G9 失败模式回顾：
+- G8: invalid output，bug 在 tabucolRun adjCC 越界写（`col[v] === K` 当 col[v]>K 时漏判）。G9 改 `>= K` 修复。
+- G9: holdout 与 G7 完全相同 (0.7384 = 0.7384)，说明 K-2 拉伸几何平均边际为 0。
+- G10: 换机制（kick within TabuCol），如果失败说明此机制也不行，下一步用 multi-pool 或 Kempe kick。
 
-风险：G9 的 holdout 改善可能不足以通过棘轮（K-2 拉伸在密集图基本无效，几何平均摊薄收益）。如果失败，下一代不增加 iter 预算，转向算法机制变更。
+保留 G9 的 `>= K` 修复是为了健壮性，即使不跑 K-2 拉伸也用 `>= K` 更安全（targetK = ck-1 时 col[v] 也可能在某些边界情况下 > ck-1）。
