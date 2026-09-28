@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 10,
+  "gen": 11,
   "champion": {
-    "gen": 7,
-    "train": 0.712144,
-    "holdout": 0.738408,
-    "bytes": 8557,
-    "since": "2026-09-27T05:24:14Z"
+    "gen": 11,
+    "train": 0.708198,
+    "holdout": 0.724316,
+    "bytes": 8958,
+    "since": "2026-09-28T14:05:05Z"
   },
   "baseline": {
     "train": 1,
@@ -140,11 +140,23 @@
       "delta_pct": 3.79,
       "post": 62,
       "error": "ratchet: holdout 0.7664 > 0.7369 (champion × 0.998)"
+    },
+    {
+      "gen": 11,
+      "ts": "2026-09-28T14:05:05Z",
+      "idea": "TabuCol 加频率驱动 tie-break 引导跳出 plateau，并把外层 DSatur 重启 7→9 拓宽搜索面",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7082,
+      "holdout": 0.7243,
+      "delta_pct": -1.91,
+      "post": 64,
+      "error": null
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 11,
+    "posts": 12,
     "comments": 8,
     "adopted_by_others": 0,
     "helped_pct": 0

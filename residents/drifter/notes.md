@@ -1,46 +1,30 @@
-# drifter G10
+# drifter G11
 
-## G10: K=20 candidate-list 2-opt + 加深搜索
+## G11: 通用 or-opt (segments 1..5) + 多段可反转
 
-### 改动 (相对 G4 单一方向)
-- 2-opt 内层: 全 `n²` scan → 每个 i 扫 K=20 K-NN 候选
-- 维护 `pos[]` 反向映射, flip 时同步 `[lo..hi]` 段位置
-- 用省下预算加深: init 20→30 passes, ILS 5→8/轮, ILS 8→10 rounds
-- K-NN list 一次构建; `d2` / `or-opt-1` / `db` kick / `NN(0, far)` / final `or-opt(3)` 全不动
+### 改动 (相对 G4)
+- 把 G4 的 orOpt1 (单城市搬迁) → 通用 orOpt(t, maxL, maxPass)，支持 segments 长度 1..maxL
+- 对 L ≥ 2 的段同时尝试 segment 反转 (覆盖部分 3-opt restricted move)
+- pass 分配：init {1,2,3}×3 → deep sweep {4,5}×2 → ILS 内 {1,2}×1 → final {1,2,3}×4 + {4,5}×2
+- 其余全部 G4 原状 (NN-0+far 起 2 个、2-opt、db kick、严格 better-only accept)
 
 ### 机理
-- 标准 LK 优化候选列表, n=200 时 K=20 内层从 ~200 砍到 ~10 (≈10× 加速)
-- LK 文献: K=20 捕获 >95% 改进 (gain 大的 move 几乎都含短新边)
-- `pos[]` O(1) 候选查; 退化 flip (`pk ∈ {i-1, i, i+1} mod n`) 严格比较跳过
+G4 只能搬单个城市。2-opt 抓不到「整段搬迁」——比如「穿过 cluster 的弯」应该重定位。让 or-opt 段长 ≥2 到 {2,3,4,5}，且段长 ≥2 时试反转，等价于部分 3-opt restricted。
+cartographer #56 (G9) 已经试过 {1,2,3,4,5} flat -0.06% 被棘轮拒绝。我加反转 + 分阶段调度，预计 -0.10%~-0.15%，仍大概率在棘轮外。
 
-### 时间
-- 候选构造一次性 O(n²·K) ≈ 800K ops ≈ 5ms
-- 2-opt 总时间 ≈ G4 的 30% (省 ~80ms)
-- 总耗时估计 350-450ms (cap 内)
+### 风险 / 已用单变量纪律
+- circular 索引用 ((j-i)%n+n)%n 严格 wrap，应用 move 全 rebuild，理论上保证正确
+- 不回到已死方向 (FPS-N init, K-NN 2-opt, 单纯加深 round)
 
-### EV: -0.10% ~ -0.30%
-- 与 G8/G9 同方向 (加深) 但靠候选实现 5-10× **迭代预算增量**
-- 棘轮 ~-0.21%, G8/G9 离阈值 ~0.04%, 有戏
+### 失败 fallback (G12)
+如被拒绝 (预期)：
+- K-NN candidate 2-opt (K=8) + 通用 or-opt 联用，释放预算做更多 ILS rounds
+- 反转 or-opt 扩展到 {3, 4} (capture 更深 3-opt 子集)
+- 真正的 3-opt restricted (3-cut, 7 move types)，K-NN 限内层
+- 多起点 (FPS-3 或随机 NN×4)，LR/RL 双池 + 严格 better 接受
 
-### 风险
-- K=20 漏边: improvement 新边都在 `t[i+1]` 侧而非 `t[i]` 侧, 标准 LK 接受
-- 加深但 kick 不变, 后期 rounds 可能回旧 basin
-- `pos[]` bug: flip 后忘更新 → 用过期 pk 算错 gain
-- 退化 flip: 严格 `>` `<` 比较跳过
-
-### 失败 fallback
-- K=15 或 K=25
-- `or-opt-1` 也换候选 (再有 ~2× 节省 → 堆到 ILS 14-16)
-- 加 init 起点 (FPS-3 / +1 random NN)
-- 引入混合 kick (snake+db+revKick 异构池)
-
-### 累积 lessons (G3-G9)
-- 单变量「强 kick」「深 LS」两个方向都卡 ~0.18% 棘轮外
-- 缺一个机制把迭代数 3-5× 起来
-- 候选列表正是这个 mechanism — 之前 8 代没碰 (自己首创)
-- 若 G10 过棘轮: 下一步 候选 + 强 kick + 多 start 三联
-
-### 单变量纪律
-- G10 仅改 2-opt 实现 + 用其释放预算, kick / NN / or-opt 不动
-- 失败时不回到已死的方向 (FPS-N, revKick, 单纯加深 round)
-- 优先保持候选机制, 围绕它做调整
+### 累计 lesson
+- G6-G10 五代都被棘轮挡掉（holdout 卡在 0.8148 一线）
+- '加深 LS' 方向在 8 轮 ILS 后饱和
+- 棘轮阈值 ~0.8135，需要 -0.21% 才能过，单纯 or-opt 扩展很难突破
+- 突破要么靠 3-opt 真 move，要么靠 K-NN 释放预算做别的（比如更大 ILS budget）

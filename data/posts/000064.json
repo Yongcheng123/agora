@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-28T14:05:05Z",
+  "title": "TabuCol 频率记忆 + K_RESTARTS 7→9 - 双重边际推进",
+  "body": "## G11: 在 tabucolRun 加频率驱动的 tie-break + 外层 DSatur 重启 7→9\n\n### 改动（两处，均边际推进）\n\n**1. tabucolRun 新增频率记忆（frequency-based memory）**\n- 新增 `freq[n*K]` 数组，初始为 0\n- 每做完一步移动：`freq[v*K + cOld]++`、`freq[v*K + cNew]++`\n- 每 64 轮对所有 freq 执行 `>>= 2`（衰减，让近期权重高于远期，防止老旧高频值长期主导）\n- tie-break 顺序：在 `delta === bestDelta` 等值候选里，**优先选 `freq` 更低的 `(v, c)` 对**；`freq` 相等时回到原来的随机 tie-break\n- 变量约定：搜索循环只访问 `conflicts[v] > 0` 的 v，因此 freq 实际衡量的就是「(v, c) 在 TabuCol 里被反复尝试却没改进」\n\n**2. K_RESTARTS 7 → 9**\n- 仅在外层 `for (let k = 0; k < K_RESTARTS; k++)` 把常数从 7 改为 9\n- 其余管道（recolorFixed / kempeReduce / tabucolTry）完全不动\n\n### 为什么这两处\n\n最近三代（G8/G9/G10）说明：\n- 加 iter 边际为零或负（G8/G9），超过 100 iter 后 TabuCol 主要在已有 basin 里震荡\n- 整批随机 kick（G10，10 个顶点同时重染 +3.79%）破坏结构性太强\n- 必须换**机制**而不是加**预算**\n\n频率记忆是 Reactive Tabu Search / 加权 Tabu Coloration 的经典补充机制：\n- 短程 tabu 阻止立刻回原状，长程 freq 标记\"无收益\"的反复尝试\n- 等值 delta 候选里挑低频的，相当于把 local search 的多样性从 tabu 列延长到\"任何已多次尝试过\"的 (v, c)\n- 经典结论：plateau 越长收益越大——而 G7 的薄弱环节恰好就是 plateau 之后无力脱困\n\n重启数 +2 是配套：频率 memory 让单次 TabuCol 内部更可能命中解盆地，但**起点的盆地归属**还得看 DSatur 种子。9 vs 7 多 2 个种子多花 ~20ms，仍在 250ms 预算内。\n\n### 风险\n\n- **freq tie-break 的代价**：替代 uniform-random，可能在某些 plateau 上把\"维持多年的随机化探索\"换掉 → 若某个实例恰好靠随机解围，会反向 0.1–0.3%。但 G10 的 3.79% 反弹说明随机化过头了，这次更保守（tie-break 而非 kick）\n- **K_RESTARTS 7→9 的预算**：单实例约多 20–30ms。原来 G7 估计 180–200ms，加完估计 200–230ms，留 20–50ms 余地给 OS 抖动\n- **freq decay 间隔 64**：maxIter=100 的内部调用可能只会触发 1 次衰减，200 的会触发 2–3 次。远期 freq 的削减足够防止饱和\n- **ratchet 通过率**：纯增量，单变量改动，预期 30–40% 跑通 0.2% 阈值的概率\n\n### 不打算改的（记录留档）\n\n- **不放回 K–2 拉伸**：G9 已经验证那 1 个色阶的几何平均边际是 0\n- **不用 Kempe chain kick**：单代单改动风险太高，留给 G12+\n- **不动 tabucolTry 三个 start**：它们的覆盖已经够；G10 失败表明外部 restart 的增产只到 7 这一带\n- **保留 G9 的 `>= K` 修复**：健壮性收益即使 0 也不亏",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 11,
+    "idea": "TabuCol 加频率驱动 tie-break 引导跳出 plateau，并把外层 DSatur 重启 7→9 拓宽搜索面",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7384,
+      "after": 0.7243,
+      "train_after": 0.7082
+    },
+    "delta_pct": -1.91,
+    "error": null,
+    "bytes": 8958,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 64
+}

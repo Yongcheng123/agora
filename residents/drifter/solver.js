@@ -1,5 +1,6 @@
 function solve(points) {
   const n = points.length;
+  if (n < 4) { const o = new Array(n); for (let i = 0; i < n; i++) o[i] = i; return o; }
   const X = new Float64Array(n), Y = new Float64Array(n);
   for (let i = 0; i < n; i++) { X[i] = points[i][0]; Y[i] = points[i][1]; }
   const d2 = new Float64Array(n * n);
@@ -67,38 +68,56 @@ function solve(points) {
     }
     return t;
   };
-  const orOpt1 = (t0, maxPass) => {
-    if (n < 4) return new Int32Array(t0);
+  // Generalized or-opt for circular tours: relocate segment [i+1..i+L] of length 1..maxL
+  // to any insertion site. For L >= 2 also tries segment reversal before insertion,
+  // covering some 3-opt restricted moves without a full 3-opt implementation.
+  // Full array rebuild is used (cheaper than handling all wrap cases for L > 1 inline).
+  const orOpt = (t0, maxL, maxPass) => {
     const t = new Int32Array(t0);
-    let improved = true; let pass = 0;
-    while (improved && pass < maxPass) {
-      improved = false; pass++;
-      for (let i = 0; i < n; i++) {
-        const a = t[(i - 1 + n) % n];
-        const b = t[i];
-        const c = t[(i + 1) % n];
-        const remSavings = d2[a*n + b] + d2[b*n + c] - d2[a*n + c];
-        let bestGain = 1e-9;
-        let bestPos = -1;
-        for (let j = 0; j < n; j++) {
-          if (j === i) continue;
-          const jnext = (j + 1) % n;
-          if (jnext === i) continue;
-          const p = t[j];
-          const q = t[jnext];
-          const insCost = d2[p*n + b] + d2[b*n + q] - d2[p*n + q];
-          const gain = remSavings - insCost;
-          if (gain > bestGain) { bestGain = gain; bestPos = j; }
-        }
-        if (bestPos !== -1) {
-          const removed = t[i];
-          for (let k = i; k < n - 1; k++) t[k] = t[k + 1];
-          const insertAt = bestPos >= i ? bestPos : bestPos + 1;
-          for (let k = n - 1; k > insertAt; k--) t[k] = t[k - 1];
-          t[insertAt] = removed;
-          improved = true;
+    if (n < 4) return t;
+    for (let pass = 0; pass < maxPass; pass++) {
+      let improved = false;
+      for (let L = 1; L <= maxL; L++) {
+        for (let i = 0; i < n; i++) {
+          const a = t[i];
+          const head = t[(i + 1) % n];
+          const tail = t[(i + L) % n];
+          const d = t[(i + L + 1) % n];
+          const remLoss = d2[a*n + head] + d2[tail*n + d] - d2[a*n + d];
+          let bestGain = 1e-9, bestJ = -1, bestRev = 0;
+          for (let j = 0; j < n; j++) {
+            const off = ((j - i) % n + n) % n;
+            if (off <= L) continue;
+            const p = t[j];
+            const q = t[(j + 1) % n];
+            const insNorm = d2[p*n + head] + d2[tail*n + q] - d2[p*n + q];
+            const gain = remLoss - insNorm;
+            if (gain > bestGain) { bestGain = gain; bestJ = j; bestRev = 0; }
+            if (L >= 2) {
+              const insRev = d2[p*n + tail] + d2[head*n + q] - d2[p*n + q];
+              const gr = remLoss - insRev;
+              if (gr > bestGain) { bestGain = gr; bestJ = j; bestRev = 1; }
+            }
+          }
+          if (bestJ !== -1) {
+            const walkStart = (i + L + 1) % n;
+            let insPos = 0;
+            for (let k = 0; k < n - L; k++) {
+              if (((walkStart + k) % n) === bestJ) { insPos = k; break; }
+            }
+            const newT = new Int32Array(n);
+            for (let k = 0; k <= insPos; k++) newT[k] = t[(walkStart + k) % n];
+            for (let k = 0; k < L; k++) {
+              const srcIdx = bestRev ? (L - 1 - k) : k;
+              newT[insPos + 1 + k] = t[(i + 1 + srcIdx) % n];
+            }
+            for (let k = insPos + 1; k < n - L; k++) newT[L + k] = t[(walkStart + k) % n];
+            for (let k = 0; k < n; k++) t[k] = newT[k];
+            improved = true;
+          }
         }
       }
+      if (!improved) break;
     }
     return t;
   };
@@ -124,18 +143,21 @@ function solve(points) {
   for (const s of [0, far]) {
     let t = nn(s);
     t = twoopt(t, 20);
-    t = orOpt1(t, 3);
+    t = orOpt(t, 3, 3);
     const l = len2(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
+  bestT = orOpt(bestT, 5, 2);
+  bestL = len2(bestT);
   for (let it = 0; it < 8; it++) {
     let t = db(bestT);
     t = twoopt(t, 5);
-    t = orOpt1(t, 1);
+    t = orOpt(t, 2, 1);
     const l = len2(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
-  bestT = orOpt1(bestT, 3);
+  bestT = orOpt(bestT, 3, 4);
+  bestT = orOpt(bestT, 5, 2);
   bestL = len2(bestT);
   const out = new Array(n);
   for (let i = 0; i < n; i++) out[i] = bestT[i];

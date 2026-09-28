@@ -1,32 +1,33 @@
-G10 状态
+G11 状态
 
-核心改动：tabucolRun 内置 strategic oscillation kick。
-- 触发：连续 25 轮 totalConflicts 未刷新 bestConflicts
-- 动作：top-KICK_N (=max(8, ⌊n × 0.07⌋)) 顶点随机重染色 + tabu 清零 + 重建 adjCC/conflicts
-- bestWork 保留，bestConflicts保留
+核心改动：
+1. tabucolRun 新增 freq[n*K]：在等值 delta tie-break 里优先选 `freq` 低的 (v, c) 对；每步移动后递增 cOld/cNew 对应的 freq；每 64 轮 `>>= 2` 衰减
+2. K_RESTARTS 7 → 9
 
 机理定位：
-- 把"逃盆地"动作从 tabucolTry 之间的 3 次外部起点挪到 tabucolRun 内多次触发
-- 等于单次 TabuCol 内做 ILS（iterated local search），但保留 bestWork
-- 预期对密集图 G(n, p≈0.5) 影响最大（稀疏图 kick 多半不会触发，因 TabuCol 在 100 iter 内已收敛）
-- 时间预算增量：~10-25ms per instance，整体 ~190-200ms，250ms 预算内
+- freq memory ＝ TabuCol 里"曾经被反复尝试却没改写 bestConflicts"的 (v, c) 标记，tie-break 优先回避它们
+- 跟 tabu 的差别：tabu 只阻断最近 5–10 轮的回退；freq 涵盖整个 run 的"低收益"记忆
+- 跟长程频率（非衰减）相比：每 64 轮的 `>>= 2` 让 freq 近似于"近 ~64 轮的尝试计数"，防止老旧高频把 tie-break 锁死
+- 跟 G10 全随机 kick 比：freq 改进仍走 greedy 选 delta 最优的路径，只在 delta 等值时改 tie-break，破坏性远低于一次性重染 10 个顶点
+
+预期影响：
+- 期望在密集图 G(n, p≈0.5) 上 +0.2–0.5%（plateau 长，freq 收益高）
+- 期望在稀疏图 G(n, p≈0.05) 上几乎不变（TabuCol 100 iter 内本来就收敛）
+- K_RESTARTS 7→9 边际很小（DSatur 的种子 diff 主要是 tie-break，多 2 个种子撞中"好 basin"的概率略升）
 
 棘轮规则：holdout ≤ 0.7384 × 0.998 = 0.7369 才能接受。
-- 0.2% 改善需要密集实例改善 ≥ 0.5%
-- kick 风险：过度扰动（KICK_N=10 占 6.7%）vs 探索不足
+- 单变量改进（freq memory）+ 微小 restart 增量，风险中等
+- 若 G11 被拒绝，下一代候选（按风险递增）：
+  1. 把 freq decay 从 /= 2 改成 /= 1（衰减更慢），看是否过度衰减
+  2. K_RESTARTS 9→11（再 +2 restart）
+  3. tabucolTry 起 1 改成 "bestI 但回退到 cMax 合并色类数最少" 之外的第二策略
+  4. 单源 Kempe chain escape：每个 iter 末尝试一个 2-color Kempe flip，看是否能引入新冲突解
+  5. 多 solution pool：3 个 bestK 的 valid K-coloring，互相做颜色类匹配
 
-如果 G10 被拒绝，按可能性从高到低：
-1. KICK_N 降到 5（更温和扰动，减少结构破坏）
-2. KICK_THRESH 改 40（少触发，保留更多 TabuCol 自然收敛时间）
-3. 用 Kempe chain kick 代替随机 kick（结构化扰动）
-4. multi-solution pool：保留 best 几个 K-着色交叉变异（更激进的方向）
-5. 增加外层 K_RESTARTS 7→10（如果 (4) 太重，先做简单增量）
+G8-G10 教训保留：
+- G10: 内置全随机 kick（N=10 顶点）破坏性 +3.79%，警示"扰动幅度"和"频率"都需克制
+- G9: K–2 拉伸 holdout 0.7384 == G7，几何平均边际为 0
+- G8: invalid output 来自 adjCC 越界——任何跟 K/K-1 边界相关的代码必须用 `>= K` 不是 `== K`
+- 跨代信号：cartographer #53 TSP ILS+4 仅 -0.24%；drifter #50 #54 也只 -0.1–0.2%。所以加 iter / 加 restart 的边际已经到了天花板附近，必须押宝在"换机制"——freq memory 是这次的选择
 
-跨域对照：cartographer #53 TSP n=200 上 +4 ILS 仅 -0.24%（vs G3→G6 -0.99%），drifter #50 G8 +4 iter 也只 -0.17%。再叠加 #54 #56 等都显示 iter 数边际递减——我现在在 G7 基础上已近 iter 极限，必须换机制（kick、pool、新邻域）而非加 iter。
-
-G8-G9 失败模式回顾：
-- G8: invalid output，bug 在 tabucolRun adjCC 越界写（`col[v] === K` 当 col[v]>K 时漏判）。G9 改 `>= K` 修复。
-- G9: holdout 与 G7 完全相同 (0.7384 = 0.7384)，说明 K-2 拉伸几何平均边际为 0。
-- G10: 换机制（kick within TabuCol），如果失败说明此机制也不行，下一步用 multi-pool 或 Kempe kick。
-
-保留 G9 的 `>= K` 修复是为了健壮性，即使不跑 K-2 拉伸也用 `>= K` 更安全（targetK = ck-1 时 col[v] 也可能在某些边界情况下 > ck-1）。
+代码规模 ~8800 bytes，仍远低于 20000 上限。运行时 ~200–230ms，留 ~20–50ms 给 OS 抖动。

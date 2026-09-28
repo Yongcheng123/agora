@@ -6,6 +6,7 @@ function solve(n, edges) {
   }
   const deg = new Int32Array(n);
   for (let v = 0; v < n; v++) deg[v] = adj[v].length;
+
   function dsatur(rng) {
     const col = new Int32Array(n).fill(-1);
     const sat = new Int32Array(n);
@@ -43,6 +44,7 @@ function solve(n, edges) {
     }
     return col;
   }
+
   function recolorFixed(col) {
     let ch = true;
     while (ch) {
@@ -58,11 +60,13 @@ function solve(n, edges) {
     }
     return col;
   }
+
   function numColors(col) {
     let mx = 0;
     for (let v = 0; v < n; v++) if (col[v] > mx) mx = col[v];
     return mx + 1;
   }
+
   function kempeReduce(col) {
     const work = new Int32Array(col);
     const visited = new Uint8Array(n);
@@ -120,10 +124,12 @@ function solve(n, edges) {
     }
     return work;
   }
+
   function tabucolRun(work, K, maxIter) {
     const adjCC = new Int32Array(n * K);
     const conflicts = new Int32Array(n);
     const tabu = new Int32Array(n * K);
+    const freq = new Int32Array(n * K);
     let totalConflicts = 0;
     for (let v = 0; v < n; v++) {
       const wv = work[v];
@@ -163,7 +169,12 @@ function solve(n, edges) {
             ties = 1;
           } else if (delta === bestDelta) {
             ties++;
-            if (Math.random() * ties < 1) {
+            const curF = freq[v * K + c];
+            const bestF = freq[bestV * K + bestC];
+            if (curF < bestF) {
+              bestV = v;
+              bestC = c;
+            } else if (curF === bestF && Math.random() * ties < 1) {
               bestV = v;
               bestC = c;
             }
@@ -185,21 +196,27 @@ function solve(n, edges) {
         else if (work[u] === cNew) conflicts[u]++;
       }
       conflicts[v] = adjCC[v * K + cNew];
+      freq[v * K + cOld]++;
+      freq[v * K + cNew]++;
       totalConflicts += bestDelta;
       if (totalConflicts < bestConflicts) {
         bestConflicts = totalConflicts;
         bestWork = new Int32Array(work);
         if (bestConflicts === 0) break;
       }
+      if ((iter & 63) === 63) {
+        for (let i = 0; i < freq.length; i++) freq[i] >>= 2;
+      }
     }
     return bestConflicts === 0 ? bestWork : null;
   }
+
   function tabucolTry(col, targetK, maxIter) {
     const K = targetK;
     if (K < 2) return null;
     const ec = new Int32Array(K);
     for (let v = 0; v < n; v++) {
-      if (col[v] === K) {
+      if (col[v] >= K) {
         for (const u of adj[v]) {
           if (col[u] < K) ec[col[u]]++;
         }
@@ -211,7 +228,7 @@ function solve(n, edges) {
     }
     let work = new Int32Array(n);
     for (let v = 0; v < n; v++) {
-      work[v] = col[v] === K ? bestI : col[v];
+      work[v] = col[v] >= K ? bestI : col[v];
     }
     let r = tabucolRun(work, K, maxIter);
     if (r) return r;
@@ -221,7 +238,7 @@ function solve(n, edges) {
     if (r) return r;
     work = new Int32Array(n);
     for (let v = 0; v < n; v++) {
-      work[v] = col[v] === K ? bestI : col[v];
+      work[v] = col[v] >= K ? bestI : col[v];
     }
     const cf = new Int32Array(n);
     for (let v = 0; v < n; v++) {
@@ -236,7 +253,8 @@ function solve(n, edges) {
     }
     return tabucolRun(work, K, maxIter);
   }
-  const K_RESTARTS = 7;
+
+  const K_RESTARTS = 9;
   let bestCol = null;
   let bestK = Infinity;
   for (let k = 0; k < K_RESTARTS; k++) {
