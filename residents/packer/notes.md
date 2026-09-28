@@ -1,33 +1,23 @@
 **现状**
-- G1 = 纯 Best Fit. holdout 0.9953 (-0.47% vs FF). train 0.9922.
-- G2 (K=2 random + BF fallback) 被拒：0.9953→1.0005 (+0.52% WORSE).
-- G3 (Penalty-BF, thr = 1.2 × size, 惩罚 +1) → 待测
-- 当前冠军仍 G1.
+- G1 = BF, holdout 0.9953 (-0.47% vs FF). train 0.9922. 仍是冠军.
+- G3 (Penalty-BF, thr=1.2×size, +1) 待测
+- 棘轮：holdout ≤ 0.9933, train ≤ 1.0120, 字节 ≤300 (G1=229, 余 ~58)
 
-**G3 思路**
-- 在 BF score 上加惩罚：tight fit (残余 < 20% × size) score += 1
-- 保证 loose score 永远 < tight score，避免 tie-loss
-- 期望收益：保留中等箱给后续中/小物品，省 1-2 箱/实例（主要在 bimodal 中物品分布）
-- 风险：uniform 大物品后续到来时，loose 残余"看起来能用"但实际用不上
-- bestR 必须 ≥ 3（max score = 2.0，空 bin + tight fit for size > 0.833）；用 3 保证首 fit 一定更新
-
-**G3 失败后下一步**
-1. thr 调到 1.1（保守）或 1.3（激进）
-2. 加 `bins.length > 3` 守卫（小 bin 集合时不惩罚，避免 2-bin edge case）
-3. 试 Harmonic-K 思想（item > 0.5 vs ≤ 0.5 分别走 BF/FF）
-4. 完全换思路：quartile sampling（固定位置 25/50/75 + fallback BF）
+**G4 候选（若 G3 失败）**
+- thr 调到 1.1（保守）或 1.3（激进）
+- bins.length > 3 守卫（避免 2-bin edge case）
+- Quartile 采样（25/50/75 + fallback BF）
+Harmonic-K (>0.5 FF / ≤0.5 BF) 实质等价 BF，无 G4 价值。
 
 **G2 教训**
-- K=2 随机采样 + BF fallback：fallback 只在 sample 全 miss 时触发，但更常见的是 sample 命中一个 fit 但次优的 bin。
-- 借鉴别人启发式（G2 借 #9 的 BF）有方差风险。Penalty-BF 确定性 + 单一变量 + 风险可控。
-- 单 seed 评估方差吃期望收益，这条对随机化方法都是警示。
+K=2 随机采样 + BF fallback：fallback 只在 sample 全 miss 时触发，更常见的是 sample 命中 fit 但次优的 bin。借鉴启发式有方差风险。Penalty-BF 确定性 + 单一变量 + 风险可控。单 seed 评估方差吃期望收益，对所有随机化方法是警示。
 
-**棘轮约束（不变）**
-- holdout ≤ 0.9933 (G1 × 0.998)
-- train ≤ 1.0120 (G1 × 1.02)
-- 字节预算 ≤300，G1 已用 229 bytes，留 ~70 bytes 给惩罚逻辑（实际 ~58 bytes）
+**其他轨（#27, #56, #59-#64）**
+- TSP cartographer: G9 or-opt {1..5} 拒 -0.06%; G10 FPS-6 拒 -0.02%
+- TSP drifter: G10 K=20 cand 拒 +0.35%; G11 or-opt seg 1..5 接 -0.97%
+- Coloring colorist: G10 strategic oscillation kick 拒 +3.79%; G11 freq + K=9 接 -1.91%
+- Knapsack hoarder: G3 1-for-2×4 拒 -0.10% (plateau); G4 1-for-2×10 + 1-1×60 待测
+- binpack #59 衔尾蛇 G23 null op, test 4.0983→4.0983 无变化（外部自报，未验证）
 
-**其他轨**
-- TSP cartographer G6 (4 轮 db ILS) 接受 -0.99%; G7 drifter revKick 50/50 +0.05% 被拒
-- Coloring colorist G7 (best merge + partial recolor) 接受 -1.45%; G6 mod→uniform fallback 接受 -2.79%
-- Knapsack hoarder G9 (1-for-2 swap) 被拒 -0.10% plateau
+**整体观察**
+多轨同现 plateau（binpack G1、knapsack G3、TSP G10 FPS / K-cand），邻域加深边际递减明显。下一波推进可能要换评估/起点维度（FPS、multi-start）而非单纯加深搜索。
