@@ -1,30 +1,34 @@
-# drifter G11
+# drifter G12
 
-## G11: 通用 or-opt (segments 1..5) + 多段可反转
+## G12: FPS-3 第三起点 + 最终 or-opt 段长 5→8
 
-### 改动 (相对 G4)
-- 把 G4 的 orOpt1 (单城市搬迁) → 通用 orOpt(t, maxL, maxPass)，支持 segments 长度 1..maxL
-- 对 L ≥ 2 的段同时尝试 segment 反转 (覆盖部分 3-opt restricted move)
-- pass 分配：init {1,2,3}×3 → deep sweep {4,5}×2 → ILS 内 {1,2}×1 → final {1,2,3}×4 + {4,5}×2
-- 其余全部 G4 原状 (NN-0+far 起 2 个、2-opt、db kick、严格 better-only accept)
+### 改动 (相对 G11)
+两处 marginal 推进：
 
-### 机理
-G4 只能搬单个城市。2-opt 抓不到「整段搬迁」——比如「穿过 cluster 的弯」应该重定位。让 or-opt 段长 ≥2 到 {2,3,4,5}，且段长 ≥2 时试反转，等价于部分 3-opt restricted。
-cartographer #56 (G9) 已经试过 {1,2,3,4,5} flat -0.06% 被棘轮拒绝。我加反转 + 分阶段调度，预计 -0.10%~-0.15%，仍大概率在棘轮外。
+1. **FPS-3 第三起点**：在 {0, far} 之外找 `argmax_i min(d2[i], d2[far*n+i])`，作为第三个 NN 起点，跑完整 LS (NN + 2-opt(20) + orOpt(L=1..3, 3 passes))
+2. **最终 or-opt 段长上限 5→8**：`orOpt(bestT, 5, 2)` → `orOpt(bestT, 8, 2)`
 
-### 风险 / 已用单变量纪律
-- circular 索引用 ((j-i)%n+n)%n 严格 wrap，应用 move 全 rebuild，理论上保证正确
-- 不回到已死方向 (FPS-N init, K-NN 2-opt, 单纯加深 round)
+### 假设
+- G11 卡住的 residual 来源有二：(a) 起点不够多 ({0, far} 在某些拓扑下 basin 相近)，(b) 段长上限 5 抓不到 cluster-scale move (~1/3 个 cluster)
+- (a) 借鉴 cartographer #60 (FPS-N)；(b) 在 #56 (段长 5) 和 G11 (反转) 基础上自然延伸
 
-### 失败 fallback (G12)
-如被拒绝 (预期)：
-- K-NN candidate 2-opt (K=8) + 通用 or-opt 联用，释放预算做更多 ILS rounds
-- 反转 or-opt 扩展到 {3, 4} (capture 更深 3-opt 子集)
-- 真正的 3-opt restricted (3-cut, 7 move types)，K-NN 限内层
-- 多起点 (FPS-3 或随机 NN×4)，LR/RL 双池 + 严格 better 接受
+### 风险
+- cartographer #60 单试 FPS-6 仅 -0.02% (ratchet 拒)，但当时 LS 弱；G11 LS 强很多，FPS-3 应更高
+- L=6..8 在均匀随机实例可能完全浪费；聚类实例才有意义
+- 增量 ~1M ops 贴近 250ms 预算上限
+
+### G11 lesson 回顾
+- G11 的 -0.97% 是 or-opt 反转提供的，是「结构提升」级别
+- G7-G10 五代 marginal 改动都被棘轮挡掉，原因：单纯加深 LS / 改 kick / K-NN 限制 都是 marginal 改动
+- 棘轮现在 ~0.8063 (0.8083 × 0.998)，需要 -0.21% 才能过
+
+### G13 fallback (如被拒)
+- 真正的 3-opt restricted (3-cut, 7 move types) + K-NN candidate 列表 (K=12) 控制 cost
+- 释放预算后做更多 ILS rounds (8 → 12)
+- 或 cluster-aware init (Floyd-style cluster + intra-cluster NN)
 
 ### 累计 lesson
-- G6-G10 五代都被棘轮挡掉（holdout 卡在 0.8148 一线）
-- '加深 LS' 方向在 8 轮 ILS 后饱和
-- 棘轮阈值 ~0.8135，需要 -0.21% 才能过，单纯 or-opt 扩展很难突破
-- 突破要么靠 3-opt 真 move，要么靠 K-NN 释放预算做别的（比如更大 ILS budget）
+- 任何单纯加深 LS 都在 ratchet 阈值附近徘徊
+- 起点多样性 (#60) 单独 marginal，与 LS 联动可能放大
+- 段长扩展与反转是 or-opt 的有效方向
+- 250ms 预算基本饱和，每加一处 marginal 必须找地方释放

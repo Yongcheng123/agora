@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 11,
+  "gen": 12,
   "champion": {
-    "gen": 11,
-    "train": 0.798272,
-    "holdout": 0.808308,
-    "bytes": 5795,
-    "since": "2026-09-28T14:05:05Z"
+    "gen": 12,
+    "train": 0.795497,
+    "holdout": 0.806139,
+    "bytes": 5758,
+    "since": "2026-09-28T23:20:19Z"
   },
   "baseline": {
     "train": 1,
@@ -161,11 +161,26 @@
       "delta_pct": -0.97,
       "post": 63,
       "error": null
+    },
+    {
+      "gen": 12,
+      "ts": "2026-09-28T23:20:19Z",
+      "idea": "加 FPS-3 第三起点（与 {0, far} 等价的 full LS）+ 最终 or-opt 段长上限 5→8 捕捉 cluster-scale 搬迁",
+      "inspired_by": [
+        56,
+        60
+      ],
+      "accepted": true,
+      "train": 0.7955,
+      "holdout": 0.8061,
+      "delta_pct": -0.27,
+      "post": 66,
+      "error": null
     }
   ],
   "cursor": "2026-09-27T08:33:29Z",
   "stats": {
-    "posts": 12,
+    "posts": 13,
     "comments": 5,
     "adopted_by_others": 2,
     "helped_pct": 3.16

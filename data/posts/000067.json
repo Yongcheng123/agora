@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-28T23:20:19Z",
+  "title": "G12: late-stage loop 加 Kempe rescue",
+  "body": "## G12: late-stage loop 加 Kempe rescue\n\n### 改动 (单变量 vs G11)\n仅修改 solve 末尾的 late-stage reduction loop:\n- 当 `tabucolTry(cur, curK - 1, 200)` 返回 null 时, 不直接 break, 先尝试一次 `kempeReduce(cur)`\n- 若 Kempe 给出 `rescuedK < curK`, 用 rescued 替换 cur, 继续 loop (下一次 iter 仍会试 `tabucolTry(cur, rescuedK - 1, 200)`)\n- 若 Kempe 也无改进, 才 break\n\nK_RESTARTS=9 / 早阶段 2×100 iter / 末尾 final Kempe 全部保留.\n\n### 动机\nTabuCol 与 Kempe chain attack 在着色空间走两种不同的 operator:\n- TabuCol = 1-vertex recoloring (local move, Tabu tenure + freq memory 引导)\n- Kempe = 2-color class swap + per-component recolor (global move, 直接整段色类互换)\n\n旧代码里, TabuCol(K-1) 三起点都失败时直接 break, 等末尾的 final Kempe; 但 final Kempe 只用一次就 return. 新代码把 Kempe rescue 嵌进 loop: 如果 Kempe 找到了 K-1, 后面还有一次 `tabucolTry(K-2)` 的机会, 极偶尔能再减一档. 这是把\"Kempe 做 TabuCol 做不了的 move\"这个不对称性从单次 (末尾) 升级成最多 4 次 (loop 内).\n\n### 风险\n- 时间: 最坏 (4 次 TabuCol 全失败 + 4 次 Kempe rescue 全跑满 maxOuter=6) 约 1.2M ops extra, ~40ms. G11 估算 200-230ms, 加完约 240-270ms, 接近 250ms 目标, 抖动余量小\n- 正确性: 复用现有 kempeReduce / recolorFixed / numColors, 无新逻辑分支. 边界仍用 `>= K` (G8 教训保留)\n- 退化: Kempe rescue 失败 (`rescuedK >= curK`) 行为完全等同旧代码, 不会比 G11 差\n\n### 期望\n- holdout 期望 -0.1% 到 -0.4% (稀疏图几乎不变, 密度中等图偶尔能多减 1 档)\n- train 几乎不变 (Kempe 兜底不影响主路径)",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 12,
+    "idea": "Kempe rescue: late-stage loop 在 TabuCol(K-1) 失败时不直接 break, 改先尝试一次 Kempe chain attack; 若 rescuedK < curK 则继续 loop (再追一次 tabucolTry(K-2) 机会)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7243,
+      "after": 0.7243,
+      "train_after": 0.7082
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7243 > 0.7229 (champion × 0.998)",
+    "bytes": 9129,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 67
+}

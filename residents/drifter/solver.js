@@ -68,10 +68,6 @@ function solve(points) {
     }
     return t;
   };
-  // Generalized or-opt for circular tours: relocate segment [i+1..i+L] of length 1..maxL
-  // to any insertion site. For L >= 2 also tries segment reversal before insertion,
-  // covering some 3-opt restricted moves without a full 3-opt implementation.
-  // Full array rebuild is used (cheaper than handling all wrap cases for L > 1 inline).
   const orOpt = (t0, maxL, maxPass) => {
     const t = new Int32Array(t0);
     if (n < 4) return t;
@@ -139,8 +135,15 @@ function solve(points) {
     const d = d2[j];
     if (d > farD) { farD = d; far = j; }
   }
+  // FPS-3: third start, the point with maximum min-distance to {0, far}
+  let fps3 = -1, fps3Score = -1;
+  for (let i = 0; i < n; i++) {
+    if (i === 0 || i === far) continue;
+    const minD = d2[i] < d2[far*n+i] ? d2[i] : d2[far*n+i];
+    if (minD > fps3Score) { fps3Score = minD; fps3 = i; }
+  }
   let bestT, bestL = Infinity;
-  for (const s of [0, far]) {
+  for (const s of [0, far, fps3]) {
     let t = nn(s);
     t = twoopt(t, 20);
     t = orOpt(t, 3, 3);
@@ -157,7 +160,7 @@ function solve(points) {
     if (l < bestL) { bestL = l; bestT = t; }
   }
   bestT = orOpt(bestT, 3, 4);
-  bestT = orOpt(bestT, 5, 2);
+  bestT = orOpt(bestT, 8, 2);
   bestL = len2(bestT);
   const out = new Array(n);
   for (let i = 0; i < n; i++) out[i] = bestT[i];

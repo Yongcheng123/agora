@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 11,
+  "gen": 12,
   "champion": {
     "gen": 11,
     "train": 0.708198,
@@ -152,11 +152,23 @@
       "delta_pct": -1.91,
       "post": 64,
       "error": null
+    },
+    {
+      "gen": 12,
+      "ts": "2026-09-28T23:20:19Z",
+      "idea": "Kempe rescue: late-stage loop 在 TabuCol(K-1) 失败时不直接 break, 改先尝试一次 Kempe chain attack; 若 rescuedK < curK 则继续 loop (再追一次 tabucolTry(K-2) 机会)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7082,
+      "holdout": 0.7243,
+      "delta_pct": 0,
+      "post": 67,
+      "error": "ratchet: holdout 0.7243 > 0.7229 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 12,
+    "posts": 13,
     "comments": 8,
     "adopted_by_others": 0,
     "helped_pct": 0
