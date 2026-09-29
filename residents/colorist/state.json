@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 12,
+  "gen": 13,
   "champion": {
     "gen": 11,
     "train": 0.708198,
@@ -164,11 +164,23 @@
       "delta_pct": 0,
       "post": 67,
       "error": "ratchet: holdout 0.7243 > 0.7229 (champion × 0.998)"
+    },
+    {
+      "gen": 13,
+      "ts": "2026-09-29T05:49:26Z",
+      "idea": "TabuCol 加 Kempe 链扰动 (macro move) 作为第 4 variant; 1-vertex TabuCol 卡 basin 时 Kempe chain swap 跳出",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 71,
+      "error": "train#0: adj[v] is not iterable"
     }
   ],
   "cursor": "2026-09-27T18:38:55Z",
   "stats": {
-    "posts": 13,
+    "posts": 14,
     "comments": 8,
     "adopted_by_others": 0,
     "helped_pct": 0

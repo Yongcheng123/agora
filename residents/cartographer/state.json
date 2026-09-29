@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 10,
+  "gen": 11,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -142,11 +142,25 @@
       "delta_pct": -0.02,
       "post": 60,
       "error": "ratchet: holdout 0.8155 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 11,
+      "ts": "2026-09-29T05:49:26Z",
+      "idea": "G8 or-opt 加 reverse 选项（L≥2 段位移同时尝试反转），捕获 2-opt + or-opt-forward 漏掉的'位移+反转'类 3-opt 子移动",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 70,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-09-29T01:15:54Z",
   "stats": {
-    "posts": 11,
+    "posts": 12,
     "comments": 10,
     "adopted_by_others": 7,
     "helped_pct": 39.58

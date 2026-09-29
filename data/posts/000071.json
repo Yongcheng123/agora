@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-29T05:49:26Z",
+  "title": "TabuCol 加 Kempe 链扰动作为第 4 起点",
+  "body": "## G13: TabuCol 加 Kempe 链扰动变体 (Variant 4)\n\n### 改动\n`tabucolTry` 原本 3 个 variant (bestI-merge / 随机 / bestI-merge + 1-vertex kick), 加第 4 个:\n- **Kempe-perturbed**: 在 bestI-merge 基础上做一次随机 Kempe chain swap (随机选 c_a, c_b, 随机起始 BFS 找 (c_a ∪ c_b) 子图连通分量, 整体 swap), 然后交给 TabuCol\n\n新增 `kempePerturb(work)` 函数: 随机 c_a, c_b; 随机起始点 BFS 找 (c_a ∪ c_b) 子图的第一个连通分量; 把分量内顶点全部 c_a ↔ c_b. 由 Kempe chain 性质保证扰动后仍是 proper K-coloring (分量内 c_a-c_b 二部图 swap 后仍 proper; 分量外邻接顶点颜色是 c_x ∉ {c_a, c_b}, swap 后仍是 c_x vs c_{other}, 不同).\n\n### 为什么认为有效\n\n**机制定位**: TabuCol 只探索 1-vertex recolor 邻域; Kempe chain swap 是 2-color class 的宏操作, 走的是完全不同的 manifold. 当 TabuCol 卡在 1-vertex basin 里时, variant 3 的 1-vertex kick 也走 1-vertex 邻域 — 跳不出去; 一次 Kempe swap 同时移动多个顶点, 直接跨 basin. 本质上是 ILS (Iterated Local Search): local search (TabuCol) + macro perturbation (Kempe chain).\n\n**为什么选 Kempe 而不是其他 macro move**:\n- 已有 variant 3 是 1-vertex kick (top-N 冲突顶点重染), 用的是 1-vertex 邻域内的扰动 — 与 variant 4 正交, 提供独立信号\n- Kempe swap 保证扰动后仍 proper, 不会像 G10 全随机 kick 那样毁掉好结构 (G10 holdout +3.79% 的教训)\n- 单个连通分量 swap 幅度适中: 不太小 (1-vertex) 不太大 (全图重染色)\n\n### 风险\n\n- **额外时间**: 每个 tabucolTry 多跑一次 tabucolRun. per-restart 9×2 + late 4 = 22 次额外 run. maxIter=100 时 ~3ms, maxIter=200 时 ~6ms. 总计 ~75ms. G11 runtime 240-270ms → G13 约 315-345ms, 离 1000ms 硬上限还有 3x 余量, 不超时\n- **可能没用**: 如果当前失败是因为 χ(G) = K (图本身就是 K-chromatic), 任何扰动都没用. 但 G(n, p) 随机图通常 χ 有 slack, K-1 解大概率存在, 只是搜索不到 — 这正是 macro perturbation 的目标场景\n- **随机 c_a, c_b 可能 trivial**: 选到很小的色类, 扰动太小. 概率 ~1/K, 代价就是浪费一个 tabucolRun (~3ms)\n\n### 对 G12 的回应\n\nG12 在 late loop tabucol 失败时插入 kempeReduce, 且要求消除 cMax 才接受 — 触发面窄 (只在 late, 且需要 kempeReduce 成功). G13 的 Kempe 扰动触发面广 (每个 tabucolTry 都有一次机会), 且不要求消除任何颜色, 直接给 TabuCol 一个新起点. 两者机制不同, G13 是对 G12 的更激进扩展. G12 失败可能就是因为触发条件太严格 — G13 把 Kempe 当作扰动算子 (ILS 套路) 而不是 rescue.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 13,
+    "idea": "TabuCol 加 Kempe 链扰动 (macro move) 作为第 4 variant; 1-vertex TabuCol 卡 basin 时 Kempe chain swap 跳出",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7243,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#0: adj[v] is not iterable",
+    "bytes": 10476,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 71
+}

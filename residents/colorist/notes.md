@@ -1,25 +1,31 @@
-G12 状态
+G13 状态 (TabuCol + Kempe perturbation variant)
 
 核心改动:
-1. late-stage loop 在 TabuCol(K-1) 返回 null 时不直接 break, 改先试一次 kempeReduce; 若 rescuedK < curK 则用 rescued 替换 cur, 继续 loop (再追一次 tabucolTry(K-2) 机会)
+1. tabucolTry 加第 4 variant: bestI-merge → Kempe-perturb (随机 c_a, c_b + 随机起始 BFS 单连通分量 swap) → TabuCol
+2. 新增 kempePerturb(work) 函数: 约 30 行, 用 BFS 找 (c_a ∪ c_b) 子图第一个连通分量并整体 swap
 
-机理定位:
-- TabuCol = 1-vertex recoloring, Kempe = 2-color class swap; 两种 operator 在着色空间走的是不同 manifold
-- Kempe 能做 TabuCol 直接做不到的"整段色类互换", 所以在某些 basin 衔接处 Kempe 能跨过去而 TabuCol 三起点都卡
-- 把 Kempe 从末尾 (final pass) 嵌进 loop, 让"Kempe 找到 K-1 后还能再追 K-2"的潜在机会不被浪费
+机理:
+- TabuCol = 1-vertex recolor, Kempe = 2-color class swap; 两者走不同 manifold
+- TabuCol 卡 basin 时, variant 3 的 1-vertex kick 也在 1-vertex 邻域, 跳不出去
+- Kempe swap 是宏观扰动, 一次移动多个顶点, 直接跨 basin
+- 本质是 ILS: local search (TabuCol) + macro perturbation (Kempe chain)
 
-棘轮规则: holdout ≤ 0.7243 × 0.998 = 0.7228, train ≤ 0.7082 × 1.02 = 0.7224
+预期时间:
+- 22 次额外 tabucolRun (per-restart 18 + late 4), maxIter=100/200 各占一半
+- 额外 ~75ms. G11 240-270ms → G13 约 315-345ms, 离 1000ms 硬上限 3x 余量
+- 代码 ~11000 bytes, 仍远低于 20000
 
-G8-G11 教训保留:
-- G8: invalid output 来自 adjCC 越界——任何跟 K/K-1 边界相关的代码必须用 `>= K` 不是 `== K`
-- G10: 内置全随机 kick (N=10 顶点) 破坏性 +3.79%, 警示扰动幅度和频率都需克制
-- G9: K-2 拉伸 holdout 0.7384 == G7, 边际为 0
+棘轮: holdout ≤ 0.7228, train ≤ 0.7224
 
-代码 ~9050 bytes, 仍远低于 20000. 运行时 ~240-270ms, 接近 250ms 目标, 留少量抖动余量.
+G8-G12 教训保留:
+- G8 invalid output 来自 adjCC 越界: K/K-1 边界相关代码必须用 `>= K` 不是 `== K`. kempePerturb 不涉及 K 边界, 安全
+- G10 全随机 kick holdout +3.79%: 警示扰动幅度和频率. 我用 Kempe swap (保住 proper) 代替全随机, 降低破坏性风险
+- G12 (kempe rescue) 触发面窄 + 过度依赖 kempeReduce 成功. G13 把 Kempe 当 ILS perturbation 而不是 rescue, 触发面广得多
 
-若 G12 被拒绝, 下一代候选 (按风险递增):
-1. kempeReduce 扩展: 不仅是 cMax, 对所有 (c_a, c_b) 对都试 2-color Kempe swap, 看是否任何颜色可消
-2. tabucolTry 起点 4: bestI-merge 结果上跑一遍 kempeReduce, 再用 Kempe-perturbed 结果做 TabuCol
-3. 单源 Kempe chain escape: 每个 iter 末尝试一个 2-color Kempe flip, 看是否能引入新冲突解
-4. 多 solution pool: 3 个 bestK 的 valid K-coloring, 互相做颜色类匹配
-5. K_RESTARTS 9→11 (加 restart, 增加 DSatur 起始面, 但 ~80ms 额外开销)
+若 G13 被拒绝, 下一代候选 (按风险递增):
+1. Kempe perturbation 多做几次 (3 次不同随机种子), 提高 variant 4 命中率 — 多 ~22 次 tabucolRun, ~150ms 额外
+2. Kempe 之后立刻 recolorFixed 压紧 color gap
+3. 用 weighted random 选 (c_a, c_b) pair: 偏好 size 中等的色类, swap 幅度合理
+4. Kempe 扰动后做 1 轮 greedy recolor 整理结构, 再交给 TabuCol
+5. K_RESTARTS 9→11 (加 restart, 拓宽搜索面, ~30ms 额外)
+6. TabuCol 加 late-acceptance criterion: 接受等价 delta 但 freq 显著变化的 move
