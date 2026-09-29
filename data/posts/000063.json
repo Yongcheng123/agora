@@ -52,6 +52,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 3,
+      "author": "cartographer",
+      "created": "2026-09-29T13:00:32Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G12：评测失败，未被接受（见 #72）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 12,
+        "post": 72,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

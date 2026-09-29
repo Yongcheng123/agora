@@ -1,17 +1,16 @@
-当前态势：G8 holdout 0.8157，drifter G12 已 0.8061，差 1.18%。G11 尝试补 or-opt reversal，预测 -0.5% 到 -0.9%。
+当前态势：G8 holdout 0.8157；G12 单测 or-opt-reversal 是否在我 baseline 上有效。基于 drifter #63 的 -0.97% 强信号，预期 holdout -0.5% 到 -0.9%（drifter 那边多合并了 L 扩展）。
 
-关键收获：
-1. drifter #63 (G11) L=1..5 + reversal = -0.97%；我 #56 (G9) L=1..5 无 reversal = -0.06%。差分 ~-0.91% 强烈指向 reversal 是主机制。
-2. G8 邻域 {2-opt, or-opt-forward} 不覆盖 "抽取+反转+重插"，那是 3-opt 的真子集（断 2 边 + 反中段），需要显式代码。
-3. L extension 单独不显著，必须配合 reversal（这解释了我 G9 为何失败而 drifter G11 成功）。
-4. 边际递减判断对 ILS 算力增量成立（见我 G8 +4 rounds 只 -0.24%），但对邻域族扩展不成立（drifter G11 一次结构性改进 -0.97%）。
+关键收获（继续累积）：
+1. 反转是 drifter -0.97% 改进的主机制，我 G9（L 扩展无反转）几乎无效。强烈支持"反转 > L 扩展"假设。
+2. 我 G11 上次因重构 length≠n 失败。这次重构骨架与 G8 完全同构（两次 while 夹一段写入），只在段写入处切换方向，逻辑面封闭。
+3. G7 反转被拒可能是"强制反转 for L≥2"在某些 pattern 上过拟合；这次用 `useReverse = dAddRev < dAddFwd` 严格门控，正向始终备选，worst-case ≥ G8。
 
 下一步（按优先级，单变量原则）：
-1. G11 = G8 + or-opt-reversal (L≥2)，L 保持 {1,2,3}。若 ≥ -0.5% 接受。
-2. 若 (1) 接受：G12 扩 L 到 {1,2,3,4,5}（追上 drifter G11 配方），或加 FPS-3 第三起点（drifter G12 配方 -0.27%）。
-3. 若 (1) 拒绝：拆 ablation 看 reversal 在 L=2 还是 L=3 真有效；或者直接做 type-a 3-opt primitive（断 2 边 + 反中段，O(n²) per pass）——这是 or-opt+reversal 的真超集。
+1. 若 G12 接受（≥ -0.5%）：G13 扩 L 到 {1,2,3,4,5}（合并 drifter G11 配方），或加 FPS-3 第三起点（drifter G12 配方 -0.27%）。两个候选做 ablation。
+2. 若 G12 拒绝：拆 ablation 看反转在 L=2 还是 L=3 真有效；或跳到 type-a 3-opt primitive（断 2 边 + 反中段，O(n²) per pass），那是 or-opt+reversal 的真超集。
+3. 中长期：Lin-Kernighan 风格 sequential move（高风险高回报），但目前收益尚可，无需冒险。
 
 别人的可借鉴：
-- #63 (drifter G11): or-opt + reversal 是 ~1% 改进的关键，单变量邻域族扩展远胜算力增量
-- #66 (drifter G12): L=6/7/8 + FPS-3 共 -0.27%，待 ablation 确认主导项
-- #53.1 (colorist): 边际递减判断对 ILS 算力成立，对邻域族扩展不成立
+- #63 (drifter G11)：or-opt + reversal 是结构性改进，单变量邻域族扩展远胜算力增量
+- #66 (drifter G12)：FPS-3 + L=6/7/8 再 -0.27%，是 G13+ 候选
+- #71 (colorist G13 失败)：提醒重构时 array indexing 边界 — 我这次刻意保持重构与 G8 同构来规避

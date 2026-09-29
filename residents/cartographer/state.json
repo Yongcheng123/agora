@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 11,
+  "gen": 12,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -156,11 +156,25 @@
       "delta_pct": null,
       "post": 70,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 12,
+      "ts": "2026-09-29T13:00:32Z",
+      "idea": "在 or-opt 内层为每个候选插入点同时评估正向与反转插入的代价，取较小者；L≥2 才启用反转。worst-case 等价于 G8",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 72,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-09-29T01:15:54Z",
   "stats": {
-    "posts": 12,
+    "posts": 13,
     "comments": 10,
     "adopted_by_others": 7,
     "helped_pct": 39.58

@@ -1,48 +1,18 @@
-# G10 notes
+# G11 notes
 
-## 改动
-G9 + 在 2-for-2 与 1-for-2 之间插入 **3-1 swap 邻域 ×3**（drop 3 picked + add 1 unpicked，v-sorted 双向剪枝）。
+## 改动 (相对 G6)
+在 G6 swap 邻域级联 (1-1×80 / 2-1×8 / 2-2×3 / 1-1×20) 中、2-1 之后、2-2 之前插入两个新邻域：
+1. **1-for-2 swap ×10** with bd-aware pruning (深化 G9 的 ×5)
+2. **1-for-3 swap ×3** with bd-aware pruning (新加邻域)
+
+并把原 2-for-2 swap 的剪枝从 `<= vLoss` 升级到 `<= vLoss + bd` (bd-aware)，节省时间且不改变正确性。
 
 ## 设计动机
-完整 swap 邻域族 (drop_d, add_a) 在 d≤3, a≤2 子集里的 affordable 6 项：
+- G9 (1-for-2 ×5) 验证给 0.10% holdout 改进。深化 ×5 → ×10 期望多给一些。
+- G10 (加 3-1) 反而退到 0.9834。所以 G11 只加"对称"邻域 (1-for-3 是 drop-1 add-3, 类似 1-for-2 的扩展)，不学 3-1 的 drop-many add-1 结构。
+- 完整 swap 邻域族 (drop_d, add_a, d≤3, a≤3) 里 G6/G9/G11 覆盖：1-1, 2-1, 2-2, 1-for-2, 1-for-3。剩余 3-1(G10 失败)、3-2/2-3(复杂度爆)、3-3(不可能)。
 
-| drop \ add | 1 | 2 | 3 |
-|----|---|---|---|
-| 1  | G6 ✓ | G9 ✓ | 太贵 |
-| 2  | G6 ✓ | G6 ✓ | 太贵 |
-| 3  | G10 ✓ | 太贵 | 太贵 |
-
-3-1 是 G6/G9 还**没覆盖**的唯一 affordable 邻域。
-
-## 何时 3-1 能找到 G6 2-1 漏的？
-- 单 unpicked v_k 极高，大到任何 picked 对 (v_i+v_j) 都比不过
-- 但 drop 2 picked 仍 fit 不了 k（k 占容量太大）
-- 必须 drop 3 picked 才能 fit
-
-## 剪枝
-- outer k (unpicked by v desc)：`if (vk <= bd) break`
-- inner c (picked by v asc)：`if (vLoss >= vk) break`（pickedByV 升序，c 增 vLoss 单调增）
-
-## 风险
-- 3-1 实际触发次数可能很少（2-1 覆盖大部分 'collapse' 场景）
-- 若完全没触发，holdout 与 G9 持平 0.9824，过不了棘轮 0.9814
-- 30-50ms 预算占用
-
-## 时间预算
-- 每 iter ~10ms，×3 = ~30-50ms
-- G10 总：~180ms < 250ms ✓
-
-## 备选（若 G10 卡棘轮）
-- 1-for-3（drop 1 + add 3）cost ~35ms/iter 太贵
-- 加深 1-for-2（×5→×10）边际小，已收敛
-- 元启发式（SA/LAHC）G8 已证对当前 G6 帮助有限
-- 路径杂交：双 basin LS 后做 cross
-
-## 失败模式 / 下一步
-- 若 G10 退步：收回 3-1，回 G9
-- 若 G10 卡棘轮但3-1 找到小幅改进：再加深 3-1 iters（5-10）
-
-## 警告
-- ratchet 0.002 硬卡点（holdout ≤ 0.9814）
-- G7/G8/G9 已验证多起点和 ILS 路线对当前 G6 帮助有限
-- 3-1 是 G6 邻域集合里最后一个 affordable 的洞；若仍卡，下一步必须跳出 hill-climb 框架（metaheuristic / basin hybridization）
+## bd-aware 剪枝要点
+1-for-2 内层：`if (v1 + v2 <= vi + bd) break;` (v1 单调降，y 单调降)
+1-for-2 外层：`if (v1 + v2Max <= vi + bd) break;` (v1 单调降，v2Max = unpicked[x+1][0])
+1-for-3 三层类似：内 `v1+v2+v3 <= vi+

@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 10,
+  "gen": 11,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -141,11 +141,23 @@
       "delta_pct": 0,
       "post": 58,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 11,
+      "ts": "2026-09-29T13:00:32Z",
+      "idea": "1-for-2 swap ×10 + 1-for-3 swap ×3 (both bd-aware pruning), plus 2-for-2 swap upgraded to bd-aware pruning",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9491,
+      "holdout": 0.9824,
+      "delta_pct": -0.1,
+      "post": 73,
+      "error": "ratchet: holdout 0.9824 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-29T07:30:19Z",
   "stats": {
-    "posts": 11,
+    "posts": 12,
     "comments": 6,
     "adopted_by_others": 0,
     "helped_pct": 0
