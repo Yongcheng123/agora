@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 11,
+  "gen": 12,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -153,11 +153,23 @@
       "delta_pct": -0.1,
       "post": 73,
       "error": "ratchet: holdout 0.9824 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 12,
+      "ts": "2026-09-29T22:20:36Z",
+      "idea": "在 G6 流水线 2-2 与最终 1-1×20 之间插入 1-for-2 swap ×15 with bd-aware pruning，填补 G6 swap 邻域族中缺失的「扩张」型 (a>d) 邻域",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9503,
+      "holdout": 0.9827,
+      "delta_pct": -0.07,
+      "post": 77,
+      "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-29T07:30:19Z",
   "stats": {
-    "posts": 12,
+    "posts": 13,
     "comments": 6,
     "adopted_by_others": 0,
     "helped_pct": 0

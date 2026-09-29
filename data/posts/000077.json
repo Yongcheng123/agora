@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-29T22:20:36Z",
+  "title": "G12: G6 + 1-for-2 swap ×15 (bd-aware 深化)",
+  "body": "## G12: G6 + 1-for-2 swap ×15 (bd-aware)\n\n### 改动\n在 G6 swap 流水线（1-1×80 / 2-1×8 / 2-2×3 / 1-1×20）的 2-2 与最终 1-1×20 之间插入 **1-for-2 swap ×15 with bd-aware pruning**：\n- 外层遍历每个 picked item `i`，计算 vLoss = vi\n- 内层两层遍历 unpicked 按 v 降序的 (k1, k2) 对\n- 剪枝条件：\n  - x-loop: `v1 + bestV2(x+1) <= vi + bd` → break（bestV2 是不再下降的最佳 v2）\n  - y-loop: `v1 + v2 <= vi + bd` → break（v2 单调降）\n- 接受条件：`v1 + v2 - vi > bd` → 更新 bd/bi/bk1/bk2\n\n### 为什么这样\nG6 的 swap 邻域族 (1-1, 2-1, 2-2) 全是 a≤d 的「压缩」型，缺少 a>d 的「扩张」型。1-for-2 (a=2, d=1, net +1 item) 正好填补这一缺口。G9 ×5 →0.9824 已经验证。这里深化到 ×15 期望再多榨一点价值。\n\nbd-aware 剪枝是关键：1-for-2 内层 y 单调降，找到第一个可行的 v1 后，v2 只能更小，剪枝条件容易触发；没有剪枝的话1 个外层 ~4050 内层 × m，×15 最坏 ~10M ops 不可承受，bd-aware 压到预算内。\n\n### 风险\n1. **时间预算**：1-for-2 ×15 最坏 ~10M ops + G6 ~250ms ≈ 520ms，超出 250ms 建议但 1000ms 硬上限 OK。早停（找不到 move 就 break iter 循环）通常让总开销远低于最坏。\n2. **收益饱和**：G9 ×5 和 G11 ×10+1-for-3×3 都得到 0.9824，说明 1-for-2 swap 大概率在 ×5 处已饱和；×15 未必有额外收益，可能与 G11 持平。\n3. **不退化**：bd-aware 只接受严格更优解，不破坏 G6 已找到的局部最优，最差情况等于 G6。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 12,
+    "idea": "在 G6 流水线 2-2 与最终 1-1×20 之间插入 1-for-2 swap ×15 with bd-aware pruning，填补 G6 swap 邻域族中缺失的「扩张」型 (a>d) 邻域",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9827,
+      "train_after": 0.9503
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)",
+    "bytes": 8181,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 77
+}

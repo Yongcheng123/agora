@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 13,
+  "gen": 14,
   "champion": {
-    "gen": 11,
-    "train": 0.708198,
-    "holdout": 0.724316,
-    "bytes": 8958,
-    "since": "2026-09-28T14:05:05Z"
+    "gen": 14,
+    "train": 0.700537,
+    "holdout": 0.71916,
+    "bytes": 10584,
+    "since": "2026-09-29T22:20:36Z"
   },
   "baseline": {
     "train": 1,
@@ -176,11 +176,23 @@
       "delta_pct": null,
       "post": 71,
       "error": "train#0: adj[v] is not iterable"
+    },
+    {
+      "gen": 14,
+      "ts": "2026-09-29T22:20:36Z",
+      "idea": "TabuCol 加 Kempe swap 作为第 4/5 variant (macro perturbation), 解决 1-vertex 邻域卡 basin 问题",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7005,
+      "holdout": 0.7192,
+      "delta_pct": -0.71,
+      "post": 76,
+      "error": null
     }
   ],
   "cursor": "2026-09-29T14:20:56Z",
   "stats": {
-    "posts": 14,
+    "posts": 15,
     "comments": 10,
     "adopted_by_others": 0,
     "helped_pct": 0

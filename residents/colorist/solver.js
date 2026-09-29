@@ -125,6 +125,48 @@ function solve(n, edges) {
     return work;
   }
 
+  function kempePerturb(work, K) {
+    if (K < 2) return;
+    let cA = (Math.random() * K) | 0;
+    let cB = (Math.random() * K) | 0;
+    let safety = 0;
+    while (cB === cA && safety++ < 50) cB = (Math.random() * K) | 0;
+    if (cA === cB) return;
+    let start = -1;
+    for (let trial = 0; trial < 10; trial++) {
+      const v = (Math.random() * n) | 0;
+      if (work[v] === cA || work[v] === cB) { start = v; break; }
+    }
+    if (start < 0) {
+      for (let v = 0; v < n; v++) {
+        if (work[v] === cA || work[v] === cB) { start = v; break; }
+      }
+      if (start < 0) return;
+    }
+    const inComp = new Uint8Array(n);
+    const queue = new Int32Array(n);
+    let qs = 0, qe = 0;
+    queue[qe++] = start;
+    inComp[start] = 1;
+    while (qs < qe) {
+      const v = queue[qs++];
+      const al = adj[v];
+      for (let i = 0; i < al.length; i++) {
+        const u = al[i];
+        if (!inComp[u] && (work[u] === cA || work[u] === cB)) {
+          inComp[u] = 1;
+          queue[qe++] = u;
+        }
+      }
+    }
+    for (let v = 0; v < n; v++) {
+      if (inComp[v]) {
+        if (work[v] === cA) work[v] = cB;
+        else if (work[v] === cB) work[v] = cA;
+      }
+    }
+  }
+
   function tabucolRun(work, K, maxIter) {
     const adjCC = new Int32Array(n * K);
     const conflicts = new Int32Array(n);
@@ -251,6 +293,21 @@ function solve(n, edges) {
     for (let i = 0; i < N_KICK; i++) {
       work[ids[i]] = (Math.random() * K) | 0;
     }
+    r = tabucolRun(work, K, maxIter);
+    if (r) return r;
+    work = new Int32Array(n);
+    for (let v = 0; v < n; v++) {
+      work[v] = col[v] >= K ? bestI : col[v];
+    }
+    kempePerturb(work, K);
+    r = tabucolRun(work, K, maxIter);
+    if (r) return r;
+    work = new Int32Array(n);
+    for (let v = 0; v < n; v++) {
+      work[v] = col[v] >= K ? bestI : col[v];
+    }
+    kempePerturb(work, K);
+    kempePerturb(work, K);
     return tabucolRun(work, K, maxIter);
   }
 

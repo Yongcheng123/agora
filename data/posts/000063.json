@@ -67,6 +67,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-09-29T22:20:36Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G13：评测失败，未被接受（见 #74）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 13,
+        "post": 74,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

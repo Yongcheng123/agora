@@ -1,31 +1,26 @@
-G13 状态 (TabuCol + Kempe perturbation variant)
+G14 (TabuCol + Kempe perturbation, 重做 G13)
+
+G13 失败原因: `train#0: adj[v] is not iterable`. 推测 BFS 中 start 越界或 adj 引用错位. G14 改写: `const al = adj[v]; for (i...) al[i]` 显式索引 + `start=-1 / cA===cB` fallthrough 防御 (找不到目标颜色的 vertex 时直接 return).
 
 核心改动:
-1. tabucolTry 加第 4 variant: bestI-merge → Kempe-perturb (随机 c_a, c_b + 随机起始 BFS 单连通分量 swap) → TabuCol
-2. 新增 kempePerturb(work) 函数: 约 30 行, 用 BFS 找 (c_a ∪ c_b) 子图第一个连通分量并整体 swap
+1. 新增 `kempePerturb(work, K)` (~35 行): 随机选 c_a ≠ c_b, BFS 找 (c_a ∪ c_b) 子图第一个连通分量, 整体 swap. proper recoloring, 保合法性.
+2. `tabucolTry` 末尾加 variant 4 (bestI-merge + 1×Kempe + TabuCol)
+3. variant 4 失败后加 variant 5 (bestI-merge + 2×Kempe + TabuCol), 边际成本可控
 
-机理:
-- TabuCol = 1-vertex recolor, Kempe = 2-color class swap; 两者走不同 manifold
-- TabuCol 卡 basin 时, variant 3 的 1-vertex kick 也在 1-vertex 邻域, 跳不出去
-- Kempe swap 是宏观扰动, 一次移动多个顶点, 直接跨 basin
-- 本质是 ILS: local search (TabuCol) + macro perturbation (Kempe chain)
+机理: TabuCol 1-vertex recolor 卡 basin 时, Kempe swap 是 macro move (proper, 改可达邻域结构); 本质是 ILS (LS + macro perturbation). 双 Kempe 是更深一档 macro.
 
-预期时间:
-- 22 次额外 tabucolRun (per-restart 18 + late 4), maxIter=100/200 各占一半
-- 额外 ~75ms. G11 240-270ms → G13 约 315-345ms, 离 1000ms 硬上限 3x 余量
-- 代码 ~11000 bytes, 仍远低于 20000
+预算: 22 × 2 = 44 次额外 tabucolRun (worst case), variant 5 仅在 variant 4 失败时触发, 期望增量减半. ~50-80ms. G14 约 300-350ms, 5× 余量. ~11500 bytes.
 
-棘轮: holdout ≤ 0.7228, train ≤ 0.7224
+G8-G13 教训:
+- G8 adjCC 越界 → K 边界用 `>= K`. kempePerturb 不涉及, 安全
+- G10 全随机 kick +3.79% → 扰动幅度/频率要紧. Kempe swap 保住 proper 比全随机温和
+- G12 kempe rescue 触发面窄. G14 把 Kempe 当 ILS perturbation, 触发面广
+- G13 adj 引用失败 → G14 显式索引 + 防御查找
 
-G8-G12 教训保留:
-- G8 invalid output 来自 adjCC 越界: K/K-1 边界相关代码必须用 `>= K` 不是 `== K`. kempePerturb 不涉及 K 边界, 安全
-- G10 全随机 kick holdout +3.79%: 警示扰动幅度和频率. 我用 Kempe swap (保住 proper) 代替全随机, 降低破坏性风险
-- G12 (kempe rescue) 触发面窄 + 过度依赖 kempeReduce 成功. G13 把 Kempe 当 ILS perturbation 而不是 rescue, 触发面广得多
-
-若 G13 被拒绝, 下一代候选 (按风险递增):
-1. Kempe perturbation 多做几次 (3 次不同随机种子), 提高 variant 4 命中率 — 多 ~22 次 tabucolRun, ~150ms 额外
-2. Kempe 之后立刻 recolorFixed 压紧 color gap
-3. 用 weighted random 选 (c_a, c_b) pair: 偏好 size 中等的色类, swap 幅度合理
-4. Kempe 扰动后做 1 轮 greedy recolor 整理结构, 再交给 TabuCol
-5. K_RESTARTS 9→11 (加 restart, 拓宽搜索面, ~30ms 额外)
-6. TabuCol 加 late-acceptance criterion: 接受等价 delta 但 freq 显著变化的 move
+若 G14 被拒, 候选 (按风险递增):
+1. Kempe 后 recolorFixed 压紧 color gap 再 TabuCol
+2. weighted (c_a, c_b) pair, 偏好中等大小色类 (swap 幅度合理)
+3. Kempe 后 greedy recolor 整理结构再 TabuCol
+4. K_RESTARTS 9→11 (拓宽搜索, ~30ms)
+5. TabuCol 加 late-acceptance (等价 delta 但 freq 变化)
+6. variant 5 改成 3×Kempe (更深 macro 移动)

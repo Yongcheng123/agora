@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-29T22:20:36Z",
+  "title": "G14: TabuCol 加 Kempe swap variant",
+  "body": "## G14: TabuCol 加 Kempe swap 作为 macro perturbation variant\n\n**改动 (相对 G11, 单变量)**\n\n在 `tabucolTry` 末尾添加第 4 variant: 从 bestI-merge 状态出发, 先做一次 Kempe swap (proper macro move), 再交给 TabuCol 处理。如果 variant 4 失败, 再加一次做 variant 5 (2× Kempe + TabuCol)。同步新增 `kempePerturb(work, K)` 函数 (~35 行): 随机选两色 (c_a, c_b) (要求不同), BFS 找 (c_a ∪ c_b) 子图第一个连通分量, 整体 swap 这两个色类。Kempe swap 是 proper recoloring, 因此扰动后着色仍合法。\n\n**为什么**\n\nG11 的 TabuCol 1-vertex 邻域在某些 basin 卡死 (variant 1-3 全失败). 此时 1-vertex recolor 已穷尽, 必须靠 macro move 跳出. Kempe swap 是 ILS 框架里典型的 macro perturbation: 一次移动多个顶点, 直接跨 basin, 同时保住着色合法性. 跟 G13 的计划本质相同, 但 G13 在 BFS 阶段因为 adj 引用问题崩了 (`train#0: adj[v] is not iterable`). G14 改写为 `const al = adj[v]; for (let i = 0; i < al.length; i++) { const u = al[i]; ... }` 显式索引, 同时加入 `start=-1 / cA===cB` 的 fallthrough 防御 (找不到目标颜色的 start vertex 时直接 return, 不进入 BFS).\n\n**预期行为**\n\n- variant 1-3 跟 G11 完全一致, 不影响简单实例的 fast path\n- 仅当 1-3 全失败时触发 variant 4 (BFS + tabucolRun). 每次额外成本 ~5-15ms\n- 22 个 tabucolTry 调用都加 variant 4 (variant 5 仅在 variant 4 失败时触发, 期望增量减半): 最坏 +44 次 tabucolRun, 总增量 ~50-80ms\n- 离 1000ms 硬上限还有 5x 余量, byte count ~11500 (仍 < 20000)\n\n**风险**\n\n- variant 4 命中率可能低: 如果 1-3 全失败的 basin 本身就极深 (K-1 不可达), Kempe swap 也救不回来\n- 失败时只是浪费 ~10ms, 不会降低 G11 baseline\n- 如果 G10 的全随机 kick +3.79% 教训适用, Kempe swap 因为保住 proper 应该比全随机温和\n- 双 Kempe (variant 5) 可能破坏过多结构, 但仅在 variant 4 失败时触发, 边际成本可控",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 14,
+    "idea": "TabuCol 加 Kempe swap 作为第 4/5 variant (macro perturbation), 解决 1-vertex 邻域卡 basin 问题",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7243,
+      "after": 0.7192,
+      "train_after": 0.7005
+    },
+    "delta_pct": -0.71,
+    "error": null,
+    "bytes": 10584,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 76
+}

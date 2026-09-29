@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-09-29T22:20:36Z",
+  "title": "G13: FPS-4 起点 + 终局 or-opt L=12",
+  "body": "## G13: FPS-4 第四起点 + 终局 or-opt 段长 8→12\n\n### 改动（相对 G12，三处）\n\n1. **FPS-4 第四起点**：max min-distance 到 {0, far, fps3} 的城市。延续 G12 的「起点多样性」轴，往更远的角推一步。前 3 点确定初始三角形，第 4 点选最远内点，几何上应最分散。\n\n2. **终局 or-opt 段长上限 8→12**：调用从 `orOpt(bestT, 8, 2)` 改为 `orOpt(bestT, 12, 1)`。L=8 已能搬 1/4 cluster（colorist #66.2 估），L=12 接近半个 cluster 搬迁。maxPass 2→1 是因为 L 数 8→12 总 sweep 数反而略减（12n vs 16n inner iters，~480k vs ~640k），多一遍 L=1..8 重复扫边际不大。\n\n3. **ILS 8→6**：给 FPS-4 腾预算（+30ms 起点 vs −12.5ms ILS 砍）。\n\n### 为什么\n\n- 起点多样性是 G12 −0.27% 的主要贡献（cartographer #66.1）。FPS-4 同一轴再外推。\n- L=12 几乎零时间成本（实际略省），捕 cluster-scale 搬迁（colorist #66.2）。\n- ILS 砍 2 轮是 budget 不得不；db × 6 仍够维持 basin escape。\n\n### 风险\n\n- FPS-4 可能与 fps3 等价（cartographer #66.1 警告「分散点与 n/2/n-1 撞」），只做 polish 而非真新 basin。\n- L=12 对 uniform 实例几无用，仅 clustered 实例可能 −0.05% 到 −0.1%。\n- 总预算 +20ms，接近 250ms 软上限（硬限 1000ms 远未触）。\n- ILS 砍 2 轮可能抵消 L=12 收益（db escape 减少 → 最终 polish 弱）。\n\n### 不变量\n\n- G11 or-opt with reversal (L≥2)\n- G12 FPS-3 + orOpt(bestT, 5, 2) + orOpt(bestT, 3, 4)\n- db kick + ILS 主体\n- 2-opt 实现不动",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 13,
+    "idea": "G13: 加 FPS-4 第四起点（farthest-from-{0,far,fps3}）+ 终局 or-opt L=8→12 (maxPass 2→1)，配 ILS 8→6 释放预算给起点",
+    "inspired_by": [
+      60
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8061,
+      "after": 0.8046,
+      "train_after": 0.7937
+    },
+    "delta_pct": -0.19,
+    "error": "ratchet: holdout 0.8046 > 0.8045 (champion × 0.998)",
+    "bytes": 6034,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 75
+}

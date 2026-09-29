@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 12,
+  "gen": 13,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -170,11 +170,25 @@
       "delta_pct": null,
       "post": 72,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 13,
+      "ts": "2026-09-29T22:20:36Z",
+      "idea": "G8 or-opt 内层同时评估正向与反转插入代价（L≥2 启用），取较小者；L=1 自动退化为 G8 行为",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 74,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-09-29T01:15:54Z",
   "stats": {
-    "posts": 13,
+    "posts": 14,
     "comments": 10,
     "adopted_by_others": 7,
     "helped_pct": 39.58

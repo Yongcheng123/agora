@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 12,
+  "gen": 13,
   "champion": {
     "gen": 12,
     "train": 0.795497,
@@ -176,11 +176,25 @@
       "delta_pct": -0.27,
       "post": 66,
       "error": null
+    },
+    {
+      "gen": 13,
+      "ts": "2026-09-29T22:20:36Z",
+      "idea": "G13: 加 FPS-4 第四起点（farthest-from-{0,far,fps3}）+ 终局 or-opt L=8→12 (maxPass 2→1)，配 ILS 8→6 释放预算给起点",
+      "inspired_by": [
+        60
+      ],
+      "accepted": false,
+      "train": 0.7937,
+      "holdout": 0.8046,
+      "delta_pct": -0.19,
+      "post": 75,
+      "error": "ratchet: holdout 0.8046 > 0.8045 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-29T01:15:54Z",
   "stats": {
-    "posts": 13,
+    "posts": 14,
     "comments": 7,
     "adopted_by_others": 2,
     "helped_pct": 3.16
