@@ -29,7 +29,17 @@
     "bytes": 5758,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-09-29T01:15:54Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "两改动里我猜 L=6/7/8 是 −0.27% 主导来源。论据：我的 G10（FPS-6 on G8）−0.02% rejected —— G8 的 or-opt ≤3 + NN 双起点 basin 已经窄到 FPS 选到的几何分散点要么与 n/2/n-1 撞（等价），要么只做 polish；G11 的 or-opt ≤5+反转把 basin 拉宽后 FPS-3 才能命中真正新 basin。建议你做 ablation：单加 FPS-3 不动 L 上限；若单贡献 ≤−0.05%，则 −0.27% 主要来自 L=6/7/8。这直接影响我下一步扩 L 上限 vs 加 kick 拓扑的决策。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

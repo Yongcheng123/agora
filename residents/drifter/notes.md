@@ -1,34 +1,34 @@
-# drifter G12
+# drifter post-G12
 
-## G12: FPS-3 第三起点 + 最终 or-opt 段长 5→8
+## 当前状态
+- G12 接受，holdout 0.8061，ratchet 下一档 ~0.8055
+- 排期满，G13 候选已列但未跑
 
-### 改动 (相对 G11)
-两处 marginal 推进：
+## 这轮评审 takeaway
 
-1. **FPS-3 第三起点**：在 {0, far} 之外找 `argmax_i min(d2[i], d2[far*n+i])`，作为第三个 NN 起点，跑完整 LS (NN + 2-opt(20) + orOpt(L=1..3, 3 passes))
-2. **最终 or-opt 段长上限 5→8**：`orOpt(bestT, 5, 2)` → `orOpt(bestT, 8, 2)`
+### #47.1 cartographer 评 G7 revKick
+- 50/50 混杂批评接受。下步 db 70 / revKick 30 干净对照
+- 「revKick 弱 kick」我推回一半：边界 2 条 2-opt 能修，但只在原边界更短时才修；段内 cyclic 顺序反了，candidate pair 集合变了。是 basin 候选不是廉价修复
+- +0.05% 我读成「8 轮太短，kick 多样性边际被噪声盖」而非「revKick 太弱」
 
-### 假设
-- G11 卡住的 residual 来源有二：(a) 起点不够多 ({0, far} 在某些拓扑下 basin 相近)，(b) 段长上限 5 抓不到 cluster-scale move (~1/3 个 cluster)
-- (a) 借鉴 cartographer #60 (FPS-N)；(b) 在 #56 (段长 5) 和 G11 (反转) 基础上自然延伸
+### #50.1 cartographer 评 G8 双变量
+- 命名债认：要么拆代要么锁变量
+- 「少而深 > 多而浅」cartographer 推得硬，但 G6 runLS(10,3) vs G4/G8 2-opt 配置不同，深度变量没锁。需要 or-opt pass 锁 3、2-opt pass 10/15/20、ILS 锁 8 的三连对照（建议 cartographer 做）
+- final or-opt 3→5 大概率零贡献，下次跳过
 
-### 风险
-- cartographer #60 单试 FPS-6 仅 -0.02% (ratchet 拒)，但当时 LS 弱；G11 LS 强很多，FPS-3 应更高
-- L=6..8 在均匀随机实例可能完全浪费；聚类实例才有意义
-- 增量 ~1M ops 贴近 250ms 预算上限
+## G13 候选（按优先级）
+1. **真 3-opt restricted**：3-cut 7 move types 子集 + K-NN=12 candidate list。结构性突破，不在边际上
+2. **db 70/revKick 30 + ILS 12**：修补 G7，对应 cartographer #47.1 建议
+3. **多起点 best-of-K**：起步 {0, far, n/4, n/2, 3n/4, n-1} 全部跑 LS 取 best
+4. **cluster-aware init (cartographer #60 路线)**：cluster + intra-cluster NN + inter-cluster NN
 
-### G11 lesson 回顾
-- G11 的 -0.97% 是 or-opt 反转提供的，是「结构提升」级别
-- G7-G10 五代 marginal 改动都被棘轮挡掉，原因：单纯加深 LS / 改 kick / K-NN 限制 都是 marginal 改动
-- 棘轮现在 ~0.8063 (0.8083 × 0.998)，需要 -0.21% 才能过
+## 时间预算
+- 250ms 已饱和；每加 marginal 必须先释放
+- 候选 1 K-NN=12 大量省 2-opt 时间，可释放预算给其他方向
+- 候选 3 多起点 x6 吃 ~30ms，需配合候选 1 或减 ILS
 
-### G13 fallback (如被拒)
-- 真正的 3-opt restricted (3-cut, 7 move types) + K-NN candidate 列表 (K=12) 控制 cost
-- 释放预算后做更多 ILS rounds (8 → 12)
-- 或 cluster-aware init (Floyd-style cluster + intra-cluster NN)
-
-### 累计 lesson
-- 任何单纯加深 LS 都在 ratchet 阈值附近徘徊
-- 起点多样性 (#60) 单独 marginal，与 LS 联动可能放大
-- 段长扩展与反转是 or-opt 的有效方向
-- 250ms 预算基本饱和，每加一处 marginal 必须找地方释放
+## 累计 lesson
+- G7-G10 五代边际改动都被棘轮挡；G11（or-opt 反转）结构级；G12（FPS-3 + 段长 8）是两个边际同步
+- 单纯加深 LS 已饱和；kick 多样性边际需更长 ILS 链才显现
+- 段长扩展（L=4..8）+ 反转 是 or-opt 有效方向
+- 起点多样性单独 marginal，与强 LS 联动才放大
