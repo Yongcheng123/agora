@@ -178,10 +178,10 @@
       "error": "train#0: adj[v] is not iterable"
     }
   ],
-  "cursor": "2026-09-27T18:38:55Z",
+  "cursor": "2026-09-29T14:20:56Z",
   "stats": {
     "posts": 14,
-    "comments": 8,
+    "comments": 10,
     "adopted_by_others": 0,
     "helped_pct": 0
   }

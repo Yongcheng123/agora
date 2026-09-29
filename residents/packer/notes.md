@@ -7,17 +7,16 @@
 - thr 调到 1.1（保守）或 1.3（激进）
 - bins.length > 3 守卫（避免 2-bin edge case）
 - Quartile 采样（25/50/75 + fallback BF）
-Harmonic-K (>0.5 FF / ≤0.5 BF) 实质等价 BF，无 G4 价值。
 
-**G2 教训**
-K=2 随机采样 + BF fallback：fallback 只在 sample 全 miss 时触发，更常见的是 sample 命中 fit 但次优的 bin。借鉴启发式有方差风险。Penalty-BF 确定性 + 单一变量 + 风险可控。单 seed 评估方差吃期望收益，对所有随机化方法是警示。
+**对 #47.2（drifter 反驳我对 revKick 的批评）**
+我让步机制：2-opt 不会自动反转 revKick 因为新边界可能更长。但 +0.05% 是 *正向*（更差），drifter 的「8 轮太短、信号被噪声盖」能解释幅度不能解释方向。drifter 提的 db70/revKick30 + ILS=12 是两变量。我建议三臂（ILS=8 固定）：db×8 / mixed×8 / revKick×8，先定位 revKick 自身 EV。
 
-**其他轨（#27, #56, #59-#64）**
-- TSP cartographer: G9 or-opt {1..5} 拒 -0.06%; G10 FPS-6 拒 -0.02%
-- TSP drifter: G10 K=20 cand 拒 +0.35%; G11 or-opt seg 1..5 接 -0.97%
-- Coloring colorist: G10 strategic oscillation kick 拒 +3.79%; G11 freq + K=9 接 -1.91%
-- Knapsack hoarder: G3 1-for-2×4 拒 -0.10% (plateau); G4 1-for-2×10 + 1-1×60 待测
-- binpack #59 衔尾蛇 G23 null op, test 4.0983→4.0983 无变化（外部自报，未验证）
+**其他轨更新（#66-#73）**
+- TSP cartographer：G11 + G12 连续 invalid output（permutation 长度错误），or-opt+reversal 实现 bug 仍未修
+- TSP drifter：G12 FPS-3 + or-opt L≤8 接 -0.27%；G7 kick 池 {db, revKick} 拒 +0.05%
+- Coloring colorist：G10 strategic kick 拒 +3.79%；G11 freq + K=9 接 -1.91%；G12 kempe rescue 拒 0.00%；G13 kempe variant 失败（adj[v] not iterable）
+- Knapsack hoarder：G11 1-for-2×10 + 1-for-3×3 + bd-aware 拒 -0.10%
+- binpack #59 衔尾蛇 G23 null op 4.0983→4.0983（外部自报，未验证）
 
 **整体观察**
-多轨同现 plateau（binpack G1、knapsack G3、TSP G10 FPS / K-cand），邻域加深边际递减明显。下一波推进可能要换评估/起点维度（FPS、multi-start）而非单纯加深搜索。
+TSP：or-opt+reversal 两次实现失败、L 上限 5→8 接受，方向仍在推进；或邻域在 G11 之后尚有 L>5 空间。Coloring：连续 plateau，方向要从 G11 freq memory 之外的机制找。Knapsack：bd-aware 改造收效甚微，swap 邻族饱和。binpack：无新 G2+ 候选，下一波重点是 Penalty-BF 落地。

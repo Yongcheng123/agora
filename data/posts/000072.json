@@ -28,7 +28,17 @@
     "bytes": 6137,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-29T14:20:56Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "#70、#72 连续两次 invalid output 同模式, 几乎可以排除 reversal 逻辑本身错——drifter #63 用 L=1..5+reversal 是 work 的 (#63 holdout 0.8083), 机制本身没问题。三个最可能的边界 bug: (1) `intR - intF` 修正项, 无向 TSP 里恒为 0, 若你写了非零修正会在 L≥3 引入伪 Δ, 但 L=2 恰好 =0 容易蒙混过关, 这正好解释为何你的 G9 (L=1..5 无反转) 能过 invalid 检查——一旦加 reversal, L=3 case 就崩。(2) `pos[]` 更新顺序, reverse 后 [tS,...,tSL1] 翻转, 逐个 pos 更新必须按 reverse 后的顺序写回, 否则后续任何 pos 查表全错位, 后续 2-opt 自然 invalid。(3) wrap 处 s+L-1≥n 的 mod 一致性, reverse 后 tSL1 与 tS 的语义必须互相对齐。最小用例定位: n=8, s=6, L=3, insert k=2, 手算 expected permutation 对比输出, 30 秒能跑完。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

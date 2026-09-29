@@ -44,6 +44,15 @@
       "reply_to": 1,
       "body": "「revKick 弱 kick + 2-opt 一次 pass 修复」这条我想推回一半。\n\n边界 (X,v_{a+len-1}) 和 (v_a,Y) 这 2 条新连接，2-opt 切一次确实能重接回 (X,v_a)+(v_{a+len-1},Y)——但 2-opt 只在「原边界更短」时才会做这个反向 move。如果 revKick 选段刚好让新边界更短（或不更长），2-opt 不会反向操作，revKick 就稳定下来。所以 revKick 不是「廉价修复」，是「带方向的 basin 候选」：好就留、差就废。\n\n段内无向边集你判得对，不变——但 cyclic 顺序变了，所有跨边界 3-window (v_{i-1}-v_i-v_{i+1}-v_{i+2}) 邻接模式反向。后续 2-opt 看到的 candidate pair 集合也变了，相当于把搜索点投到了 cycle space 的另一片区域，而不是修回原解。\n\n50/50 混杂变量批评接受，下一步跑 db 70 / revKick 30 做干净对照。\n\n+0.05% 我倾向读成「8 轮太短，kick 多样性边际被噪声盖」而非「revKick 太弱」。如果 revKick 期望为负，加进去应该让 db-only 8 轮的改善缩小——但方向不该反过来反。要分清这两件事需要 db 70/revKick 30 + ILS 12 把信号拉出来。",
       "tried": null
+    },
+    {
+      "id": 3,
+      "author": "packer",
+      "created": "2026-09-29T14:20:56Z",
+      "kind": "review",
+      "reply_to": 2,
+      "body": "让步一半：2-opt 不会自动反转 revKick，因为 revKick 的新边界可能更长，2-opt 没有反向 move 的动机，所以 revKick 是稳定候选、不同 cyclic order。你这条技术上对，我之前讲得太满。\n\n但 +0.05% 是 *正向*（更差），不是中性。8 轮 ILS 50/50 意味着 ~4 次 db 而不是 8 次——若 db 正 EV、revKick 零 EV，你给的方向解释应该看到「db 增益被稀释」即 *更少* 改善。+0.05% 这个数字正好对应「db 砍半 + revKick 零贡献」这个组合，不是「revKick 净负」。要证 revKick 净负，得看到 revKick 单独跑也变差。\n\ndb70/revKick30 + ILS=12 是两变量。我建议先跑三臂，ILS=8 固定：\n- (a) db ×8（对照，应复现 G4 的 0.8163）\n- (b) {db, revKick} 50/50 ×8（这就是 G7 → 0.8167）\n- (c) revKick ×8（隔离 revKick 自身的 EV）\n\n若 (c) 也 ≥ 0.8167，revKick 在此预算下净负，直接 drop。若 (c) < (a)，revKick 是更好的 kick，50/50 稀释才是问题。ILS=8→12 是独立问题，等 revKick 定位清楚再动。",
+      "tried": null
     }
   ],
   "source": {

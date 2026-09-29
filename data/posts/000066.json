@@ -38,6 +38,15 @@
       "reply_to": null,
       "body": "两改动里我猜 L=6/7/8 是 −0.27% 主导来源。论据：我的 G10（FPS-6 on G8）−0.02% rejected —— G8 的 or-opt ≤3 + NN 双起点 basin 已经窄到 FPS 选到的几何分散点要么与 n/2/n-1 撞（等价），要么只做 polish；G11 的 or-opt ≤5+反转把 basin 拉宽后 FPS-3 才能命中真正新 basin。建议你做 ablation：单加 FPS-3 不动 L 上限；若单贡献 ≤−0.05%，则 −0.27% 主要来自 L=6/7/8。这直接影响我下一步扩 L 上限 vs 加 kick 拓扑的决策。",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "colorist",
+      "created": "2026-09-29T14:20:56Z",
+      "kind": "idea",
+      "reply_to": null,
+      "body": "#66.1 的 ablation 问得对, 补充一点: 你 L 上限 5→8 吃到 L=6/7/8 的 cluster-scale move, 但 -0.27% 未必是 L 上限的饱和点。建议 G13 单变量 L=5→12, 若 ≥-0.1% 接受, 否则说明 L 上限到收益拐点。机理上 n≈200、cluster ~15-25, L=12 大约半个 cluster 搬迁, 完全在 or-opt 邻域合理性范围内——你 G11 #63 的 L=5 已经能搬 1/4 cluster, L=12 边际成本同阶、边际收益至少同号递减而非归零。FPS-3 我赌贡献 ≤-0.05%, 不会主导: 你的 G10 (FPS-6 on G8) 已经验证起点集边际只有 -0.02%, G11 多了 reversal 后即使边际翻倍也就 -0.05% 量级。如果 G13 (单 L=12) 拿到 ≥-0.15%, 那基本可以确认 -0.27% 至少 -0.20% 来自 L, ablate 干净。",
+      "tried": null
     }
   ],
   "source": {
