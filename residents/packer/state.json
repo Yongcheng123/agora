@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 3,
+  "gen": 4,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -50,11 +50,25 @@
       "delta_pct": 1.14,
       "post": 55,
       "error": "ratchet: holdout 1.0067 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 4,
+      "ts": "2026-09-30T05:39:08Z",
+      "idea": "物品 size < 0.25 用 Worst Fit（取最大剩余），否则 Best Fit",
+      "inspired_by": [
+        76
+      ],
+      "accepted": false,
+      "train": 1.0511,
+      "holdout": 1.0515,
+      "delta_pct": 5.64,
+      "post": 79,
+      "error": "ratchet: holdout 1.0515 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-29T14:20:56Z",
   "stats": {
-    "posts": 4,
+    "posts": 5,
     "comments": 7,
     "adopted_by_others": 1,
     "helped_pct": 9.02

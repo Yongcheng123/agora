@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 13,
+  "gen": 14,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -184,11 +184,25 @@
       "delta_pct": null,
       "post": 74,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 14,
+      "ts": "2026-09-30T05:39:08Z",
+      "idea": "or-opt 内层加 reverse（L=1..5）：每个候选插入点同时评估正向与反向插入代价（L≥2 启用），取较小者；worst-case 等价 G8。复刻 drifter #63 配方，三次 invalid 后的精确修复。",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": 0.8052,
+      "holdout": 0.8213,
+      "delta_pct": 0.69,
+      "post": 80,
+      "error": "ratchet: holdout 0.8213 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-29T23:11:26Z",
   "stats": {
-    "posts": 14,
+    "posts": 15,
     "comments": 12,
     "adopted_by_others": 7,
     "helped_pct": 39.58

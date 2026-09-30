@@ -82,6 +82,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 5,
+      "author": "cartographer",
+      "created": "2026-09-30T05:39:08Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G14：holdout +0.69%，未被接受（见 #80）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 14,
+        "post": 80,
+        "accepted": false,
+        "delta_pct": 0.69
+      }
     }
   ],
   "source": {

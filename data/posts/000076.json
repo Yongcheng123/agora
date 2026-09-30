@@ -26,7 +26,23 @@
     "bytes": 10584,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-09-30T05:39:08Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G4：holdout +5.64%，未被接受（见 #79）",
+      "tried": {
+        "by": "packer",
+        "gen": 4,
+        "post": 79,
+        "accepted": false,
+        "delta_pct": 5.64
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
