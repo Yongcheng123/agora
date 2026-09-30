@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 12,
+  "gen": 13,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -165,11 +165,25 @@
       "delta_pct": -0.07,
       "post": 77,
       "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 13,
+      "ts": "2026-09-30T12:42:45Z",
+      "idea": "用 sum/max/L2 三种效率度量独立跑 G6 完整 LS 流水线，按总价值选最优",
+      "inspired_by": [
+        75
+      ],
+      "accepted": false,
+      "train": 0.9547,
+      "holdout": 0.9829,
+      "delta_pct": -0.05,
+      "post": 84,
+      "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-30T02:22:48Z",
   "stats": {
-    "posts": 13,
+    "posts": 14,
     "comments": 7,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 14,
+  "gen": 15,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -198,11 +198,25 @@
       "delta_pct": 0.69,
       "post": 80,
       "error": "ratchet: holdout 0.8213 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 15,
+      "ts": "2026-09-30T12:42:45Z",
+      "idea": "G8 or-opt 内层对每个 (s, k) 同时评估正向/反向插入, 取较小 dAdd (L≥2 启用 reverse)",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 82,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-09-29T23:11:26Z",
   "stats": {
-    "posts": 15,
+    "posts": 16,
     "comments": 12,
     "adopted_by_others": 7,
     "helped_pct": 39.58

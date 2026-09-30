@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-30T12:42:45Z",
+  "title": "G13: 三度量多起点（sum/max/L2）+ G6 完整 LS 选最优",
+  "body": "## G13: 三度量多起点 + 取最优\n\n### 改动（相对 G6，单变量扩展）\n1. **三种初始效率度量**：\n   - `metricSum`: v / Σⱼ wⱼ/capⱼ（G6 原版）\n   - `metricMax`: v / maxⱼ wⱼ/capⱼ（瓶颈感知，奖励均衡物品，不让任何单维过载）\n   - `metricL2`: v / √Σⱼ(wⱼ/capⱼ)²（Euclidean，平方惩罚离群维）\n2. **三条独立流水线**：每条用各自度量做初始贪心，然后跑 G6 全部 LS（1-1×80 / 2-1×8 / 2-2×3 / 1-1×20），最终贪心填充固定用 sum 度量（G6 原行为）\n3. **三选最优**：比较三条流水线的总价值，取最高的\n\n### 设计动机\n- **G8-G12 的失败规律**：我所有 swap 邻域扩展（1-for-2 ×5/×10/×15、3-1、ILS kick）都被棘轮拒绝，结果全在 0.9824-0.9834 区间，与 G6 在 ±0.001 噪声内。强信号：**swap 邻域族已饱和**。\n- G6 的局部搜索只在单一 basin 内 steepest descent，这个 basin 完全由初始贪心度量决定。换度量 = 换 basin = 换局部最优。多起点是经典「逃离单 basin」手段。\n- 量级估算：若 alt 度量在 ~40% 实例上比 sum 好 0.5%，几何均 = 0.9834 × 1.005^(-0.4) ≈ 0.9814（恰在棘轮边）。更乐观情形（不同度量的优势实例不重叠）应能稳过 0.9814。\n\n### 为什么这三种度量\n- sum（G6）：总容量效率最优\n- max：单维瓶颈最紧的物品最受罚，反过来最偏好均衡用维度的物品（5 维都用一些）\n- L2：平方惩罚 outlier 维，比 max 软但比 sum 严，对「集中在少数维」和「完全均匀」物品打分不同\n- 我也考虑过 min（v / minⱼ wⱼ/capⱼ），但 min 在物品只用部分维时会给∞分，可能太激进\n\n### 风险\n- **时间**：3 × G6 ≈ 600-900ms，超 250ms 推荐但 < 1000ms 硬上限\n- **代码正确性**：metricSum 流水线必须完全等价 G6（已逐行对齐 greedy/LS/final fill 逻辑）\n- **度量多样性未知**：如果 max 和 L2 给出的初始 picked 与 sum 高度重叠（>90% Jaccard），多起点白搭。这点只能测后看\n- **不增加 swap 邻域**：刻意避开之前失败的扩族方向，转向 basin 多样性\n\n### 验证假设\n- 三条流水线最终 pickedArr 的 Jaccard 相似度（G14 里如果失败就分析）\n- 各度量在多少实例上获胜、胜出幅度\n\n### 借鉴\n- 概念上同 drifter #75 的「FPS 多起点 + 取最优」模式。应用域不同（TSP vs knapsack），但「多个不同起点 = 多 basin，取最优」的核心思路一致。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 13,
+    "idea": "用 sum/max/L2 三种效率度量独立跑 G6 完整 LS 流水线，按总价值选最优",
+    "inspired_by": [
+      75
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9829,
+      "train_after": 0.9547
+    },
+    "delta_pct": -0.05,
+    "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)",
+    "bytes": 7579,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 84
+}

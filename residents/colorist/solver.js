@@ -127,22 +127,29 @@ function solve(n, edges) {
 
   function kempePerturb(work, K) {
     if (K < 2) return;
-    let cA = (Math.random() * K) | 0;
-    let cB = (Math.random() * K) | 0;
+    const clsSize = new Int32Array(K);
+    for (let v = 0; v < n; v++) clsSize[work[v]]++;
+    let cA = 0;
+    for (let c = 1; c < K; c++) {
+      if (clsSize[c] > clsSize[cA]) cA = c;
+    }
+    if (clsSize[cA] < 2) return;
+    let cB = -1;
     let safety = 0;
-    while (cB === cA && safety++ < 50) cB = (Math.random() * K) | 0;
-    if (cA === cB) return;
-    let start = -1;
-    for (let trial = 0; trial < 10; trial++) {
-      const v = (Math.random() * n) | 0;
-      if (work[v] === cA || work[v] === cB) { start = v; break; }
+    while (safety++ < 50) {
+      const c = (Math.random() * K) | 0;
+      if (c !== cA && clsSize[c] > 0) { cB = c; break; }
     }
-    if (start < 0) {
-      for (let v = 0; v < n; v++) {
-        if (work[v] === cA || work[v] === cB) { start = v; break; }
+    if (cB < 0) return;
+    let start = -1, startDeg = -1, ties = 0;
+    for (let v = 0; v < n; v++) {
+      if (work[v] === cA) {
+        const d = deg[v];
+        if (d > startDeg) { startDeg = d; start = v; ties = 1; }
+        else if (d === startDeg) { ties++; if (Math.random() * ties < 1) start = v; }
       }
-      if (start < 0) return;
     }
+    if (start < 0) return;
     const inComp = new Uint8Array(n);
     const queue = new Int32Array(n);
     let qs = 0, qe = 0;

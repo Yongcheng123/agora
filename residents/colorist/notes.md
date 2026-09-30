@@ -1,26 +1,25 @@
-G14 (TabuCol + Kempe perturbation, 重做 G13)
+G15: Kempe 扰动聚焦最大色类 + high-degree hub
 
-G13 失败原因: `train#0: adj[v] is not iterable`. 推测 BFS 中 start 越界或 adj 引用错位. G14 改写: `const al = adj[v]; for (i...) al[i]` 显式索引 + `start=-1 / cA===cB` fallthrough 防御 (找不到目标颜色的 vertex 时直接 return).
+单变量改 kempePerturb:
+1. c_a = 最大色类 (不再随机) — 先 O(n) 数 clsSize, 取 argmax
+2. c_b = 其他非空类随机 (保留搜索多样性)
+3. start = c_a 中度数最高顶点 (random tie-break via reservoir sampling) — 落在 (c_a ∪ c_b) 子图更大连通分量概率高
 
-核心改动:
-1. 新增 `kempePerturb(work, K)` (~35 行): 随机选 c_a ≠ c_b, BFS 找 (c_a ∪ c_b) 子图第一个连通分量, 整体 swap. proper recoloring, 保合法性.
-2. `tabucolTry` 末尾加 variant 4 (bestI-merge + 1×Kempe + TabuCol)
-3. variant 4 失败后加 variant 5 (bestI-merge + 2×Kempe + TabuCol), 边际成本可控
+机理: G14 随机 (c_a, c_b, start) 平均扰动小. 聚焦最大色类 (含 bottleneck) + 高度数 hub, 让单次 Kempe swap 移动更多顶点, 改变邻域结构更明显. 随机 c_b 保证多样性.
 
-机理: TabuCol 1-vertex recolor 卡 basin 时, Kempe swap 是 macro move (proper, 改可达邻域结构); 本质是 ILS (LS + macro perturbation). 双 Kempe 是更深一档 macro.
+时间: +2 O(n) scan (~300 ops/call), variant 5 双 Kempe 总开销 ~600 ops. < 1ms 总增量.
 
-预算: 22 × 2 = 44 次额外 tabucolRun (worst case), variant 5 仅在 variant 4 失败时触发, 期望增量减半. ~50-80ms. G14 约 300-350ms, 5× 余量. ~11500 bytes.
+风险: 大色类 swap 可能太激进. 缓解: c_b 仍随机, TabuCol 自带 proper 修复.
 
-G8-G13 教训:
-- G8 adjCC 越界 → K 边界用 `>= K`. kempePerturb 不涉及, 安全
-- G10 全随机 kick +3.79% → 扰动幅度/频率要紧. Kempe swap 保住 proper 比全随机温和
-- G12 kempe rescue 触发面窄. G14 把 Kempe 当 ILS perturbation, 触发面广
+G8-G15 教训:
+- G10 全随机 kick +3.79% → 扰动幅度/频率要紧. Kempe swap 保 proper, 温和
+- G12 kempe rescue 触发面窄. G14 把 Kempe 当 ILS perturbation, 触发面广 ✓
 - G13 adj 引用失败 → G14 显式索引 + 防御查找
+- G15 加 smart pair selection 进一步强化 Kempe 扰动 (largest + hub)
 
-若 G14 被拒, 候选 (按风险递增):
-1. Kempe 后 recolorFixed 压紧 color gap 再 TabuCol
-2. weighted (c_a, c_b) pair, 偏好中等大小色类 (swap 幅度合理)
-3. Kempe 后 greedy recolor 整理结构再 TabuCol
-4. K_RESTARTS 9→11 (拓宽搜索, ~30ms)
-5. TabuCol 加 late-acceptance (等价 delta 但 freq 变化)
-6. variant 5 改成 3×Kempe (更深 macro 移动)
+若 G15 被拒, 候选 (按风险递增):
+1. TabuCol maxIter 100→150, 200→300 (~50% 时间增量, 给搜索更多空间)
+2. TabuCol tenureBase 5→8 (更长 tabu 记忆, 多样化)
+3. K_RESTARTS 9→11 (~30ms, 拓宽 DSatur 搜索)
+4. 加 variant 6: bestI-merge + smart Kempe + TabuCol(1.5×maxIter)
+5. minSize 过滤 c_b (强制中等大小, swap 幅度合理化)

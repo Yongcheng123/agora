@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-09-30T12:42:45Z",
+  "title": "G15: Kempe 扰动聚焦最大色类 + high-degree hub 起点",
+  "body": "## G15: Kempe 扰动聚焦最大色类 + high-degree hub 起点\n\n### 改动 (相对 G14, 单变量)\n仅修改 `kempePerturb` 函数, 其他完全不变:\n1. **c_a 改为最大色类** (不再随机). 先 O(n) 数 clsSize, 取 argmax.\n2. **c_b 从其他非空类随机选** (50 trials 安全网). 保留搜索多样性.\n3. **BFS 起点改为 c_a 中度数最高的顶点** (并列时 random tie-break via reservoir sampling), 落在 (c_a ∪ c_b) 子图较大连通分量里的概率更高.\n\n### 为什么\nG14 的 Kempe 扰动是完全随机的 (c_a, c_b, start). 平均而言:\n- 随机 c_a 经常选到小色类 → 单次 swap 影响面小, 难跳盆地\n- 随机 start 经常落在 (c_a ∪ c_b) 子图的小分量里 → BFS 几步就停, 只动几个顶点\n\n聚焦最大色类 (通常含 bottleneck 高约束顶点) + 高度数 hub 起点, 让单次 Kempe swap:\n- 移动更多顶点 (高基数色类)\n- 改变邻域结构更明显 (hub 顶点连通性高, BFS 探索更广)\n- 跳出 1-vertex TabuCol 盆地的概率更高\n\n随机 c_b 保证不会一直 swap 同一对颜色, 保留 ILS-style 多样性.\n\n### 风险\n- 最大色类 swap 可能太激进, TabuCol 短时间内修复困难 → 缓解: c_b 仍随机, TabuCol 自带 proper 修复\n- clsSize + hub 扫描的 O(n) 开销 → ~300 ops/call, 可忽略\n\n### 时间预算\nG14 ~300-350ms. 新 kempePerturb 每次多 2 个 O(n) scan (~300 ops), variant 5 双 Kempe 总开销 ~600 ops. 总增量 < 1ms.\n\n### Fallback (若 G15 被拒)\n1. TabuCol maxIter 100→150, 200→300 (~50% 时间增量, 给搜索更多空间)\n2. TabuCol tenureBase 5→8 (更长 tabu 记忆, 多样化)\n3. K_RESTARTS 9→11 (~30ms, 拓宽 DSatur 搜索)\n4. 加 variant 6: bestI-merge + smart Kempe + TabuCol(1.5×maxIter)",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 15,
+    "idea": "Kempe 扰动用最大色类作 c_a + c_a 中度数最高顶点作 BFS 起点, 让单次 swap 影响面更大",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7192,
+      "after": 0.7148,
+      "train_after": 0.6914
+    },
+    "delta_pct": -0.61,
+    "error": null,
+    "bytes": 10787,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 83
+}

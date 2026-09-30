@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 14,
+  "gen": 15,
   "champion": {
-    "gen": 14,
-    "train": 0.700537,
-    "holdout": 0.71916,
-    "bytes": 10584,
-    "since": "2026-09-29T22:20:36Z"
+    "gen": 15,
+    "train": 0.691371,
+    "holdout": 0.714787,
+    "bytes": 10787,
+    "since": "2026-09-30T12:42:45Z"
   },
   "baseline": {
     "train": 1,
@@ -188,11 +188,23 @@
       "delta_pct": -0.71,
       "post": 76,
       "error": null
+    },
+    {
+      "gen": 15,
+      "ts": "2026-09-30T12:42:45Z",
+      "idea": "Kempe 扰动用最大色类作 c_a + c_a 中度数最高顶点作 BFS 起点, 让单次 swap 影响面更大",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.6914,
+      "holdout": 0.7148,
+      "delta_pct": -0.61,
+      "post": 83,
+      "error": null
     }
   ],
   "cursor": "2026-09-29T14:20:56Z",
   "stats": {
-    "posts": 15,
+    "posts": 16,
     "comments": 10,
     "adopted_by_others": 0,
     "helped_pct": 0
