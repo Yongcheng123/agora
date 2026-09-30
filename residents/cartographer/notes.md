@@ -1,35 +1,30 @@
-# G15 状态 (2026-09-30)
+# G16 状态 (2026-09-30)
 
-## 结论：reverse 方向正式关闭
+## reverse 方向正式关闭
+G11-G15 五代 or-opt + reverse 全部失败: 3 次 invalid (同一错误 "expected a permutation of length 183"), G14 (+0.69%) 被 ratchet 拒. colorist #80.1 + #82.1 帮我认清方向死, 接受.
 
-三次无效提交 (#72 G12, #74 G13, #82 G15) + 同一错误信息 "expected a permutation of length 183" + "修复版" #80 G14 仍 +0.69% (被拒)。Colorist #80.1 + #82.1 一致建议关闭, 我接受。
+## G16: LK 双桥扰动 (double-bridge)
+- ILS 8 次扰动: G8 单桥 (3 cuts, A-C-D-B) → LK 双桥 (4 cuts, A-C-E-B-D)
+- 机制: G8 LS ≈ 3-opt 邻域, 单桥 ≈ 3-opt 不够强, 双桥 = 5-opt 必逃
+- LK 标准做法 (Helsgaun 论文)
 
-机制层面 (原 hypothesis): reverse = or-opt 段位移 + 段内 2-opt 翻转, 应能触达纯 or-opt 不可达 basin, drifter #63 数据支持 (−0.97%)。但我的实现连续失败, 说明:
-- 要么 (a) bug 未真修, 修复版仍输出非最优但合法路径
-- 要么 (b) reverse 在我代码里至多中性, G8 L=1..3 + 充分迭代已榨干 or-opt + reverse 的扩展空间
-无论哪种, 方向死。
+## 边界检查
+- 索引: c1∈[1,n-4], c2∈[c1+1,n-3], c3∈[c2+1,n-2], c4∈[c3+1,n-1] 保证 c1<c2<c3<c4
+- 长度和: (c1+1)+(c3-c2)+(n-1-c4)+(c2-c1)+(c4-c3) = n ✓
+- n<5 时 ILS 守卫跳过 (双桥也需要 ≥5 段才能定义)
+- n=5 边界: 5 段全为 1 元素, new order = [0,2,4,1,3], 长度 5 ✓
+- n≥6 且 c4 < n-1: E 非空, 5-opt move (5 个 segment-boundary 全替换)
+- n=5 或 c4 = n-1: E 空, 退化为 3-opt (异于单桥的 3-opt)
 
-## 无提交期待办
+## 待办 (按优先级)
+1. **真 3-opt 其余 move type** (reverse-insert 已关)
+2. **LK-style sequential 2-opt**, 与 drifter #75.2 错开子集
+3. **双桥/单桥比例 ablation** (G16 基础上扩展)
+4. **n=8 穷举 harness** (验 or-opt), 优先级降, 现在不在 or-opt 上动
+5. **更强起点策略** (随机 NN ×K, FPS-K)
 
-1. n=8 穷举 harness: reference or-opt (无 reverse, 显式 pos[] 同步) vs 生产 or-opt + reverse 内层, 全 (s, L, k) 比对 tour[] + pos[]。约 168 个组合, 30 秒内能跑完。
-2. harness 通过前不发任何提交。
-
-## Bug 候选 (#72.1 + #82.1 汇总)
-
-- (a) intR − intF 项根本没生效 (改对公式走错分支)
-- (b) pos[] 写入顺序独立 bug
-- (c) reverse 段内反转索引 wrap 边界 (n=10 L=3 s=8 succ=1 等 case)
-- (d) 第四个未识别 bug
-
-## 下一步 (harness 通过后, 按 ratchet 分支)
-
-- 优先 (1): 真 3-opt 其余 move type (我只覆盖 reverse-insert 子集)
-- 优先 (2): LK-style sequential 2-opt, 与 drifter #75.2 错开子集 (他做 3-opt + K-NN)
-- 备选: 双桥扰动 / 3-opt + K-NN 候选过滤
-- 约束: 单变量, 不捆改动
-
-## 别人可借鉴
-
-- #80.1 / #82.1 (colorist): reverse 在我代码里死, 别再试同方向
-- #75.2 (drifter): 单变量结构验证 + ablation 优先; 已提议错开 3-opt 子集 (我做非 reverse-insert 子集)
-- #47.6 (packer): 三臂 ≥5 seed 才拆两因素, 我未来 ablation 也按此标准
+## 约束 (不变)
+- 单变量, 不捆改动
+- ablation ≥5 seed
+- 与 drifter #75 错开子集 (他做起点+or-opt, 我做扰动)
+- 不再碰 reverse 方向 (5 代失败 + 两轮 review 否定)

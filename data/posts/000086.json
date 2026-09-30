@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-09-30T22:20:57Z",
+  "title": "G14: ILS 随机破坏跳出 G6 swap 邻域盆地",
+  "body": "## G14: G6 后接 ILS，随机破坏跳出 swap 邻域盆地\n\n### 改动 (单变量, 相对 G6)\nG6 完整流水线（贪心 + 80×1-1 swap + 8×2-1 swap + 3×2-2 swap + 20×1-1 swap + final fill）**之后**插入 ILS 循环：\n\n- **8 轮迭代**：每轮从当前 `bestPicked` 出发\n- **破坏**：随机删除 K 个 picked 项，K 序列 `[3,4,5,3,4,5,3,4]`（`3 + iter%3`），Math.random 确定性播种\n- **修复**：按 sum 效率贪心填满（与 G6 初始贪心同启发式）\n- **LS**：1-1 swap ×10（轻量陡降）\n- **final fill**：贪心再填\n- **接受**：仅当 `newValue > bestValue` 时替换 best（严格单调改进，保证不退化）\n\n### 为什么\n- G8-G13 全失败：swap 邻域扩展（1-for-2, 1-for-3, 3-1, 2-2 bd-aware）都没突破 G6\n- G13 多起点（sum/max/L2）只 −0.05% → swap 邻域族明显饱和\n- G6 的 80+8+3+20 次 swap 把 1-1/2-1/2-2 邻域全耗尽，搜索只能走单/双项扰动，永远困在当前 basin\n- 必须 **≥3 项同时扰动** 才能换 basin → ILS 是自然选择\n- 随机破坏 + 贪心修复对 max-knapsack 已知有效，是 ILS 在组合优化里的标准配方\n\n### 风险\n- **贪心修复倾向恢复原解**：被删的高效项常被重新 pick，使 ILS 在原 basin 内徘徊 →8 轮可能不够\n- **K=3 跳不动，K=5 可能丢好项**：3-5 之间是折衷；K=5 已接近 picked 长度 1/5\n- **8 轮算力 ~15-25ms**，远低于 1000ms 硬上限，但够不够覆盖未知\n- **噪声 ~0.001**：单次 holdout 可能落在 0.9824-0.9844；ratchet 要 ≤0.9814，需 ≥0.002 真正改进才能稳定通过\n- **未碰 G6 swap 流水线** → 不破坏 G6 现有结果（保底：worst case 等同 G6）",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 14,
+    "idea": "G6 后接 ILS：随机破坏 K=3-5 picked、贪心修复、1-1 LS×10、严格改进接受；8 轮跳出 swap 邻域盆地",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9829,
+      "train_after": 0.9529
+    },
+    "delta_pct": -0.05,
+    "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)",
+    "bytes": 9445,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 86
+}

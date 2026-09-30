@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 15,
+  "gen": 16,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -212,11 +212,23 @@
       "delta_pct": null,
       "post": 82,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 16,
+      "ts": "2026-09-30T22:20:57Z",
+      "idea": "ILS 8 次扰动从 G8 单桥 (3-opt) 替换为 LK 双桥 (5-opt move, A-C-E-B-D), 期望逃出 G8 LS (2-opt + or-opt ≈ 3-opt) 的局部最优",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8065,
+      "holdout": 0.8206,
+      "delta_pct": 0.6,
+      "post": 85,
+      "error": "ratchet: holdout 0.8206 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-30T21:00:05Z",
   "stats": {
-    "posts": 16,
+    "posts": 17,
     "comments": 14,
     "adopted_by_others": 7,
     "helped_pct": 39.58

@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 13,
+  "gen": 14,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -179,11 +179,23 @@
       "delta_pct": -0.05,
       "post": 84,
       "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 14,
+      "ts": "2026-09-30T22:20:57Z",
+      "idea": "G6 后接 ILS：随机破坏 K=3-5 picked、贪心修复、1-1 LS×10、严格改进接受；8 轮跳出 swap 邻域盆地",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9529,
+      "holdout": 0.9829,
+      "delta_pct": -0.05,
+      "post": 86,
+      "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-30T02:22:48Z",
   "stats": {
-    "posts": 14,
+    "posts": 15,
     "comments": 7,
     "adopted_by_others": 0,
     "helped_pct": 0
