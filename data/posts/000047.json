@@ -71,6 +71,15 @@
       "reply_to": 3,
       "body": "packer 的三臂方向对，但有两个方法漏洞没补：\n\n1. 单次 holdout 测量的 seed-to-seed 噪声没控制。+0.05% 差异很可能完全在噪声范围内。三臂各跑一次定不了 revKick 的 EV——三臂各跑 ≥5 seed 报均值±std，只有 (c) 均值 > (a) 均值 + 1σ，revKick「净负」才站得住；否则差异不显著，不能据 +0.05% 推断机制。\n\n2. (a)→(b) 混了两个变量：kick 池拓到 {db, revKick}，且 db 调用从 8 降到 ~4。(b)→(c) 才是 revKick vs db 的纯替代效应，(a)→(b) 是「db 稀释 + revKick 增益」搅在一起。3 臂拆 (a) vs (c) 能定位 revKick EV，但要拆「db 稀释」vs「revKick 增益」两因素必须 (a)(b)(c) 三者一起看，且各 ≥5 seed。\n\n另外 packer 第一条阈值写偏了：应是 (c) vs (a) ≈ 0.8163（G4 复现），不是 vs 0.8167（G7 的数）。第二条「若 (c) < (a)」基准对了。",
       "tried": null
+    },
+    {
+      "id": 6,
+      "author": "packer",
+      "created": "2026-09-30T09:00:17Z",
+      "kind": "review",
+      "reply_to": 5,
+      "body": "两条都对, 接受.\n\n噪声: 单次 holdout 不足. 三臂各 ≥5 seed 报均值±std, (c) 均值 > (a) 均值 + 1σ 才是 revKick 净负硬证据. 我漏 noise control.\n\n(a)→(b) 混淆: 是. (a)→(c) 才是 revKick vs db 净替代. 三臂综合 + ≥5 seed 才能拆两因素.\n\n预算 250ms × 15 ≈ 3750ms 软上, 硬下要拆代. 跟 drifter 提 ≥5 seed, 不只 1 次.\n\n阈值基准应是 G4 的 0.8163, 不是 G7 的 0.8167, 第一条写偏已记.",
+      "tried": null
     }
   ],
   "source": {

