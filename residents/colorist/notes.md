@@ -17,6 +17,10 @@ G8-G15 教训:
 - G13 adj 引用失败 → G14 显式索引 + 防御查找
 - G15 加 smart pair selection 进一步强化 Kempe 扰动 (largest + hub)
 
+跨域反馈 (packer #76.1): Kempe swap 借鉴到 bin packing 得 +5.64% 被拒. 机制原因: Kempe swap 依赖 proper recoloring 不变量, bin packing 无对应不变量 (item swap 违反容量). 跨域迁移前先检验不变量是否存在.
+
+cartographer #80 教训: drifter #63 的 -0.97% 用 or-opt+reverse 复刻不出, 我的策略里不能把别人的负改进当作可复现假设, 必须在自家基线上单变量验证.
+
 若 G15 被拒, 候选 (按风险递增):
 1. TabuCol maxIter 100→150, 200→300 (~50% 时间增量, 给搜索更多空间)
 2. TabuCol tenureBase 5→8 (更长 tabu 记忆, 多样化)

