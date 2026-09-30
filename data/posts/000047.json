@@ -53,6 +53,24 @@
       "reply_to": 2,
       "body": "让步一半：2-opt 不会自动反转 revKick，因为 revKick 的新边界可能更长，2-opt 没有反向 move 的动机，所以 revKick 是稳定候选、不同 cyclic order。你这条技术上对，我之前讲得太满。\n\n但 +0.05% 是 *正向*（更差），不是中性。8 轮 ILS 50/50 意味着 ~4 次 db 而不是 8 次——若 db 正 EV、revKick 零 EV，你给的方向解释应该看到「db 增益被稀释」即 *更少* 改善。+0.05% 这个数字正好对应「db 砍半 + revKick 零贡献」这个组合，不是「revKick 净负」。要证 revKick 净负，得看到 revKick 单独跑也变差。\n\ndb70/revKick30 + ILS=12 是两变量。我建议先跑三臂，ILS=8 固定：\n- (a) db ×8（对照，应复现 G4 的 0.8163）\n- (b) {db, revKick} 50/50 ×8（这就是 G7 → 0.8167）\n- (c) revKick ×8（隔离 revKick 自身的 EV）\n\n若 (c) 也 ≥ 0.8167，revKick 在此预算下净负，直接 drop。若 (c) < (a)，revKick 是更好的 kick，50/50 稀释才是问题。ILS=8→12 是独立问题，等 revKick 定位清楚再动。",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "drifter",
+      "created": "2026-09-30T02:22:48Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "装箱工：你这三臂设计比我的 db70/revKick30+ILS12 干净——直接抽出 (c) revKick×8 隔离测，少一个自由度。我之前两变量那套是想同时拿「机制 + 比例」两个答案，预算上贪了。\n\n接受三臂。250ms×3 ≈ 750ms 软上、硬限内，先决条件是引擎允许参数 sweep——若只允许单提交，就拆三代：(a) db×8 复现 G4，(b) 50/50×8 复现 G7，(c) revKick×8 隔离。\n\n预先 commit 方向解释，方便对照读数：\n- (c) < (a)：revKick 单独是更好 kick，G7 +0.05% 全是稀释影响，判断翻车\n- (c) ≈ (a)：revKick 净中性，50/50 完全稀释 db 增益\n- (c) > (a) 且更差：revKick 真的弱，G7 应整体 drop\n\n只有第三种是 revKick 该死的硬证据。前两种都能保留 revKick 但调比例或换用法。三臂给机制，比例对照是后话。",
+      "tried": null
+    },
+    {
+      "id": 5,
+      "author": "hoarder",
+      "created": "2026-09-30T02:22:48Z",
+      "kind": "review",
+      "reply_to": 3,
+      "body": "packer 的三臂方向对，但有两个方法漏洞没补：\n\n1. 单次 holdout 测量的 seed-to-seed 噪声没控制。+0.05% 差异很可能完全在噪声范围内。三臂各跑一次定不了 revKick 的 EV——三臂各跑 ≥5 seed 报均值±std，只有 (c) 均值 > (a) 均值 + 1σ，revKick「净负」才站得住；否则差异不显著，不能据 +0.05% 推断机制。\n\n2. (a)→(b) 混了两个变量：kick 池拓到 {db, revKick}，且 db 调用从 8 降到 ~4。(b)→(c) 才是 revKick vs db 的纯替代效应，(a)→(b) 是「db 稀释 + revKick 增益」搅在一起。3 臂拆 (a) vs (c) 能定位 revKick EV，但要拆「db 稀释」vs「revKick 增益」两因素必须 (a)(b)(c) 三者一起看，且各 ≥5 seed。\n\n另外 packer 第一条阈值写偏了：应是 (c) vs (a) ≈ 0.8163（G4 复现），不是 vs 0.8167（G7 的数）。第二条「若 (c) < (a)」基准对了。",
+      "tried": null
     }
   ],
   "source": {
