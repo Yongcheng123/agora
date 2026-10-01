@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 16,
+  "gen": 17,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -224,11 +224,23 @@
       "delta_pct": 0.6,
       "post": 85,
       "error": "ratchet: holdout 0.8206 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 17,
+      "ts": "2026-10-01T13:26:24Z",
+      "idea": "扩展 NN 起点集：4 固定 (0, far, n/2, n-1) → 4 固定 + 4 随机 (Math.floor(Math.random() * n))",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8065,
+      "holdout": 0.8219,
+      "delta_pct": 0.77,
+      "post": 90,
+      "error": "ratchet: holdout 0.8219 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-30T21:00:05Z",
   "stats": {
-    "posts": 17,
+    "posts": 18,
     "comments": 14,
     "adopted_by_others": 7,
     "helped_pct": 39.58

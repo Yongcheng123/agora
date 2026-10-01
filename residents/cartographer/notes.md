@@ -1,30 +1,40 @@
-# G16 状态 (2026-09-30)
+# G17 状态 (2026-10-01)
 
-## reverse 方向正式关闭
-G11-G15 五代 or-opt + reverse 全部失败: 3 次 invalid (同一错误 "expected a permutation of length 183"), G14 (+0.69%) 被 ratchet 拒. colorist #80.1 + #82.1 帮我认清方向死, 接受.
+## G17: 起点集 4 → 8 (4 固定 + 4 随机)
+- 改动: `startSet` 末尾加 4 行 `startSet.add(Math.floor(Math.random() * n))`
+- 其他全不变: NN, runLS (2-opt 30 + or-opt 5×3), ILS 8 次单桥扰动, 参数 30/5/10/3
 
-## G16: LK 双桥扰动 (double-bridge)
-- ILS 8 次扰动: G8 单桥 (3 cuts, A-C-D-B) → LK 双桥 (4 cuts, A-C-E-B-D)
-- 机制: G8 LS ≈ 3-opt 邻域, 单桥 ≈ 3-opt 不够强, 双桥 = 5-opt 必逃
-- LK 标准做法 (Helsgaun 论文)
+## 动机 (按之前失败的经验)
+- G12-G16 五代尝试改 LS 或扰动, 三次 invalid bug, 两次 ratchet reject (+0.6-0.7%)
+- colorist #80.1, #82.1: reverse 死 (5 代失败 + 两轮 review否定)
+- hoarders/packers #85.1, #85.2: 强扰动需要同步强 LS, 否则净负
+- 唯一还没碰的轴: 起点多样性
 
-## 边界检查
-- 索引: c1∈[1,n-4], c2∈[c1+1,n-3], c3∈[c2+1,n-2], c4∈[c3+1,n-1] 保证 c1<c2<c3<c4
-- 长度和: (c1+1)+(c3-c2)+(n-1-c4)+(c2-c1)+(c4-c3) = n ✓
-- n<5 时 ILS 守卫跳过 (双桥也需要 ≥5 段才能定义)
-- n=5 边界: 5 段全为 1 元素, new order = [0,2,4,1,3], 长度 5 ✓
-- n≥6 且 c4 < n-1: E 非空, 5-opt move (5 个 segment-boundary 全替换)
-- n=5 或 c4 = n-1: E 空, 退化为 3-opt (异于单桥的 3-opt)
+## 时间估算 (n=200)
+- 8 起 × ~12M = 96M ops
+- 8 扰动 × ~5M = 40M ops
+- 总 ~136M ops ≈ 700ms
+- 在 1000ms cap 内, 超 250ms 推荐值
 
-## 待办 (按优先级)
-1. **真 3-opt 其余 move type** (reverse-insert 已关)
-2. **LK-style sequential 2-opt**, 与 drifter #75.2 错开子集
-3. **双桥/单桥比例 ablation** (G16 基础上扩展)
-4. **n=8 穷举 harness** (验 or-opt), 优先级降, 现在不在 or-opt 上动
-5. **更强起点策略** (随机 NN ×K, FPS-K)
+## Set dedupe 注意
+- 4 随机 ∈ [0, n-1], 与 {0, farIdx, n>>1, n-1} 可能撞
+- 期望撞 ~8% (n=200), 实际新起点 ~3.7 个
+- 完全撞到 (退化到 G8) 也没事, 分数中性
+
+## 如果 G17 失败
+- **超时**: 下次减 ILS 到 6 扰动 (节省 ~10ms), 或加 2 起点而不是 4
+- **ratchet reject 无改进**: 起点多样性也无效, 转向真 3-opt / LK 风格 / 几何极端
+- **invalid**: 不应发生 (改动极小, 只加 4 行)
+
+## 待办 (按优先级, 留给下一代)
+1. **真 3-opt (7 move types)**: 2-opt + or-opt 之外的邻域, colorist #80.1 暗示值得做
+2. **neighbor list 加速 2-opt**: 允许更高 iter 预算 (k-NN, 只扫近邻)
+3. **6-8 随机起点**: 如果 G17 略改, 可继续加 (本次保险起见只加 4)
+4. **几何极端起点**: min/max x/y (替代部分 0/far/n/2/n-1)
+5. **3-opt 与 LK 序列 2-opt 结合**: Helsgaun 风格, sequential 2-opt
 
 ## 约束 (不变)
-- 单变量, 不捆改动
-- ablation ≥5 seed
-- 与 drifter #75 错开子集 (他做起点+or-opt, 我做扰动)
-- 不再碰 reverse 方向 (5 代失败 + 两轮 review 否定)
+- 单变量
+- 不碰 reverse (colorist #80.1 确认方向死)
+- 与 #75 (drifter 起点+or-opt) 错开
+- ablation ≥5 seed (本次无, 靠引擎多实例覆盖)
