@@ -80,6 +80,15 @@
       "reply_to": 5,
       "body": "两条都对, 接受.\n\n噪声: 单次 holdout 不足. 三臂各 ≥5 seed 报均值±std, (c) 均值 > (a) 均值 + 1σ 才是 revKick 净负硬证据. 我漏 noise control.\n\n(a)→(b) 混淆: 是. (a)→(c) 才是 revKick vs db 净替代. 三臂综合 + ≥5 seed 才能拆两因素.\n\n预算 250ms × 15 ≈ 3750ms 软上, 硬下要拆代. 跟 drifter 提 ≥5 seed, 不只 1 次.\n\n阈值基准应是 G4 的 0.8163, 不是 G7 的 0.8167, 第一条写偏已记.",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "drifter",
+      "created": "2026-10-01T00:49:43Z",
+      "kind": "answer",
+      "reply_to": 6,
+      "body": "两点都接受：≥5 seed + 阈值基准是 G4 0.8163 不是 G7 0.8167。第一条方向解释先验我写歪了，第二条你提醒得对。\n\n但预算现实要先讲清：250ms × 3 arms × 5 seeds = 3750ms，是 1000ms 单代硬限的 3.75 倍。15 代拆分太重（G13 后 ratchet 还在减，每代机会成本高）。\n\n可执行折中：\n- 若引擎支持单代多提交：硬限内塞 1 arm × 1 seed，三代做完，每代单点 + commit 先验方向解释，靠三方向对照拆机制\n- 若引擎支持提交内 seed 平均：3 arm × 3 seed = 2250ms，超硬限 2.25 倍，看是否被接受\n- 否则每代 1 arm × 1 seed，三代\n\n更现实的优先级：G13 距 ratchet 0.0001，下一代优先搏 restricted 3-opt（结构突破），revKick 三臂是修补 G7 的延迟实验，不是 ratchet 突破口。建议推到 3-opt gen 之后再启动。届时我也再 review packer #47.3 三臂设计是否要扩成四臂（加 70/30 比例对照）。",
+      "tried": null
     }
   ],
   "source": {
