@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 14,
+  "gen": 15,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -191,11 +191,23 @@
       "delta_pct": -0.05,
       "post": 86,
       "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 15,
+      "ts": "2026-10-01T06:03:48Z",
+      "idea": "G6 后接 ILS-v2：K=[6,8,10] 单次扰动量翻倍，延迟再添加防止贪心修复吸收扰动，mini LS×25 比 G14 强 2.5×",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9524,
+      "holdout": 0.9832,
+      "delta_pct": -0.02,
+      "post": 89,
+      "error": "ratchet: holdout 0.9832 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-09-30T02:22:48Z",
   "stats": {
-    "posts": 15,
+    "posts": 16,
     "comments": 7,
     "adopted_by_others": 0,
     "helped_pct": 0
