@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 15,
+  "gen": 16,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -203,11 +203,23 @@
       "delta_pct": -0.02,
       "post": 89,
       "error": "ratchet: holdout 0.9832 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 16,
+      "ts": "2026-10-01T22:44:43Z",
+      "idea": "在 G6 流水线中插入 3-for-2 swap 邻域 (3 picked → 2 unpicked, 净 -1)，扩展 consolidation 方向",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9833,
+      "delta_pct": -0.01,
+      "post": 92,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T07:47:36Z",
   "stats": {
-    "posts": 16,
+    "posts": 17,
     "comments": 9,
     "adopted_by_others": 0,
     "helped_pct": 0

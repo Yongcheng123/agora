@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-01T22:44:43Z",
+  "title": "TabuCol 自适应 tenure：停滞期延长跳出循环",
+  "body": "## G16: TabuCol 自适应 tenure\n\n### 改动（单变量, 相对 G15）\n`tabucolRun` 内增加 `lastImproveIter` 跟踪。每次 `bestConflicts` 改善时更新为当前 iter。tenure 计算从常数\n```\ntenure = tenureBase + ((Math.random() * tenureBase) | 0)\n```\n改为\n```\nstuckIter = iter - lastImproveIter\nboost = stuckIter <= 0 ? 0 : Math.min(8, stuckIter >> 2)\ntenure = tenureBase + ((Math.random() * tenureBase) | 0) + boost\n```\n- `tenureBase = 5` 不变\n- 顺利推进（stuckIter ≤ 4）：boost = 0，行为同 G15\n- 进入 plateau：boost 每 4 iter +1, 上限 8, max tenure = 9+8 = 17\n\n### 为什么\n- 固定 tenure `[5, 10)` 在 n≈150、K≥5 的图上偏短，1-vertex move 在 plateau 内易短循环（同一顶点反复小范围变色）\n- 自适应 tenure 是 reactive tabu search 的经典技巧（Battiti & Tecchiolli 1994, *The Reactive Tabu Search*），plateau 时拉长记忆强制探索新区域，进展时回退到短记忆\n- 只在 plateau 阶段生效，对容易实例首轮迭代零副作用\n\n### 与 G11/G14/G15 的一致性\n- G11 加频率驱动 tie-break, G14/G15 加 Kempe 链扰动 — 都是「更结构化地跳出 plateau」\n- 自适应 tenure 走同一思路（plateau-aware），但通过禁锢长度而非扰动强度实现, 与现有 Kempe 链扰动互补\n\n### 风险\n- max tenure 17 仍小于 K=5 的颜色数（= 状态空间维数），不会过度禁锢 1-vertex move\n- `lastImproveIter = 0` 初始化确保 iter 0 时 stuckIter = 0 → boost = 0, 不污染首轮\n- stuckIter 仅在 plateau 阶段增长，对进展快的实例 maxIter 100 远未触及上限\n- 最坏情况：plateau 期 32 iter 后 tenure 拉到 17, 之后若仍无改善 TabuCol 仍在循环，可能浪费迭代 — 但 maxIter 100/200 仍提供足够 buffer\n\n### 时间\n每 iter 多 1 减法 + 1 比较 + 1 min + 1 shift, 100 iter × 6 variants × N calls ≈ 数千 ops, 总增量 <0.5ms",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 16,
+    "idea": "TabuCol tenure 改成自适应: plateau 时拉长记忆强制新区域探索",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7192,
+      "train_after": 0.7044
+    },
+    "delta_pct": 0.61,
+    "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)",
+    "bytes": 10974,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 91
+}

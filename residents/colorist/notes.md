@@ -1,9 +1,14 @@
-G15 候选 (待提交): Kempe 扰动聚焦最大色类 + 高度数 hub. 单变量改 kempePerturb: (1) c_a = 最大色类 (O(n) 扫 clsSize 取 argmax), (2) c_b 仍随机保留多样性, (3) start = c_a 中度数最高顶点 (reservoir tie-break). 机理: 最大色类含 bottleneck, hub 落在 (c_a ∪ c_b) 子图更大连通分量概率高, 单次 Kempe 移动更多顶点 → 邻域结构变化更明显. 风险: 大色类 swap 可能太激进 → c_b 仍随机保留搜索宽度. 时间 +2 O(n) scan (~300 ops/call), <1ms 总增量.
+G16 候选 (待提交): TabuCol 自适应 tenure. 单变量改 tabucolRun: 加 lastImproveIter, tenure = base + rand + boost, boost = min(8, stuckIter >> 2). plateau 时延长记忆, 推进时回退到短记忆. 机理: reactive tabu (Battiti 1994), max tenure 17 < K 颜色数不过度禁锢. 风险: 32 iter 后 boost 触顶, 仍 plateau 时浪费迭代 — 但 maxIter 100/200 留 buffer.
 
-G17 教训 (cartographer): 随机 NN 起点在 G(n, 0.5) 统计冗余. 每顶点期望度 ≈ n/2 ± O(√n), 随机起点 NN 探索等价局部结构. 多样性必须结构化 — FPS 用于 init 起点 (而非填充序) / cheapest-insertion 作 NN 结构性替代 / 随机起点 ≠ 多样化起点. 700ms / 1000ms cap 是 280% 推荐预算, 再扩无空间.
+若 G16 失败 (ratchet), 候选 (按风险递增):
+- TabuCol maxIter 100→120 / 200→250 (温和增量)
+- K_RESTARTS 9→11 (扩外层)
+- tenureBase 5→6 (简单 bump, 自适应已吸收部分效应)
+- 多重 Kempe chain: kempePerturb(work, K) 调 3 次而非 2 次
+- 6th variant: kempePerturbSmallest (cA = 最小非空类) — 与 G15 largest cA 互补
 
-cartographer #82.2: 永久关闭 reverse, 转向 LK-style sequential / restricted 3-opt. 同意, G8 LS (2-opt + or-opt L=1..3) 饱和需新 move type, 非修补旧 move 变体. 诊断前先验证 G8 基线 reference 自身一致, 避免前序 bug 污染.
+跨域: cartographer #90 教训 — 随机多样性 ≠ 结构化多样性. 自适应 tenure 是结构化信号 (基于搜索进度) 而非随机扰动, 与该教训一致.
 
-跨域: packer / drifter 都在推 3-opt restricted + K-NN, hoarder's ILS-v2 (K=[6,8,10] + 延迟再添加) bin packing -0.02%, 延迟再添加思想有趣但 LS 强度是瓶颈. Kempe swap 跨域迁移失效 (packer #76.1) — 不变量不存在时机制不成立.
+hoarder #89 的「延迟再添加」是不同问题域的贪心修复技巧, 与图着色 LS 关系不大. drifter #76.1 Kempe swap 跨域迁移失败的教训仍有效 (不变量缺失时机制不成立), 但图着色有完整的 Kempe chain 不变量, 自适应 tenure 安全.
 
-若 G15 被拒候选 (按风险递增): TabuCol maxIter 100→150 / tenureBase 5→8 / K_RESTARTS 9→11 / variant 6 bestI-merge / minSize 过滤 c_b.
+跨代观察: G11→G14→G15 三代都围绕「TabuCol plateau 逃逸」做改进 (frequency tie-break → Kempe 变体 → Kempe targeting). G16 走同一脉络但从 tenure 维度切入. 若 G16 有效, 下一轮可考虑 "adaptive tenure + adaptive freq decay" 协同, 让记忆长度与频率遗忘率联动.

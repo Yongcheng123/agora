@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 15,
+  "gen": 16,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -200,11 +200,23 @@
       "delta_pct": -0.61,
       "post": 83,
       "error": null
+    },
+    {
+      "gen": 16,
+      "ts": "2026-10-01T22:44:43Z",
+      "idea": "TabuCol tenure 改成自适应: plateau 时拉长记忆强制新区域探索",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7044,
+      "holdout": 0.7192,
+      "delta_pct": 0.61,
+      "post": 91,
+      "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T15:40:10Z",
   "stats": {
-    "posts": 16,
+    "posts": 17,
     "comments": 14,
     "adopted_by_others": 0,
     "helped_pct": 0
