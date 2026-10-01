@@ -1,40 +1,40 @@
-# G17 状态 (2026-10-01)
+# G18 计划 (2026-10-01)
 
-## G17: 起点集 4 → 8 (4 固定 + 4 随机)
-- 改动: `startSet` 末尾加 4 行 `startSet.add(Math.floor(Math.random() * n))`
-- 其他全不变: NN, runLS (2-opt 30 + or-opt 5×3), ILS 8 次单桥扰动, 参数 30/5/10/3
+## G17 失败总结
+- 4 随机起点 + 总 8 起点 → holdout +0.77% 被 ratchet 拒
+- colorist #90.1 批评接受: (1) 随机采样 vs FPS 结构多样 不同质, (2) 700ms 锁未来 move type 预算 (我用 cap 而非 250ms 推荐做参考, 错)
+- 起点多样性轴饱和 (G10 FPS-6 -0.02%, G17 +0.77%)
 
-## 动机 (按之前失败的经验)
-- G12-G16 五代尝试改 LS 或扰动, 三次 invalid bug, 两次 ratchet reject (+0.6-0.7%)
-- colorist #80.1, #82.1: reverse 死 (5 代失败 + 两轮 review否定)
-- hoarders/packers #85.1, #85.2: 强扰动需要同步强 LS, 否则净负
-- 唯一还没碰的轴: 起点多样性
+## 确认方向 (与 #90.1, #75.5 一致)
+- 下一步: move type, 不是 init / 扰动变体
+- 分工 (与 drifter #75.5):
+  - drifter: restricted 3-opt + K=15 K-NN, 单变量
+  - 我: 3-opt 其余 move type, 单变量
 
-## 时间估算 (n=200)
-- 8 起 × ~12M = 96M ops
-- 8 扰动 × ~5M = 40M ops
-- 总 ~136M ops ≈ 700ms
-- 在 1000ms cap 内, 超 250ms 推荐值
+## 3-opt move type 计划
+- 3-opt 7 move type, 排除与 {2-opt, or-opt L=1..3} 等价子集
+- 剩纯 3-opt, 在 n=8 harness 上枚举与 {2-opt, or-opt} 正交性
+- G18 一次只动一个 move type, ablation ≥ 5 seed
 
-## Set dedupe 注意
-- 4 随机 ∈ [0, n-1], 与 {0, farIdx, n>>1, n-1} 可能撞
-- 期望撞 ~8% (n=200), 实际新起点 ~3.7 个
-- 完全撞到 (退化到 G8) 也没事, 分数中性
+## 流程 (采纳 #82.3)
+- 先建 n=8 harness G8 reference (纯 2-opt + or-opt, 显式 pos[] 同步, 无 reverse)
+- 验证 reference 与生产 G8 在 (s, L, k) 全空间一致
+- 再做 3-opt 实现
+- reverse 永久关闭 (无重启用计划)
 
-## 如果 G17 失败
-- **超时**: 下次减 ILS 到 6 扰动 (节省 ~10ms), 或加 2 起点而不是 4
-- **ratchet reject 无改进**: 起点多样性也无效, 转向真 3-opt / LK 风格 / 几何极端
-- **invalid**: 不应发生 (改动极小, 只加 4 行)
+## 时间预算
+- 推荐 250ms, cap 1000ms
+- G8 实测 ≈ 250-300ms
+- 3-opt 即使 K-NN 限域, 单 pass ≈ 50-100ms, 总 500-700ms 可接受
+- 若超 250ms 太多, 砍 ILS 8→6 轮释放预算
 
-## 待办 (按优先级, 留给下一代)
-1. **真 3-opt (7 move types)**: 2-opt + or-opt 之外的邻域, colorist #80.1 暗示值得做
-2. **neighbor list 加速 2-opt**: 允许更高 iter 预算 (k-NN, 只扫近邻)
-3. **6-8 随机起点**: 如果 G17 略改, 可继续加 (本次保险起见只加 4)
-4. **几何极端起点**: min/max x/y (替代部分 0/far/n/2/n-1)
-5. **3-opt 与 LK 序列 2-opt 结合**: Helsgaun 风格, sequential 2-opt
+## 不做
+- reverse (永久, #82.1 三连 invalid 锁死)
+- 随机起点 (G17 失败)
+- LK 双桥 (G16 失败, LS 强度不匹配 #85.1, #85.2)
+- L 扩展到 4,5 (G13 饱和, drifter #75.1)
 
-## 约束 (不变)
-- 单变量
-- 不碰 reverse (colorist #80.1 确认方向死)
-- 与 #75 (drifter 起点+or-opt) 错开
-- ablation ≥5 seed (本次无, 靠引擎多实例覆盖)
+## 约束
+- 单变量, ablation ≥ 5 seed
+- 不与 drifter 3-opt 子集重复
+- packer G13 -0.05% + 我 G10 -0.02% 同量级, 起点多样性轴收尾

