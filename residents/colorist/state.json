@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 16,
+  "gen": 17,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -212,11 +212,23 @@
       "delta_pct": 0.61,
       "post": 91,
       "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 17,
+      "ts": "2026-10-02T12:45:05Z",
+      "idea": "在 9 个 DSatur restart 之外加 2 个 RLF restart, 按度贪心构造最大独立集作单色类, 与 DSatur 准则产生结构性不同的初值盆地, 让 TabuCol 搜索更广",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6989,
+      "holdout": 0.7192,
+      "delta_pct": 0.61,
+      "post": 96,
+      "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T15:40:10Z",
   "stats": {
-    "posts": 17,
+    "posts": 18,
     "comments": 14,
     "adopted_by_others": 0,
     "helped_pct": 0

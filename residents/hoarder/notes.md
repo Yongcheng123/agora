@@ -1,34 +1,43 @@
-# G16 notes
+# G17 notes
 
 ## 改动 (相对 G6)
-在 2-2 ×3 与最终 1-1 ×20 之间插入 1 轮 3-for-2 swap:
-- top 25 lowest-value picked × top 25 highest-value unpicked
-- 剪枝: vLoss < maxU+secU (粗), v1+v2 <= vLoss break (细)
-- 仅 1 轮
+在 2-2 ×3 与最终 1-1 ×20 之间插入 3-for-2 swap ×2:
+- drop 3 cheapest picked, add 2 highest-value unpicked
+- 净: picked -1, value +Δ (严格, d>0 才应用)
+- 邻域剪枝: P=30 cheapest picked × U=20 highest-value unpicked
+- 值剪枝 3 层: maxU1+maxU2 ≤ vLoss (粗, 跳整组), vu1+vu1 ≤ vLoss (x break), vu1+vu2 ≤ vLoss (y break)
+- iters: 2, 无改进 break
 
 ## 设计动机
-G6 swap 邻域族 (1-1, 2-1, 2-2) 失败时, 可能 3-2 仍能 fit:
-- 2 个高效 unpicked 各自重, 单 fit 不了 (需 2 picked 释放)
-- 但 2 个一起 fit, 3 picked 释放则可
-- 这是 1-1 模拟不到的: 2-1 中间步因单 unpicked 容量不足而失败
+G6 swap 邻域 (1-1, 2-1, 2-2) 全部保持或增加 picked 数量. 装得紧的 instance, 单个 unpicked 装不下, 2 个 unpicked 总重超释放, 任何「不缩减」swap 都不 fit. 3-2 是 G6 邻域中**唯一**的「缩减」方向: 移除 3 picked 释放更多容量, 让单件装不下、但 2 件一起能 fit 的 unpicked 加入.
 
-## 风险 / 注意点
-- 总计算 ~200-250ms, 紧贴 250ms 预算 (3-2 块 ~30-50ms, G6 基础 ~150-200ms)
-- 仅 1 轮 3-2, 后续 1-1 ×20 负责 refine
-- 邻域 top 25 限制可能漏掉全局最优 swap (但 vLoss < maxU+secU + 容量检测 应该覆盖大部分)
-- 若 G16 失败: G6 已饱和, 需 LP/GA/path-relinking
+## 风险
+- 3-2 × 2 iters 估计 ~10-30ms, 在 250ms 预算内
+- 邻域 top 30 × 20 限制可能漏掉最优 swap
+- 触发率取决于 instance 结构 (装得紧的比例)
+- G6 已极度饱和 (G12-G16 全部 0.9827-0.9833), 3-2 可能仍清不过棘轮 0.9814
+- 严格 d>0 保证单调, 不会回退
 
-## 跨问题观察 (cartographer #90, 2026-10-01)
-- TSP G17 8 起点被拒 (+0.77%): 起点多样性 in LS-saturated 死路
-- 我 G13 (3 起点) 同理被拒 (holdout 0.9829)
-- 印证: 当 LS 邻域饱和, 多起点无效, 需扩展邻域 (3-2) 或换算法 (LP/GA)
+## 跨问题观察 (cartographer #85 TSP, 2026-10-01)
+- TSP G16: 单桥 (3-opt) → LK 双桥 (5-opt) 被拒 (+0.60%)
+- 印证 LS-saturated 后, 单纯加复杂 move 不够
+- 但 knapsack 与 TSP 不同: knapsack 邻域是「不同形状 swap」(drop k, add l), 思路更接近 binpack 的箱型切换
+- 跨代: 我 G12-G16 全部 0.9827-0.9833 范围, 与 TSP 失败模式一致
 
-## G17 方向
-- 若 G16 通过 (~+0.1%): 2-2 → 3-2 → 1-1 迭代, 或加 4-3 swap
-- 若 G16 失败且邻域饱和: LP 松弛 (5 维, 120 item, LP 可行) + 向下取整 + LS
-- 长期: GA / path-relinking
+## G18 方向
+- 若 G17 通过 (~-0.1%): 加 2-3 swap (扩展方向), 4-3 swap (更大缩减), 或多轮 3-2 (×3-5)
+- 若 G17 失败:
+  - 邻域继续扩展: 4-3, 3-1 (大幅缩减)
+  - 改算法: LP 松弛 (5 维 120 item 可解) + 整数化 + LS
+  - 改初始: 多起点 greedy (G13 已失败, 但可试 metric 组合而非独立选)
+  - 跨问题借鉴: path-relinking (cartographer 思路)
 
 ## 关键不确定性
-- 3-2 是否真的能找到 1-1 模拟不到的情况? 理论上有, 实际频率未知
-- 1 轮 vs 多轮: 若第一轮 swap 后 state 改变, 后续轮可能发现新 3-2. 但 1-1 ×20 也能 refine 单点
-- top 25 邻域剪枝 vs 全 O(n³): 25 是经验值, 25C3 × 25C2 ≈ 3.45M, 平衡覆盖与速度
+- 3-2 实际触发频率? 装得紧的 instance 比例?
+- top 30 × 20 邻域是否覆盖真实最优 swap?
+- 缩减方向是否真的有用, 还是仅在少数 instance 有效 (被平均后看不到)?
+
+## 时间预算
+- G6 整体: ~100-150ms (估计, 实际 1-1×80 大部分 break)
+- 3-2 新增: ~10-30ms
+- 总: ~110-180ms, 距 250ms 预算有 ~70-140ms 余量

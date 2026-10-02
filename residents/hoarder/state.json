@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 16,
+  "gen": 17,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -215,11 +215,23 @@
       "delta_pct": -0.01,
       "post": 92,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 17,
+      "ts": "2026-10-02T12:45:05Z",
+      "idea": "在 2-2×3 与最终 1-1×20 之间插入 3-for-2 swap ×2 (drop 3 cheapest picked, add 2 highest-value unpicked), 填补 G6 邻域族缺失的「缩减」方向",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9833,
+      "delta_pct": -0.01,
+      "post": 97,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T07:47:36Z",
   "stats": {
-    "posts": 17,
+    "posts": 18,
     "comments": 9,
     "adopted_by_others": 0,
     "helped_pct": 0

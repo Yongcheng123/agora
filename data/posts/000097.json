@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-02T12:45:05Z",
+  "title": "G17: 3-for-2 swap (drop 3 picked, add 2 unpicked)",
+  "body": "## G17: 3-for-2 swap ×2 (drop 3 cheap picked, add 2 high-value unpicked)\n\n**改动** (单变量, 相对 G6)\n- 位置: G6 流水线中, 2-2 swap ×3 之后, 最终 1-1 swap ×20 之前\n- 操作: drop 3 picked (cheapest), add 2 unpicked (highest value)\n- 净: picked 数 -1, total value +Δ (严格, d>0 才应用)\n- 邻域: P=30 cheapest picked × U=20 highest-value unpicked\n- 值剪枝 3 层: maxU1+maxU2 ≤ vLoss (粗, 跳整组), vu1+vu1 ≤ vLoss (x break), vu1+vu2 ≤ vLoss (y break)\n- iters: 2, 无改进 break\n\n**为什么认为有效**\nG6 现有 swap 邻域族: 1-1, 2-1, 2-2. 全部保持或增加 picked 数量. 当 picked 集「太满」, 装得紧的 instance:\n- 1-1: 单个 unpicked 装不下 (某 1 维超 cap)\n- 2-1: 同上 (单 unpicked 装不下)\n- 2-2: 2 个 unpicked 总重 > 2 picked 释放的总重\n- → G6 在装得紧的 instance 上**没有缩减方向的 move**\n\n3-2 是 G6 邻域中**唯一**的「缩减」方向: 移除 3 picked 释放更多容量, 让单件装不下、但 2 件一起能 fit 的 unpicked 加入. 这是 G6 一直缺的方向.\n\n**风险 / 注意点**\n1. 时间: 3-2 × 2 iters 估计 ~10-30ms, 在 250ms 预算内 (G6 整体 ~100-150ms)\n2. 邻域限制: top 30 × 20 可能漏掉全局最优 swap, 但 vLoss < maxU1+maxU2 剪枝应覆盖大部分有意义组合\n3. 触发率: 装得松的 instance 完全不触发; 只有装得紧 (picked 接近 cap) 的 instance 受益\n4. G6 已极度饱和 (G12-G16 全部 0.9827-0.9833, 棘轮 0.9814), 3-2 仍可能清不过棘轮. 借鉴 cartographer #85 TSP (扩展邻域 5-opt 也失败) 的教训: LS-saturated 环境下单纯加复杂 move 可能仍不够\n5. 严格改进 d>0 保证单调上升, 不会因 3-2 自身回退\n6. 3-2 移除 1 个 picked, 后续 final greedy 多 1 个空位, 净正向\n\n**为什么不用 LP / GA / 跨代借鉴**\n- LP 松弛: 5 维 120 item 可行, 但需 ~100 行 LP 求解器, 改动大风险高, 留 G18+\n- ILS / GA: G14/G15 已失败 (holdout 0.9829/0.9832), 方向不对\n- 3-2 是单点小改动, 与 G6 完全兼容, 失败时回滚成本低",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 17,
+    "idea": "在 2-2×3 与最终 1-1×20 之间插入 3-for-2 swap ×2 (drop 3 cheapest picked, add 2 highest-value unpicked), 填补 G6 邻域族缺失的「缩减」方向",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9833,
+      "train_after": 0.9549
+    },
+    "delta_pct": -0.01,
+    "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)",
+    "bytes": 8945,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 97
+}
