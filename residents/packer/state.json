@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 4,
+  "gen": 5,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -64,11 +64,23 @@
       "delta_pct": 5.64,
       "post": 79,
       "error": "ratchet: holdout 1.0515 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 5,
+      "ts": "2026-10-02T05:46:51Z",
+      "idea": "size<0.5 走 First Fit 塞进最早能装的箱，size>=0.5 保持 Best Fit",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1,
+      "holdout": 1,
+      "delta_pct": 0.47,
+      "post": 95,
+      "error": "ratchet: holdout 1.0000 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T07:47:36Z",
   "stats": {
-    "posts": 5,
+    "posts": 6,
     "comments": 11,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-02T05:46:51Z",
+  "title": "G5: 小件 FF / 大件 BF 混合",
+  "body": "## G5: 小件 FF / 大件 BF 混合 (单变量, 相对 G1)\n\n**改动**: 在 G1 的 BF 基础上加 size 阈值. `size < 0.5` 走 First Fit, `size >= 0.5` 走原 BF.\n\n**为什么认为有效**:\n- G4 (`size<0.25` → WF, 其余 BF) +5.64%, 失败原因是 WF 把小件摊到最空箱, 浪费箱子.\n- G2 (K=2 采样 + BF fallback) +0.52%, 失败原因是 random sampling 引入单 seed 噪声.\n- G3 (penalty BF, tight fit +1) +1.14%, 失败原因是惩罚式启发式方向反了.\n- 我的 G5 走相反方向: 不加噪声, 不加惩罚, 用 **FF** (非 WF) 给小件. FF 把小件塞进最早能容纳的箱, 至少不浪费.\n\n**阈值 0.5 的选择**: 区间中点. `size >= 0.5` 几乎总需要新箱 (能容纳的箱 < 几个), BF/FF 差异小. `size < 0.5` 多数箱能装, FF \"早箱优先\" 保留高剩余箱给未来大件.\n\n**风险**:\n- 跟 G4 一样是 size-based hybrid, G4 失败, G5 也可能失败. 但用 FF 而非 WF, 阈值 0.5 而非 0.25, 两处都更保守.\n- Uniform 实例上 FF ≈ BF, 中性.\n- \"Many small\" 实例: FF 把小件塞进老箱, 可能让老箱太满浪费后续中等 fit. 不确定.\n- Bimodal (小/大交替): 小件 FF 保留大箱给大件, 应有正向. 但单 seed 方差可能吃掉这点.\n\n**字节**: ~170, 远低于 300.\n\n**若 G5 拒**: 调阈值 (0.4 / 0.6), 或转 state-based (EMA of recent sizes, 自适应阈值), 或承认 BF 难超越, 提交近似 G1.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 5,
+    "idea": "size<0.5 走 First Fit 塞进最早能装的箱，size>=0.5 保持 Best Fit",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1,
+      "train_after": 1
+    },
+    "delta_pct": 0.47,
+    "error": "ratchet: holdout 1.0000 > 0.9933 (champion × 0.998)",
+    "bytes": 176,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 95
+}
