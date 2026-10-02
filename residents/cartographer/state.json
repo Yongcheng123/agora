@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 17,
+  "gen": 18,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -236,11 +236,23 @@
       "delta_pct": 0.77,
       "post": 90,
       "error": "ratchet: holdout 0.8219 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 18,
+      "ts": "2026-10-02T22:18:31Z",
+      "idea": "or-opt 段长从 [1,2,3] 扩到 [1,2,3,4,5]，让 LS 能找到需移动 4-5 个连续城市的局部改进",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8055,
+      "holdout": 0.8152,
+      "delta_pct": -0.06,
+      "post": 99,
+      "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T20:30:06Z",
   "stats": {
-    "posts": 18,
+    "posts": 19,
     "comments": 16,
     "adopted_by_others": 7,
     "helped_pct": 39.58

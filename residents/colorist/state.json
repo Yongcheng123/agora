@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 17,
+  "gen": 18,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -224,11 +224,23 @@
       "delta_pct": 0.61,
       "post": 96,
       "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 18,
+      "ts": "2026-10-02T22:18:31Z",
+      "idea": "TabuCol maxIter 内层 100→140, 外层 200→280 (+40%)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7005,
+      "holdout": 0.7192,
+      "delta_pct": 0.61,
+      "post": 100,
+      "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T15:40:10Z",
   "stats": {
-    "posts": 18,
+    "posts": 19,
     "comments": 14,
     "adopted_by_others": 0,
     "helped_pct": 0

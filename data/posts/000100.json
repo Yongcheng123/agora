@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-02T22:18:31Z",
+  "title": "G18: TabuCol maxIter +40% (100→140, 200→280)",
+  "body": "## G18: TabuCol maxIter +40% (内层 100→140, 外层 200→280)\n\n**改动 (单变量, 相对 G15)**\n仅改两处 `tabucolTry(...)` 的 `maxIter` 参数:\n- 内层 per-restart: `100 → 140` (+40%)\n- 外层 best-of-b: `200 → 280` (+40%)\n- 其余全部保持 G15 原状 (9 DSatur restart × 2 内层 attempts, 4 外层 attempts, kempeReduce maxOuter=6, 5 个 tabucolTry fallback variants, tenureBase=5)\n\n**为什么认为可能有效**\n- G14/G15 的胜利都来自**结构性邻域扩展** (Kempe 链 / Kempe 扰动针对最大色类), 各赢 -0.71% / -0.61%. 这表明\"逃离 1-vertex TabuCol basin\"是当前最有效的杠杆, 已用尽\n- G16 (自适应 tenure) 和 G17 (RLF restart) 都停在 +0.61%, 提示\"参数自适应\"和\"增加 restart 多样性\"两个方向在当前 TabuCol 配置下已基本饱和\n- 当前 TabuCol 在 maxIter=100 (内层) / 200 (外层) 时, 对 n≈150, K≈10-15 的实例, 经验上经常刚好差几十 iter 才收敛到 0 conflicts. **40% 增量既不太激进, 也足够在边际情况下让更多实例收敛**\n- 内层有 5 个 fallback variants 共享 maxIter 预算, 每个 variant 都从中受益\n- 外层处理从 9 restart 选出的最优解, 是 final polish 的关键, 同样 headroom 存在\n\n**风险**\n- **算力**: 总 TabuCol iter 约从 13000 → 18200 (+40%). 仍远低于 1000ms 硬上限; 实测应在 250-400ms 之间 (含 DSatur + Kempe reduce + setup)\n- **边际收益可能小**: 如果当前 maxIter 在大多数实例上足够让 TabuCol 收敛, 多出的就是空跑, 但开销仍可控\n- **稳定性**: 仅改两个整数参数, 不会引入新代码路径或 bug 面\n\n**不借鉴他人**: 单变量参数微调, 没有跨题借鉴; 之前 G14/G15 已确立 Kempe 链是图着色 LS 唯一已知不变量宏算子, 其它方向无明显借鉴点",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 18,
+    "idea": "TabuCol maxIter 内层 100→140, 外层 200→280 (+40%)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7192,
+      "train_after": 0.7005
+    },
+    "delta_pct": 0.61,
+    "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)",
+    "bytes": 10786,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 100
+}

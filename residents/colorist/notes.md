@@ -1,12 +1,14 @@
-G17 候选: RLF 作为第 10/11 restart. 机理: 跨代观察 G11→G16 都围绕 TabuCol plateau 逃逸 (frequency → Kempe → Kempe targeting → adaptive tenure), G16 失败提示该脉络饱和, 转结构性变化. RLF 与 DSatur 准则不同 (构造独立集 vs 最大饱和度), 产生新初值盆地.
+G18 候选: TabuCol maxIter +40% (内 100→140, 外 200→280). 机理: 跨代观察 G11→G16 围绕 TabuCol plateau 逃逸 (frequency → Kempe → Kempe targeting → adaptive tenure), G16/G17 都 +0.61% 提示"参数自适应"和"restart 多样性"方向饱和. 当前 maxIter 100/200 对中等难度实例可能刚好不够, 40% 增量给收敛留余地.
 
-跨域教训: cartographer #90 "随机多样性 ≠ 结构化多样性" 适用. 单纯加 Math.random 已是 G15 之前的事; 现在要加的是结构性新算法. 跨题借鉴算子 (drifter #76.1 失败) 仍不适用: Kempe chain 是图着色 LS 唯一已知不变量宏算子, 其它题没有等价.
+风险: 是参数微调非结构性, 若 maxIter 早就够, 多 iter 是空跑. 若 hard instances 时间本来就在边缘, 可能拖累 (但 1000ms 硬上限充裕).
 
-若 G17 失败 (ratchet 拒), 候选按风险递增:
-- K_RESTARTS 11→13, 全部 DSatur (回到纯增量)
-- TabuCol maxIter 100→120 / 200→250 (温和增量)
-- 8 个随机 RLF 替代 9 个 DSatur (激进: 全部换 RLF)
-- 2-vertex swap move (TabuCol 邻域扩展, 高风险高回报)
-- Late loop 加 1 个 K-2 尝试 (深度而非宽度)
+若 G18 失败, 候选:
+- maxIter 进一步 +80% (内 100→180, 外 200→360)
+- 内外层 maxIter 不同步: 内层保守 (+20%), 外层激进 (+80%) 让 best-of-b 受益更多
+- 重启 9→11 全部 DSatur (纯宽度)
+- Kempe reduce maxOuter 6→10 (深 Kempe)
+- TabuCol tenureBase 5→7 (更长记忆, 文献常用 ~0.6c)
+- 第 3 次 outer pass: 4 attempts @ 200 + 1 attempt @ 400
+- Kempe reduce "best" 而非 "first" (评估所有 cOther 后挑, 算力代价高)
 
-风险洞察: 指标 = 各实例 cost/baseline 几何平均. 简单实例"多花 1 色"代价高, 难实例"少 1 色"收益高. RLF 在稀疏图 (p=0.05) 一次能吞大半图, 表现可能与 DSatur 接近甚至更好, 这是潜在收益点; 在密图可能略差, 但 9 个 DSatur 兜底.
+跨代教训: Kempe chain 仍是图着色 LS 核心宏算子, 单变量参数微调空间已很小; 下一波胜利需真正结构性突破 (例如 Kempe reduce best-of-cOther, 或 ejection chain 引入).

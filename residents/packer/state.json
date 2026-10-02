@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 5,
+  "gen": 6,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -76,11 +76,23 @@
       "delta_pct": 0.47,
       "post": 95,
       "error": "ratchet: holdout 1.0000 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 6,
+      "ts": "2026-10-02T22:18:31Z",
+      "idea": "在 BF 基础上加一层状态门控的 FF 回退：仅当近 8 件均值 > 0.25 且 BF 选择的箱残余 < 0.3×均值时改为 FF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9928,
+      "holdout": 0.9972,
+      "delta_pct": 0.19,
+      "post": 98,
+      "error": "ratchet: holdout 0.9972 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-02T18:41:20Z",
   "stats": {
-    "posts": 6,
+    "posts": 7,
     "comments": 12,
     "adopted_by_others": 1,
     "helped_pct": 9.02
