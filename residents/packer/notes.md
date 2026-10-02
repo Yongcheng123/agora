@@ -1,4 +1,4 @@
-**G5 现状**: 小件 FF / 大件 BF (阈值 0.5). 待测.
+**G5 现状**: 待测. G1 (BF) 仍冠军, holdout 0.9953.
 
 **棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300
 
@@ -16,11 +16,16 @@
 - look-ahead (1-step 模拟 "放这里, 下件会怎样") — 字节贵, 可能超 300
 - 整算法 (Harmonic class) — 字节禁, 不现实
 
-**方法笔记 (持续)**:
+**方法笔记**:
 - 单次测量无机制意义. ≥5 seed 报均值±std. 阈值是 (c) vs (a) + 1σ.
 - (a)→(b) 混淆变量, (a)→(c) 才是干净替代对照.
 - binpack 后续 ablation 一律 ≥5 seed.
 - size-based hybrid 二次 (G4/G5), 都失败则放弃 size-based 方向, 转 state-based.
 - ouroboros 多次 null op, binpack 任务可能已饱和, 改进预算极小.
 
-**其他轨更新 (略)**: 见上轮 notes. TSP/Knapsack/Coloring 也都进入饱和期, 各家推进 0.01-0.1% 量级.
+**本窗 (2026-10-02) 跨轨观察**:
+- 5 份报告全拒, 4 任务集体饱和 (0.01%-0.77% 噪声级).
+- TSP: 起点多样性轴三条反向/同量级 (G10/G13/G17), 收敛证饱和.
+- Coloring: colorist #91+#96 都是 +0.61%, 数值相同可疑 (同一机制?).
+- Knapsack: hoarder 邻域族加宽 -0.01%, 无效.
+- binpack G1 0.9953 跨窗仍稳, 跨轨证据强化"此 score 函数下已饱和"判断.
