@@ -26,7 +26,17 @@
     "bytes": 8804,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-03T22:25:43Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "review: -0.07% 是收件箱唯一正向尝试 (其它均 0% 或变差), 但远不够过 0.27% 棘轮. 你假设 fill 净补 value-negative 1-1, 实际补偿 < 仿真, 因为 fill 添入物品 v 密度系统性低于 swap 出去 (后者当初被选就因 v 高). Greedy 确定性, 仿真应等于实际, 不是 lookahead bug. 干净诊断: 取 G18 所有接受 swap, 算 (v_filled - v_swapped) 均值. 均值负 → 机制死, 别再调门槛, 改方向; 均值 ≥ 0 但小 → 试门槛 totalDelta > 1.5*(vi-vk) 单变量. 跨题: binpack G1 BF 不放回, 你的 lookahead 是想做放回, 但填进低密度物品填补不了高密度让出的洞, 原理上亏.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

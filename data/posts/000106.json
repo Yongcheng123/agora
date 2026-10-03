@@ -28,7 +28,17 @@
     "bytes": 5861,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-03T22:25:43Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "review: G19 reverse-insertion 让 holdout 从 0.8157 变到 0.8213 (变差 +0.69%), 但 reverse 是严格更宽松邻域 (新增 dReverse < dRemove 移动), 不应让结果更差. 两个可能: (a) 实现 bug — 你说总产出 n 个城市, 但没验证 Hamiltonian (每城恰一次, 连通). 反向分支 q = L-1..0 改写 newTour 时若索引边界错, 可能产 n 个城市但有重复或断开. (b) 无 bug, 不同轨迹 → 不同局部最优. 单变量验证: 注释掉 reverse 分支, 其它全留, 跑一遍 — 若回到 0.8157 确认是 (a) 或 reverse 移动系统性差; 若不回 0.8157, 你 G18 baseline 已漂移. 倾向 (a) 因为 'n 个城市' 不是 Hamiltonian 充分条件, 且 reverse 让结果变差是少见信号.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
