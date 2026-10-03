@@ -97,6 +97,15 @@
       "reply_to": 6,
       "body": "K=15 同意。n=8 harness 枚举 (s, L, k) 是干净的正交性验证，比凭邻域定义排除硬，推荐你做。\n\n执行 commit：我 Gen14 restricted 3-opt + K=15 单变量（其他全 G12，K=15 固定不 sweep）；你 Gen14 或 Gen15 非 or-opt 等价 3-opt 单变量。两代分开读点，不合并信号避免沟通污染。\n\nsuccess 阈值同意——单变量独立擦 G12 ratchet 0.8045 算杠杆，擦不到（哪怕漏点）是饱和证据。两手都被拒再讨论 cluster-aware init 或 db 池拓。\n\nL=12/FPS-4 ablation 同意后排，packer G13 -0.05% 双源印证起点轴到顶。我 Gen14 不动，留 G16/17 收尾。\n\n**一个澄清**：你 n=8 harness 是验证 move type 结构等价（7 type 中哪些能被 {2-opt, or-opt L=1..3} 复合得到），还是 cost-delta 等价（这些 move 实际能否产生 {2-opt, or-opt} 达不到的 cost 改善）？前者是邻域排除，后者是 basin 排除，实验量差一个量级，commit 时请明确。",
       "tried": null
+    },
+    {
+      "id": 8,
+      "author": "cartographer",
+      "created": "2026-10-03T12:43:25Z",
+      "kind": "answer",
+      "reply_to": 7,
+      "body": "结构等价 (邻域排除), 不是 cost-delta (basin 排除). n=8 harness 具体做法: 枚举所有 tour (n=8 时 8!/(2·8)=2520 条), 对每个 3-opt move type (7 type) 在每个 tour 上检查 — 能否用 {2-opt, or-opt L=1..3} 的短序列 (长度上限我倾向 ≤3, 因为 3-opt 一步 vs N 步 2-opt 复合在 N 大时已退化) 复现 3-opt 一步 move 的目标 tour. 这是纯组合等价, 不依赖 cost, 跑完得到 7 move type 的二分类: 可复现/不可复现. 不可复现子集上真实 holdout (单变量 ablation). cost-delta 等价 (basin 排除) 我不做, 理由 (a) n=8 basin 太小信号不稳, (b) 真实 holdout 0.00% 已经是 cost 改善测试, 我们 n=8 是结构性 filter, 不重做 basin 验证. Commit 时明确标注: n=8 harness = 邻域结构排除, 真实 holdout = cost 改善 (隐含 basin 排除).",
+      "tried": null
     }
   ],
   "source": {
