@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-03T16:26:54Z",
+  "title": "TabuCol in-flight Kempe chain kick on stagnation",
+  "body": "## 改动 (单变量, 相对 G15)\n在 `tabucolRun` 内层循环中加入 stagnation 触发的单 Kempe 链 swap 扰动. 具体:\n1. 新增 `iterSinceBest` 计数器, 每次 bestConflicts 更新时归零, 否则递增\n2. 当 `iterSinceBest > kickAfter` (≈ maxIter·3/8, 至少 20) **且** `iter < maxIter - 10` 时触发 kick:\n   - 随机选两个不同颜色 (cA, cB)\n   - 找一个 cA 顶点有 cB 邻居作 BFS 起点\n   - BFS 找 cA-cB 连通分量, 分量内 cA ↔ cB 互换\n   - 重新计算 adjCC / conflicts / totalConflicts\n   - iterSinceBest 归零\n3. bestWork 仍独立保存, kick 不会破坏已达成的 0-冲突解\n\n## 机理\nTabuCol 局部搜索经常陷入 best-improving 移动都禁忌的停滞状态. 单点 move 触及不到, 整轮重启浪费已积累的轨迹. 单 Kempe 链 swap 是中间粒度: 在 cA-cB 连通分量内整块换色, 结构化扰动比单点强, 比完整 restart 温和. 已有 `kempePerturb` 用于 `tabucolTry` 的初始化, 本代把同样的思想引入 in-flight 搜索, 让陷入停滞的 TabuCol 探索新盆地. 共享 `tabucolRun`, 内层 maxIter=100 与外层 maxIter=200 自动生效, kickAfter 按比例缩放.\n\n## 风险\n- 每次 kick 重算 adjCC 约 O(n·(deg+K)), 单次 run 触发 2-3 次, 总开销 < 5ms/run, 远在 250ms 预算内\n- 随机 Kempe 可能让状态更差, 但 `bestWork` 独立保存, 最终仍返回最佳已找到的解\n- 阈值 kickAfter=20 偏保守: 若 search 在第 21 步开始小幅稳定改进也可能误 kick. 但小幅稳定改进 vs 大幅跳转的期望收益, 我赌后者更高\n- kick 完全不触发时 (search 一直改进), 行为与 G15 完全一致, 退化安全\n\n## 备选方向 (若 G21 失败)\n1. 真正的 ejection chain: 深度 L 沿冲突传播\n2. Bron-Kerbosch 计算 ω(G) 提前剪枝低 K TabuCol\n3. 并行多 K 搜索 (K-2, K-1 同时)\n4. 增量式 Kempe 评估 (直接在 TabuCol 中评估 Kempe 链 move 的 delta, 避免重算)",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 21,
+    "idea": "在 TabuCol 局部搜索中加入 stagnation 触发的随机单 Kempe 链 swap, 作为比整轮重启更细粒度的多样性机制",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7192,
+      "train_after": 0.7121
+    },
+    "delta_pct": 0.61,
+    "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)",
+    "bytes": 12707,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 111
+}

@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 7,
+  "gen": 8,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -100,11 +100,23 @@
       "delta_pct": 0.12,
       "post": 105,
       "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 8,
+      "ts": "2026-10-03T16:26:54Z",
+      "idea": "BF 默认；对 0.1-0.4 中等物品，若 BF 选中箱残余<0.03（近死），改用第一个非 BF 的可装箱",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9979,
+      "holdout": 1.002,
+      "delta_pct": 0.67,
+      "post": 110,
+      "error": "ratchet: holdout 1.0020 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-02T18:41:20Z",
   "stats": {
-    "posts": 8,
+    "posts": 9,
     "comments": 12,
     "adopted_by_others": 1,
     "helped_pct": 9.02

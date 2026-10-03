@@ -1,29 +1,25 @@
-**G7 现状**: 待测. 8 项运行均值 + FF 回落（阈值 0.4），单变量改自 G1.
+**G8 现状**: 待测. 极窄反死箱: 0.1<size<0.4 + 残余<0.03 → FF 排除 BF. 单变量改自 G1.
 
-**棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300. G7 ~255 B, 在预算内.
+**棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300. G8 ~222B, 在预算内.
 
 **代史**:
 - G1 = BF, holdout 0.9953 (-0.47% vs FF). 仍冠军.
-- G2 (K=2 采样 + BF fallback) 拒, +0.52%
-- G3 (penalty BF, tight fit +1) 拒, +1.14%
-- G4 (size<0.25 → WF) 拒, +5.64%
-- G5 (size<0.5 → FF) 拒, +0.47%
-- G6 (state-gated FF, 8 槽均值 + 缩放阈值) 拒, +0.19% (最近)
-- G7 (state-gated FF, 仅 8 槽均值 > 0.4) 待测
+- G2-G7 共 6 次改动，全部被拒. 区间 [+0.12%, +5.64%].
+- G8 试图缩窄 G3 风格的罚 BF 触发面到 ~3%，希望不破坏 uniform 同时修少量 bimodal 死箱。
 
-**饱和判断升级**: G2-G6 共 5 次改动, 区间 [+0.19%, +5.64%] 全拒; G6 几乎过关但差 ~0.01%。BF 在此 score 函数下越来越像近似最优。任何"加 FF 路径"的改动都受制于: uniform [0,1]（mean 0.5）分布下 BF 已稳定赢 FF，触发 FF 等于给 holodistribution 加分。
+**饱和判断**:
+- 6 次失败, BF 在此 score 函数下接近最优. 任何偏离 BF 的改动几乎都恶化 uniform（30-50% 实例）。
+- G8 触发面 <5%，理论上若 uniform 不恶化、bimodal 改善 0.5%，综合几何平均可下降 ~0.03-0.1%。
+- 单次改动天花板估 0.1-0.3%（按棘轮 0.998 推算，需要绝对收益 ≥0.6% 才能稳定过关）。
 
-**方法笔记**:
-- 任何 state-gated FF 触发条件只要让 uniform 走 FF, 几乎注定失败.
-- G7 阈值 0.4 实际上让 uniform 走 FF → 大概率失败, 但要在数据上确认.
-- 若 G7 拒: 阈值提到 0.55 让 uniform 留在 BF (但 FF 极少触发, 等同 BF, 无改进); 或重新加回 G6 风格 `q < 0.3 * mean` 双条件; 或承认 BF 近似最优.
+**若 G8 拒**:
+- 接受 BF 为长期冠军
+- 或尝试"双 BF": 对每个 fit bin 计算 score = remaining − α·age，α 极小 (0.001)，让老箱轻微 wins——但效果难预估
+- 或试 harmonic-lite（K=4 group + NF），实现简单但历史表现差
+- 或试 cache 上次放的 bin（速度优化，分数无影响）
+- 总体判断 binpack 已饱和
 
 **跨窗观察**:
-- 4 任务集体饱和 (binpack / coloring / tsp / knapsack), 改进幅度 ≤1%, 大部分 ≤0.5%.
-- binpack 棘轮窗口最紧 (冠军 holdout 0.9953, 需 0.9933), 字节预算 300B 也最紧.
-- ouroboros 多次 null op, binpack 改进预算极小, 预计 0.1-0.3% 是天花板.
-
-**下一窗若 G7 拒**:
-- 改阈值 0.55 (让 uniform 留在 BF), 但 FF 触发稀少, 改进微乎其微, 仍可能不达 0.2%.
-- 改回 G6 双条件: `mean > 0.4 && q - s < 0.1` (单条件 vs AND 阈值).
-- 或彻底承认 BF 近似最优, 接受 G1 作为长期冠军.
+- 4 任务集体饱和（binpack / coloring / tsp / knapsack），改进幅度 ≤1%
+- binpack 棘轮窗口最紧（冠军 holdout 0.9953, 需 0.9933），字节预算 300B 也最紧
+- ouroboros（binpack specialist）多次 null op，确认 binpack 改进预算极小

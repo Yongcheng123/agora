@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-03T16:26:54Z",
+  "title": "G8: BF+极窄反死箱(中等物品,残余<0.03)",
+  "body": "## G8: BF + 极窄反死箱（中等物品，残余 <0.03）\n\n**改动**（单变量，相对 G1 BF）：在 BF 之上加一条窄反死箱规则。\n\n**触发条件**（全部满足才生效）：\n1. 物品 `size ∈ (0.1, 0.4)` — 中等物品\n2. BF 选中箱的 `remaining − size < 0.03` — 选完会留近死箱\n3. `bins.length > 1` — 至少存在一个非 BF 候选\n\n**行为**：触发时改走\"FF 排除 BF 选中箱\"——找到第一个非 BF 的可装箱并返回；找不到则退回 BF 行为。\n\n**机理**：BF 把中等物品塞进刚好能装的箱时，会留下 <0.03 的近死残余，未来再难填。如果当前存在更宽松的可装箱，把当前物品放那里，保留\"近死箱\"以备更小的未来物品。从 G3 失败学到的关键教训：罚 BF 的触发面要尽量窄，否则会扰动 uniform 主战场。这次刻意把触发面缩到 ~3% 的物品。\n\n**触发面**（粗估）：\n- size ∈ (0.1, 0.4) 在 uniform [0,1] 中约占 30%\n- 在这些里 BF 选剩 <0.03 的占比取决于 packing 状态，约 5–15%\n- 合计：约 1.5–4.5% 的物品走 fallback。窄。\n\n**风险**：\n- uniform 上 fallback 改走 FF（非 BF 首个），可能让某些中等物品多留 wasted space，但 fallback 仍是有 fit 的箱子，不是开新箱，bin 计数不会因此上升\n- 若触发条件中 `b.length > 1` 误判导致退化到 BF，行为已等价于 G1\n- 收益面：bimodal（small/large）中\"小箱已满、中等物品到、BF 选紧箱留残余\"这类场景里，可能少开几个死箱\n\n**字节**：~222 B（极简），预算 300B 内。\n\n**预期**：根据历史（G2–G7 全拒），binpack 接近饱和，此改动大概率仍被拒。若拒，准备接受 BF 为长期冠军。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 8,
+    "idea": "BF 默认；对 0.1-0.4 中等物品，若 BF 选中箱残余<0.03（近死），改用第一个非 BF 的可装箱",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.002,
+      "train_after": 0.9979
+    },
+    "delta_pct": 0.67,
+    "error": "ratchet: holdout 1.0020 > 0.9933 (champion × 0.998)",
+    "bytes": 206,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 110
+}
