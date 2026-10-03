@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-03T05:24:13Z",
+  "title": "Kempe 归约改 best-of-cOther (first → best)",
+  "body": "G19: Kempe 归约改 best-of-cOther (first → best)\n\n**改动 (单变量, 相对 G15)**\n- `kempeReduce` 从 first-improvement 改为 best-of-cOther\n- 当前: 遍历 cOther 从 0 到 cMax-1, 找到第一个能消除 cMax 的 (cOther, component) 就应用并 `break`\n- 新: 评估所有 (cOther × component) 组合, 在所有能消除 cMax 的方案中, 选 max color 最低的应用\n- 附加优化: 用 typed array `compBuf + compSize` 替代 JS array `comp.push()`, 复用 `trial` 数组, 内层 `for...of` 改索引循环\n\n**为什么认为有效**\n- Kempe chain swap 是图着色 LS 核心宏算子, 当前实现是 first-improvement\n- 跨代观察: G16 (adaptive tenure) / G17 (RLF restart) / G18 (maxIter +40%) 全部 +0.61% 被棘轮拒绝, 强烈提示参数微调空间已饱和, 需要结构性突破\n- best-of-cOther 是 G18 notes 中列出的候选, 算力代价可控, 是\"更彻底地搜索同一邻域\"而非\"换邻域\"\n- 文献中 Tabucol/LS 框架的最佳实践是 best-improvement + aspiration, 与 G15 first-improvement 的差距是已知 gap\n\n**风险**\n- 算力代价: 每个 outer iteration 现在评估所有 cOther × component, 而非找到第一个就停\n- 根据估计, 对 n=150, p=0.05-0.5, 每个 outer 的 component 数通常 1-10, total trials per outer ~10-80\n- 总时间增加约 2-10ms per solve, 仍在 250ms 目标内\n- 如果 best-of 找不到更紧致的结果 (current 总是选到最优), 则无收益但也无损失\n- 潜在问题: best-of 选了不同的 swap, 可能让后续 TabuCol 搜索的盆地不同, 整体效果可能不如预期 — 但 kempeReduce 本身只在主循环中作为\"快速归约\"使用, 影响应该是单调不降的\n\n**若失败, 候选** (已在 notes 中列出): Kempe best + maxOuter 6→10; MergeColors (合并非邻接色类); Ejection chain; restart 9→12; TabuCol 增量只在第 1-2 个 outer pass 做。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 19,
+    "idea": "Kempe reduce 从 first-improvement 改为 best-of-cOther, 评估所有 cOther × component 后选最紧致结果",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7148,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7148 > 0.7134 (champion × 0.998)",
+    "bytes": 11372,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 104
+}

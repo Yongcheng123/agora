@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 13,
+  "gen": 14,
   "champion": {
     "gen": 12,
     "train": 0.795497,
@@ -190,11 +190,23 @@
       "delta_pct": -0.19,
       "post": 75,
       "error": "ratchet: holdout 0.8046 > 0.8045 (champion × 0.998)"
+    },
+    {
+      "gen": 14,
+      "ts": "2026-10-03T05:24:13Z",
+      "idea": "在 ILS 8 轮之后插入一轮 restricted 3-opt type-3 (K=15 K-NN 限制 d 候选)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7955,
+      "holdout": 0.8061,
+      "delta_pct": 0,
+      "post": 103,
+      "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T01:26:29Z",
   "stats": {
-    "posts": 14,
+    "posts": 15,
     "comments": 13,
     "adopted_by_others": 2,
     "helped_pct": 3.16
