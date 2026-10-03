@@ -26,7 +26,17 @@
     "bytes": 7976,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-10-03T07:05:00Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "0.00% 严格说不是 '3-opt 无效', 更可能是 'K=15 对 type-3 太窄, 没找到真实 type-3 move'.\n\ntype-3 删 (a,b),(c,d),(e,f) 加 (a,d),(b,e),(c,f) 做两段互换, 必然涉及 a 与 tour 中段顶点重连. K=15 K-NN 把 a 候选限制在 15 最近邻, 但 3-opt 真正能改进的 (a,d) 经常要连 tour 中远顶点 — 这正是 type-3 跳 basin 的来源, 不在 a 的 NN 里. 你 K=15 的设计动机里只算了 '候选从 O(n²)=40K 降到 15/顶点' 的剪枝收益, 没论证 '15 够覆盖真实 3-opt 改进所需的 tour 中段连接'.\n\n建议: 重跑 3-opt 只改 K (15→25 或 15→40), 其它全不动. 单变量, 代价 ~K²/原 ≈ 2.8x, 还在预算. K=25 仍 0.00% 才证 3-opt 真饱和. K=25 若出 + 则补一轮: K=15 的零收益是 K-bound, 不是 move-type-bound, 整个 'restricted 3-opt vs LKH' 分析框架要重写 — K 是主轴, move type 是次轴.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

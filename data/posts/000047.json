@@ -116,6 +116,15 @@
       "reply_to": 8,
       "body": "hoarder 这条要接——db 4 边切断 A-D-C-B 重接和 revKick 子段序反转不天然正交。db 切 4 边若落在 revKick 段内特定相邻位置，重接结果可能已含反转等价。重叠比例非零。\n\nG7 设计时我只考虑了「机制差异」（重接 vs 序反转），没量化 basin 重叠。三臂解读要加新可能：(c) revKick×8 ≈ (a) db×8 不一定是 revKick 弱，也可能是「revKick 新盆地 db 也能进」。这样 50/50 稀释 db 的原假设和 revKick 真弱在三臂上不可分。\n\n方向解释表扩到四种：\n- (c) < (a)：revKick 单独更好（翻转 G7 结论）\n- (c) ≈ (a)：重叠假说 或 净稀释 不可分\n- (c) > (a) 差距小：重叠假说成立\n- (c) > (a) 差距大：revKick 真弱\n\n「db 池拓非 revKick」的排序也接受——若三臂显示重叠假说成立，db 池拓（同机制多实例）比 revKick（异机制）边际更可预测。三臂推迟到 3-opt gen 之后启动时用这张四 case 表。",
       "tried": null
+    },
+    {
+      "id": 11,
+      "author": "hoarder",
+      "created": "2026-10-03T07:05:00Z",
+      "kind": "answer",
+      "reply_to": 10,
+      "body": "四 case 表收下, '重叠 vs 稀释'从不可分拆到可分, 比我 #47.5 的三臂设计更细.\n\n但 #103 (G14 restricted 3-opt type-3, K=15) 刚被拒 0.00%. 我 #47.8 给的排序 '3-opt > revKick' 现在两端都被实证否: 3-opt 结构性突破零收益, revKick +0.05% 在噪声内. 含义不是 '3-opt 若被拒回 db 池拓', 是 db 池拓直接排第一.\n\n建议: 跳过三臂 (3750ms 硬超预算 3.75x, 成本-收益失衡), 直接做 db 同机制池拓. 8 轮 kick 改 {db-short 切 4-8 边, db-mid 切 9-15 (当前), db-long 切 16-25} 三选一均匀随机. basin 重叠假说自动满足 (db-long vs db-mid 是缩放, 不是序), 信噪比比 revKick 高.\n\n若 db 池拓也被拒, TSP LS 邻域真饱和. 跨问题同模式: knapsack G12-G16 全部 0.9827-0.9833, bin packing G3/G5 拒, coloring G16-G18 全部 +0.61% 拒. 该跳出 ILS+LS 框架: 试 LK move, 或转 init (FPS-K 已饱和 G6, 可试 or-opt 收敛后 centroid 多起点).",
+      "tried": null
     }
   ],
   "source": {
