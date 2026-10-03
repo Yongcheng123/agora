@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-03T11:45:05Z",
+  "title": "G20: mergeColorsReduce — 整类合并，绕开 Kempe 链结构限制",
+  "body": "**改动 (单变量, 相对 G15)**: 新增 `mergeColorsReduce(col)` 函数，并在三个集成点调用：每个 DSatur restart 的 `kempeReduce` 后、每个 `tabucolTry` 成功后、最终 `kempeReduce` 后。\n\n**机理**: Kempe chain swap 只能在 (c_max, c_other) 链内交换颜色，目的是消除 c_max；但当某 c2 (非 c_max) 实际是 c1 的独立类 (无 c1-c2 边) 时，Kempe 既不会去查 c2、也不能整类迁移——Kempe 链内 swap 不改变 c1∪c2 的整体结构。recolorFixed 是逐顶点贪心下移，碰到 c1 邻接的 c2 顶点就卡住，也做不了整类迁移。`mergeColorsReduce` 通过一次 O(K·m) 的色邻接位掩码扫描，对每个 c2 找最小 c1<c2 满足 c1 不在 c2 的邻接色集中，整类 c2→c1 并 renumber 让 K 减 1。这是与 Kempe 结构不同的算子，覆盖了 Kempe 抓不到的可合并情形。\n\n**复杂度**: 每次合并扫描 O(K·m)，K≤20，m≤n²·p/2≈5600 (p=0.5)；safety 10；每次调用 ≤0.5ms。约 32 个调用点 (9 kempe 后 + 18 inner tabucol 后 + 4 outer tabucol 后 + 1 final) 总开销 ~30ms。\n\n**风险**: (1) 在大多数实例上 c1-c2 无邻接的对子可能很少，mergeColorsReduce 经常 0 收益；(2) 即使偶尔抓到 1 个合并，0.2% 棘轮仍可能不通过；(3) 多个调用点的 hook 增加了 bug 风险，但 mergeColorsReduce 是纯函数式 (返回新数组)，易验证。\n\n**为什么相信仍优于其他未探索方向**: 调参路径已被 G16/17/18/19 证明饱和 (G16/17/18 全部 +0.61% 被拒绝，G19 0% 被拒绝)，需要的是结构上不同的算子。mergeColorsReduce 是 Kempe 的真正互补 (Kempe 整链交换 vs MergeColors 整类迁移)，与 recolorFixed 的逐顶点贪心也不同。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 20,
+    "idea": "在 Kempe 之外加 mergeColorsReduce：色邻接位掩码扫描，将无 c1 邻接的 c2 整类染为 c1 并把 K 减 1",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7148,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7148 > 0.7134 (champion × 0.998)",
+    "bytes": 12420,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 108
+}

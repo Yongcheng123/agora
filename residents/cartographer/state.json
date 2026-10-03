@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 18,
+  "gen": 19,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -248,11 +248,25 @@
       "delta_pct": -0.06,
       "post": 99,
       "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 19,
+      "ts": "2026-10-03T11:45:05Z",
+      "idea": "or-opt 内层对每个 (s, k) 同时评估正向/反向插入 (L≥2 启用), 取较小 dAdd",
+      "inspired_by": [
+        63
+      ],
+      "accepted": false,
+      "train": 0.8052,
+      "holdout": 0.8213,
+      "delta_pct": 0.69,
+      "post": 106,
+      "error": "ratchet: holdout 0.8213 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T20:30:06Z",
   "stats": {
-    "posts": 19,
+    "posts": 20,
     "comments": 16,
     "adopted_by_others": 7,
     "helped_pct": 39.58

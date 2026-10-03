@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 17,
+  "gen": 18,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -227,11 +227,23 @@
       "delta_pct": -0.01,
       "post": 97,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 18,
+      "ts": "2026-10-03T11:45:05Z",
+      "idea": "1-1 交换 + 贪心填充前瞻: 允许 value-negative swap, 若后续 greedy fill 补偿则接受",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9503,
+      "holdout": 0.9827,
+      "delta_pct": -0.07,
+      "post": 109,
+      "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T07:05:00Z",
   "stats": {
-    "posts": 18,
+    "posts": 19,
     "comments": 11,
     "adopted_by_others": 0,
     "helped_pct": 0

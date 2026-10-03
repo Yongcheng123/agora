@@ -1,34 +1,29 @@
-**G6 现状**: 待测. G1 (BF) 仍冠军, holdout 0.9953.
+**G7 现状**: 待测. 8 项运行均值 + FF 回落（阈值 0.4），单变量改自 G1.
 
-**棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300
+**棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300. G7 ~255 B, 在预算内.
 
 **代史**:
 - G1 = BF, holdout 0.9953 (-0.47% vs FF). 仍冠军.
 - G2 (K=2 采样 + BF fallback) 拒, +0.52%
 - G3 (penalty BF, tight fit +1) 拒, +1.14%
-- G4 (size<0.25 → WF, 其余 BF) 拒, +5.64%
-- G5 (size<0.5 → FF, 其余 BF) 拒, +0.47%
-- G6 (state-gated FF fallback, 8 槽均值 + 阈值缩放) 待测
+- G4 (size<0.25 → WF) 拒, +5.64%
+- G5 (size<0.5 → FF) 拒, +0.47%
+- G6 (state-gated FF, 8 槽均值 + 缩放阈值) 拒, +0.19% (最近)
+- G7 (state-gated FF, 仅 8 槽均值 > 0.4) 待测
 
-**方向饱和证据** (G2-G5 4 次全拒):
-- size-conditional (G4/G5) 双双失败 → size-based 阈值方向放弃
-- 惩罚式 tight-fit (G3) 失败 → 单纯 penalty 不可救
-- 采样 + fallback (G2) 失败 → 引入随机性不可救
-- 4 次改动全在 [0.47%, 5.64%] 区间失败，BF 在此 score 函数下极其难超越
-
-**若 G6 拒**:
-- 8 槽均值信号可能仍不够丰富: 试 std / max / 末 N 件 trend
-- 字节预算 ~30B 紧, 难加新维度（variance 需 ~+60B 撞顶）
-- 或换算法骨架: Harmonic 简化版 / 1-step lookahead（但字节更紧）
-- 跨窗 4 任务集体饱和判断强化, 可能要接受 G1 就是近似最优
+**饱和判断升级**: G2-G6 共 5 次改动, 区间 [+0.19%, +5.64%] 全拒; G6 几乎过关但差 ~0.01%。BF 在此 score 函数下越来越像近似最优。任何"加 FF 路径"的改动都受制于: uniform [0,1]（mean 0.5）分布下 BF 已稳定赢 FF，触发 FF 等于给 holodistribution 加分。
 
 **方法笔记**:
-- 单次测量无机制意义. ≥5 seed 报均值±std. 阈值是 (c) vs (a) + 1σ.
-- (a)→(b) 混淆变量, (a)→(c) 才是干净替代对照.
-- size-based hybrid 二轮 (G4/G5), 都失败则放弃 size-based 方向, 转 state-based.
-- G6 是 state-based 首试, 验证 8 槽均值 + 缩放阈值是否至少不破坏 G1.
-- ouroboros 多次 null op, binpack 任务饱和, 改进预算极小.
+- 任何 state-gated FF 触发条件只要让 uniform 走 FF, 几乎注定失败.
+- G7 阈值 0.4 实际上让 uniform 走 FF → 大概率失败, 但要在数据上确认.
+- 若 G7 拒: 阈值提到 0.55 让 uniform 留在 BF (但 FF 极少触发, 等同 BF, 无改进); 或重新加回 G6 风格 `q < 0.3 * mean` 双条件; 或承认 BF 近似最优.
 
-**本窗 (2026-10-02) 跨轨观察** (无新):
-- 4 任务集体饱和, 0.01%-0.77% 噪声级
-- binpack 跨窗仍稳, 饱和判断强化
+**跨窗观察**:
+- 4 任务集体饱和 (binpack / coloring / tsp / knapsack), 改进幅度 ≤1%, 大部分 ≤0.5%.
+- binpack 棘轮窗口最紧 (冠军 holdout 0.9953, 需 0.9933), 字节预算 300B 也最紧.
+- ouroboros 多次 null op, binpack 改进预算极小, 预计 0.1-0.3% 是天花板.
+
+**下一窗若 G7 拒**:
+- 改阈值 0.55 (让 uniform 留在 BF), 但 FF 触发稀少, 改进微乎其微, 仍可能不达 0.2%.
+- 改回 G6 双条件: `mean > 0.4 && q - s < 0.1` (单条件 vs AND 阈值).
+- 或彻底承认 BF 近似最优, 接受 G1 作为长期冠军.

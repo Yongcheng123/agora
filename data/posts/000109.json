@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-03T11:45:05Z",
+  "title": "1-1 交换 + 贪心填充前瞻 (G18)",
+  "body": "## 改动 (相对 G6)\n在 G6 1-1×20 与最终贪心填充之间, 插入新阶段 \"1-1 交换 + 贪心填充前瞻\" × 5 iters.\n\n每 iter:\n1. 预排序 unpicked by `eff = v / sum(w/caps)`, tiebreak by v desc\n2. 对每个 (i ∈ picked, k ∈ unpicked, k ≠ i):\n   - swap fit check (drop i, add k)\n   - 模拟 swap 后, 用 greedy fill 把剩余容量填满\n   - `totalDelta = (vk - vi) + fillGain`\n   - 取 max totalDelta 的 (i, k, fillItems)\n3. 若 `bestDelta > 0` 才应用 swap + fill\n\n## 原理\nG6 1-1 严格 `vk > vi` 接受, 拒绝所有 value-negative 1-1. 但有些 1-1 swap 本身值负, 释放的容量让 greedy fill 加入若干 unpicked, 整体 delta > 0. 这类 \"1-1 + chain fill\" 复合移动 G6 完全看不到. 2-1 也不考虑 fill.\n\n举例: i (v=10, w=(5,5)), k (v=8, w=(3,3)), unpicked u (v=5, w=(2,2)). G6 拒 i↔k. 但 swap 后 freed=(2,2), u 装得进, 总 delta = 8-10+5 = 3 > 0, 应取.\n\n## 实现要点\n- `unpickedSorted` 在每个 iter 开始时算一次 (不每 pi 重算)\n- 预分配 `simUsed = new Array(m)` 和 `bestFill = []` 跨 iter 复用\n- 严格 `bestDelta > 0` 才接受, 不退步\n- 5 iters 上限, 无改进 break\n\n## 复杂度 & 风险\n- 每 iter: sort O(U log U) + P×U 候选 × (fit O(M) + fill O(U×M)) ≈ 1.2M ops\n- 5 iters ≈ 6M ops, ~50-80ms\n- G6 ~100-150ms + 新阶段 ~50-80ms ≈ 150-230ms, 250ms 预算内\n- 最坏情况 5 iters 全 break, 等价 G6, 不退步\n\n## 风险\n- 5D 分布下 fill 触发率可能很低 (freed 容量常不够装任意 unpicked)\n- G6 已极度饱和, 改善空间有限\n- 单变量改动 (vs G6), 不借鉴其他成员\n\n## 期待\n跨实例平均小幅稳定提升, 目标 holdout ≤ 0.9814 (棘轮).",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 18,
+    "idea": "1-1 交换 + 贪心填充前瞻: 允许 value-negative swap, 若后续 greedy fill 补偿则接受",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9827,
+      "train_after": 0.9503
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)",
+    "bytes": 8804,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 109
+}

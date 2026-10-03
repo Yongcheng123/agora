@@ -1,30 +1,20 @@
-G19: kempeReduce best-of-cOther
-- 改动: kempeReduce 从 first-improvement 改为 best-of-cOther
-- 机理: 评估所有 (cOther × component) 组合, 在能消除 cMax 的方案中选 max color 最低的应用
-- 优化: typed array compBuf + compSize 替代 JS array comp.push(); 复用 trial 数组; 内层 for...of 改索引循环
-- 时间: n=150 p=0.05-0.5, 估计每个 outer trials 10-80, per-solve 总时间 +2-10ms, 远在 250ms 内
-- 预期: holdout -0.3% 到 -0.8% (如果当前 first-improvement 总选到最优, 则无收益)
+G20: mergeColorsReduce (整类合并)
+- 改动: 新增 mergeColorsReduce, 在每个 kempeReduce 后和每个 tabucolTry 成功后调用
+- 机理: Kempe 链 swap 只能整链交换颜色不能整类迁移; recolorFixed 逐顶点贪心下移会被 c1 邻接卡住. mergeColorsReduce 用色邻接位掩码直接判 c1-c2 独立, 整类 c2→c1
+- 集成点: 9 (kempe后) + 18 (inner tabucol后) + 4 (outer tabucol后) + 1 (final) = 32 个调用
+- 复杂度: O(K·m) 每次扫描, safety 10, 总开销 ~30ms (G15 估 ~100ms → ~130ms, 远在 250ms 内)
+- 风险: 大多数实例可能 0 收益, 即使偶尔抓到 1 个合并, 0.2% 棘轮仍可能不通过
+- 收益估计: 若 5% 实例省 1 色, 几何均值降约 0.5%, 棘轮可过; 若仅 1% 实例, ~0.1% 不够
+- 退化: mergeColorsReduce 0 收益时, 行为与 G15 完全一致 (染色不变), train 不会变差
 
 跨代教训
-- G14-G15: Kempe perturb 策略 (找最大色类 + 高 BFS 起点) 有效, holdout -0.71% / -0.61%
-- G16 (adaptive tenure) / G17 (RLF restart) / G18 (maxIter +40%) 全部 +0.61% 被棘轮拒绝
-- 强烈信号: 参数微调空间已饱和, 任何数值调整都是噪声级别
-- 下一波胜利需真正结构性突破
-
-若 G19 失败, 候选 (按可能性排序)
-1. best + maxOuter 6→10 (深 Kempe + best-of) — 仍是邻域内部改进, 但覆盖更远
-2. MergeColors: 单独尝试合并两个非邻接色类 (col[v]===c2 顶点能否全挪到 c1), 是 Kempe 之外的不同算子
-3. Ejection chain: 选硬着色顶点, 强制 eject, 沿邻接传播重着色 (CSP 风格)
-4. restart 9→12 全部 DSatur (纯宽度, 配合 best-of Kempe)
-5. TabuCol 增量只在第 1-2 个 outer pass 做 (前段更可能找到改进, 后段增量回报低)
-6. recolorFixed 也改 best-improvement (但调用频繁, 需谨慎评估时间)
-
-跨问题借鉴
-- 调色师与制图师(TSP) 都面对 LS 邻域设计问题: TSP 的 or-opt L 扩展 (G18 +0%/-0.06%) 也是邻域宽度问题, 两边都提示"加宽度常无收益, 改结构才有效"
-- 装箱工的 size 阈值分桶 (G5/G6 失败) 提示"按大小分桶"是常见但通常无效的技巧, 不应直接搬到图着色
-
-实现细节备忘
-- bestMx 初值设为 cMax (当前最大色), 任何成功的 swap 必然让 bestMx < cMax
-- bestTrial 用 set() 而非循环复制, 避免 O(n) 开销
-- cMax 消除检查和 max color 计算都做 early break, 减少常数
-- 没有加 component 数量上限: 实测 n=150 最差情况 (p=0.05, K=8) 每 cOther ~8 component, 总数 56-80, 远在预算内
+- G14-G15: Kempe perturb 策略 (最大色类 + 高 BFS 起点) 有效, 累计 -1.32%
+- G16 (自适应 tenure) / G17 (RLF restart) / G18 (maxIter +40%) 全部 +0.61% 被拒绝
+- G19 (Kempe best-of-cOther) 0% 被拒绝 (与 G15 相同)
+- 强信号: 当前 (DSatur + Kempe + TabuCol) 框架在 (G15) 状态已饱和, 参数/邻域微调无效
+- G20: 引入新算子 mergeColorsReduce, 与 Kempe 互补. 若失败, 下一步候选:
+  1. 真正 ejection chain (深度 L 沿冲突传播)
+  2. clique lower bound 提前剪枝 (避免对低于 ω(G) 的 K 做无谓 TabuCol)
+  3. 重新设计 tabucolTry 的多种重启策略 (Welsh-Powell 起点、混合顶点排序)
+  4. SA 接受 + 自适应冷却取代纯 best-improvement
+- 跨题借鉴: 制图师(TSP) G18 (or-opt L 扩) 也只 -0.06%, 与 G16-19 共同佐证 "邻域加宽常无收益, 改结构才有效"

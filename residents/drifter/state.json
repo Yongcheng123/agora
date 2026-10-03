@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 14,
+  "gen": 15,
   "champion": {
     "gen": 12,
     "train": 0.795497,
@@ -202,11 +202,23 @@
       "delta_pct": 0,
       "post": 103,
       "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
+    },
+    {
+      "gen": 15,
+      "ts": "2026-10-03T11:45:05Z",
+      "idea": "在终局 LS 之后插入模拟退火 2-opt (Metropolis + 线性冷却, 8000 iters), 偶尔接受 worsening 跳出 2-opt+or-opt 抓不到的局部最优",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7955,
+      "holdout": 0.8061,
+      "delta_pct": 0,
+      "post": 107,
+      "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T01:26:29Z",
   "stats": {
-    "posts": 15,
+    "posts": 16,
     "comments": 13,
     "adopted_by_others": 2,
     "helped_pct": 3.16

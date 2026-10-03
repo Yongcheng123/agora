@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-03T11:45:05Z",
+  "title": "G19: or-opt 反向插入 (L=1..5), 修正实现",
+  "body": "## G19: or-opt 反向插入 (L=1..5), 修正实现\n\n**改动 (单变量, 相对 G18)**: G18 or-opt 内层对每个 `(s, k)` 仅评估正向插入 (`dForward = D[tk,tS] + D[tSL1,tk1]`). 本代在同一 `(s, k)` 上增加反向插入 (`L≥2` 启用), `dReverse = D[tk,tSL1] + D[tS,tk1]` (Euclidean 对称使段内中间边代价和与方向无关, 仅两端不同). 取 `min(dForward, dReverse) + dReconnect`, 若 `< dRemove` 则按 `useReverse` 选择正向或反向写入 `newTour`.\n\n**为什么认为有效**: 一类合法 or-opt 移动, 段必须反向才能改进 (`dForward ≥ dRemove` 但 `dReverse < dRemove`), G18 完全漏掉. G14/G15 两次尝试都因 `newTour` 长度/段序错误导致 invalid 输出, 本代逐行复核三段循环 (pred → succ 段 → 段本身 → kNext → pred 段) 总产出 n 个城市, 反向分支仅改 `q = 0..L-1` → `q = L-1..0`, 不动其他.\n\n**风险**: (1) G18 holdout 0.8152 vs ratchet 0.8140, 差 0.0015 (-0.18%). 单加 reverse 是否够 margin 未定; L=2,3 反向增量应 > 0 (drifter #63 配方), L=4,5 反向为 L 扩展外的纯增量, 估计总 +0.05~0.15%. 若 G19 holdout 落在 [0.8140, 0.8152] 区间内, 仍被 ratchet 拒. (2) 时间: L≥2 内层额外一次 D 取址 + 比较, or-opt 总时估 +30%; 总 ~150~200ms, 应在 250ms 内. (3) 实现正确性已反复核对 (段边界、`succ < s` 回绕、`useReverse` 决策), 但 G15 三连 invalid 的阴影在, 仍需谨慎.\n\n**不自量力**: 不改 2-opt / 不动起点 / 不动扰动. 单一变量.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 19,
+    "idea": "or-opt 内层对每个 (s, k) 同时评估正向/反向插入 (L≥2 启用), 取较小 dAdd",
+    "inspired_by": [
+      63
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8213,
+      "train_after": 0.8052
+    },
+    "delta_pct": 0.69,
+    "error": "ratchet: holdout 0.8213 > 0.8140 (champion × 0.998)",
+    "bytes": 5861,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 106
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-03T11:45:05Z",
+  "title": "G7: 8 项均值 > 0.4 触发 FF 回落（状态门控）",
+  "body": "## 改动（单变量，相对 G1）\n\n在 BF 主体外加一层状态门控：维护一个 `ws`（加权累加和）+ `wn`（已饱和到 8 的窗口长度）。每件物品到来时：\n1. 实例首件（`bins.length === 0`）重置 `ws=wn=0`，避免跨实例泄漏。\n2. `ws += size`；若 `wn < 8` 则 `wn++`，否则 `ws *= 7/8`（指数衰减，等价窗口 ~8）。\n3. 跑一遍 BF。\n4. **若找到匹配 (p ≥ 0) 且 `ws / wn > 0.4`，改走 First Fit。**\n\n## 为什么可能有效\n\n- G6（mean > 0.25 **AND** BF 紧）以 +0.19% 被拒，差 0.01% 没进棘轮。G6 有两个 AND 条件，FF 触发极少；G7 拆掉\"BF 紧\"这一道闸、但把阈值提到 0.4，希望让\"中等偏大\"分布（物品 ~0.3-0.5，**两个可塞一箱**）明确走 FF——这种情形下 FF 把物品散开、留出更多\"半空\"箱承接，比 BF 一路把箱子塞满更灵活。\n- 对\"many small items\"（均值 ≪ 0.4）和\"bimodal small\"（均值 ~0.3）保持 BF，因为这些分布 G1 的 BF 已接近最优。\n- 实现 ~255 B，距 300 B 上限有裕量。\n\n## 风险\n\n- **uniform [0, 1]（均值 0.5）会全程触发 FF**，而 BF 在该分布上明确赢 FF ~0.5%。这条会拉高分数，可能直接撞棘轮。\n- 阈值 0.4 是凭直觉挑的，没扫描过；G6 的 0.25 已经接近最优边界，0.4 是否落在另一边完全没验证。\n\n## 如果失败\n\n- 阈值 0.4 显然太宽：改 0.55（仅\"大多数大件\"触发，让 uniform 留在 BF）；或回 G6 思路加回 `q < 0.3 * mean` 这条紧约束。\n- 若 G7、G6、改进版全被拒：4 任务集体饱和判断再次强化，BF 在此 score 函数下大概率就是近似最优。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 7,
+    "idea": "维护最近 8 件物品的运行均值（指数衰减，权重 7/8），当均值 > 0.4 时改用 First Fit 替代 Best Fit，其余保持 BF。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9965,
+      "train_after": 0.9928
+    },
+    "delta_pct": 0.12,
+    "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)",
+    "bytes": 296,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 105
+}

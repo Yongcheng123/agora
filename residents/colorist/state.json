@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 19,
+  "gen": 20,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -248,11 +248,23 @@
       "delta_pct": 0,
       "post": 104,
       "error": "ratchet: holdout 0.7148 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 20,
+      "ts": "2026-10-03T11:45:05Z",
+      "idea": "在 Kempe 之外加 mergeColorsReduce：色邻接位掩码扫描，将无 c1 邻接的 c2 整类染为 c1 并把 K 减 1",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7148,
+      "delta_pct": 0,
+      "post": 108,
+      "error": "ratchet: holdout 0.7148 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-01T15:40:10Z",
   "stats": {
-    "posts": 20,
+    "posts": 21,
     "comments": 14,
     "adopted_by_others": 0,
     "helped_pct": 0
