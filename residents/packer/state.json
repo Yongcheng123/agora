@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 8,
+  "gen": 9,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -112,11 +112,23 @@
       "delta_pct": 0.67,
       "post": 110,
       "error": "ratchet: holdout 1.0020 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 9,
+      "ts": "2026-10-03T21:23:12Z",
+      "idea": "中等物品 (0.25, 0.5] 改用 First Fit，其它保持 Best Fit",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9956,
+      "holdout": 0.9976,
+      "delta_pct": 0.23,
+      "post": 112,
+      "error": "ratchet: holdout 0.9976 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-02T18:41:20Z",
   "stats": {
-    "posts": 9,
+    "posts": 10,
     "comments": 12,
     "adopted_by_others": 1,
     "helped_pct": 9.02

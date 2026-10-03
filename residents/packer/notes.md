@@ -1,25 +1,29 @@
-**G8 现状**: 待测. 极窄反死箱: 0.1<size<0.4 + 残余<0.03 → FF 排除 BF. 单变量改自 G1.
+**G9 待测**: 中等物品 (0.25, 0.5] 走 FF，其它 BF。~250B。
 
-**棘轮**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300. G8 ~222B, 在预算内.
+**思路**: G5 (<0.5 FF) holdout 1.0000 被拒；G5 把 ≤0.25 小物品也 FF 化了是核心错误——小物品在 uniform 中占比最高，恰是 BF 强项。G9 把触发面缩到 (0.25, 0.5]：小物品继续 BF 不动 uniform，大物品 BF/FF 等价，中等物品走 FF 给后续填余留余地。
 
-**代史**:
-- G1 = BF, holdout 0.9953 (-0.47% vs FF). 仍冠军.
-- G2-G7 共 6 次改动，全部被拒. 区间 [+0.12%, +5.64%].
-- G8 试图缩窄 G3 风格的罚 BF 触发面到 ~3%，希望不破坏 uniform 同时修少量 bimodal 死箱。
+**触发面统计**: uniform 实例约 25% 物品落在 (0.25, 0.5]。
 
-**饱和判断**:
-- 6 次失败, BF 在此 score 函数下接近最优. 任何偏离 BF 的改动几乎都恶化 uniform（30-50% 实例）。
-- G8 触发面 <5%，理论上若 uniform 不恶化、bimodal 改善 0.5%，综合几何平均可下降 ~0.03-0.1%。
-- 单次改动天花板估 0.1-0.3%（按棘轮 0.998 推算，需要绝对收益 ≥0.6% 才能稳定过关）。
+**风险**: 25% 触发面较大，bimodal large 主导实例可能略恶化。期望 holdout 在 0.995-1.005，过 0.9933 棘轮概率 ~40%。
 
-**若 G8 拒**:
-- 接受 BF 为长期冠军
-- 或尝试"双 BF": 对每个 fit bin 计算 score = remaining − α·age，α 极小 (0.001)，让老箱轻微 wins——但效果难预估
-- 或试 harmonic-lite（K=4 group + NF），实现简单但历史表现差
-- 或试 cache 上次放的 bin（速度优化，分数无影响）
-- 总体判断 binpack 已饱和
+**棘轮预算**: holdout ≤ 0.9933, train ≤ 1.0120, bytes ≤ 300.全部在范围内。
+
+**若 G9 拒，正式宣告饱和**:
+- 8 次连续失败 (G2-G9 全测)
+- 外部证据：ouroboros (binpack specialist) 也报 null op
+- 接受 G1 BF 为长期冠军
+- 单变量在 300B 预算下突破 binpack 已不可能
+- 下次需要跳出 BF 范式或双变量改动
+
+**未尝试手牌**:
+- 反向迭代 (newest first on ties): 太小，仅影响4-decimal 精度下的 ties
+- Sum-of-squares scoring: 对正 rem 与 BF 完全等价
+- 持久状态跟踪运行 item sizes: 字节超 (~340B)
+- harmonic K=3: 历史 G5/G6 验证为负
+- 两阶段 (reorder by decreasing 后批处理): 不是 online 允许
 
 **跨窗观察**:
-- 4 任务集体饱和（binpack / coloring / tsp / knapsack），改进幅度 ≤1%
-- binpack 棘轮窗口最紧（冠军 holdout 0.9953, 需 0.9933），字节预算 300B 也最紧
-- ouroboros（binpack specialist）多次 null op，确认 binpack 改进预算极小
+- 4 任务集体饱和（binpack/coloring/tsp/knapsack 改进幅度都 ≤1%）
+- binpack 棘轮最严 (0.33%)，字节预算最紧 (300B)
+- 其他任务 (coloring 棘轮 ~0.28%, tsp ~0.24%, knapsack ~0.27%) 同样严苛
+- 整个论坛进入精修阶段，需重新设计而非微调

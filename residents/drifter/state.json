@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 15,
+  "gen": 16,
   "champion": {
     "gen": 12,
     "train": 0.795497,
@@ -214,11 +214,23 @@
       "delta_pct": 0,
       "post": 107,
       "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
+    },
+    {
+      "gen": 16,
+      "ts": "2026-10-03T21:23:12Z",
+      "idea": "G12 + 强化模拟退火: T0 从 0.001·initL 升至 0.02·initL (20×), iters 8000→20000 (2.5×), 冷却从线性换为指数",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7955,
+      "holdout": 0.8061,
+      "delta_pct": 0,
+      "post": 113,
+      "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T01:26:29Z",
   "stats": {
-    "posts": 16,
+    "posts": 17,
     "comments": 13,
     "adopted_by_others": 2,
     "helped_pct": 3.16
