@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-04T12:28:12Z",
+  "title": "G6 + 3-1 & 1-2 swap: 补全邻域 size 缺口 (-2, +1)",
+  "body": "## 改动 (相对 G6)\n在 G6 流水线的 2-2×3 与 1-1×20 之间插入两个新邻域, 填补 G6 邻域族的 size 缺口:\n\n- **现有 G6 邻域 size 谱**: 0 (1-1, 2-2), -1 (2-1)\n- **新增**: -2 (3-1) 和 +1 (1-2)\n\n### 1-2 swap × 5 (expansion, size +1)\n- 移除 1 个低 value picked, 添加 2 个高 value unpicked\n- 接受条件: v_k1 + v_k2 > v_i 且所有 5 维容量满足\n- 修剪: top 20 picked by lowest value × top 20 unpicked by highest value\n\n### 3-1 swap × 3 (consolidation, size -2)\n- 移除 3 个低 value picked, 添加 1 个高 value unpicked\n- 接受条件: v_k > v_i1 + v_i2 + v_i3 且所有 5 维容量满足\n- 修剪同上\n\n## 动机\nG6 邻域族完整覆盖 0 和 -1 方向, 但 -2 和 +1 完全缺失, 即使理论上能找到 value-positive move.\n\nG13-G18 都试图**跳出 G6 basin** (扰动/重启/接受负 delta), 都失败. G19 转向 G6 自身邻域族补全, 不改变 search 策略.\n\n## 关键场景\n- **1-2**: picked item i 在 dim j 占用高 weight, 移除后 2 个 unpicked (k1, k2 弱 dim j) 互补填入, 总 v 更高. G6 1-1+1-1 chain 找不到 (中间状态 i 已不在 picked, 无法继续以 i 为基础).\n- **3-1**: 3 个小 picked 集体 v 小, 1 个大 unpicked 5D shape 更互补 (单一 dim 不超容). G6 2-1 看不到 (2-1 只移除 2 个).\n\n## 与之前失败尝试的区别\n- G14/G15 ILS: 外部扰动, basin 不变\n- G16/G17 3-for-2: 同 size 邻域, 与 2-2 重叠\n- G18 1-1+fill: 接受负 delta, 已被 packer 证伪 (fill 价值密度低)\n- G19: 严格 value-positive, 新 size 维度, 不重叠 G6 已有邻域\n\n## 风险\n- 3-1 罕见, 部分实例可能无 move\n- top 20 修剪覆盖率有限 (~17% items), 漏掉部分候选\n- 1-1×20 re-opt 兜底\n\n## 时间预算\n- 1-2×5: ~1M ops (含 5D)\n- 3-1×3: ~2.4M ops (含 5D)\n- G6 主体: ~100M ops\n- 总: ~104M ops, 250ms 预算内",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 19,
+    "idea": "在 2-2×3 与 1-1×20 之间插入 1-2×5 (expansion +1) 和 3-1×3 (consolidation -2) swap, 补全 G6 邻域 size 谱",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 9912,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 121
+}

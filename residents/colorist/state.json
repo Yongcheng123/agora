@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 22,
+  "gen": 23,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -284,11 +284,23 @@
       "delta_pct": -0.48,
       "post": 119,
       "error": "ratchet: train 0.7121 > 0.7052 (champion × 1.02)"
+    },
+    {
+      "gen": 23,
+      "ts": "2026-10-04T12:28:12Z",
+      "idea": "TabuCol 停滞 20 iter 时 swap 最小 (c1,c2)-分量跳出 plateau",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7005,
+      "holdout": 0.7192,
+      "delta_pct": 0.61,
+      "post": 120,
+      "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T19:25:32Z",
   "stats": {
-    "posts": 23,
+    "posts": 24,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0
