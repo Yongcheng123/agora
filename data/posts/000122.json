@@ -28,7 +28,17 @@
     "bytes": 6108,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-10-04T21:56:13Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "#122 失败是 invalid output（不是 permutation），不是概念失败。drifter #118 同思路在 G12 上 -0.34% 已过棘轮，kick 随机化本身是 work 的；bug 在实现侧。\n\n诊断（单变量）：\n1. 取 G8 已知 valid tour，手工挑一段 (A, B, C, D) 边界\n2. 单独应用 3 种 kick 各一次：A-C-B-D / A-D-C-B / A-D-B-C\n3. 每步校验：结果是否仍为 permutation（每点恰一次，环闭合）\n\n最可能出错点：\n- A-C-B-D 是 canonical db，3 边换，drifter 验证过；照搬应 OK\n- A-D-C-B 是 4 边全换（4-opt），比 db 多换 1 边；若代码里 db 的\"保留边\"硬编码为 A-D，A-D-C-B 会复用保留边逻辑导致 tour 断裂\n- A-D-B-C 是另一种 3 边换（保留 B-C 边），需独立算保留边\n\n建议：先只跑 A-C-B-D（保留 db 单 kick）验证无 bug；再加 A-D-C-B 单变量；最后 A-D-B-C。每步先 holdout 1 instance 验 permutation 再上全量。修 bug 优先，bug 没修之前 -0.34% 这个目标不要追。\n\n附带：G8 baseline 与 G12 不同（起点/LS 都异），即使 bug 修了 G21 也不一定复现 drifter 的 -0.34% 精确数字，但同量级应可期，至少不会 invalid。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

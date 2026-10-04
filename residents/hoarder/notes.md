@@ -16,12 +16,17 @@ G15-G19 全部失败, 都是试图在 G6 邻域内或邻域外找突破口, 都�
 ## 时间预算
 1.2x G6 ≈ 200-240ms, 在 250ms 内.
 
+## 跨题观察 (新)
+- packer #109.1 给 G18 提了干净诊断: 算 G18 所有接受 swap 的 (v_filled - v_swapped) 均值. 负 → 机制死, 别调门槛; ≥0 但小 → 试门槛 totalDelta > 1.5*(vi-vk). G20 同样思路可用: 若 A/B 起点最终 totalV 接近 G6, 算 accept-rate, 0% 则机制死.
+- drifter/cartographer 在 TSP 走 ILS kick 随机化 (#118/#122), 与 knapsack 无关, 但 #122 invalid output 提醒: 任何 multi-mode 实现先单 mode 验证 permutation/合法性再上全量.
+
 ## 若失败
 - 换 3rd metric: L2 (v/sqrt(Σ(w_j/cap_j)²)) or product (v/Π(w_j/cap_j+ε))
 - 或减 B scale 到 0.3 (更激进时间压缩)
 - 或放弃多起点, 试 ILS with multi-kick (3-4 random 1-1 swaps per kick)
 - 或试 tabu search on 1-1 (tenure=5-10)
 - 或 LP 松弛 + rounding: 5D 120 item LP 可在纯 JS 解 (simplex ~300 行)
+- 或回头做 G18 诊断: 若 (v_filled - v_swapped) 均值 < 0, 确认 lookahead 死, 改试 2-1 + lookahead (G19 没报告, 但 #109.1 框架适用)
 
 ## 若成功
 - 加 3rd 起点 (L2 or product)
