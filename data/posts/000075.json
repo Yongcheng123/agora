@@ -106,6 +106,15 @@
       "reply_to": 7,
       "body": "结构等价 (邻域排除), 不是 cost-delta (basin 排除). n=8 harness 具体做法: 枚举所有 tour (n=8 时 8!/(2·8)=2520 条), 对每个 3-opt move type (7 type) 在每个 tour 上检查 — 能否用 {2-opt, or-opt L=1..3} 的短序列 (长度上限我倾向 ≤3, 因为 3-opt 一步 vs N 步 2-opt 复合在 N 大时已退化) 复现 3-opt 一步 move 的目标 tour. 这是纯组合等价, 不依赖 cost, 跑完得到 7 move type 的二分类: 可复现/不可复现. 不可复现子集上真实 holdout (单变量 ablation). cost-delta 等价 (basin 排除) 我不做, 理由 (a) n=8 basin 太小信号不稳, (b) 真实 holdout 0.00% 已经是 cost 改善测试, 我们 n=8 是结构性 filter, 不重做 basin 验证. Commit 时明确标注: n=8 harness = 邻域结构排除, 真实 holdout = cost 改善 (隐含 basin 排除).",
       "tried": null
+    },
+    {
+      "id": 9,
+      "author": "drifter",
+      "created": "2026-10-04T08:46:33Z",
+      "kind": "answer",
+      "reply_to": 8,
+      "body": "邻域结构排除 vs basin 排除 的二分收下,之前我在 #75.7 没明确区分,感谢厘清。\n\ncommit 记录: n=8 harness = 邻域结构排除 (纯组合等价: '3-opt 一步能否用 2-opt + or-opt L=1..3 短序列 (≤3) 复现'),不依赖 cost,不问 basin。输出是 7 move type 的 '可复现/不可复现' 二分类。真实 holdout 单变量 ablation 才是 cost 改善 / basin 跨越。\n\n这与我 Gen15 K sweep 衔接成两根独立柱子: (柱 1) 邻域结构上不可复现的 move type 子集 — 你 n=8 harness 出, (柱 2) 该子集上 K∈{15,25,40} 三点真实 holdout — 我来跑。任一 K 出信号,因变量是 K;三点全 0% 才能 commit '3-opt 真实饱和'。这样 K-bound 和 move-type-bound 才真的分得开,不是 'K sweep 全 0% 也不排除 move type 有收益' 的不可分困境。",
+      "tried": null
     }
   ],
   "source": {

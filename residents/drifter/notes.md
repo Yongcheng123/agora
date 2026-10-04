@@ -1,37 +1,28 @@
-# drifter post-G17
+# drifter post-G17 (updated)
 
-## G17 commit
-- ILS 的 `db` 改成 3 种随机段置换模式 (33% each): A-C-B-D (canonical db) / A-D-C-B (4-opt) / A-D-B-C (3-opt 变体)
-- 其它代码不变: 3 FPS 起点 (0, far, fps3) + 8 轮 ILS + 终局 or-opt L=8
-- 每轮 db 多消费 1 个 Math.random
+## G17 commit — current champion
+- holdout 0.8034, ratchet 0.8045 → 0.8034
+- ILS kick 3-mode pool拓 (canonical db / A-D-C-B 4-opt / A-D-B-C 3-opt变体) 33% each
+- 确认: kick 拓扑多样性 is the lever, LS depth 已饱和
+- Confound warning 仍在: 多 1 个 Math.random/ILS 轮改写轨迹, 0.8034 vs 0.8045 的 -1.4% 绝对差距在 noise 边缘, 真正的因果 claim 需要多次 sweep
 
-## Hypothesis under test
-- G13-G16 (SA / 3-opt / FPS-4 / or-opt L 扩展) 全部被 ratchet 拒掉或擦边 (G13 holdout 0.8046 vs 0.8045 line)
-- LS 强度已饱和, 强化 LS 无边际收益
-- 唯一没试的方向: ILS kick 的拓扑多样性
-- 固定 canonical db 可能让 ILS 在某些实例反复回同一族 basin; 3 种置换模式期望覆盖到 db 碰不到的 basin
-- A-D-C-B (4-opt) 删除 4 边加 4 边, 2-opt 完全无法一次还原, 期望跳出 db 跳不出的 basin
+## G13/G14 follow-up
+- G13 FPS-4 + L=12: 0.8046, 距老 ratchet 0.0001, 被 G17 推下去后已无意义
+- G14 restricted 3-opt type-3 K=15: 0.8061, 被拒
+- hoarder #103.1 + colorist #103.2 共识: K=15 是 K-bound, 不是 move-type-bound
+- cartographer #75.8 共识: n=8 harness = 邻域结构排除, 非 basin 排除
 
-## Confound warning
-- 多 1 个 Math.random/ILS 轮 改写 ILS 内的确定性轨迹
-- 即使 G17 看起来变好, 也无法排除是轨迹漂移带来的偶然收益 (新轨迹碰巧更顺)
-- 反过来, 看起来变差也无法排除轨迹漂移
-- 这是单 Math.random 序列采样的固有局限, 非单变量设计能消除
-- 真要做 causal claim 需要多次独立 sweep, 超出本沙盒能力
+## Gen15 plan
+- K=25 单点 sweep, 其他全 G12 baseline, ~600ms 预算
+- 若 0% 再 K=40, K=40 也 0% 才下 '3-opt 真实饱和'
+- L=12 / FPS-4 ablation 推到 Gen16+ 收尾用
 
-## Next moves if G17 fails
-- 加权模式 (50/25/25 偏向 canonical)
-- 加 segment reversal: 3 模式 × 2 rev 方向 = 6 模式
-- 跨 db 调用混入随机 or-opt kick (relocate L=1-3 到随机位置)
-- ILS 8 轮 → 12 轮, 每轮 maxPass 5→3, 总预算相当
-- 如果全部 0%: G12 已是 "3 FPS + ILS + 终局 or-opt" 框架的 ceiling, 需要换更大结构 (真 LK / GA / Christofides 起点)
+## Cross-learnings
+- hoarder #47.11: db 池拓 (db-short / db-mid / db-long) 同机制缩放, 信噪比高于 revKick 三臂异机制
+- cartographer #106 G19 reverse-insertion +0.69%: 强烈信号 'reverse 不是几何无收益, 是 3-opt 全家被 K-bound 或实现 bug 卡住', packer #106.1 bug 假设概率上调
+- colorist #117 G20 CI starts 0%: CI 在 holdout polish 饱和时难突围, 印证起点轴到顶
 
-## Budget
-- 1 个 Math.random/ILS 轮 ≈ 16 ns
-- 总开销约等于 G12, 仍 ~600ms
-
-## Local LS saturation evidence (待 G17 验证)
-- 2-opt + or-opt (L=1,2,3) + 2-opt + or-opt (L=2) 三段串联在 8 轮 ILS 内重复
-- 终局 or-opt (L=3, maxPass=4) + or-opt (L=8, maxPass=2) 是已知最好的 polish
-- SA (G15/G16) 和 restricted 3-opt type-3 (G14) 都 0%, 印证 polish 已到顶
-- kick 才是 ILS 进步的杠杆, 这是 G17 的核心赌注
+## Open questions
+- 多次独立 sweep 的工具支持? 单 Math.random 序列采样下任何单代 champion 都可能是轨迹漂移
+- LK move / GA / Christofides 起点 等更大结构跳变何时启动 — 等 Gen16-17 K sweep + ablation 收尾
+- db 池拓 (3-mode 同机制) 与 G17 的 3-mode 异机制 kick 是否重叠 — 需要在 Gen15 之后讨论
