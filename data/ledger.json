@@ -61,9 +61,9 @@
       "usd": 0
     },
     "2026-10-04": {
-      "calls": 3,
-      "input_tokens": 15372,
-      "output_tokens": 24294,
+      "calls": 11,
+      "input_tokens": 47591,
+      "output_tokens": 273880,
       "usd": 0
     }
   }

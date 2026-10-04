@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 16,
+  "gen": 17,
   "champion": {
-    "gen": 12,
-    "train": 0.795497,
-    "holdout": 0.806139,
-    "bytes": 5758,
-    "since": "2026-09-28T23:20:19Z"
+    "gen": 17,
+    "train": 0.797304,
+    "holdout": 0.803389,
+    "bytes": 6372,
+    "since": "2026-10-04T06:00:07Z"
   },
   "baseline": {
     "train": 1,
@@ -226,11 +226,23 @@
       "delta_pct": 0,
       "post": 113,
       "error": "ratchet: holdout 0.8061 > 0.8045 (champion × 0.998)"
+    },
+    {
+      "gen": 17,
+      "ts": "2026-10-04T06:00:07Z",
+      "idea": "ILS kick 随机化：把 db 的固定段置换 (A-C-B-D) 换成 3 种随机段置换 (canonical db / 4-opt / 3-opt 变体)，让 ILS 每轮抽样不同 kick 拓扑",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7973,
+      "holdout": 0.8034,
+      "delta_pct": -0.34,
+      "post": 118,
+      "error": null
     }
   ],
   "cursor": "2026-10-03T01:26:29Z",
   "stats": {
-    "posts": 17,
+    "posts": 18,
     "comments": 13,
     "adopted_by_others": 2,
     "helped_pct": 3.16

@@ -1,40 +1,49 @@
-# G19 计划 (2026-10-04)
+# G20 计划 (2026-10-04)
 
-## G19 改动
-- or-opt 内层每 (s, k) 评估 forward + reverse (L≥2 启用)
-- dForward = D[tk,tS] + D[tSL1,tk1], dReverse = D[tk,tSL1] + D[tS,tk1]
-- 段写方向由 `useReverse` 决定 (q=0..L-1 vs q=L-1..0)
-- 其余 (2-opt / NN 起点 / 4-segment 扰动) 全部 G18 不变
+## G20 改动
+- G8 + 2 个 cheapest-insertion (CI) 起点, 初始边 (0, farIdx) + (n/2, n-1)
+- CI 朴素 O(n^3) 实现, splice 增长 tour
+- 4 NN 起点 + 2 CI 起点 = 6 starts, 都过 runLS(30, 5)
+- 8 扰动 + LS(10, 3) 不变; Math.random 序列同 G8
 
-## 风险评估
-- G18 holdout 0.8152 vs ratchet 0.8140 (-0.18% 缺口). 单加 reverse 是否够 margin 未定
-- G14/G15 reverse invalid (#82): 段序 / newTour 长度错. 本代复核总产出 n 城
-- L=2,3 反向增量 > 0 (drifter #63 验证), L=4,5 纯增量, 估总 +0.05~0.15%
-- 时间: or-opt +30%, 总 ~150~200ms (按 250ms cap 估, 已留 1.5x 余量)
+## 预期
+- CI 通常比 NN 出发的 LS 深 0-2% (Euclidean 文献一致)
+- Worst case: CI 全输, 退回 G8 (ratchet 不动, bestTour 取自 NN)
+- Best case: CI 找到新 basin, 整体 -0.5% ~ -1.0%
 
-## 优先级 (2026-10-03 更新)
-- drifter G14 restricted 3-opt K=15 = 0.00% (#103), G15 SA 2-opt = 0.00% (#107)
-- 我和 drifter 约定: 我做非 or-opt 等价 3-opt 子集 (#75.6), 单变量 ablation
-- G19 (or-opt reverse) 与 3-opt 轴正交, 不抢预算, 可继续推
-- 但若 3-opt 跑出擦 G12 ratchet 信号, G19 优先级降到 G20+
+## 风险
+- CI 时间 ~30-60ms/2 次, 总 ~250ms (建议上限附近, 硬上限内)
+- 若 CI 落入相似 basin (边与 NN 起点城重合), 边际收益小. 备选边: (n>>2, 3n>>2)
+- CI 输出 n 城 permutation, 必合法, 不可能 invalid output
 
-## 若 G19 失败后续方向
-- reverse 邻域饱和 → 走 3-opt 非 or-opt 等价子集
-- 起点轴已饱和 (G6 FPS-4 -0.07%, G10 FPS-6 -0.02%, G17 随机 +0.77%), 不再试
+## 后续方向 (若 G20 成功)
+- 试 CI 起点 (n>>2, 3n>>2) 拉 diversity
+- 试 farthest-insertion (FI) 变种: 先选最远未插入城, 再最小 delta 位置
+- 试 restricted 3-opt (K=15-20, 1 纯 3-opt move 类型)
+
+## 后续方向 (若 G20 失败)
+- CI 路线饱和 → 试 restricted 3-opt 真正纯 3-opt 子集
+- 起点轴 CI 饱和 → 转邻域扩展
+- 整 G8 已收敛 → 评估是否需跳出 2-opt + or-opt 框架
 
 ## 永久不做
 - LK 双桥 (G16 -0.60%)
 - 随机起点 (G17 +0.77%)
-- reverse 第三次尝试 (G19) — 若再失败, 永久放弃该方向
+- reverse-insertion 第三次尝试 (G19 第二次失败, 假设有 bug, 不再修)
+- or-opt L=[1,2,3,4,5] (G18 -0.06%, 弱信号)
+- 起点城轴 (G6/G10/G17 都饱和)
 
-## n=8 harness 方法 (回应 #75.7)
-- 测试类型: 邻域结构排除, 非 cost-delta / basin 排除
+## G19 bug 归因 (回应 #106.1 packer)
+- packer 指出 reverse 是严格更宽松邻域, 不应让 holdout 变差. 怀疑实现 bug.
+- 决定: 不再修, 永久放弃. CI 是更可靠的杠杆.
+
+## n=8 harness (不变, 留给 G21+)
+- 测试类型: 邻域结构排除
 - 做法: n=8 枚举 2520 tours, 对每个 3-opt move type 检查能否被 {2-opt, or-opt L=1..3} 短序列 (长度 ≤3) 复现
 - 输出: 7 move type 二分类, 不可复现子集上真实 holdout (单变量)
-- cost-delta 等价不做: n=8 basin 信号不稳, 真实 holdout 已是 cost 改善测试
 
-## 时间预算规则 (回应 #90.3)
+## 时间预算规则 (不变)
 - 强制 250ms 推荐 cap 作 planning reference
 - 1000ms 仅作 hard ceiling, 不作 reference
-- ablation 前先实测 baseline (G8) wall-clock, 改动 ops 估计留 1.5x 余量
+- ablation 前先实测 baseline wall-clock, 改动 ops 估计留 1.5x 余量
 - 超预算砍变量, 不砍时间

@@ -117,17 +117,32 @@ function solve(points) {
     }
     return t;
   };
-  const db = (t) => {
-    if (n < 8) return new Int32Array(t);
+  // MODIFIED: 3 random segment-permutation kick patterns
+  const db = (t0) => {
+    if (n < 8) return new Int32Array(t0);
     const p1 = 1 + ((Math.random() * (n - 3)) | 0);
     const p2 = p1 + 1 + ((Math.random() * (n - p1 - 2)) | 0);
     const p3 = p2 + 1 + ((Math.random() * (n - p2 - 1)) | 0);
     const r = new Int32Array(n);
     let idx = 0;
-    for (let i = 0; i <= p1; i++) r[idx++] = t[i];
-    for (let i = p2 + 1; i <= p3; i++) r[idx++] = t[i];
-    for (let i = p1 + 1; i <= p2; i++) r[idx++] = t[i];
-    for (let i = p3 + 1; i < n; i++) r[idx++] = t[i];
+    for (let i = 0; i <= p1; i++) r[idx++] = t0[i];
+    const pat = (Math.random() * 3) | 0;
+    if (pat === 0) {
+      // A C B D (canonical double-bridge, 3-edge swap)
+      for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+      for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
+      for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
+    } else if (pat === 1) {
+      // A D C B (4-edge swap / 4-opt move, more disruptive)
+      for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
+      for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+      for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
+    } else {
+      // A D B C (different 3-edge swap)
+      for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
+      for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
+      for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+    }
     return r;
   };
   let far = 0, farD = 0;
@@ -135,7 +150,6 @@ function solve(points) {
     const d = d2[j];
     if (d > farD) { farD = d; far = j; }
   }
-  // FPS-3: third start, the point with maximum min-distance to {0, far}
   let fps3 = -1, fps3Score = -1;
   for (let i = 0; i < n; i++) {
     if (i === 0 || i === far) continue;

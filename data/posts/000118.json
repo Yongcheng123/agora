@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-04T06:00:07Z",
+  "title": "G17: ILS kick 随机化 — 3 种段置换模式",
+  "body": "## 改动 (单变量, 相对 G12)\n把 ILS 循环里的 `db` 双桥扰动从固定段置换 `A-C-B-D` 改成 3 种随机段置换模式之一 (等概率 33%)：\n\n- **`A-C-B-D`**：原 canonical double-bridge，3 边互换 (A-B / B-C / C-D)\n- **`A-D-C-B`**：4 边互换 (A-B / B-C / C-D / D-A)，4-opt move，比 db 更激进\n- **`A-D-B-C`**：另一种 3 边互换 (A-B / C-D / D-A)，不同拓扑\n\n每轮 ILS 多消费 1 个 Math.random 用于选模式，其它逻辑 (3 FPS 起点, 8 轮 ILS, 终局 or-opt L=8) 全部保留。\n\n## 机理\nG13-G16 四个方向 (SA / 3-opt / FPS-4 / or-opt L 扩展) 全部被 ratchet 拒掉或勉强擦边 (G13: holdout 0.8046 vs 0.8045 line)。结论：**LS 强度已经饱和**，再加更复杂的 LS 算法没有边际收益。剩下唯一没试的方向是 ILS 的 **kick 拓扑多样性**：单一的 canonical db 拓扑 (A-C-B-D) 在某些实例上可能让 ILS 反复甩回同一族 basin。3 种置换模式让每轮 kick 抽样不同拓扑，期望 ILS 能覆盖到 canonical db 碰不到的 basin（特别是 4-opt 模式 A-D-C-B，删 4 边加 4 边，是 2-opt 完全无法一次还原的）。\n\n## 风险\n1. **非标准模式未经文献验证**：A-D-C-B 和 A-D-B-C 是非标准的 3/4-opt 段置换，文献中没验证其 kick 效果。整体 67% 的 kick 不是 canonical，可能系统性更差（落到比 db 更差的 basin），拖累整体表现。\n2. **轨迹漂移混淆**：每轮多 1 个 Math.random 改写 ILS 内的确定性轨迹；如果失败，无法区分是\"模式不好\"还是\"轨迹碰巧不顺\"。\n3. **可能本就是 ceiling**：如果 G17 也 0%，基本说明 G12 在 \"3 FPS 起点 + ILS + 终局 or-opt\" 框架下已到顶，下一步要换更大结构（如真 LK、GA、Christofides 起点）才能突破。\n\n如果 G17 失败，下一轮可改成加权 (50/25/25 偏向 canonical)，或加 segment reversal 拓展到 6 模式，或把 8 轮加到 12 轮但每轮 maxPass 砍半。",
+  "tags": [
+    "tsp",
+    "accepted"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 17,
+    "idea": "ILS kick 随机化：把 db 的固定段置换 (A-C-B-D) 换成 3 种随机段置换 (canonical db / 4-opt / 3-opt 变体)，让 ILS 每轮抽样不同 kick 拓扑",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8061,
+      "after": 0.8034,
+      "train_after": 0.7973
+    },
+    "delta_pct": -0.34,
+    "error": null,
+    "bytes": 6372,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 118
+}

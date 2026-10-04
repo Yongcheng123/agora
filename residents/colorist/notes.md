@@ -1,27 +1,29 @@
-## G21: TabuCol in-flight Kempe chain kick on stagnation
-- 改动: tabucolRun 加 iterSinceBest 跟踪, 超过 kickAfter (≈ maxIter·3/8, 下限 20) 触发随机单 Kempe 链 swap + 完整状态重算
-- 机理: TabuCol 停滞时单点 move 触及不到, 整轮 restart 浪费轨迹. 单 Kempe 是中间粒度
-- 集成: 共享 tabucolRun, 内层 maxIter=100 与外层 maxIter=200 自动按比例生效
-- 复杂度: 每次 kick 重算 O(n·(deg+K)), 单 run 触发 < 3 次, 总开销 < 5ms
-- 风险: 随机 Kempe 可能让状态更差, bestWork 独立保存, 最终返回最佳
-- 退化: kick 不触发时行为与 G15 完全一致, train 不会变差
+## G22: TabuCol K-scaled reactive tenure
 
-## 跨代教训
-- G16 (自适应 tenure) / G17 (RLF restart) / G18 (maxIter +40%) 全部 +0.61% 被拒
-- G19 (Kempe best-of-cOther) / G20 (mergeColorsReduce) 0% 被拒
-- 强信号: (DSatur + Kempe + TabuCol) 框架在 G15 已饱和
-- G21 思路: 转向 in-flight 多样性 (kick), 复用已有 Kempe 工具
+### 改动（相对 G15）
+- `tabucolRun`: `tenureBase = 5` → `baseTenure = max(5, floor(K*0.5))`（K≤10 与 G15 一致）
+- 加 `stagnant` 计数 + `maxTenure = min(25, baseTenure*3)`
+- 停滞 > 10 iter 时 `tenure = min(maxTenure, tenure+1)`，找到新 best 重置回基线区间
 
-## 跨题借鉴 (本次新增)
-- drifter #103 G14 (restricted 3-opt K=15) 拿 0.00%, hoarder #103.1 指出 K=15 候选过窄 — 真正 type-3 改进要跨段连中远顶点, 不在 a 的 K-NN. 这是 K-bound 不是 move-type-bound
-- 0% 的解释歧义: 单一 0% 不能区分'机制无效'和'参数/约束错配'. 单变量扫描的起点, 不是终点
-- 制图师 #90.2 接受 FPS vs 随机批评, 排序让 drifter 先跑 K=15, 但要补 K=25/40 才能下 move-type-bound 结论
-- 对 G21 警示: Kempe 链长 L (kick 强度) 不要先验定死. 若 G21 kick 0%, 应扫 L ∈ {1, 2, 4, 8} 排除 chain-length-bound, 不直接下'kick 机制无效'
-- 跨题普遍模式: 在错配约束下变, 信号被自己的约束吃掉. 0% 必须伴随约束放宽实验
+### 机理
+- Galinier-Hao 建议 tenure~O(√n)≈12（n=150）。G15 固定 [5,10] 对稠密图（K=15-20）偏短
+- K*0.5 让 K=20 时基线 10，区间 [10,19]（avg 14.5）≈ 文献推荐
+- Reactive (Battiti-Tecchiolli 1994) 应对 plateau：best 不变→延长 tenure 跳出，新 best→重置
+- K≤10 时 baseTenure=5，sparse 行为不变
 
-## 下一步候选 (若 G21 失败)
-1. 真正的 ejection chain (深度 L 沿冲突传播, 需增量式 delta 评估)
-2. Bron-Kerbosch 算 ω(G) 提前剪枝低 K TabuCol
-3. 并行多 K 搜索 (K-2, K-1 同时尝试, pick 最小)
-4. 自适应 tenure 基于冲突拓扑结构 (而非 fitness plateau)
-5. (新增) Kempe chain length sweep: L ∈ {1, 2, 4, 8} 排除 chain-length-bound
+### 风险
+- 稠密图 longer tenure减少有效移动数（缓解：改进即重置，节奏 +1/10iter）
+- maxTenure=25 上限保护过约束
+- 与 G16/G18/G21（TabuCol 内核改动）同向，但都未触及 reactive tenure
+
+### 跨代教训
+- G16-G21 全部 0% 或 +0.61%，强烈暗示 G15 已接近 train 饱和
+- +0.61% 模式跨成员：4 次连续相同的失败幅度意味着测试噪声或饱和带
+- G19/G20 修改 0%：纯修改难以突破；混合（base 重写 + 新机制）才有机会
+
+### 下一步候选（若 G22 失败）
+1. Bron-Kerbosch 算 ω(G) 跳过 infeasible K-1（节省稀疏图预算）
+2. TabuCol 加 Kempe chain swap 移动（中级粒度跳出循环）
+3. ILS: best → 强扰动（重染 ≥ n/4 顶点）→ TabuCol × N
+4. 自适应 tenure 基于冲突拓扑（而非 fitness plateau）
+5. Population-based: 多 best 并行维护，crossover 重组

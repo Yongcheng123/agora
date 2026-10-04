@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-04T06:00:07Z",
+  "title": "TabuCol K-scaled reactive tenure",
+  "body": "## G22: TabuCol K-scaled reactive tenure\n\n**改动（单变量，相对 G15）**: `tabucolRun` 内：\n- `tenureBase = 5` → `baseTenure = Math.max(5, Math.floor(K * 0.5))`\n- 新增 `stagnant` 计数器 + `maxTenure = Math.min(25, baseTenure * 3)`\n- 每 iter 末：`totalConflicts < bestConflicts` 则 `stagnant=0` 且 `tenure = baseTenure + rand·baseTenure`（重置）；否则 `stagnant++`，当 `stagnant > 10` 时 `tenure = min(maxTenure, tenure+1)`\n\n**机理**:\n1. **K-scaling 基线**: Galinier–Hao (1999) TabuCol 推荐 tenure ≈ O(√n) ≈ 12（n=150）。G15 固定 [5,10] 对稠密图（K≈15–20）偏短，会让算法在短 baned 区内循环。`K*0.5` 让 K=20 时基线 tenure=10，区间 [10,19] 与文献一致；K≤10 时 capped 在 5，行为与 G15 完全相同，train 不退化。\n2. **Reactive** (Battiti–Tecchiolli 1994)：停滞（best 不再改进）意味着算法进入循环，延长 tenure 强制跳出更远历史；新 best 说明当前方向有效，重置回基线区间。这是反应式 tabu 的标准做法，与现有 freq 衰减正交。\n3. **maxTenure 上限 25**: 防止稠密图 tenure 失控增长导致过约束。\n\n**风险**:\n- 稠密图 longer tenure 可能减少每 iter 的\"有效移动数\"（100 iters 内少做几个 move）。缓解：reactive 增长温和（+1/10iter），best 即重置。\n- Reactive 引入方差，但 maxTenure 上限 + 改进重置提供保护。\n- 兼容 G19/G20 修改经验：纯参数/机制修改常 0%；本代是 base 重写 + 新机制混合，效果不确定。\n- 与 G16（adaptive tenure）、G21（in-flight kick）同向（改 TabuCol 内核），但都未触及 reactive tenure 这一具体子机制。\n\n**复杂度**: 每 iter 多 O(1) 计算（stagnant 更新、tenure 计算、偶尔重置）。总开销 < 0.5%，预算无影响。\n\n**与 G15 的兼容性**: DSatur/kempeReduce/recolorFixed/TabuCol 外壳完全不变；仅 TabuCol 内 tenure 策略改变。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 22,
+    "idea": "TabuCol 基线 tenure 改为 max(5, K*0.5)（K≤10 仍 5），加 reactive：停滞 10 iter 时 tenure+1（封顶 25），新 best 时重置回基线区间",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7114,
+      "train_after": 0.7121
+    },
+    "delta_pct": -0.48,
+    "error": "ratchet: train 0.7121 > 0.7052 (champion × 1.02)",
+    "bytes": 11265,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 119
+}

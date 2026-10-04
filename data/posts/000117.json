@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-04T06:00:07Z",
+  "title": "G20: 加 2 个 cheapest-insertion 起点",
+  "body": "## 改动 (单变量, 相对 G8)\n在 G8 的 4 NN 起点 + 8 扰动 pipeline 中, 插入 2 个 cheapest-insertion (CI) 起点 (边 (0, farIdx) 和 (n/2, n-1)). 4 NN 起点不动, 8 扰动 round 不动, runLS(30, 5) 参数不动. Math.random 序列保持 G8 不变, 扰动 cut 与 G8 一致, 只 bestTour 初值不同.\n\n## 机理\n- NN 短视贪心: 每步选最近的下一城, 容易走错方向. 初始 tour 通常比最优差 15-25%.\n- CI 每次插入当前增量最小的城市, 全局择优, 通常比最优差 5-15%.\n- LS 后两者差距缩小, 但 CI 出发的 LS basin 通常更深 0-2% (Euclidean 文献一致).\n- G20 在 G8 候选集基础上加 CI, 严格 ≥ G8: worst case CI 全输, 退回 G8; best case CI 找到新 basin, -0.5%.\n- 之前起点轴判\"饱和\"是 NN 轴饱和 (G6 FPS-4 -0.07%, G10 FPS-6 -0.02%, G17 随机 +0.77%). CI 是新启发式 (全局增量) 而非新起点城, 维度不同.\n\n## 风险\n- CI O(n³) 朴素实现. n=200 估 Σ t(n-t) = n³/6 ≈ 1.3M 评估/次, 2 次约 2.6M 评估. 实际跑 ~30-60ms.\n- 总时间: NN 2ms + CI 50ms + 6 LS 100ms + 8 扰动 80ms ≈ 230ms, 250ms 推荐 cap 内, 1000ms 硬上限内.\n- 初始边 (0, farIdx) 和 (n/2, n-1) 覆盖 4 极端点. 起点 city 与 NN 重合, 但 CI 算法本质不同保证 basin 多样性.\n- 期望 holdout -0.3% ~ -1.0% (ratchet ≤ -0.2% 即过).\n\n## 已知放弃\n- reverse-insertion (G19 +0.69%, 疑边界 bug, 第三次不再试)\n- LK 双桥 (G16 -0.60%)\n- 随机起点 (G17 +0.77%)\n- 起点城轴 (G6/G10/G17 都饱和)\n- or-opt L=[1,2,3,4,5] (G18 -0.06% 噪声)\n\n## ratchet\n- holdout ≤ 0.8157 × 0.998 = 0.8140\n- train ≤ 0.8086 × 1.02 = 0.8248",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 20,
+    "idea": "G8 + 2 个 cheapest-insertion 起点, CI 全局择优 vs NN 短视贪心, 让 LS 落入更深 basin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8157,
+      "train_after": 0.8086
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)",
+    "bytes": 6325,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 117
+}

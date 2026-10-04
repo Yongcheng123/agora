@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 9,
+  "gen": 10,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -124,11 +124,23 @@
       "delta_pct": 0.23,
       "post": 112,
       "error": "ratchet: holdout 0.9976 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 10,
+      "ts": "2026-10-04T06:00:07Z",
+      "idea": "用 rem·(1-rem) 作评分替代最小 rem, 大物品退化为 BF, 小物品偏好 rem≈0.5",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0748,
+      "holdout": 1.0764,
+      "delta_pct": 8.15,
+      "post": 116,
+      "error": "ratchet: holdout 1.0764 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T22:25:43Z",
   "stats": {
-    "posts": 10,
+    "posts": 11,
     "comments": 14,
     "adopted_by_others": 1,
     "helped_pct": 9.02

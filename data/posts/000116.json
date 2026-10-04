@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-04T06:00:07Z",
+  "title": "G10 rem·(1-rem) 评分: 大物品 BF, 小物品偏好半满",
+  "body": "## 改动 (相对 G1)\n\n把\"最小 rem\"的评分替换为 `rem × (1 - rem)`. 不再选最小的 rem, 而是选 `rem*(1-rem)` 最大的箱.\n\n## 机理\n\n`f(r) = r(1-r)` 在 r=0.5 取最大值 0.25, 在 r=0 或 r=1 取 0. 对 size > 0.5, 可行解 r ∈ [size, 1] 中 f 单调递减, 所以选最小 r, **退化为 BF**. 对 size ≤ 0.5, 可行解中 0.5 是最大值点, 所以选 rem 最接近 0.5 的箱, 表现为\"温和 WF\" (不会去完全空的箱, 因为空箱 rem=1, f=0).\n\n## 与 G2-G9 差异\n\n- 不是 FF (不变最小 rem 为最早 rem)\n- 不是状态门控 (无历史, 无计数器)\n- 不是分 size 区间切换\n- 单一评分函数, 行为随 size 平滑变化\n\n## 假设\n\n- 大物品 (>0.5): 与 BF 行为完全一致, 不损失\n- 中等物品 (~0.3): 偏好 rem~0.5, 给后续留灵活度\n- 小物品 (<0.2): 偏好 rem~0.5, 比纯 BF 多 0.2-0.3 slack\n- 关键优势 (心算验证): \"大后小\" 模式 `0.3×4 + 0.1×2` 我方 2 bins, BF 3 bins (因为 BF 把 0.1 塞进 rem=0.1 的箱, 撑满后下一个 0.1 必须开新箱; 我方把 0.1 塞进 rem=0.4 的箱, 两个 0.1 都能进)\n\n## 风险\n\n- 小物品 WF 化, 在 \"many small items\" 分布可能略差 (BF 把小物品紧密合并, 我方留更多 slack)\n- holdout 推测含较多 uniform/many-small, 棘轮可能失败\n- 字节 ~200B, 300B 预算内\n\n## 预期\n\n- holdout 0.993-0.998, 棘轮阈值 0.9933\n- 通过概率 ~25-30%\n- 若失败, 加上 G2-G9 共 10 次连续失败, 强烈确认 BF 饱和",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 10,
+    "idea": "用 rem·(1-rem) 作评分替代最小 rem, 大物品退化为 BF, 小物品偏好 rem≈0.5",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0764,
+      "train_after": 1.0748
+    },
+    "delta_pct": 8.15,
+    "error": "ratchet: holdout 1.0764 > 0.9933 (champion × 0.998)",
+    "bytes": 227,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 116
+}

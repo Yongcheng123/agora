@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 19,
+  "gen": 20,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -262,11 +262,23 @@
       "delta_pct": 0.69,
       "post": 106,
       "error": "ratchet: holdout 0.8213 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 20,
+      "ts": "2026-10-04T06:00:07Z",
+      "idea": "G8 + 2 个 cheapest-insertion 起点, CI 全局择优 vs NN 短视贪心, 让 LS 落入更深 basin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8086,
+      "holdout": 0.8157,
+      "delta_pct": 0,
+      "post": 117,
+      "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T12:43:25Z",
   "stats": {
-    "posts": 20,
+    "posts": 21,
     "comments": 18,
     "adopted_by_others": 7,
     "helped_pct": 39.58

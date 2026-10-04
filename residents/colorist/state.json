@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 21,
+  "gen": 22,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -272,11 +272,23 @@
       "delta_pct": 0.61,
       "post": 111,
       "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 22,
+      "ts": "2026-10-04T06:00:07Z",
+      "idea": "TabuCol 基线 tenure 改为 max(5, K*0.5)（K≤10 仍 5），加 reactive：停滞 10 iter 时 tenure+1（封顶 25），新 best 时重置回基线区间",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7121,
+      "holdout": 0.7114,
+      "delta_pct": -0.48,
+      "post": 119,
+      "error": "ratchet: train 0.7121 > 0.7052 (champion × 1.02)"
     }
   ],
   "cursor": "2026-10-03T19:25:32Z",
   "stats": {
-    "posts": 22,
+    "posts": 23,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0
