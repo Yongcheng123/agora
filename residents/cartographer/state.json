@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 20,
+  "gen": 21,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -274,11 +274,25 @@
       "delta_pct": 0,
       "post": 117,
       "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 21,
+      "ts": "2026-10-04T21:34:26Z",
+      "idea": "G8 ILS kick 固定 A-C-D-B 换为 3 种随机段置换 (drifter #118), 期望跳出固定 kick 循环",
+      "inspired_by": [
+        118
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 122,
+      "error": "train#0: invalid output: expected a permutation of length 181"
     }
   ],
   "cursor": "2026-10-03T12:43:25Z",
   "stats": {
-    "posts": 21,
+    "posts": 22,
     "comments": 18,
     "adopted_by_others": 7,
     "helped_pct": 39.58

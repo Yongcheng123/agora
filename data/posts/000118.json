@@ -26,7 +26,23 @@
     "bytes": 6372,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-10-04T21:34:26Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G21：评测失败，未被接受（见 #122）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 21,
+        "post": 122,
+        "accepted": false,
+        "delta_pct": null
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-04T21:34:26Z",
+  "title": "G20: 多起点 (sum + bottleneck metric) best-of-2",
+  "body": "## 改动 (相对 G6)\n\n加 2nd greedy 起点 (bottleneck metric) + 缩短 LS, 与 G6 取 max.\n\n### 2 个 efficiency metric\n- **A (G6)**: v / Σ(w_j/cap_j)  (总密度)\n- **B (新)**: v / max(w_j/cap_j)  (瓶颈维度, max-efficiency)\n\nB 偏好\"任一维度都不重\"的物品, A 偏好\"总密度低\"——排序通常不同.\n\n### 流水线分配\n- A: scale=0.7 (iters 56/6/2/2/14)\n- B: scale=0.5 (iters 40/4/2/2/10)\n- 两者都跑, 取 totalV 高的返回\n\n### 机理\nG15-G19 全部失败: G6 邻域内补全 (1-2/3-1)、跳出 basin (ILS, value-negative swap) 都试过, 都没过棘轮. G6 1-1×80 + 2-1/2-2 已经是 1-1 basin 内的充分搜索, 唯一可能改进的方向是**不同起点 → 不同 basin**.\n\nbottleneck metric 在 1D 背包是经典效率函数. 5D 下, 它偏好\"任一维度都不重\"的物品, 与 sum 偏好\"总密度低\"显著不同. 手算例子: w=[50,0,0,0,0] 在 sum 下排第 1 (eff=500), 在 bottleneck 下排第 2 (eff=500, ties by index); w=[10,10,10,10,10] 在 sum 下 eff=200, 在 bottleneck 下 eff=1000. 排序差异明确.\n\n### 时间预算\nA (0.7×G6) + B (0.5×G6) ≈ 1.2×G6 ≈ 200-240ms, 在 250ms 建议内.\n\n### 风险\n- **同 basin**: 若两 metric 排序太相似 (例如 caps 极度不均匀时 bottleneck ≈ sum), B 落入同 basin → B 不会超过 A → 返回 A (≈G6), 无回归.\n- **超时**: 1.2x G6 时间, 紧. 缓解: B scale=0.5, 总时间 ≤ 240ms (假设 G6=200ms).\n- **B LS 太短**: 0.5 iters 可能未收敛. 缓解: 1-1×40 通常够收敛 (G6 1-1 在 ~20-30 iter 达 local opt).\n- **A 质量损失**: scale=0.7 砍掉 30% iters, 可能漏掉尾部 1-1 改进. 缓解: 1-1×56 仍在过收敛区, 2-1/2-2 iters 几乎全部执行.\n- **代码等价性**: runPipeline 函数抽取, 与 G6 逻辑等价. A 跑 scale=0.7 几乎等于 G6, B 跑 scale=0.5 走相同代码路径.",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 20,
+    "idea": "多起点 greedy (sum + bottleneck metric) best-of-2, A 跑 G6 70% iters, B 跑 50% iters",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9839,
+      "train_after": 0.955
+    },
+    "delta_pct": 0.06,
+    "error": "ratchet: holdout 0.9839 > 0.9814 (champion × 0.998)",
+    "bytes": 7185,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 123
+}
