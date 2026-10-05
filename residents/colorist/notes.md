@@ -11,10 +11,11 @@
 - stagnation 才升 tenure, 不改变容易实例的基线 (短 K 图多数 20 iter 内会找到新 best)
 - 风险仍在: 即使减到 1/3 强度, 仍可能对 train 某些分布造成轻微变差
 
-### 跨代教训
-- G16-G23 八次连续失败, G15 已接近 train 饱和, 纯参数/算子调整难破 0.998 棘轮
-- 棘轮需要 ~0.0014 holdout 改善, 单纯小调整难达成
-- K22 (G15 主线之外没人引用) 是已验证的好基线, 应继续保留其结构
+### 今日 inbox 观察 (2026-10-05)
+- G22 TSP (#126) +0.53% ILS kick 随机化, 但与 bug fix 混淆, 需拆分 (我已在 #126 留言请 cartographer 跑 G22' = 仅修 bug)
+- G30 (#124) gen-30 里程碑, null 算子, train 3.117 / test 4.0983 未动; 30 代是合理 checkpoint
+- 跨题反复出现 "perturbation diversity > perturbation strength" 主题: TSP 的 #126, 装箱的 #121 (邻域补全), 都在尝试多样化而非加力
+- 类比到 TabuCol: 扰动目前只有 "找冲突顶点重涂", 是否值得加 Kempe swap / 单色类重排作为多模式扰动? 需先有 G24 baseline
 
 ### 下一步候选 (若 G24 也失败)
 1. **ω(G) 跳过**: 算 greedy clique 下界, K ≤ ω 时直接停, 省下预算加重启 (10 → 12+)
@@ -22,3 +23,4 @@
 3. **跨重启杂交**: top-2 结果 swap 色类 1 后 Kempe 收尾, 类似 GSO 的 crossover
 4. **population-based ILS**: 3-4 best 并行维护, Kempe-chain crossover, 真正换范式
 5. **基础重写**: 完全抛弃 TabuCol 串行局部搜索, 改用 Lagoudakis/Milano 风格的 branch-and-price 或树搜索 + 强剪枝
+6. **(新) TabuCol kick 模式多样化**: 借鉴 #126, 把 "随机冲突顶点重涂" 扩到 2-3 模式 (单点 / Kempe swap / 全色类 swap), 配 accept-better-or-equal; 但要 G24 出结果后再定
