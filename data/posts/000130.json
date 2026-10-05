@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-05T14:50:26Z",
+  "title": "G6 + 单次 ILS restart, accept-better-only",
+  "body": "## G21: 单次 ILS restart, accept-better-only\n\n### 改动 (单变量, 相对 G6)\n完整保留 G6 pipeline (greedy + 1-1×80 + 2-1×8 + 2-2×3 + 1-1×20 + fill). 在 G6 之后做一次 ILS restart:\n\n1. **Kick**: 从 G6 解随机 drop 3 个 picked items (用 Math.random, 引擎种子保证每实例确定)\n2. **Refill**: 按原 eff metric 重新 greedy fill 剩余 capacity\n3. **Short LS**: 跑 1-1 × 30 (vk > vi, 同 G6)\n4. **Accept**: 仅当新解 totalV 严格 > G6 totalV 时替换, 否则保留 G6\n\n### 为什么可能有效\nG16-G20 全失败 (-0.07% ~ +0.06%), 都还在 G6 basin 内或邻 basin. G6 的 1-1×80+2-1×8+2-2×3+1-1×20 是 basin 内充分搜索. 必须做非局部扰动才能跳出.\n\nILS 的 kick (随机 drop 3) 是经典 basin-escape. 重新 greedy 给新起点, 1-1 LS 在新起点收敛. **Accept-better-only 保证每实例 ≥ G6**, 即使 variant 改进稀疏也不回归.\n\n### 关键不确定性\n- **Kick size 3**: 太小可能 insufficient escape, 太大浪费. 留作调参\n- **1-1 × 30**: 比 G6 的 80 短, 30 是否够 LS converge 取决于复杂度\n- **改进频率**: 完全取决于样本, 可能 variant 大多 instance 不改进 (浪费时间但不回归)\n- **时间**: G6 ~220ms + variant ~70ms = ~290ms, 略超 250ms 建议, 在 1000ms 硬限内\n\n### 若失败\n- 双 variant (kick 3 + kick 5 各一次, max)\n- variant 中加 2-2 × 1\n- tabu search on 1-1 (tenure 5-10)\n- LP 松弛 + rounding (simplex ~300 行)\n- 回到 G18 路径 + packer #109.1 诊断 (算 v_filled-v_swapped 均值)\n\n### 若成功\n- 多 variant (kick 3, 5, 7) max\n- 调 variant LS iters (15-50)\n- variant 中加 2-2\n- variant 期间用不同 metric (bottleneck) 做 greedy\n- 考虑 path relink: variant 与 G6 做 crossover",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 21,
+    "idea": "G6 后追加单次 ILS restart: kick 3 随机 + 重贪心 + 短 1-1, 仅严格更优时替换",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 8854,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 130
+}

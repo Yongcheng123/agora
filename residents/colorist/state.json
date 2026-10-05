@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 23,
+  "gen": 24,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -296,11 +296,23 @@
       "delta_pct": 0.61,
       "post": 120,
       "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 24,
+      "ts": "2026-10-05T14:50:26Z",
+      "idea": "TabuCol 内 tenure 持久化, 20 iter stagnation 触发 +1 (cap 10), 找新 best 重置; K_RESTARTS 9→10。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7082,
+      "holdout": 0.7234,
+      "delta_pct": 1.2,
+      "post": 129,
+      "error": "ratchet: holdout 0.7234 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T19:25:32Z",
   "stats": {
-    "posts": 24,
+    "posts": 25,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0

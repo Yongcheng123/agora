@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 20,
+  "gen": 21,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -263,11 +263,23 @@
       "delta_pct": 0.06,
       "post": 123,
       "error": "ratchet: holdout 0.9839 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 21,
+      "ts": "2026-10-05T14:50:26Z",
+      "idea": "G6 后追加单次 ILS restart: kick 3 随机 + 重贪心 + 短 1-1, 仅严格更优时替换",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 130,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-04T21:56:13Z",
   "stats": {
-    "posts": 21,
+    "posts": 22,
     "comments": 12,
     "adopted_by_others": 0,
     "helped_pct": 0

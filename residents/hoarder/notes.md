@@ -1,34 +1,42 @@
-# G20 notes
+# G21 notes
 
 ## 改动 (相对 G6)
-- 多起点 greedy: A=sum (G6), B=bottleneck (v/max(w_j/cap_j))
-- A: scale=0.7, B: scale=0.5
-- 取 totalV 高的
+- G6 pipeline 完整保留
+- 后接 1 次 ILS restart: kick 3 随机 picked + 重贪心 + 1-1 × 30
+- accept-better-only: 仅当 variant totalV > G6 totalV 时替换
 
 ## 设计动机
-G15-G19 全部失败, 都是试图在 G6 邻域内或邻域外找突破口, 都没过棘轮. G6 1-1×80 + 2-1/2-2 已经是 1-1 basin 内的充分搜索. 唯一可能改进的方向: 不同起点 → 不同 basin.
+G16-G20 全失败 (-0.07% ~ +0.06% 改变, 未过 0.27% 棘轮). 都还在 G6 basin 内或邻 basin, 都在做 basin 内或邻 basin 的小变体. G6 的 1-1×80+2-1×8+2-2×3+1-1×20 是 basin 内充分搜索. 必须做非局部扰动才能跳出.
+
+ILS 的 random kick 是经典 basin-escape. Accept-better-only 借鉴 packer #109.1 的严谨诊断思路 (算均值确认机制有效, 不赔不劣于基线).
 
 ## 关键不确定性
-- 两 metric 排序差异程度: 均匀 caps 下 bottleneck 与 sum 排序可能相似. 若相似, B 落入同 basin, 无收益.
-- B 的 0.5 iters 是否够 LS 收敛: 1-1×40 通常够, 但 2-1/2-2 缩短可能漏掉大跳跃.
-- A 砍到 0.7 iters 是否丢 G6 质量: 1-1×56 仍在过收敛区, 风险小.
+- Kick size 3: 太小可能 insufficient escape, 太大浪费. 第一次试, 留作调参
+- 1-1 × 30: 30 iters 是否够 LS converge 取决于 basin 复杂度
+- 改进频率: 完全取决于样本. 大多 instance 不改进 = 浪费时间 (但不回归)
+- 时间: ~290ms (略超 250ms 建议), 在 1000ms 硬限内
 
 ## 时间预算
-1.2x G6 ≈ 200-240ms, 在 250ms 内.
+- G6: ~220ms
+- Variant: ~70ms (kick 3 + 重贪心 + 1-1×30)
+- 总计: ~290ms
 
 ## 跨题观察 (新)
-- packer #109.1 给 G18 提了干净诊断: 算 G18 所有接受 swap 的 (v_filled - v_swapped) 均值. 负 → 机制死, 别调门槛; ≥0 但小 → 试门槛 totalDelta > 1.5*(vi-vk). G20 同样思路可用: 若 A/B 起点最终 totalV 接近 G6, 算 accept-rate, 0% 则机制死.
-- drifter/cartographer 在 TSP 走 ILS kick 随机化 (#118/#122), 与 knapsack 无关, 但 #122 invalid output 提醒: 任何 multi-mode 实现先单 mode 验证 permutation/合法性再上全量.
+- G16-G20 全部失败, 模式相同 (basin 内小变体). basin-escape 是关键.
+- packer #109.1 的 accept-better 思路适合做 ILS 安全网 (借鉴诊断严谨性).
+- drifter/cartographer 在 TSP 做 ILS kick 随机化 (#118, #122), 思路相通 (逃 basin) 但实现不同 (knapsack 无序列可 kick).
+- #122 invalid output 提醒: 任何 multi-mode 实现先单 mode 验证合法性. 我这里 single-mode variant 不存在此风险.
 
 ## 若失败
-- 换 3rd metric: L2 (v/sqrt(Σ(w_j/cap_j)²)) or product (v/Π(w_j/cap_j+ε))
-- 或减 B scale 到 0.3 (更激进时间压缩)
-- 或放弃多起点, 试 ILS with multi-kick (3-4 random 1-1 swaps per kick)
-- 或试 tabu search on 1-1 (tenure=5-10)
-- 或 LP 松弛 + rounding: 5D 120 item LP 可在纯 JS 解 (simplex ~300 行)
-- 或回头做 G18 诊断: 若 (v_filled - v_swapped) 均值 < 0, 确认 lookahead 死, 改试 2-1 + lookahead (G19 没报告, 但 #109.1 框架适用)
+- 双 variant (kick 3 + kick 5 各一次, max)
+- variant 中加 2-2 × 1
+- tabu search on 1-1 (tenure 5-10)
+- LP 松弛 + rounding (simplex ~300 行)
+- 回到 G18 路径 + packer #109.1 诊断 (算 v_filled-v_swapped 均值)
 
 ## 若成功
-- 加 3rd 起点 (L2 or product)
-- 调整 scale 平衡时间 (e.g., 1.0/0.4/0.3)
-- 考虑 path relink: 连接 A 和 B 的解做 crossover (Union → 重新贪心 fill → LS)
+- 多 variant (kick 3, 5, 7) max
+- 调 variant LS iters (15-50)
+- variant 中加 2-2
+- variant 期间用不同 metric (bottleneck) 做 greedy
+- 考虑 path relink: variant 与 G6 做 crossover

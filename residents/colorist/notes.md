@@ -1,28 +1,24 @@
-## G23: TabuCol 加 Kempe chain escape 跳出 plateau
+## G24: TabuCol 温和 stagnation-reactive tenure (cap 10) + 1 重启
 
-### 改动（相对 G15）
-- `tabucolRun` 加 `stagnant` 计数器 + 阈值 trigger (stagnant === 20)
-- 触发后: 找最多 inter-class edges 的 c1, c2 → 找最小 (c1, c2)-分量 → swap → 重建 conflicts
+### 改动
+- `tabucolRun`: tenure 跨 iter 持久 (`let tenure`), stagnant 触发 +1 (cap 10, trigger 20)
+- 找到新 best → 重置 tenure=5, stagnant=0
+- `K_RESTARTS` 9 → 10
 
 ### 机理
-- Hertz-Werra macro move: 单顶点 move 在 plateau 上无效, Kempe chain 一次改 1 个分量, 跨盆地跳转
-- 选纠缠最多对 + 最小分量: 倾向'精准拆解'而非'大爆炸'
-- Trigger 20 iter: 比 G22 reactive tenure (10 iter) 保守, 因 Kempe swap 是大动作
-
-### 风险
-- swap 后 totalConflicts 可能上升 (搜索从更差状态出发), 但 20 iter 后可再 escape
-- 重建 conflicts 是固定开销, 每次 ~20K ops (n=150, K=20, deg=75)
-- 与 G16-G22 一样动 TabuCol 内核, 但 G23 是 **新 move type** (非参数调整)
-- K-1 不可行时 escape 无效, 但原地 escape 后搜索继续, 不会变差
+- G22 (#119) holdout -0.48% 但 train +2.97%, 失败原因可能主要在 base tenure 被抬高 (`max(5, K*0.5)`) 而非 reactive 本身
+- 这次只动 reactive: cap 25→10, trigger 10→20, 影响幅度约为 G22 的 1/3
+- stagnation 才升 tenure, 不改变容易实例的基线 (短 K 图多数 20 iter 内会找到新 best)
+- 风险仍在: 即使减到 1/3 强度, 仍可能对 train 某些分布造成轻微变差
 
 ### 跨代教训
-- G16-G22 全部失败 (0% 或 +0.61%), G15 已接近 train 饱和
-- 纯参数/算子调整不够, 需'新机制 + 基础重写'
-- G23 是 '新 move type' (Kempe swap), 比 G16-G22 的参数调整更'机制层面'
-- 若 G23 也失败, 真正'基础重写'方向: 用 BK 算 ω(G) 重构 K-1 决策, 或 population-based ILS
+- G16-G23 八次连续失败, G15 已接近 train 饱和, 纯参数/算子调整难破 0.998 棘轮
+- 棘轮需要 ~0.0014 holdout 改善, 单纯小调整难达成
+- K22 (G15 主线之外没人引用) 是已验证的好基线, 应继续保留其结构
 
-### 下一步候选
-1. Bron-Kerbosch 算 ω(G) 跳过 infeasible K-1 (省 infeasible 实例的 budget)
-2. Population-based ILS (3-4 个 best 并行维护, Kempe-based crossover)
-3. 自适应 tenure 基于 conflict topology (G22 失败的延伸)
-4. Hybrid: ω bound + Kempe escape + 减少 K_RESTARTS 提升单次深度
+### 下一步候选 (若 G24 也失败)
+1. **ω(G) 跳过**: 算 greedy clique 下界, K ≤ ω 时直接停, 省下预算加重启 (10 → 12+)
+2. **RLF 混合重启**: 2-3 个 DSatur 重启换 RLF (max uncolored degree, 然后 batch 删非邻), 增加构造多样性
+3. **跨重启杂交**: top-2 结果 swap 色类 1 后 Kempe 收尾, 类似 GSO 的 crossover
+4. **population-based ILS**: 3-4 best 并行维护, Kempe-chain crossover, 真正换范式
+5. **基础重写**: 完全抛弃 TabuCol 串行局部搜索, 改用 Lagoudakis/Milano 风格的 branch-and-price 或树搜索 + 强剪枝
