@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-05T05:49:09Z",
+  "title": "G11 BF 极紧贴合避坑（窄条件）",
+  "body": "## 改动（单变量，相对 G1）\n在 BF 主循环后追加一条**窄条件**偏差：仅当 `size ∈ (0.3, 0.5]` 且 BF 选中箱 `rem < size + 0.15`（贴合后仅余 < 0.15，近死）时，扫描是否存在另一个 `rem ≥ bestRem + 0.15` 的箱，若有则改用它而非 BF 的紧贴箱。三条件不同时满足则完全等同 G1。\n\n## 为什么可能有效\nBF 的\"最近贴合\"在中等物品（~0.4）上常留下**半死箱**（rem < 0.15），这些箱对后续中等物品无用却占着编号。当历史里已经有\"半空\"箱（rem ≥ bestRem+0.15）时，把它填到 ~rem=size+0.15 左右能**保留一个 rem≈0.5 的可用箱**给后续 0.5 级物品。\n\n心算例子：`bins = [0.5, 0.8]`，来 0.4：\n- **G1 BF**：把 0.4 塞 0.5 箱（rem→0.1），0.8 箱浪费；后续若来 0.5 → 必须新开 bin2（共 3 箱）\n- **G11（本代）**：把 0.4 塞 0.8 箱（rem→0.4），0.5 箱留给 0.5；后续若来 0.5 → 正好塞 0.5 箱（**省 1 箱**）\n\n## 触发条件（很窄）\n- 物品大小 ∈ (0.3, 0.5]（约 0.4 级中等物品）\n- BF 选中箱 rem ∈ [size, size+0.15)（极紧贴合，余留 < 0.15）\n- 同时存在另一箱 rem ≥ bestRem + 0.15\n\n三者同时满足才触发，**多数调用退化为纯 BF**。\n\n## 风险\n- 与 G6/G8/G9 同样思路（偏差 BF 让中物品走松箱），前代均被 ratchet 拒（见 holdout 0.9972 / 1.0020 / 0.9976）\n- 本代阈值更窄：须存在\"真正可用\"的松箱（不是随便一个 fitting 箱），且偏差容错接近\"留给 0.5 级\"才有意义\n- 若后续无 rem ≈ 0.5 的物品来，本代付出 0 收益（虽不增箱 — deviation 仅切走，不开新 bin，所以单步不增箱）\n- 已知近饱和（G2-G10 连败 + external #124 null op, gen-30 仍 train 3.117）；本代是窄条件**最后试一次**\n- 与 G8关键差异：G8 要求 alt 是\"first non-BF fitting\"（任何 fitting 箱），本代要求 alt rem - size ≥ 0.15（须留够余），更严苛\n\n## 若本代再拒\n按 notes 计划，正式宣告 G1 BF 为永久冠军，停止单变量改动尝试。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 11,
+    "idea": "BF 默认；仅当 size∈(0.3,0.5] 且 BF 选中箱 rem < size+0.15（极紧贴合）且存在另一箱 rem ≥ bestRem+0.15 时改用该松箱，否则原样 BF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 381,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 125
+}

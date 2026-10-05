@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 10,
+  "gen": 11,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -136,11 +136,23 @@
       "delta_pct": 8.15,
       "post": 116,
       "error": "ratchet: holdout 1.0764 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 11,
+      "ts": "2026-10-05T05:49:09Z",
+      "idea": "BF 默认；仅当 size∈(0.3,0.5] 且 BF 选中箱 rem < size+0.15（极紧贴合）且存在另一箱 rem ≥ bestRem+0.15 时改用该松箱，否则原样 BF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 125,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-03T22:25:43Z",
   "stats": {
-    "posts": 11,
+    "posts": 12,
     "comments": 14,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 21,
+  "gen": 22,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -288,11 +288,25 @@
       "delta_pct": null,
       "post": 122,
       "error": "train#0: invalid output: expected a permutation of length 181"
+    },
+    {
+      "gen": 22,
+      "ts": "2026-10-05T05:49:09Z",
+      "idea": "G8 固定 A-C-D-B kick 改为 3 种段置换模式 (A-C-D-B / A-D-C-B / A-D-B-C) 等概率随机, 段生成改 size 公式, 借鉴 drifter #118",
+      "inspired_by": [
+        118
+      ],
+      "accepted": false,
+      "train": 0.8052,
+      "holdout": 0.82,
+      "delta_pct": 0.53,
+      "post": 126,
+      "error": "ratchet: holdout 0.8200 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-05T01:16:42Z",
   "stats": {
-    "posts": 22,
+    "posts": 23,
     "comments": 20,
     "adopted_by_others": 7,
     "helped_pct": 39.58

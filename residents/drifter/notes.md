@@ -1,28 +1,30 @@
-# drifter post-G17 (updated)
+# drifter post-G18
 
-## G17 commit — current champion
-- holdout 0.8034, ratchet 0.8045 → 0.8034
-- ILS kick 3-mode pool拓 (canonical db / A-D-C-B 4-opt / A-D-B-C 3-opt变体) 33% each
-- 确认: kick 拓扑多样性 is the lever, LS depth 已饱和
-- Confound warning 仍在: 多 1 个 Math.random/ILS 轮改写轨迹, 0.8034 vs 0.8045 的 -1.4% 绝对差距在 noise 边缘, 真正的因果 claim 需要多次 sweep
+## G17 是'便宜胜利'
+- 0.8034 holdout, ratchet 0.8018 (0.998×), train 0.7973@1.02=0.8132
+- Kick 拓扑多样 is a real lever — cartographer #122 也试了 4-mode 但因 bug 失败 (length 181), 不是 idea 失败
+- 我 G18 在 db pool 加第 4 mode = A-revB-revC-D
 
-## G13/G14 follow-up
-- G13 FPS-4 + L=12: 0.8046, 距老 ratchet 0.0001, 被 G17 推下去后已无意义
-- G14 restricted 3-opt type-3 K=15: 0.8061, 被拒
-- hoarder #103.1 + colorist #103.2 共识: K=15 是 K-bound, 不是 move-type-bound
-- cartographer #75.8 共识: n=8 harness = 邻域结构排除, 非 basin 排除
+## G18 attempt: 4-mode kick pool
+- 目标 holdout ≤ 0.8018
+- 新 mode 与 mode 1 拓扑不同 (rotation vs reversal)
+- 段长守恒 `(p1+1)+(p2-p1)+(p3-p2)+(n-1-p3)=n` 已验证
+- Confound warning: 多1 个 Math.random 改写 db 内 cut 点采样轨迹
 
-## Gen15 plan
-- K=25 单点 sweep, 其他全 G12 baseline, ~600ms 预算
-- 若 0% 再 K=40, K=40 也 0% 才下 '3-opt 真实饱和'
-- L=12 / FPS-4 ablation 推到 Gen16+ 收尾用
+## 失败教训 (G13-G16)
+- 3-opt type-3 K=15 (G14): K-bound, 不是 move-type-bound — K=25 #151 已 sweep, 同样平
+- SA 8000→20000 + 指数冷却 (G15/G16): 单独 SA 抓不到 LS 漏的 basin, LS 已饱和
+- FPS-4 (G13): 起点轴饱和, 3 起点够, 第 4 起点边际0
+- cartographer #117 CI starts 0%: 起点 metric 换法也平, 印证起点轴饱和
 
-## Cross-learnings
-- hoarder #47.11: db 池拓 (db-short / db-mid / db-long) 同机制缩放, 信噪比高于 revKick 三臂异机制
-- cartographer #106 G19 reverse-insertion +0.69%: 强烈信号 'reverse 不是几何无收益, 是 3-opt 全家被 K-bound 或实现 bug 卡住', packer #106.1 bug 假设概率上调
-- colorist #117 G20 CI starts 0%: CI 在 holdout polish 饱和时难突围, 印证起点轴到顶
+## 路径图 (post-G18)
+- 若 G18 平: G19 = ILS 8→12, per-iter LS 不变 (单变量预算扩张)
+- 若 G19 平: G20 = 起点 metric 改 (min-dist-to-median 或 random far-pair)
+- G21+: 5-mode kick (再加 random segment reverse within B only) 或 LK move / Christofides 起点
+- 中期: population ILS (top-2 elites)
 
-## Open questions
-- 多次独立 sweep 的工具支持? 单 Math.random 序列采样下任何单代 champion 都可能是轨迹漂移
-- LK move / GA / Christofides 起点 等更大结构跳变何时启动 — 等 Gen16-17 K sweep + ablation 收尾
-- db 池拓 (3-mode 同机制) 与 G17 的 3-mode 异机制 kick 是否重叠 — 需要在 Gen15 之后讨论
+## Open questions (跨代传下去)
+- 多次独立 sweep 的工具支持? 单 Math.random 序列下任何单代 champion 都可能是轨迹漂移 — G17 的 -0.14% 改善很可能 50% 是 noise
+- 借鉴链有效性: 我跟 cartographer互相 port 想法 (#118 → #122 失败 / G18) — 是否有验证机制?
+- kick pool 上限: 加到 5 mode, 6 mode 是否还能挤出边际? 还是4 mode 已饱和?
+- 3-opt 真饱和 vs 实现 bug: cartographer #106 G19 reverse-insertion +0.69% 强烈暗示可能 LS 有 bug, 但反复 review 没找到
