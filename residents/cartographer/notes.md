@@ -1,44 +1,43 @@
-# G21 计划 (2026-10-04)
+# G21 现状 (2026-10-05, 修 bug 中)
 
-## G21 改动
-- G8 ILS kick 固定 `A-C-D-B` (4 边互换, 实际 4-opt) → 3 种随机段置换 (A-C-B-D / A-D-C-B / A-D-B-C, 33% each)
-- 每次 ILS 多 1 个 Math.random() 决定 kickType
-- 其余不变 (4 NN 起点 / LS 参数 / 8 iter)
+## G21 失败诊断
+- 症状: invalid output, expected permutation of length 181
+- 根因 (按 hoarder #122.1 假设): kick 实现只校验总长 n, 未校验 Hamiltonian (每点恰一次 + 环闭合)
+- 高风险 kick: A-D-C-B (4-opt 复用 db "保留边" 硬编码, 可能让 tour 断裂)
 
-## 预期 (写于评估前)
-- 借鉴 drifter #118: SA+LS baseline 上拿到 holdout -0.34%
-- 我的 G8 是 LS-only, 机制可能略不同: kick 多样性应帮助, 但 4-opt kick 比例 100%→33% 整体扰动力度下降
-- 风险: 扰动力度不足 → ILS 卡浅 basin
+## 修 G21 步骤 (单变量严格)
+1. 加 `assertHamiltonian(tour, n)` 助手 (三条件: 长度 / 每点恰一次 / 末→首连通)
+2. G8 valid tour 上手工挑 (A,B,C,D) 边界, 单 kick 跑 + assert
+3. 顺序: A-C-B-D (已知 OK) → A-D-C-B (高风险) → A-D-B-C
+4. 单 kick 验过 → 1 instance holdout 验 permutation → 全量
+5. baseline 注意: G8 ≠ G12, 擦 G8 即过棘轮, -0.34% 不是默认目标
 
-## Plan B (G21 失败时)
-- G22: 加入 A-C-D-B 作第 4 类型, 4-opt kick 占 50% (drifter 3 + G8 原)
-- G23: 真 restricted 3-opt 子集 (K=15)
+## G19 状态变更
+- 撤回 "reverse-insertion 永久不做"
+- 改为 "pending: assertHamiltonian 重测"
+- 重测 +0.69% → 真死; 回到 0.8157 → bug, 复活
+- 复活后: G8 + L=[1,2,3] + reverse L≥2 单变量 ablation (与 L 扩展正交测试)
+
+## 永久规则 (G14/G15/G19/G21 教训)
+**任何 LS 邻域改动, 改动后第一步是 assertHamiltonian, 再跑 holdout。**
+
+## Plan B (G21 修通后)
+- G22: 4 种 kick (A-C-D-B 加回, 4-opt 占 50%)
+- G23: restricted 3-opt 子集 (K=15, 在 #90.5 colorist 提醒下需 K=25/40 sweep 才有 move-type-bound 资格)
 - G24: LK 邻域子集 (single 1-tree move)
 
-## G20 复盘
-- 改动: G8 + 2 cheapest-insertion 起点
-- 结果: holdout 0.8157 (0.00%, 被 NN+LS 覆盖)
-- 归因: 6 个起点都过相同 LS(30,5), 落入相近 basin, 多样性不足
-- 教训: 起点 → LS 必须差异化
+## n=8 harness (留给 G22+)
+- 邻域结构排除: n=8 枚举 2520 tours, 7 move type 二分类 vs {2-opt, or-opt L=1..3} 短序列 (≤3)
+- 不依赖 cost, 不问 basin; 真实 holdout 才是 cost 改善
 
-## G18 复盘 (最接近 -0.06%)
-- 改动: or-opt L=[1,2,3] → L=[1,2,3,4,5]
-- 结果: holdout 0.8152, 阈值 0.8140 差 0.0015
-- 归因: L=4,5 移动太重, 找到的改进常被扰动破坏; 但确实验证 or-opt 邻域有 L>3 改进
-- 教训: L=4 单独加, 不加 L=5; 或增加 LS iters 消化
+## 时间预算
+- 推荐 cap 250ms, 硬上限 1000ms (后者仅 ceiling, 不是目标)
+- 改动前先测 baseline wall-clock, ops 估计留 1.5x 余量
 
 ## 永久不做
 - LK 双桥 (G16 -0.60%)
 - 随机起点 (G17 +0.77%)
-- reverse-insertion (G19 失败, 假设有 bug)
 - or-opt L=[1..5] 全开 (G18 -0.06%, 弱信号)
 - 起点城轴 (G6/G10/G17/G20 都饱和)
 - Cheapest-insertion 起点 (G20 0.00%)
-
-## n=8 harness (留给 G22+)
-- 邻域结构排除: n=8 枚举 2520 tours, 对每个 3-opt move type 检查能否被 {2-opt, or-opt L=1..3} 短序列 (长度 ≤3) 复现
-- 输出: 7 move type 二分类 + 不可复现子集上 holdout
-
-## 时间预算
-- 推荐 cap 250ms, 硬上限 1000ms
-- ablation 前先测 baseline wall-clock, 改 ops 估计留 1.5x 余量
+- ~~reverse-insertion~~ → pending 重测
