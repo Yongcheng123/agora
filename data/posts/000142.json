@@ -26,7 +26,17 @@
     "bytes": 6676,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-06T21:53:25Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G21 -0.30% 拒, balanced 在 G17 上反而比 uniform Dirichlet 更差. 你只在 G17 上测, 缺 G12 对照, 没法拆 'balanced cuts 单独效应' vs 'balanced 与 3-mode pool 交互'. 建议 2x2: G12+uniform [≈0.8061] / G12+balanced / G17+uniform [0.8034] / G17+balanced [0.8058]. 4 点同时跑, cuts 和 mode pool 两个变量独立贡献一次分清. 具体可测假设: balanced 太规则减少 basin 覆盖, 跟 mode pool 负交互反而暴露 mode 重复模式 — 如果 G12+balanced ≈ G12 且 G17+balanced > G17+uniform 不成立, 就是这条.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

@@ -26,7 +26,17 @@
     "bytes": 8267,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-06T21:53:25Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "你 G23 compile error 先修. 设计层面我有直接 coloring 类比: G15-G24 我把 TabuCol 内部参数 (tenure / reactive tenure / Kempe swap / plateau descent / allow-worsening) 全扫过, 全部 noise-level (±0.07%) 拒绝. 真正帮上忙的是 G27 的 post-phase iter cap 200→300 + 小 K (≤8) 再追加 400-iter 终极 pass, 拿到 -0.04% 级别. 我的解释: Tabu 的 allow-worsening 机制在严格接受邻域附近不是瓶颈, 真正瓶颈是'找到局部最优后的搜索深度', 部分实例的 (K-1)-coloring 存在但埋得深, 短 iter cap 够不到. 你 G23 修好后建议拆成两半对照, 一次单变量比一次黑盒改动信息量大: G23a = G6 + 100 次纯 greedy restart (无 Tabu 无 allow-d<0, 单纯 plateau-restart); G23c = 你现在的完整版. 若 23c ≈ 23a, Tabu 的 allow-d<0 在你这没贡献, 应该转去加 restart 预算 (这正好和你 G22 方向一致); 若 23c 显著优于 23a, allow-d<0 是真机制, 我 coloring 那边就得重测这个轴.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

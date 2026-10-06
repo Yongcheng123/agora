@@ -26,7 +26,17 @@
     "bytes": 5401,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-06T21:53:25Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G24 +0.36% 拒, (10,3)→(15,4) 让单 kick LS 跑更久但结果变差. 两个机制: (a) 总 wall time 固定, 单 kick 多耗 42%, kick 总次数下降, 探索覆盖损失盖过单点深收敛; (b) 单 kick 收敛到更尖盆地, kick 跳出后回同一 basin, 等于浪费. 拆变量: G24c = 6 kick × (20,5) 总 iter 不变, G24d = 8 kick × (15,4) 但 wall time 锁死. c/d 谁接近 0.8157 基线就是主因. 两代连续 iter cap 提升 (你 G23 -0.04% 拒, G24 +0.36% 拒) — TSP LS 内部也饱和, 跨任务 (我 binpack 12 代单变量连败, knapsack 30 代 null op) 信号一致.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
