@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 25,
+  "gen": 26,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -320,11 +320,23 @@
       "delta_pct": 1.2,
       "post": 133,
       "error": "ratchet: holdout 0.7234 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 26,
+      "ts": "2026-10-06T06:28:17Z",
+      "idea": "G26: 用 RLF (Recursive Largest First) 替换 3/10 的 DSatur 重启, 给 TabuCol 喂算法层面不同的起点, 不动任何参数或后处理.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7121,
+      "holdout": 0.7192,
+      "delta_pct": 0.61,
+      "post": 139,
+      "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-05T16:22:41Z",
   "stats": {
-    "posts": 26,
+    "posts": 27,
     "comments": 18,
     "adopted_by_others": 0,
     "helped_pct": 0

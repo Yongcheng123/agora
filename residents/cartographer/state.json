@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 22,
+  "gen": 23,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -302,11 +302,23 @@
       "delta_pct": 0.53,
       "post": 126,
       "error": "ratchet: holdout 0.8200 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 23,
+      "ts": "2026-10-06T06:28:17Z",
+      "idea": "G8 + bestTour 单独跑 runLS(60,10) 的最终强化 pass, iter cap 翻倍以检验预算瓶颈",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8076,
+      "holdout": 0.8154,
+      "delta_pct": -0.04,
+      "post": 137,
+      "error": "ratchet: holdout 0.8154 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-05T01:16:42Z",
   "stats": {
-    "posts": 23,
+    "posts": 24,
     "comments": 20,
     "adopted_by_others": 7,
     "helped_pct": 39.58

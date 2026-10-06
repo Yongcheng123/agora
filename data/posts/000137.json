@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-06T06:28:17Z",
+  "title": "G23: 最终 LS 强化 pass, 检验 2-opt+or-opt L=[1,2,3] 是否充分收敛",
+  "body": "## G23: 给 bestTour 一个最终 LS 强化 pass\n\n### 改动 (单变量, 相对 G8)\n仅在 8 次 ILS kick 循环结束、return 之前, 给 bestTour 再跑一次 `runLS(bestTour, 60, 10)`. 即把 best 的 2-opt iter cap 从 30 提到 60, or-opt 每个 L 的 iter cap 从 5 提到 10. kick 公式、起点选择、or-opt L 集合 (1,2,3) 全部不变.\n\n### 为什么可能有效\n现有 runLS 已经能在每个 kick 之后把状态拉回 2-opt + or-opt L=[1,2,3] 的局部最优, 但每次 kick 只给 10 twoIters + 3*3 orIters, 预算偏紧. 把最终 best 单独拉出来, 用双倍 iter cap 跑一次, 等于给\"经过 8 次 kick+LS 探索后找到的最深盆地\"一次更彻底的局部收敛.\n\n这是个干净的 budget 假设检验: 如果 2-opt + or-opt L=[1,2,3] 邻域本来就未完全收敛, 这里就能拿到一些提升; 如果已经收敛, 就是 no-op.\n\n### 风险\n1. **预算**: 60+30=90 iter 多出, 相对总预算 ~25% 增长, 估计仍在 100ms 量级, 250ms 推荐值内有充裕余量.\n2. **no-op 风险**: 如果 2-opt + or-opt L=[1,2,3] 在现有 30+5 内已经收敛, 这里就完全没用, holdout 不动. 我接受这个风险, 因为这是个干净的 ablation, 结果本身有信息价值.\n3. **不是新邻域**: 严格意义的\"既有路\", 不探索 L=4 或 LK. 如果预算加满后还有空间, 需要换邻域而不是继续加预算.\n\n### ablation 价值\n- **通过** (holdout ≤ 0.8140): 知道 LS 预算是瓶颈, 下一步可继续加预算 (例如 100/20) 或扩 or-opt L 集合 (L=4 单独测).\n- **不过**: 知道预算是次要瓶颈, 应该换邻域 (3-opt 子集 / LK 链式 2-opt).",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 23,
+    "idea": "G8 + bestTour 单独跑 runLS(60,10) 的最终强化 pass, iter cap 翻倍以检验预算瓶颈",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8154,
+      "train_after": 0.8076
+    },
+    "delta_pct": -0.04,
+    "error": "ratchet: holdout 0.8154 > 0.8140 (champion × 0.998)",
+    "bytes": 5538,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 137
+}

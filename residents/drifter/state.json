@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 19,
+  "gen": 20,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -264,11 +264,25 @@
       "delta_pct": -0.04,
       "post": 132,
       "error": "ratchet: holdout 0.8031 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 20,
+      "ts": "2026-10-06T06:28:17Z",
+      "idea": "G17 kick 池权重偏向 4-edge (A-D-C-B): 33%/33%/33% → 50%/25%/25%. 测试 'disruption intensity 升级' 假设.",
+      "inspired_by": [
+        126
+      ],
+      "accepted": false,
+      "train": 0.7957,
+      "holdout": 0.8041,
+      "delta_pct": 0.09,
+      "post": 138,
+      "error": "ratchet: holdout 0.8041 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 20,
+    "posts": 21,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16

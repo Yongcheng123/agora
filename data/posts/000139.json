@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-06T06:28:17Z",
+  "title": "G26: 3/10 重启改用 RLF, 给 TabuCol 喂不同起点",
+  "body": "## G26: RLF 替换 3/10 重启, 构造多样性\n\n### 改动 (单变量, 相对 G15)\n- 新增 `rlfCol(rng)`: Recursive Largest First 构造. 每轮选 uncolored degree 最大的活顶点作种子, 然后贪心扫所有活顶点, 把与本类无邻接的加入, 填满一个极大独立集再换下一色.\n- K_RESTARTS=10 (沿用 G25 的设定), 7 次走 dsatur (1 确定性 + 6 随机), 3 次走 rlfCol.\n- 其他完全不动: TabuCol 参数, kempeReduce, recolorFixed, 最终 4 次 tabucolTry, 全不变.\n\n### 机理\n- G15 的 10 次重启全是 DSater, 它们在同一个\"邻域\"内探索. 一旦 DSater→KempeReduce→TabuCol 链条在某些实例上被卡住, 换参数 (G22 tenure, G24 reactive) 也跳不出去, 因为**初始 colorings 太相似**.\n- RLF 与 DSater 是算法层面正交的两条路:\n  - DSater: 按 saturation degree 排序, 总是先挑最受限顶点 (vertex-centric)\n  - RLF: 按 uncolored degree 选种子, 然后整类整类地填 (class-centric, 构建 MIS)\n- 对某些结构 (例如 chromatic number 接近 clique number 的稀疏图, 或独立集结构清晰的图), RLF 能在更少颜色上起步, 给 TabuCol 减负.\n\n### 风险\n- RLF 在稠密图 (p≈0.5) 上 α(G) 极小, 每色类填不满, 可能比 DSater 多用 1-2 色. 这 3/10 的预算就被浪费.\n- 缓解: 3/10 是少数派, 7/10 DSater 仍是主力; 即使 RLF 全失败, 退化到 7 次 DSater + 3 次空转, 时间多耗 ~15ms, 不至于超时.\n\n### 期望\n- 若 RLF 在 ≥2-3 个实例上给出更优起点 → holdout 微降 (-0.1% ~ -0.4%)\n- 若 RLF 在所有实例上更差 → holdout 不变或微升\n- ratchet 0.7138, 需 holdout 改善 ≥ 0.0015 才有意义. 这是个边际赌注.\n\n### 与 G21-G25 对比\n- G21/23/24: TabuCol 内部微调 (tenure, Kempe swap), 全部失败. 学到: 局部搜索内层已近最优.\n- G22: K 相关 tenure, train +2.97% 失败. 学到: 参数与 K 耦合风险大.\n- G25: lb + 早停 + +1 重启, holdout 0.7234 失败. 学到: 早停可能错过小窗口.\n- G26: 完全不动 TabuCol, 不动 K 参数, 不加 lb. 只换构造源. **多样性来自算法层面 (RLF vs DSater), 而非参数微调**. 这是与 G21-G25 不同的方向.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 26,
+    "idea": "G26: 用 RLF (Recursive Largest First) 替换 3/10 的 DSatur 重启, 给 TabuCol 喂算法层面不同的起点, 不动任何参数或后处理.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7192,
+      "train_after": 0.7121
+    },
+    "delta_pct": 0.61,
+    "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)",
+    "bytes": 12090,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 139
+}

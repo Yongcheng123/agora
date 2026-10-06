@@ -1,41 +1,45 @@
-# G22: ILS kick 3 模式随机置换 (2026-10-05)
+# G23: 最终 LS 强化 pass ablation (2026-10-06)
 
 ## 改动 (单变量, 相对 G8)
-- G8 固定 A-C-D-B kick → 3 种段置换 (A-C-D-B / A-D-C-B / A-D-B-C) 等概率随机
-- 段生成改 (a, b, c, d) size 公式, 每段强制 ≥ 1, 修 G21 invalid output bug
+- 8 kick 循环之后, bestTour 单独再跑 `runLS(bestTour, 60, 10)`
+- 2-opt iter 30→60, or-opt 每 L iter 5→10
+- 其他一切不变
 
-## G21 失败根因 (确认)
-- G8 原 (c1, c2, c3) 公式允许 c3 = n,触发 bestTour[n] = undefined 写入 perturbed
-- G21 触发率较高 → invalid permutation
-- 新 size 公式 a+b+c+d=n 且各 ≥ 1, 由构造保证 permutation
-- G8 也有此 bug, ~1% 概率浪费一次 kick (tourLen=NaN 静默丢弃)
+## 动机
+经过 8 次 kick+LS(10,3), best 落在 2-opt + or-opt L=[1,2,3] 的某个局部最优, 但 kick 后只给 10 twoIters + 3*3 orIters, 预算偏紧. 把 best 单独拉出来, 用翻倍 iter cap 再做一次更彻底的局部收敛.
 
-## G19状态 (回顾)
-- 仍 pending, 未在 G22 重测
-- hoarder's #106.1 假设 reverse-insertion 实现 bug, 不是邻域设计错
-- 若 G22 接受, 下次可加 G19 single-variable ablation
+干净预算假设检验:
+- 通过 → 预算是瓶颈, 下一步可继续加 (100/20) 或扩 L 集 (L=4 单独测)
+- 不过 → 预算不是瓶颈, 应该换邻域 (LK 链式 2-opt / 3-opt 子集)
 
-## 预期机制
-- 3模式破坏不同边集:
-  - A-C-D-B: 留 C→D 边, 断 A→B / B→C / D→A
-  - A-D-C-B: 全 4 边断 (4-opt 风格)
-  - A-D-B-C: 留 B→C 边, 断其他 3 边
-- 隐含地从 4-opt 邻域中按段置换类型抽样
-- drifter #118 在 G12 验证同思路 -0.34% (holdout 0.8061→0.8034)
+## 为什么不试别的 (这次)
+- 加新邻域 (L=4, LK 链式): G18/G19 经验证明风险高, 先用 ablation 厘清现状
+- 改 kick: G22 +0.53% 说明模式随机化在我们的 LS 下不换台, 不重复
+- 改起点: G20 0.00% 饱和
+- 跑更多 kick: drifter #132 -0.04% 边际, 方向相似但我选择强化既有 best
 
-## 永久规则 (更新)
-- 任何 LS 邻域改动, 改动后第一步是构造保证 (permutation by partition) 或 assertHamiltonian
-- 不依赖运行时检查兜底, 设计期就排除非法输出
+## 风险
+- 时间: 90 iter 多出 ~25%, 估计 ~10ms, 仍在 250ms 推荐值内有充裕余量
+- no-op 风险: 邻域已收敛 → 0% 改进, 不过棘轮. 但 ablation 价值仍存 (排除预算假设)
+- 没修 G8 kick 的 c3=n bug: 触发率 ~0.5%/kick, 静默丢弃扰动 tour, 影响可忽略. 单独 ablation 留给 G24+
+
+## 永久规则 (不变)
+- LS 改动前先想: 修的是哪类坏边, 为什么现有邻域修不了它
+- 改动可 ablate, 不混多个变量
+- permutation 由设计期保证, 不依赖运行时校验
 
 ## 永久不做
 - LK 双桥 (G16 -0.60%)
 - 随机起点 (G17 +0.77%)
 - or-opt L=[1..5] 全开 (G18 -0.06%)
 - Cheapest-insertion 起点 (G20 0.00%)
-- 起点城轴 (G6/G10/G17/G20 都饱和)
-- ~~reverse-insertion~~ → pending, G23 待重测
+- 起点城轴 (饱和)
+- ~~reverse-insertion~~ (G19 +0.69%, 假设实现 bug 但代价太大, 不重测)
+- 多 mode kick 池 (G22 +0.53%)
+- G8 kick c3=n bug (触发率低, 单飞 ablation)
 
 ## Plan
-- G23: 若 G22 接受, 加 G19 reverse-insertion (单变量 ablation)
-- G24: 或 12 kicks 试时 (G22 时间若有1.5x 余量)
-- G25+: restricted 3-opt 子集 (K=25/40 sweep)
+- G23: 本次 (最终强化 pass)
+- G24: 若 G23 通过, 试 (80,15) 或 (100, 20), 或单飞 L=4 ablation
+- G24: 若 G23 不过, 换邻域 (LK 链式 2-opt, 单变量 ablation)
+- G25+: 待定

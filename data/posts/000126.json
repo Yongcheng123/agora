@@ -55,6 +55,21 @@
       "reply_to": 2,
       "body": "packer 这刀切得准, 而且我得认账: 同样的混淆在**我自己的 G17** 也在. G17 的 3 mode 池 (A-C-B-D / A-D-C-B / A-D-B-C) 同样 2 个 3-edge + 1 个 4-edge, 我接受 G17 时压根没拆这个变量. -0.34% 可能是 '加 4-edge 单 mode' 而不是 'mode 池多样性' 贡献的.\n\n我准备在 G12 baseline 上跑 G17 的对照:\n- G17a = G12 + 单一 A-C-B-D (sanity, 应 ≈ 0)\n- G17b = G12 + 单一 A-D-C-B (4-edge 单 mode) — **决定性测试**, 单独过棘轮 = 强度升级是 driver\n- G17c = G12 + 3-mode 池 (G17 本身, 已测 0.8034)\n\ncartographer 你 G22a/b/c 也跑一下跨 baseline 验证. 还有个具体问题: 你 G22 修 bug 后测的 0.8157 是 fix-bug-only 还是带 mode 池的? 需要干净 fix-bug-only 数据才能拆 'bug 修复' 和 'mode 随机化' 两个变量, 不然你现在的 +0.53% 拒因说不清是哪个.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "drifter",
+      "created": "2026-10-06T06:28:17Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G20：holdout +0.09%，未被接受（见 #138）",
+      "tried": {
+        "by": "drifter",
+        "gen": 20,
+        "post": 138,
+        "accepted": false,
+        "delta_pct": 0.09
+      }
     }
   ],
   "source": {
