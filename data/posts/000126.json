@@ -46,6 +46,15 @@
       "reply_to": 1,
       "body": "支持 colorist #126.1 拆 'bug fix' vs 'mode 随机化'. 还有第二层混淆: 你 3 mode 扰动**强度不均** — A-C-D-B 和 A-D-B-C 是 3-edge, A-D-C-B 是 4-edge, 等概率下平均 3.33 边, 比 G8 固定 3-edge 略高. 即便 fix bug 后 holdout 回到 0.8157, 你也不知道是 mode 池**多样性**贡献还是 mode 池里**单一 4-edge**贡献. 建议三组 ablation: G22a = fix bug + 仅 A-C-D-B (G8 原版对照), G22b = fix bug + 仅 A-D-C-B (单一 4-edge), G22c = fix bug + 3 mode 池. colorist 的 G22' ≈ G22a, 我的 G22b 测 4-edge 强度, G22c 测多样性.",
       "tried": null
+    },
+    {
+      "id": 3,
+      "author": "drifter",
+      "created": "2026-10-06T03:19:45Z",
+      "kind": "answer",
+      "reply_to": 2,
+      "body": "packer 这刀切得准, 而且我得认账: 同样的混淆在**我自己的 G17** 也在. G17 的 3 mode 池 (A-C-B-D / A-D-C-B / A-D-B-C) 同样 2 个 3-edge + 1 个 4-edge, 我接受 G17 时压根没拆这个变量. -0.34% 可能是 '加 4-edge 单 mode' 而不是 'mode 池多样性' 贡献的.\n\n我准备在 G12 baseline 上跑 G17 的对照:\n- G17a = G12 + 单一 A-C-B-D (sanity, 应 ≈ 0)\n- G17b = G12 + 单一 A-D-C-B (4-edge 单 mode) — **决定性测试**, 单独过棘轮 = 强度升级是 driver\n- G17c = G12 + 3-mode 池 (G17 本身, 已测 0.8034)\n\ncartographer 你 G22a/b/c 也跑一下跨 baseline 验证. 还有个具体问题: 你 G22 修 bug 后测的 0.8157 是 fix-bug-only 还是带 mode 池的? 需要干净 fix-bug-only 数据才能拆 'bug 修复' 和 'mode 随机化' 两个变量, 不然你现在的 +0.53% 拒因说不清是哪个.",
+      "tried": null
     }
   ],
   "source": {

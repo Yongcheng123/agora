@@ -1,38 +1,40 @@
-# drifter post-G19
+# drifter post-G19 / G17 baseline ablation
 
-## G18 attempt: 4-mode kick pool
-- 加第 4 mode = A-revB-revC-D (同时反转 B/C 两段)
-- 失败: holdout 0.8070 (+0.45%), 超 ratchet 0.8018
-- 解读: 4th mode 拓扑与现有 3-mode 重叠太多 (都是 permutation, 没真正独立方向), 边际为负; 也可能多 1 个 Math.random 调用移位了 cut-point 轨迹
-- **教训**: kick pool 加 mode 必须拓扑独立 (permutation vs reversal vs rotation vs shift), 不能只是又一种 permutation
+## 紧急: G17 的混淆变量 (我自己之前漏了)
+packer #126.2 指出 cartographer G22 的 mode 池有强度混淆. **同样的混淆在 G17 也在**:
+- A-C-B-D: 3-edge
+- A-D-C-B: 4-edge  
+- A-D-B-C: 3-edge
 
-## G19 attempt: ILS 8→12
-- 理由: G17 笔记里写明的下一站, 单变量预算扩张
-- 风险: LS 已饱和 → 8→12 边际 0
-- 若失败: G20 = 5-mode kick (加 random segment reverse within B only, 拓扑独立), G21 = population ILS top-2
+G17 接受时我没拆 '多样性' vs '加 4-edge'. -0.34% 可能是单 mode 贡献.
 
-## 失败教训 (G13-G19)
-- 3-opt type-3 K=15/25: K-bound 已饱和
-- SA 8000→20000 + 指数冷却: LS 已饱和, SA 单独抓不到 basin
-- FPS-4: 起点轴饱和, 3 起点够
-- 4-mode kick (G18): 拓扑独立性是必要条件, permutation 类已饱和
-- cartographer #117 CI starts 0%: 起点 metric 换法饱和
+## 跨 baseline 不对称信号
+| baseline | kick 原态 | + 3-mode 池 | 结果 |
+|---|---|---|---|
+| 我的 G12 (3-edge) | 3-edge | 33% 4-edge + 67% 3-edge | **G17 通过 -0.34%** |
+| cartographer G8 (4-edge) | 4-edge | 33% 4-edge + 67% 3-edge | G22 拒 +0.53% |
+| 我的 G17 (3-mode 池) | 33%/33%/33% | + 第 4 permutation mode | G18 拒 +0.45% |
 
-## 路径图 (post-G19, 假设 G19 也平)
-- G20: 5-mode kick (加 reversal-only mode) — 唯一拓扑独立方向
-- G21: population ILS (top-2 elites)
-- G22: 起点 metric 改 (min-dist-to-median 或 random far-pair)
-- 中期: LK move / Christofides 起点
+唯一通过的是 baseline 从 3-edge 升到 3.33-edge. 多样性方向 (G18 加 permutation) 反而退. **强烈提示 driver 是强度升级, 不是多样性**.
 
-## Open questions
-- 多次独立 sweep 工具支持? 单 Math.random 序列下 champion 是轨迹漂移 vs 真信号 — G17 的 -0.14% 改善很可能 50% 是 noise
-- kick pool 上限: 加到 5 mode 是否还能挤出边际? 4 mode (G18) 已饱和
-- 3-opt 真饱和 vs 实现 bug: cartographer #106 G19 reverse-insertion +0.69% 暗示 LS 可能有 bug, 但反复 review 没找到
-- 借鉴链有效性: drifter ↔ cartographer 互相 port 想法 (#118 → #122 失败 / G18 都失败)
+## 新优先级 (推翻原 G20 计划)
+1. **G17a**: G12 + 单一 A-C-B-D (sanity, 应 ≈ 0)
+2. **G17b**: G12 + 单一 A-D-C-B (4-edge 单 mode) — **决定性测试**
+3. **G17c**: G12 + 3-mode 池 (G17 本身, 已 0.8034)
+4. 若 G17b 单独过 → G20 改为 '4-edge 永久 + 1 个拓扑独立 mode (reversal-only B 段)'
+5. 若 G17b 不过但 G17c 过 → 原 G20 (5-mode 池) 继续
+6. 若两者都不过 → G17 是噪声, 回到 G12 找别的方向
 
-## 时间预算估计 (n=200)
-- 3 起点 NN + 2opt(20) + orOpt(3,3): ~25ms
-- orOpt(5,2): ~15ms
-- ILS 12 iter (G19): ~75ms (vs G17 50ms)
-- orOpt(3,4) + orOpt(8,2): ~45ms
-- 总: ~160ms, 在 250ms 预算内有 ~90ms 余量
+## cartographer 协作请求
+- 跑 G8a (fix bug only) / G8b (G8 本身 = 4-edge 单 mode) / G8c (3-mode 池 = G22)
+- 给出 G22 的 0.8157 是 fix-bug-only 还是带 mode 池 — 干净数据才能拆 'bug 修复' vs 'mode 池'
+- 跨 baseline 验证 G17b 的结论
+
+## 暂缓 / 状态
+- G19 (ILS 8→12): 笔记说 '假设 G19 也平', 实际是否已测需确认. 优先级降到 G17 ablation 之后
+- G20 (5-mode 池): 等 G17b 结果再决定
+- G21 (population ILS top-2): 太远, 暂搁
+- LK / Christofides: 中期, 等 ablation 出再说
+
+## 借鉴链教训
+#118 → cartographer G21/G22 都失败, 不是想法错, 是 baseline 已饱和. 跨 baseline port 时必须先确认对方 baseline 在该方向上没饱和, 否则容易得出 '想法无效' 的假阴性.

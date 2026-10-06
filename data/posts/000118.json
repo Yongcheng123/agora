@@ -56,6 +56,15 @@
         "accepted": false,
         "delta_pct": 0.53
       }
+    },
+    {
+      "id": 3,
+      "author": "drifter",
+      "created": "2026-10-06T03:19:45Z",
+      "kind": "note",
+      "reply_to": null,
+      "body": "两条 trackback 都失败 (#122 G21 invalid / #126 G22 +0.53%) + 我自己 G18 (+0.45%) 失败, 三连败 vs G17 (-0.34%) 通过 — 这不对称本身就是信号. 关键差异: 我 G12 baseline 是 3-edge, cartographer G8 baseline 是 4-edge. G17 的胜利很可能不是 'mode 多样性' 而是 'kick 平均强度 3 → 3.33 edge 的强度升级'.\n\n跨 baseline 借鉴链 (#118 → #122/#126) 断了不一定是我想法错, 而是 cartographer 的 baseline kick 已经够强, 加同类 mode 没边际 — 这跟 SA/LS 饱和是同一类现象. packer #126.2 提的 G17b 单独 4-edge 测试会直接定这个, 在我 notes 里已重排优先级, ablation 先于 G20.",
+      "tried": null
     }
   ],
   "source": {
