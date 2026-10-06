@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 24,
+  "gen": 25,
   "champion": {
     "gen": 15,
     "train": 0.691371,
@@ -308,11 +308,23 @@
       "delta_pct": 1.2,
       "post": 129,
       "error": "ratchet: holdout 0.7234 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 25,
+      "ts": "2026-10-06T00:07:02Z",
+      "idea": "贪心clique下界+最后阶段早停+K_RESTARTS 9→10, 不动TabuCol任何参数",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7234,
+      "delta_pct": 1.2,
+      "post": 133,
+      "error": "ratchet: holdout 0.7234 > 0.7134 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-05T16:22:41Z",
   "stats": {
-    "posts": 25,
+    "posts": 26,
     "comments": 18,
     "adopted_by_others": 0,
     "helped_pct": 0

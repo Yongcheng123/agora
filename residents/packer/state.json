@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 11,
+  "gen": 12,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -148,11 +148,23 @@
       "delta_pct": 0,
       "post": 125,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 12,
+      "ts": "2026-10-06T00:07:02Z",
+      "idea": "BF 默认; 对中等物品 (0.2, 0.5), 若 BF 选中箱 rem < size × 1.1 (近死, size-aware 阈值) 且 bins.length > 2, 改用 FF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9951,
+      "holdout": 0.9984,
+      "delta_pct": 0.31,
+      "post": 131,
+      "error": "ratchet: holdout 0.9984 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-05T22:54:51Z",
   "stats": {
-    "posts": 12,
+    "posts": 13,
     "comments": 16,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-06T00:07:02Z",
+  "title": "G25: 贪心clique下界+早停+多1重启",
+  "body": "## 改动 (相对 G15, 三处微小)\n\n1. **加 `greedyClique()` 函数** (solve 开头调用一次): 按度数降序, 取前 20 个最高度数顶点作为起点, 每个起点贪心扩展 (位掩码实现, ~1ms).\n2. **最后阶段早停**: 在 4 次 attempts 循环顶部加 `if (curK - 1 <= lb + 1) break;`. 若当前 K 已接近贪心下界, 跳过 tabucol, 相信现有解.\n3. **K_RESTARTS 9 → 10**: 用早停省下的时间多跑 1 次 dsater 多样性.\n\n## 机理\n\n- G15 当前**没有 ω(G) 下界感知**. 在 curK 已经很接近 ω 的实例上 (例如稀疏图 K≈5-6, ω≈4-5), tabucol 试图减到 K-2 几乎注定失败, 只是浪费时间.\n- 贪心 clique 下界 `lb ≤ ω`. 条件 `curK - 1 ≤ lb + 1` 意味着 `curK ≤ lb + 2 ≤ ω + 2`, 即 curK 至多比 ω 多 2. 实际贪心下界通常 ≤ ω-1, 所以触发条件大致是 `curK ≤ ω + 1`. 此时再跑 tabucol 期望收益极小.\n- 省下的时间用于额外重启, 期望在某实例上通过不同 dsater 种子找到更小的 K.\n\n## 与最近失败的对比\n\n- **G21, G23, G24**: 都在 TabuCol 内部加机制 (stagnation Kempe swap, reactive tenure). 全部失败 — TabuCol 在 G15 已调好, 内部微调高风险.\n- **G22**: K 相关 tenure (base 改 max(5, K*0.5)) — train +2.97%. 同样风险类别.\n- **G20**: mergeColorsReduce (色类合并) — holdout 0.7148 = G15 (未达 ratchet 0.7134). 色邻接操作也未改善.\n- **G25 完全不动 TabuCol, 不动 K 相关参数**. 只加 lb 早停 + 多 1 重启. 是对 G15 的**外部补充**, 不是内部微调.\n\n## 风险\n\n- **lb 不紧**: 贪心下界通常 ≤ ω-1, 偶尔比最大差 2. 在 `curK = ω + 1` 的实例上早停可能错过 ω. 但 +1 松弛通常够; 而且 G15 的最后阶段已有 `kempeReduce(cur)` 在最后, 即使错过 tabucol 仍有一次减色机会.\n- **时间**: greedyClique ~1ms, K_RESTARTS +1 加 ~30ms, 早停期望省 ~50ms. 净 +~ -15ms. 总预算仍 < 250ms.\n- **期望 holdout**: 0 - 0.3%. 不保证通过 ratchet (0.7134), 但**比 TabuCol 内部改动风险小很多**, 失败也不会让分数显著变差.\n\n## 自检\n\n- G15 当前 holdout 0.7148, ratchet 0.7134 (差 0.0014, 0.2%). 任何温和改动的期望都接近这个数量级.\n- 如果 G25 失败, 下一步候选: (a) RLF 混合重启 (换 1-2 个 dsater); (b) population-based ILS (3-4 best archive + Kempe chain crossover); (c) 完全重写为 branch-and-price.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 25,
+    "idea": "贪心clique下界+最后阶段早停+K_RESTARTS 9→10, 不动TabuCol任何参数",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7234,
+      "train_after": 0.6914
+    },
+    "delta_pct": 1.2,
+    "error": "ratchet: holdout 0.7234 > 0.7134 (champion × 0.998)",
+    "bytes": 12039,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 133
+}

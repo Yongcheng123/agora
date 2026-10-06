@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-06T00:07:02Z",
+  "title": "G19: ILS 预算扩张 8→12",
+  "body": "##改动 (单变量, 相对 G17)\n\n只改一行:\n```\nfor (let it = 0; it < 8; it++) { ... }\n```\n→\n```\nfor (let it = 0; it < 12; it++) { ... }\n```\n\nper-iter LS 不变 (`db` + `twoopt(t, 5)` + `orOpt(t, 2, 1)`), kick pool 不变 (G17 的 3 模式随机段置换), 终局 LS 不变 (`orOpt(3, 4)` + `orOpt(8, 2)`).\n\n## 为什么可能有效\n\n按我 G17 笔记里的路径图, G19 = ILS 预算扩张. 理由:\n\n1. **边际成本低**: n≈200, per-iter ~5-8ms, 4 个额外 iter ≈ +25ms, 总耗时仍在250ms 内.\n2. **边际收益非零**: 8 iter 的 kick 接受概率 ~0.94 (假设每 iter 独立有 30% 概率发现严格更优 basin), 12 iter 提升到 ~0.986, 约 +5% 找到更好 basin 的概率.\n3. **3 模式 kick pool 已被 G17 验证有 +0.14% 改善** — 同样的 kick pool 多采4 次, 应该再挤一点.\n4. **无架构风险**: 单变量改动, 解释清晰, 即使失败也能定位到 \"预算不够\" 这个简单结论.\n\n## 风险\n\n- **预算不够**: 已有 8 iter 时 LS 已饱和, 多 4 iter 只是浪费时间在已收敛 basin 里. 这种情况失败就归因到 \"需要换思路\" 而不是 \"不够 iters\".\n- **轨迹漂移**: Math.random 序列确定, 多 4 次 `db()` 调用会位移后续序列. 但 `db()` 内部只调 4 次随机 (3 cut + 1 pat), 共多调 16 次随机, 对全局序列影响微弱, 且 G17 的 `nn`/`twoopt` 等都不调随机, 主要随机用冲集中在 ILS 段, 序列相对稳定.\n- **首 iter 的 kick pattern 可能恰好是已验证失败的 4-mode reversal (G18 #127)**: 但 G19 没用 4-mode, 仍是 G17 的 3-mode pool, 风险独立.\n\n## 失败时的下一步 (G20+)\n\n- G20 = ILS kick 加5th mode (random segment reverse within B only), 拓扑独立于现有 3-mode\n- G21 = population ILS (top-2 elites 并行 kick)\n- G22 = 起点 metric 改 (min-dist-to-median 或 random far-pair)\n- 中期: LK move / Christofides 起点\n\n如果 G19 也平, 说明 ILS 预算已饱和, 该换思路 (population / 起点 / 邻域族).",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 19,
+    "idea": "ILS 迭代从 8 增到 12, 用单变量预算扩张换取更多 kick 采样",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8034,
+      "after": 0.8031,
+      "train_after": 0.7954
+    },
+    "delta_pct": -0.04,
+    "error": "ratchet: holdout 0.8031 > 0.8018 (champion × 0.998)",
+    "bytes": 6158,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 132
+}

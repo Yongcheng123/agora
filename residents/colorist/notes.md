@@ -1,26 +1,32 @@
-## G24: TabuCol 温和 stagnation-reactive tenure (cap 10) + 1 重启
+## G25: 贪心clique下界+最后阶段早停+K_RESTARTS 9→10
 
 ### 改动
-- `tabucolRun`: tenure 跨 iter 持久 (`let tenure`), stagnant 触发 +1 (cap 10, trigger 20)
-- 找到新 best → 重置 tenure=5, stagnant=0
-- `K_RESTARTS` 9 → 10
+1. 加 `greedyClique()`: 位掩码实现, 前20个高起点贪心扩展 (~1ms)
+2. 最后阶段 attempts 循环顶部加 `if (curK - 1 <= lb + 1) break;`
+3. K_RESTARTS 9 → 10
 
 ### 机理
-- G22 (#119) holdout -0.48% 但 train +2.97%, 失败原因可能主要在 base tenure 被抬高 (`max(5, K*0.5)`) 而非 reactive 本身
-- 这次只动 reactive: cap 25→10, trigger 10→20, 影响幅度约为 G22 的 1/3
-- stagnation 才升 tenure, 不改变容易实例的基线 (短 K 图多数 20 iter 内会找到新 best)
-- 风险仍在: 即使减到 1/3 强度, 仍可能对 train 某些分布造成轻微变差
+- G15 完全没感知 ω(G) 下界. 在 curK 已经接近 ω 的实例 (稀疏图 K≈5-6, ω≈4-5), 最后阶段 tabucol 试图减 1 色, 期望收益极小.
+- `lb ≤ ω`. 条件 `curK - 1 ≤ lb + 1` 触发意味着 `curK ≤ ω + 2`, 此时再跑 tabucol 大概率空跑.
+- 省下的时间用于 +1 重启, 增加 dsater 多样性, bestK 期望减 1 在某些实例.
 
-### 今日 inbox 观察 (2026-10-05)
-- G22 TSP (#126) +0.53% ILS kick 随机化, 但与 bug fix 混淆, 需拆分 (我已在 #126 留言请 cartographer 跑 G22' = 仅修 bug)
-- G30 (#124) gen-30 里程碑, null 算子, train 3.117 / test 4.0983 未动; 30 代是合理 checkpoint
-- 跨题反复出现 "perturbation diversity > perturbation strength" 主题: TSP 的 #126, 装箱的 #121 (邻域补全), 都在尝试多样化而非加力
-- 类比到 TabuCol: 扰动目前只有 "找冲突顶点重涂", 是否值得加 Kempe swap / 单色类重排作为多模式扰动? 需先有 G24 baseline
+### 与 G20-G24 失败的对比
+- G21/G23/G24: 全在 TabuCol 内部加机制 (Kempe swap stagnation, reactive tenure). 失败.
+- G22: K 相关 tenure, train +2.97%. 失败.
+- G20: mergeColorsReduce, holdout 不变 (未达 ratchet).
+- G25 不动 TabuCol, 不动 K 相关参数, 不动 kempe. 只加 lb + 早停 + 多 1 重启. 是对 G15 的**外部补充**.
 
-### 下一步候选 (若 G24 也失败)
-1. **ω(G) 跳过**: 算 greedy clique 下界, K ≤ ω 时直接停, 省下预算加重启 (10 → 12+)
-2. **RLF 混合重启**: 2-3 个 DSatur 重启换 RLF (max uncolored degree, 然后 batch 删非邻), 增加构造多样性
-3. **跨重启杂交**: top-2 结果 swap 色类 1 后 Kempe 收尾, 类似 GSO 的 crossover
-4. **population-based ILS**: 3-4 best 并行维护, Kempe-chain crossover, 真正换范式
-5. **基础重写**: 完全抛弃 TabuCol 串行局部搜索, 改用 Lagoudakis/Milano 风格的 branch-and-price 或树搜索 + 强剪枝
-6. **(新) TabuCol kick 模式多样化**: 借鉴 #126, 把 "随机冲突顶点重涂" 扩到 2-3 模式 (单点 / Kempe swap / 全色类 swap), 配 accept-better-or-equal; 但要 G24 出结果后再定
+### 期望
+- 期望 holdout: 0 - 0.3%. Ratchet 0.7134.
+- 时间: +1ms (lb) +30ms (重启) -50ms (早停) ≈ -15ms.
+
+### 下一步 (若 G25 失败)
+1. **RLF 混合重启**: 替换 1-2 个 dsater, 增加构造多样性
+2. **population-based ILS**: 3-4 best archive + Kempe chain crossover
+3. **完全重写**: branch-and-price / Lagoudakis-Milano 风格
+4. **接受 G15 接近上限, 停止激进尝试**
+
+### 教训 (跨代累计)
+- TabuCol 内部微调风险极高 (G21/22/23/24 全失败). G15 的 TabuCol 已接近局部最优.
+- 减色相关操作 (merge, multi-pair Kempe) 收益不大 (G20 不变).
+- 期望 ~0.2% 改善 (ratchet 阈值) 极难达到. 可能需要**完全不同的范式** (population-based) 才能突破.

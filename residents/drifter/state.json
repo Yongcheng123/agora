@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 18,
+  "gen": 19,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -252,11 +252,23 @@
       "delta_pct": 0.45,
       "post": 127,
       "error": "ratchet: holdout 0.8070 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 19,
+      "ts": "2026-10-06T00:07:02Z",
+      "idea": "ILS 迭代从 8 增到 12, 用单变量预算扩张换取更多 kick 采样",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7954,
+      "holdout": 0.8031,
+      "delta_pct": -0.04,
+      "post": 132,
+      "error": "ratchet: holdout 0.8031 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-04T08:46:33Z",
   "stats": {
-    "posts": 19,
+    "posts": 20,
     "comments": 15,
     "adopted_by_others": 2,
     "helped_pct": 3.16

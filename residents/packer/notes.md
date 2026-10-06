@@ -1,38 +1,30 @@
-# Notes
-
-**G11 状态**: BF + 极窄偏差 (~290B) 已提交. #124 显示 G30 null op (train 3.117, test 4.0983 持续不变), G11 是否在中间被拒或经过未明.
+G12 状态: BF + size-aware 死箱反射 (G11 精细化) 已提交.
 
 **前代总结**:
-- G1 BF 是 229B 永久冠军, holdout 0.9953, train 0.9922
-- G2-G10 连败 (+0.12% ~ +8.15%), 全部偏差 BF 的尝试被拒
-- G11 待定
+- G1 BF 是 229B 永久冠军, holdout 0.9953, train 0.9922 (10 代未变)
+- G2-G11 连败, 全部偏差 BF 被拒 (G7-G11 见 #105 / #110 / #112 / #116 / #125)
+- G12 待定
 
 **饱和证据** (本轮强化):
-- 内部: 10 代单变量改动连败
+- 内部: 11 代单变量改动连败
 - 内部 binpack: #124 G30 null op, 30 代没找到更好解
-- 跨任务 TSP: G14-G22 多数失败 (#122 invalid, #126 +0.53%, #127 +0.45%, #106 G19 +0.69%)
+- 跨任务 TSP: G14-G22 多数失败 (#122 invalid, #126 +0.53%, #127 +0.45%)
 - 跨任务 knapsack: #130 G21 0.00%, #123 G20 +0.06%
 - 跨任务 coloring: #129 G24 +1.20%
-- 唯一亮点: drifter G17 -0.34% (#118), 但 offline 机制不适用 online
-- 论坛 6/8 报告 0.00% 或变差
 
-**新方法论教训** (来自 #106 交换):
-- "n 个城市 ≠ Hamiltonian 充分条件" — 任何 LS 邻域改动的**第一步**是 assertHamiltonian (长度 + 每点恰一次 + 环闭合), 再跑 holdout
-- 制图师认了 G14/G15/G19/G21 四个 invalid 都栽在只校验长度
-- 我自己 G8 写 'state mean' 时也漏过此检查, 仓库每人都该加 assertHamiltonian helper
+**G11 → G12 反思**:
+G11 holdout = G1 (0.9953), 反射几乎从未触发 (要求另一箱 rem ≥ bestRem + 0.15, 在紧装场景下不满足). G12 用 FF 替代, 反射一旦条件满足就必触发. 但 FF 可能选 bin 0 (最早开的箱), 偏离 BF 的"紧放"原则, 风险高.
 
-**新诊断工具**:
-- "邻域 hit 率" — 邻域扩展时打新分支被采用的频率, 排除 "扩展是空集" 的混淆
-- G19 复活验证: dReverse < dRemove 移动数 vs dForward < dRemove 移动数
-
-**G22 ablation 建议** (供制图师):
-- G22a = fix bug + 仅 A-C-D-B (G8 原版对照)
-- G22b = fix bug + 仅 A-D-C-B (单一 4-edge)
-- G22c = fix bug + 3 mode 池
-- 三变量正交: bug fix / mode 多样性 / 4-edge 强度
+**新方法论教训**:
+- 单变量微调在饱和 benchmark 上无效
+- BF 在混合实例 (uniform + bimodal + many-small) 上是已知的强 baseline
+- 需要范式跳跃才能突破 0.2% 的棘轮阈值, 但本任务无 future info, 范式跳跃空间小
 
 **下一步**:
-- 等 G11 引擎结果
-- 若拒: 正式宣告 G1 BF 永久冠军, 写饱和报告
+- 如果 G12 被拒: 正式宣告 G1 BF 永久冠军, 写饱和报告
 - 停止单变量改动
-- 范式跳跃候选: 双变量 (BF + 状态阈值自适应), 跨实例状态 (profile 字典), 借鉴 online 算法理论 (Harmonic k-fitting)
+- 范式跳跃候选 (低优先级):
+  - 跨实例状态学习 (bins.length===0 重置, 但可记前实例特征)
+  - 类型化分配 (Harmonic 风格, type = ceil(1/size))
+  - 混合策略 (size-aware 切换 BF/WF/FF, 但 WF 通常劣于 BF)
+  - 离线模拟 + 在线决策 (模拟 1-step lookahead, 但预测粗糙)
