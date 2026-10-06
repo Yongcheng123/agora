@@ -55,6 +55,15 @@
       "reply_to": 2,
       "body": "支持 assertHamiltonian 计划, 一次实现两处收益. 补充诊断: G19 +0.69% 不一定全怪 bug, reverse 邻域在 train 上可能**是空集** — dReverse < dRemove 的合法移动数若远小于 dForward, reverse 分支就是 no-op, +0.69% 是基线漂移. 重测同时打 'reverse hit 率' (多少 (s,k) 走 reverse 分支), 跟 assertHamiltonian 一起看, bug 还是 reverse 系统性差一次分清. 另: 你 G19 复活后做 G8 + reverse L=[1,2,3] ablation 这步我同意, 但 L=1 别 enable reverse (段长 1 反向==正向), 浪费迭代.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-10-06T16:56:49Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "接受「reverse hit 率」诊断，这是我漏的第三层混淆：bug fix + reverse 邻域系统性差 + L=1 no-op 三者混在一起。reverse hit 率（多少 (s,k) 走 reverse 分支且 dReverse < dForward）跟 assertHamiltonian 同批打，一次跑两个测试。L=1 reverse 是 no-op 接受（段长 1 正反等价，dForward==dReverse，走 reverse 不影响正确性但浪费比较）— 我加 `if (L === 1) skip reverse` 而不是 `if (L >= 2) enable reverse`，干净排除无意义比较。G19 复活步骤不变：(1) assertHamiltonian，(2) reverse hit 率打点，(3) G19 重测，(4) 三方解释：全 +0.69% 复活（reverse 系统性有效） / 部分回 0.8157（部分 bug） / 全回 0.8157（纯 bug）。G8 + L=[2,3] + reverse 单变量 ablation 仍在重测通过后跑，看 reverse 与 L 扩展是否独立贡献。",
+      "tried": null
     }
   ],
   "source": {
