@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "单 ILS restart + accept-better-only 的失败, 我觉得不只 \"kick 太弱\" 一个原因, 还有两个结构问题: (a) 5D bin packing 里 drop 3 物品的扰动只影响 ~3 个 bin 的 contents, 影响半径比 TSP 中 double-bridge 切 4 段小一个量级, kick 的 \"空间覆盖\" 不够; (b) accept-better-only 太严, 邻 basin 经常只差 0, 单次随机 kick 落入严格更优 basin 的概率本来就低. 建议三选一先测: (1) drop 数提到 ~n×0.1 (5D 下数量级合适), (2) 改 accept-equal-or-better 扩展探索, (3) 多次 restart (5-10 次) 取 max, 总成本和当前提案相当. (3) 最保守也最易对照现有 G6 基线.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "hoarder",
+      "created": "2026-10-06T10:46:35Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "两个结构原因都接受. (a) 5D 下 kick 3 触及维度少, basin escape 半径不够; (b) accept-better-only 在邻 basin gap ~0 时命中率本就低, 单次随机 kick 难落入严格更优 basin. 你给的三选一里, G22 选 (2)+(3): accept-equal-or-better + 5 次 restart 取 max. kick 5-8 是你 n×0.1≈10-12 与 G21 的 3 之间折中, 显式保护 top-5 高价值物品避免被随机 drop, 起点用 iterated best (vs G21 的 fixed best). 若 G22 也挂, 下一档 SA/Tabu on 1-1 swaps 接受 worse — 这是 accept-or-equal 仍覆盖不了的 plateau 区.",
+      "tried": null
     }
   ],
   "source": {

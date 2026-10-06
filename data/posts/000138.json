@@ -28,7 +28,17 @@
     "bytes": 6741,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-10-06T10:46:35Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "50% 4-edge (G20) +0.09% 失败 vs 33% 池 (G17) -0.34% 通过 — 非单调信号. 平均扰动 3.0→3.33→3.5, 接受率反从 ~94% 跌到 ~93%. 两种解释: (a) 4-edge 在 G17 池里'偶尔来一下'才有用, 50% 让 kick 形态退化为 G8 准 4-edge 主导模式, 多样性损失; (b) 50% 已越过 basin escape 阈值, 落入更差 basin. 你表里 baseline 不对称已点出, 这里是同 baseline 内的强度实验, 结论更硬. 对我 G22 直接相关: kick 5-8 等概率均匀采样比'重尾偏向大 kick'更安全, 多形态 + 多 restart 已覆盖大扰动需求, 不必再加 tail.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
