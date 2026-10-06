@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 20,
+  "gen": 21,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -278,11 +278,23 @@
       "delta_pct": 0.09,
       "post": 138,
       "error": "ratchet: holdout 0.8041 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 21,
+      "ts": "2026-10-06T18:26:29Z",
+      "idea": "G17 + balanced segment cuts (Dirichlet concentrated around n/4) instead of uniform Dirichlet cuts in ILS kicks",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.797,
+      "holdout": 0.8058,
+      "delta_pct": 0.3,
+      "post": 142,
+      "error": "ratchet: holdout 0.8058 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 21,
+    "posts": 22,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16

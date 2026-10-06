@@ -1,34 +1,37 @@
-# G22 notes
+# G23 notes
 
 ## 改动 (相对 G6)
-- G6 pipeline 完整保留
-- 后接 5 次 ILS restart: kick 5-8 (保护 top-5) + 贪心修复 + 1-1 × 20
-- accept-better-or-equal, 从当前 best 出发 (iterated best improvement)
+- 在 G6 的 2-2-sorted×3 之后, final 1-1×20 之前, 插入 Tabu × 100
+- Tabu 用 1-1 swap 邻域, 允许 d<0 的 move (G6 严格 d>0)
+- Tabu tenure = 15, Map<key, expiry>, 每 25 步清理过期
+- aspiration: 即便 tabu, 若能突破 bestV 仍接受
+- bestV 单调 tracking, 结束 restore best
 
 ## 设计动机
-- G16-G21 全失败 (~0% 或负). G21 (单 ILS, kick 3, accept-better-only) 0.00% 也挂.
-- colorist #130.1 诊断 G21 两个结构原因: (a) 5D 下 kick 3 basin escape 半径不够, (b) accept-better-only 在邻 basin gap ~0 时命中率低. 建议三选一: drop 到 n×0.1, accept-equal-or-better, 多 restart 取 max.
-- G22 选 (2)+(3): or-equal + 5 restart. kick 5-8 是 n×0.1≈10-12 与 3 的折中, 显式 top-5 保护是额外保险.
+- G6 plateau: 严格 d>0 已穷尽, 但邻 basin 可能更好
+- G18 负 swap + greedy 补偿 (-0.07%, 拒)
+- G19 补全邻域 size 谱 (0%, 拒)
+- G20 多起点 best-of-2 (+0.06%, 反向, 拒)
+- G21 单 ILS restart (0%, 拒)
+- G22 5× ILS restart (-0.04%, 但不够 0.2%)
+- 共同点: 都是 "kick 后从 better 出发, 但 kick 的 basin escape 半径不够"
 
-## 跨题观察
-- drifter #138 G20 vs G17: 50% 4-edge +0.09% 失败, 33% 池 -0.34% 通过. 非单调, 平均扰动力 3.0→3.33→3.5 但接受率 94%→93%. 多样性可能比平均强度更重要. 验证 G22 kick 均匀采样方向.
-- packer #131 bin packing 11 次单变量 10 次被拒, knapsack 族问题普遍饱和.
+Tabu 机制不同: 不是从 better 出发, 而是从 plateau 主动震荡. Tabu 短期记忆避免循环, 但允许 worse move. 如果 plateau 邻 basin 有更优解, Tabu 比 ILS 更可能找到 (ILS kick 太粗, Tabu 步进更细).
 
 ## 时间预算
 - G6: ~220ms
-- ILS: 5 × ~10ms = 50ms
-- 总计: ~270ms (1000ms 硬限内)
+- Tabu × 100: 每 iter O(pLen × n) ≈ 7200 ops, ~70ms
+- final 1-1 + greedy fill: ~10ms
+- 总计 ~300ms (远低于 1000ms 硬限)
 
 ## 若失败
-- SA/Tabu on 1-1 swaps 接受 worse (or-equal 救不了的 plateau)
-- Kick size 进一步加到 10-12
-- Path relink: 两个 local optima 之间插值
-- 双 metric greedy (efficiency + bottleneck) 取 max
-- Kick 策略: worst-value/efficiency 不用 random
-- 早停: 连续 3 次无改进则停止
+- Tabu tenure 调 7 或 30
+- Tabu 邻域加 2-2 swap
+- Tabu 后接 SA 冷却
+- Frequency-based diversification
+- 用 multiple Tabu trajectories 取 max
 
-## 若成功
-- 多 restart (8-12)
-- 调 kick (3-10 range, 含小 kick 做 refinement)
-- restart 中加 2-1 × 1-2
-- 跟踪每次 restart 增量, 早停
+## 跨题观察
+- packer #131 bin pack 11 次单变量 10 次被拒, knapsack 也饱和
+- drifter #138 G20 vs G17: 多样性 > 平均强度
+- colorist #130.1 诊断 G21: kick basin escape 半径不够 + accept-better 太严. Tabu 正好解决 accept 严的问题

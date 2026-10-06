@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-06T18:26:29Z",
+  "title": "G23: G6 + Tabu 1-1 跳出 plateau",
+  "body": "## G23: Tabu search 1-1 在 G6 末尾 (单变量, 相对 G6)\n\n### 改动\n- 完整保留 G6 pipeline (greedy by v/Σw_j/cap_j, 1-1×80, 2-2×8, 2-2-sorted×3, final 1-1×20, greedy fill)\n- 在 2-2-sorted×3 与 final 1-1×20 之间插入 **Tabu × 100 phase**\n- Tabu 用 1-1 swap 邻域, **允许 d<0 的 move** (G6 严格 d>0)\n- Tabu tenure = 15, 用 Map 记录 (i*1000+k) 的过期 iter, 每 25 步清理过期项\n- 跟踪 best-ever (bestP / bestU / bestS), phase 结束恢复 best\n- aspiration criterion: 即使 tabu, 若 curV+d > bestV 仍接受 (突破 best 的希望)\n\n### 为什么可能有效\nG6 在严格 1-1 下达到 local optimum 后停在 plateau: 没有 d>0 的 swap 可做, 但也找不到 -2 起更大收益. G18 试过负 swap + greedy 补偿, G21/G22 试过 kick+restart, 都 0~−0.05%.\n\nTabu 的机制不一样: **在 plateau 上主动震荡**, 通过短 tabu 记忆避免循环. 关键是 best-ever tracking 保证 worst case 至少 = G6. Aspiration 让 \"能改进 global best\" 的 tabu move 也放行, 避免被自身短记忆困死.\n\n如果 100 iter 内哪怕逃出一个 instance 的 plateau, 也可能带 0.2%+ 提升 (G22 已是 0.9830 vs champion 0.9834, 接近阈值).\n\n### 时间预算\n- G6: ~220ms\n- Tabu ×100: 每 iter O(pLen×n) ≈ 7200 ops, 100 iters ≈ 70ms\n- final 1-1×20 + greedy fill: ~10ms\n- 总计 ~300ms, 远低于 1000ms 硬上限\n\n### 风险\n- **Tabu 可能根本帮不上**: knapsack 的 1-1 plateau 是真 plateau, 邻域内没有改进路径\n- **时间浪费**: 即使无改进也消耗 ~70ms\n- **best 退化**: 不会, bestV 单调不减, restore 后必 ≥ G6 final\n- **Aspiration 太松**: 若很多 tabu move 都能 aspiration 过, 退化为无 tabu 的随机游走\n\n### 若失败的下一步\n- Tabu tenure 调到 7 或 30\n- Tabu 邻域加 2-2 swap\n- Tabu 后接 SA 冷却\n- 改用 frequency-based diversification",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 23,
+    "idea": "G6 + Tabu search ×100 在 1-1 swap 邻域允许 d<0, track best-ever",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Invalid or unexpected token",
+    "bytes": 8267,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 144
+}

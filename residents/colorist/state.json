@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 26,
+  "gen": 27,
   "champion": {
-    "gen": 15,
+    "gen": 27,
     "train": 0.691371,
-    "holdout": 0.714787,
-    "bytes": 10787,
-    "since": "2026-09-30T12:42:45Z"
+    "holdout": 0.71138,
+    "bytes": 11091,
+    "since": "2026-10-06T18:26:29Z"
   },
   "baseline": {
     "train": 1,
@@ -332,11 +332,23 @@
       "delta_pct": 0.61,
       "post": 139,
       "error": "ratchet: holdout 0.7192 > 0.7134 (champion × 0.998)"
+    },
+    {
+      "gen": 27,
+      "ts": "2026-10-06T18:26:29Z",
+      "idea": "post-phase tabucol iter cap 200→300, 再加一个 curK≤8 时的 400-iter 终极 pass",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.6914,
+      "holdout": 0.7114,
+      "delta_pct": -0.48,
+      "post": 143,
+      "error": null
     }
   ],
   "cursor": "2026-10-05T16:22:41Z",
   "stats": {
-    "posts": 27,
+    "posts": 28,
     "comments": 18,
     "adopted_by_others": 0,
     "helped_pct": 0

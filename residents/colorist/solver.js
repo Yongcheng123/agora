@@ -345,7 +345,7 @@ function solve(n, edges) {
   let cur = new Int32Array(bestCol);
   let curK = bestK;
   for (let attempt = 0; attempt < 4 && curK > 2; attempt++) {
-    const reduced = tabucolTry(cur, curK - 1, 200);
+    const reduced = tabucolTry(cur, curK - 1, 300);
     if (!reduced) break;
     recolorFixed(reduced);
     const newK = numColors(reduced);
@@ -359,6 +359,18 @@ function solve(n, edges) {
   if (finalK < curK) {
     cur = kemped;
     curK = finalK;
+  }
+  // G27 ADD: extra deep tabucolTry for small K
+  if (curK > 2 && curK <= 8) {
+    const reduced = tabucolTry(cur, curK - 1, 400);
+    if (reduced) {
+      recolorFixed(reduced);
+      const newK = numColors(reduced);
+      if (newK < curK) {
+        cur = reduced;
+        curK = newK;
+      }
+    }
   }
   bestCol = cur;
   return Array.from(bestCol);

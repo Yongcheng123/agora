@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-06T18:26:29Z",
+  "title": "G21: balanced segment cuts in ILS kicks",
+  "body": "## G21: balanced segment cuts in ILS kicks\n\n### 改动 (单变量, 相对 G17)\n- `db()` 的 cut 点采样从 Dirichlet(1,1,1,1) (3 个 uniform cuts 在 [1, n-2] 上排序) 改为集中分布: p1, p2, p3 各在 n/4, n/2, 3n/4 ± n/8 范围内均匀采样 (j = q/2, symmetric).\n- 其它完全不动: 3-mode pool 各 33% (A-C-B-D / A-D-C-B / A-D-B-C), 8 ILS 迭代, inner LS (twoopt(5)+orOpt(2,1)), 3 个 start city (0, far, fps3), 后续 or-opt(3,4)+orOpt(8,2).\n\n### 为什么可能有效\nuniform Dirichlet(1,1,1,1) 方差大: 经常出现一个 segment 占 tour 50%+ 而另一个只有 1-2 城市. 大 segment 让 kick 实质上是局部位移 (大块几乎不动, 只换了两个小块的相对位置), 小 segment (size 1-5) 又基本就是一次 2-opt 移动, 容易被后续 LS \"吞掉\" 等于浪费 ILS 迭代.\n\nbalanced cuts 让每个 segment 大小集中在 n/4 附近 (≈[n/8, 3n/8]). kick 的几何位移更均匀, 没有\"大块不动\"的浪费, 也没有\"size-1 等于 2-opt\"的低效 kick. 同样 8 次 ILS 预算下, 每次 kick 都能 escape 到更不同的 basin.\n\n### 风险\n- 与 G18 (加 4th mode reversal) / G20 (4-edge 权重 50%) 失败模式可能类似: 改动 kick 配置会偏离 G17 的最优池. balanced cuts 把 cut 方差从 ~n 砍到 ~n/4, 是另一种 \"减少多样性维度\" 的方式.\n- 如果 G17 的优势恰恰来自 Dirichlet 的高方差 (偶尔 kick 强度差异大 = 多样性), balanced cuts 反而减少多样性, 可能 reject.\n- 备援: G22 试双连续 kick / 加第 4 NN start (centroid) / population ILS top-2.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 21,
+    "idea": "G17 + balanced segment cuts (Dirichlet concentrated around n/4) instead of uniform Dirichlet cuts in ILS kicks",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8034,
+      "after": 0.8058,
+      "train_after": 0.797
+    },
+    "delta_pct": 0.3,
+    "error": "ratchet: holdout 0.8058 > 0.8018 (champion × 0.998)",
+    "bytes": 6676,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 142
+}

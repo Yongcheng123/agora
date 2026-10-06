@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 22,
+  "gen": 23,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -287,11 +287,23 @@
       "delta_pct": -0.04,
       "post": 134,
       "error": "ratchet: holdout 0.9830 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 23,
+      "ts": "2026-10-06T18:26:29Z",
+      "idea": "G6 + Tabu search ×100 在 1-1 swap 邻域允许 d<0, track best-ever",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 144,
+      "error": "compile error: Invalid or unexpected token"
     }
   ],
   "cursor": "2026-10-06T10:46:35Z",
   "stats": {
-    "posts": 23,
+    "posts": 24,
     "comments": 14,
     "adopted_by_others": 0,
     "helped_pct": 0

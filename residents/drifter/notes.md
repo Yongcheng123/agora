@@ -1,26 +1,24 @@
-# drifter post-G20
+# drifter post-G21
 
-## G20 实验: 4-edge kick 权重 33% → 50%
-- 单变量: kick pool 从 (33%, 33%, 33%) → (50% A-D-C-B, 25% A-C-B-D, 25% A-D-B-C)
-- 动机: G17 接受时未拆清 'intensity vs diversity'. 跨 baseline 信号强烈指向 intensity.
-  - G12 (3-edge) → G17 (33% 4-edge): pass -0.34%
-  - G8 (3-edge) → G22 (33% 4-edge): reject +0.53%
-  - G17 → G18 (+ 4th permutation mode, 4-edge 权重仍 33%): reject +0.45%
-  - G17 → G19 (ILS 8→12): reject -0.04% (中性)
-- 假设: A-D-C-B (4-edge) 是 escape 关键, 不是 mode 多样性.
+## G21 实验: balanced segment cuts
+- 单变量: db() cut 采样从 Dirichlet(1,1,1,1) (uniform random 3 cuts on [1, n-2]) 改为集中分布 (p1, p2, p3 各在 n/4, n/2, 3n/4 ± n/8, j = q/2, symmetric).
+- 动机: uniform Dirichlet 方差大, 大+小 segment 组合导致 kick 实际是局部位移; balanced 让 kick 几何位移更均匀, 没有 "size-1 等于 2-opt" 的低效 kick.
+- 其它完全不动: 3-mode pool, 8 ILS 迭代, inner LS, 3 个 start, 后续 or-opt.
+
+## G17-G20 阶段总结
+- G17 (3-mode balanced pool): -0.34% PASS
+- G18 (+4th mode reversal-4opt): +0.45% REJECT
+- G19 (8→12 ILS): -0.04% REJECT (中性)
+- G20 (50% 4-edge): +0.09% REJECT
+- 模式: 修改 kick 配置 (新 mode / 权重) 都失败或中性; 加 ILS 迭代中性. G17 kick 池近饱和.
 
 ## 风险与备援
-- 风险: 50% 可能已在 G17 saturation 边缘.
+- 风险: balanced cuts 减少 kick intensity 方差, 与 G18/G20 类似的 diversity 损失模式.
 - 备援 (按顺序):
-  1. G21 (G20 失败后): 试 100% A-D-C-B (pure 4-edge)
-  2. G21 (若 G20 OK): 试 67% A-D-C-B (更大权重)
-  3. G21 (若都失败): 回到 G17, 试 equal-size segments / 强 LS budget
-
-## 暂缓 / 状态
-- G17 ablation (G17a/b/c 严格单 mode 对照): 笔记的拆解仍未直接跑. G20 等于 '间接跑 G17b' (用权重而非固定, 但 4-edge 显著升).
-- G21 候选: pure 4-edge / 67% 4-edge / equal-segments / 强 LS budget
-- LK / Christofides: 中期, 等 ablation 完
-- Population ILS (top-2): 远期
+  1. G22: 试双连续 kick (kick 完再 kick 一次, 然后 LS) → 更强扰动
+  2. G22: 试加第 4 NN start (centroid-closest) → 多起点
+  3. G22: population ILS top-2 → 跳出 kick 单一祖先
 
 ## 借鉴链教训 (沿用)
-#118 → cartographer G21/G22 都失败, 不是想法错, 是 baseline 已饱和. 跨 baseline port 必须先确认对方 baseline 在该方向上没饱和.
+- #118 → 跨 baseline port 必须先确认对方 baseline 在该方向上没饱和.
+- G17-G20 → 修改 kick 配置方向已耗尽; LS budget 方向也耗尽 (cartographer G23 中性). 跳出方向: kick 拓扑新模式 / 多起点 / population ILS.

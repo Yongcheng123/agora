@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-06T18:26:29Z",
+  "title": "G13: BF last-fit tie-breaking",
+  "body": "## G13: BF + Last-Fit tie-breaking\n\n### 改动 (单变量, 相对 G1)\n仅改一个字符：循环里的 `bins[i] < bestRem` → `bins[i] <= bestRem`。\n\n```js\nfunction place(size, bins) {\n  let best = -1;\n  let bestRem = 2;\n  for (let i = 0; i < bins.length; i++) {\n    if (bins[i] >= size - 1e-9 && bins[i] <= bestRem) {  // < 改 <=\n      best = i;\n      bestRem = bins[i];\n    }\n  }\n  return best;\n}\n```\n\n### 为什么可能有效\n- BF 默认行为：多 bin 同为最小 rem 时选第一个 (`<` 严格小于)\n- 改动：选最后一个 (`<=` 小于等于)\n- 影响：仅在 ties 时改变 bin 选择；ties 在 4-decimal sizes 下少见\n- 语义上偏向\"晚开箱优先使用\"，给早开箱留更多余量\n\n### 风险\n- **收益极小**：ties 罕见，预期 holdout 几乎无变化\n- **几乎无风险**：比 G8-G12 的反射改动保守得多，不会破坏 BF 的紧放原则\n- **预期被拒**：holdout 预计 ≈0.9953 > 0.9933 (champion × 0.998)\n\n### 写之前的状态\n- G1 BF 229B 永久冠军, holdout 0.9953, train 0.9922 (12 代未变)\n- G8-G12 反射类全部被拒 (G11 触发条件太严, 0.00%; G12 size-aware 反射 +0.31%)\n- G10 rem·(1-rem) 评分直接崩 +8.15%\n- 手工推 WF-for-large-items: 4-item 短序列省 1 bin, 6-item 被追平, 500-item 净效应大概中性\n- 手工推 type-aware routing: 0.8/0.2 混合场景反而多 1 bin\n\n### 预期\n本改动大概率被拒（无实质改进）。被拒后正式宣告 G1 BF 永久冠军，转饱和报告。\n\n下次真正可能突破的方向：跨实例状态学习（记历史实例的 size 分布特征）或 Harmonic K=4 with dedicated bins（理论渐近优于 BF，但实现复杂）。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 13,
+    "idea": "BF 的 tie-breaking 改为 last-fit（多 bin 同为最小 rem 时选最后那个），1 字节改动 `<` → `<=`",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 230,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 140
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-06T18:26:29Z",
+  "title": "G27: post-phase iter 加深 + 小 K 终极 pass",
+  "body": "## G27: 加深后期 tabucol, 小 K 时再 400-iter 终极 pass\n\n### 改动 (相对 G15)\n两处:\n1. **Post-phase tabucol iter cap 200 → 300**: 给 `bestCol` 的 reduction 每次多 50% 搜索预算. 改的只有 `tabucolTry(cur, curK - 1, 200)` → `tabucolTry(cur, curK - 1, 300)`.\n2. **小 K 时追加 400-iter 终极 tabucol**: 在 final `kempeReduce` 之后, 若 `curK ≤ 8`, 再尝试一次 `tabucolTry(cur, curK - 1, 400)`. 小 K 时搜索空间小 (`O(n*K)` 复杂度), 400 iter 成本可控; 大 K 时跳过避免超时.\n\n### 为什么可能有效\n- 之前 G22-26 都在改 TabuCol **内部参数** (tenure / reactive / Kempe swap / RLFS diversity), 全部失败. 微调参数已经饱和.\n- 100/200 iter cap 是 250ms 预算下的硬折. 假设: 部分 holdout 实例里 (K-1)-coloring **存在**但埋得较深, 200 iter 够不到; 300-400 iter 能. TabuCol 的方差是著名的: 多一倍 iter, \"刚好找到最优\" 的概率通常非线性增长.\n- \"小 K 时再深搜\" 利用小 K 搜索空间小的事实: n=150, K=5 时每 iter 约 5K ops (vs K=15 时 15K), 400 iter 总成本 ~2M ops, 对稀疏图几乎免费.\n\n### 风险\n- **时间预算**: post-phase 多 ~2000 iters + 终极 ~2000 iters = ~25-40ms 额外. 大 K 实例 (curK ≥ 10) 风险稍高, 但 `curK ≤ 8` guard 缓解. 总估计 ~200ms, 留 ~50ms 余量.\n- **可能无效**: 加 iter cap 是\"无脑\"改动, 若 200 iter 已经覆盖了搜索瓶颈, 多给 iter 也无用.\n- **ratchet 噪声**: 0.7148 → 需 ≤ 0.7134 (差 0.2%). 单点改动可能不够显著.\n\n### 时间预算估计\n- inner: 9 × 2 × 5 × 100 = 9000 iters (~50ms)\n- post: 4 × 5 × 300 = 6000 iters (~35ms, was 4000)\n- final deep (only if curK ≤ 8): 5 × 400 = 2000 iters (~10-15ms)\n- dsatur + kempe + recolor: ~50-80ms\n- **总**: ~150-220ms, 应该 OK.",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 27,
+    "idea": "post-phase tabucol iter cap 200→300, 再加一个 curK≤8 时的 400-iter 终极 pass",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7148,
+      "after": 0.7114,
+      "train_after": 0.6914
+    },
+    "delta_pct": -0.48,
+    "error": null,
+    "bytes": 11091,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 143
+}
