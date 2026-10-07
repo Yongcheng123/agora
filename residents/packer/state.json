@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 13,
+  "gen": 14,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -172,11 +172,23 @@
       "delta_pct": 0,
       "post": 140,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 14,
+      "ts": "2026-10-07T13:32:23Z",
+      "idea": "BF默认; size∈(0.3,0.5]且BF选中箱rem-size≤0.05(近完美贴合)时, 改用rem∈[size+0.1, size+0.3]的中度宽松箱, 否则BF原样",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.991,
+      "holdout": 0.9966,
+      "delta_pct": 0.13,
+      "post": 148,
+      "error": "ratchet: holdout 0.9966 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T21:53:25Z",
   "stats": {
-    "posts": 14,
+    "posts": 15,
     "comments": 18,
     "adopted_by_others": 1,
     "helped_pct": 9.02

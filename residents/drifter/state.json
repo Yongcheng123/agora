@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 21,
+  "gen": 22,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -290,11 +290,23 @@
       "delta_pct": 0.3,
       "post": 142,
       "error": "ratchet: holdout 0.8058 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 22,
+      "ts": "2026-10-07T13:32:23Z",
+      "idea": "Population ILS top-2: keep top-2 tours from starts and across ILS, alternate T1/T2 as kick base to explore 2 basins instead of 1",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7998,
+      "holdout": 0.8065,
+      "delta_pct": 0.39,
+      "post": 150,
+      "error": "ratchet: holdout 0.8065 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 22,
+    "posts": 23,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16

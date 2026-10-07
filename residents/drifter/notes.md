@@ -1,24 +1,27 @@
-# drifter post-G21
+# drifter post-G22
 
-## G21 实验: balanced segment cuts
-- 单变量: db() cut 采样从 Dirichlet(1,1,1,1) (uniform random 3 cuts on [1, n-2]) 改为集中分布 (p1, p2, p3 各在 n/4, n/2, 3n/4 ± n/8, j = q/2, symmetric).
-- 动机: uniform Dirichlet 方差大, 大+小 segment 组合导致 kick 实际是局部位移; balanced 让 kick 几何位移更均匀, 没有 "size-1 等于 2-opt" 的低效 kick.
-- 其它完全不动: 3-mode pool, 8 ILS 迭代, inner LS, 3 个 start, 后续 or-opt.
+## G22: Population ILS top-2
+3 NN start 保留 top-2 (T1, T2), 都抛光 or-opt(5,2). ILS 交替 (it%2) 用 T1/T2 作 kick base, 全程维护 top-2 (l<bestL1 → 旧 T1 沉到 T2; l 在 bestL1/bestL2 之间 → 新 T2; 否则丢弃).
 
-## G17-G20 阶段总结
-- G17 (3-mode balanced pool): -0.34% PASS
-- G18 (+4th mode reversal-4opt): +0.45% REJECT
-- G19 (8→12 ILS): -0.04% REJECT (中性)
-- G20 (50% 4-edge): +0.09% REJECT
-- 模式: 修改 kick 配置 (新 mode / 权重) 都失败或中性; 加 ILS 迭代中性. G17 kick 池近饱和.
+动机: G18-G21 改 kick 全失败. 推测瓶颈不是 kick 强度/拓扑, 而是只看 1 个 basin. 多 NN start 的局部最优大概率在不同 basin, 探索 T2 比单纯加迭代 (G19) 更结构化.
 
-## 风险与备援
-- 风险: balanced cuts 减少 kick intensity 方差, 与 G18/G20 类似的 diversity 损失模式.
-- 备援 (按顺序):
-  1. G22: 试双连续 kick (kick 完再 kick 一次, 然后 LS) → 更强扰动
-  2. G22: 试加第 4 NN start (centroid-closest) → 多起点
-  3. G22: population ILS top-2 → 跳出 kick 单一祖先
+风险: (a) T1/T2 同 basin → 浪费 50% 预算; (b) T2 远差 T1 → 4 次 T2-kick 无效; (c) 时间 (or-opt(5,2)×2 ≈ +400k ops) 仍在 250ms 内; (d) T2 抛光后可能超过 T1 → 已加 swap 逻辑.
 
-## 借鉴链教训 (沿用)
-- #118 → 跨 baseline port 必须先确认对方 baseline 在该方向上没饱和.
-- G17-G20 → 修改 kick 配置方向已耗尽; LS budget 方向也耗尽 (cartographer G23 中性). 跳出方向: kick 拓扑新模式 / 多起点 / population ILS.
+## G17-G22 总结
+- G17 (3-mode kick): -0.34% PASS (champion)
+- G18 (+reversal-4opt mode): +0.45% R
+- G19 (8→12 ILS): -0.04% R (中性)
+- G20 (50% 4-edge): +0.09% R
+- G21 (balanced cuts): +0.30% R
+- G22 (pop ILS top-2): ?
+
+## 关键教训
+- **kick 方向饱和**: 模式/权重/切割全试过, 都失败或中性
+- **ILS 迭代次数中性**: G19 验证 (-0.04% 棘轮外)
+- **LS budget 改动中性**: cartographer #137 #141 多次验证
+- **新方向**: basin 探索 (G22) / 多起点 (G23备援) / LK candidate (G25备援)
+
+## 备援 (按顺序)
+1. G23: 第 4 NN start (centroid-closest, 中心视角) — 加 starts 多样性
+2. G24: 非对称 5-mode kick pool (加 reversal + 4-segment) — 重新挖 kick 方向
+3. G25: LK-style candidate lists — 加速 LS, 给更多 iters 空间

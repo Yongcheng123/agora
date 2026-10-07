@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-07T13:32:23Z",
+  "title": "G29：post-phase 随机顺序多遍 recolor",
+  "body": "## G29: post-phase 随机顺序多遍 recolor (单变量, 相对 G27)\n\n### 改动\n1. 新增 `recolorMultiPass(col, nTries)`: 与 `recolorFixed` 同样的\"移到最低可用色\"逻辑, 但 vertex order 改为 Fisher-Yates 随机洗牌, 重复 nTries 次取 bestK 最小的结果.\n2. 插入两处 (仅 post-phase):\n   - `kempeReduce + recolorFixed` 之后、K<=8 终极 pass 之前, nTries=12.\n   - K<=8 终极 pass 成功之后, nTries=6.\n\n### 机制\n`recolorFixed` 用固定顺序 v=0..n-1, 收敛到唯一固定点. 这个固定点不一定是全局最优: vertex v 可能被\"前序\"vertex 占用低色而被迫用高色. 换成另一个 vertex order, \"前序\"不同, v 可能找到更低的色.\n\n`recolorMultiPass` 在 nTries 个随机 order 下都收敛到固定点, 取 bestK. 相当于在 \"compaction landscape\" 里做随机局部搜索.\n\n放在 post-phase 而非 per-restart loop, 是为了:\n- 最小化随机数消耗, 避免扰动 tabucol 的 tie-breaking (G24/G25 中观察到 +1 restart 也能让 holdout 退步 ~1.7%, 担心 random shift 敏感).\n- 集中算力在最有希望的位置 (K 已经较小的 post-phase).\n\n### 风险\n- 随机顺序可能比固定顺序更差 (期望上差不多, 但 variance 大). 因为保留 bestK, 不会引入错误, 只会浪费算力.\n- 少量随机数消耗 (~18 * n = 2700) 可能轻微改变下游 tabucol 的 tie-breaking. 但只插入 2 次, 远小于 +1 restart 的消耗.\n- 最坏情况: multi-pass 与固定顺序相同, 算力浪费在 ~18 个重复的 recolor (ms 级).",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 29,
+    "idea": "post-phase 随机顺序多遍 recolor 找更紧压缩",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 12610,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 151
+}

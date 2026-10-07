@@ -1,37 +1,21 @@
 ## Binpack 状态
 
-G13 提交: BF + last-fit tie-breaking (`<` → `<=`). 当前冠军仍是 G1 0.9953, G13 几乎确定被拒.
+G14 提交: BF + 中等物品跳过近完美贴合 (0.05阈值), 改用中度宽松箱 [size+0.1, size+0.3]. 是 G11/G12 同族规则的参数微调, 预期大概率被拒.
 
-## 饱和证据 (跨任务汇总)
+## 饱和证据汇总 (更新到 G14)
 
-**Binpack**: 12 代单变量改动连败 (G2-G13), BF 紧放几乎确定最优.
+**Binpack**: 13 代单变量改动连败 (G2-G14). 失败分布: G9 +0.23%, G10 +8.15%, G11 0.00%, G12 +0.31%, G13 0.00%. holdout 始终在 [0.9953, 1.0764], 距 0.9933 棘轮至少 0.20%.
 
-**TSP (cartographer)**:
-- G23 (-0.04% 拒) + G24 (+0.36% 拒): LS iter cap 提升两代全失败
-- G19 (+0.69% 拒): or-opt reverse 邻域更宽松但变差, 待 reverse hit rate + assertHamiltonian diagnostic
-- G22 (+0.53% 拒): ILS kick mode 池化, fix-bug vs 池化两个变量未拆, G22a/b/c ablation 待跑
-
-**TSP (drifter)**:
-- G17 (-0.34% 接受): 3-mode pool 留下 mode 多样性 vs 强度 混淆
-- G20 (+0.09% 拒) + G21 (+0.30% 拒): 50% 4-edge 和 balanced cuts 都失败
-- 关键自省: drifter 自报 G17 有同种混淆 (2 个 3-edge + 1 个 4-edge), 当初未拆
-
-**Knapsack / Coloring**: knapsack G21 0.00%, coloring G27 -0.48% 接受 (iter cap 200→300 + 小 K 400 iter pass), coloring 是唯一还在挖 iter cap 的任务, 因为 tabucol 搜索空间大
-
-## 跨任务模式
-
-单变量 LS / kick / 邻域微调在 binpack/TSP/knapsack 都接近 0 或负向. 棘轮 -0.5% 起步, 单变量净改善窗口在缩. coloring G27 例外, 但跟 tabucol 内部搜索空间结构有关, 不可外推.
-
-## 下一步 (Binpack)
-
-- 正式宣告 G1 BF 永久冠军
-- 停止单变量改动
-- 写饱和报告: binpack 12 代 + 跨任务汇总
+**跨任务**: 单变量 LS / kick / 邻域微调在 binpack / TSP / knapsack 都接近 0 或负向. coloring G27 (-0.48% 接受) 是唯一例外, 跟 tabucol 搜索空间结构有关, 不可外推到 binpack.
 
 ## 真正可能突破的方向 (低优先级, 范式跳跃)
 
-1. 跨实例状态学习: 跟踪历史实例 size 分布特征 (avg, variance, bimodality) 选策略
-2. Harmonic K=4 with dedicated bins: 理论渐近 1.69 OPT vs BF 1.22 OPT
-3. 离线模拟 + 在线决策: 对每个候选 bin 模拟"平均未来项"做留余量决策
+1. **跨实例状态学习**: 跟踪历史实例 size 分布特征 (avg, variance, bimodality) 选策略. bins.length===0 标记新实例, 可用 persistent state. 但 13 代失败说明就算有状态, 阈值/规则设计也极难命中 0.2% 改进窗口
+2. **Harmonic K=4 with dedicated bins**: 理论渐近 1.69 OPT vs BF 1.22 OPT, 但需要离线分布信息, 在线实现复杂
+3. **离线模拟 + 在线决策**: 对每个候选 bin 模拟"平均未来项"做留余量决策. 500ms 时间预算内可能放不下完整模拟
 
-**单变量微调已确认无效, 下一代表若有意义必须范式跳跃.**
+## 下一步
+
+- 若 G14 被拒 (大概率): 正式宣告 G1 BF 永久冠军, 写饱和报告. 停止单变量改动, 全力转向范式跳跃
+- 若 G14 意外通过: 立即扫描同方向变体 (阈值, 区间), 但要小心不要变成参数拟合
+- 长期: 范式跳跃需要新代码结构 (state + 复杂逻辑), 估计 400-600 字节, ROI 不确定
