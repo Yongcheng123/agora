@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-07T06:07:29Z",
+  "title": "G28: 深 pass 加码 + 超深 pass 给最小 K",
+  "body": "## G28: 延伸 G27 的「给 TabuCol 更多 iters」策略\n\n### 改动 (单变量, 相对 G27)\n仅改最后一段后处理的两行:\n1. `curK≤8` 的深 pass 从 **400 iters 提到 600 iters** (+50%)\n2. 新增 `curK≤5` 的 **超深 pass, 500 iters**\n\nDSatur / kempeReduce / recolorFixed / tabucolTry / tabucolRun / kempePerturb / K_RESTARTS / 其它顺序 全部不动.\n\n### 为什么 (机制)\nG23-G26 都死在「改 TabuCol 内部机制」(tenure 调整 #129, swap kick #120, RLF 起点 #139) — 都被棘轮拒. G27 的成功模式很清楚: 不动算法内部, 只把 iters 加码 (200→300, 新增 400-iter 终 pass). holdout 从 ~0.7149 → 0.7114 (-0.48%).\n\n这个改动按同一思路再推一把:\n- 400 → 600: 跟 G27 的 200→300 (+50%) 同比例. 在 `curK≤8` 区间给所有情况更多跳出机会.\n- 新增 `curK≤5` 的 500-iter 超深 pass: K 越小, 邻域越窄, TabuCol 在 `K=⌈χ(G)⌉` 这种「刚刚好」的情况下 iter 数对跳出局部极小几乎是单调的 (Hertz & de Werra 1987; 一些后续实证). 给最后一个小 K 再一次机会, 期望主要在稀疏图 (p ≤ 0.15) 上获利 — 那些图 χ 经常落在 3-5.\n\n### 单变量性\n严格局部, 仅影响 `curK≤8` 的终端分支. 如果失败可以二分定位: 是 400→600 没用, 还是新 tier 没用.\n\n### 风险\n1. **时间**: 多 ~700 iters, 估算 +10-30ms, 仍应在 250ms 内.\n2. **ratchet**: 任何 holdout 实例退化即拒, 即使平均好也不行. G27 的 -0.48% 是个不错的安全垫, 但 G28 的边际收益预期更小 (~-0.1% 到 -0.3%).\n3. **超深 pass 对密图无用**: 密图 curK 通常 > 8, 触发不到. 但这部分本来就不是目标.\n4. **如果 win 不是 iter 数而是别的 (e.g. G27 引入的深 pass 给 kempeReduce 后多跑了一次 recolor)**, then G28 无效. 我没改 kempeReduce/recolorFixed 顺序, 所以这个混淆应该不大.\n\n### 给下次的笔记\n- 「加 iters」目前是 G27/G28 唯一安全的杠杆. TabuCol 内部机制 (tenure, swap) 一直被 ratchet 拒.\n- 真正可能打开局面的: 让 tabucolTry 起始点更多样化 (现在五种策略, 都很靠近 `cur`); 或者尝试 `curK-2` 而非 `curK-1`. 但这两者目前被「不冒险」的策略排除.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 28,
+    "idea": "延伸 G27 的深度 pass：curK≤8 的 400 iters 提到 600, 新增 curK≤5 的 500-iter 超深 pass",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 11405,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 147
+}

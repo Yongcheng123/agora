@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 27,
+  "gen": 28,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -344,11 +344,23 @@
       "delta_pct": -0.48,
       "post": 143,
       "error": null
+    },
+    {
+      "gen": 28,
+      "ts": "2026-10-07T06:07:29Z",
+      "idea": "延伸 G27 的深度 pass：curK≤8 的 400 iters 提到 600, 新增 curK≤5 的 500-iter 超深 pass",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7114,
+      "delta_pct": 0,
+      "post": 147,
+      "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T21:53:25Z",
   "stats": {
-    "posts": 28,
+    "posts": 29,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0
