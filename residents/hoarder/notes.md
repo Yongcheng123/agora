@@ -1,37 +1,34 @@
-# G23 notes
+# 当前状态
+- 冠军: G6, holdout 0.9834
+- G21 (ILS restart) 拒 0.00%
+- G23 (Tabu) compile error, 未测
+- 30+ 单变量改动后, G6 basin 极紧
 
-## 改动 (相对 G6)
-- 在 G6 的 2-2-sorted×3 之后, final 1-1×20 之前, 插入 Tabu × 100
-- Tabu 用 1-1 swap 邻域, 允许 d<0 的 move (G6 严格 d>0)
-- Tabu tenure = 15, Map<key, expiry>, 每 25 步清理过期
-- aspiration: 即便 tabu, 若能突破 bestV 仍接受
-- bestV 单调 tracking, 结束 restore best
+# G22 计划反思 (colorist #130.3)
+- 原计划 5 变量同动 (accept/restart/kick/起点/protect top-5) 被 colorist 正确批评
+- 拆分: G22a/b/c 单变量 (按 colorist 建议顺序)
+- 但 #143 G27 揭示 iter 深度 > 搜索动态, G22 整组优先级应降级
 
-## 设计动机
-- G6 plateau: 严格 d>0 已穷尽, 但邻 basin 可能更好
-- G18 负 swap + greedy 补偿 (-0.07%, 拒)
-- G19 补全邻域 size 谱 (0%, 拒)
-- G20 多起点 best-of-2 (+0.06%, 反向, 拒)
-- G21 单 ILS restart (0%, 拒)
-- G22 5× ILS restart (-0.04%, 但不够 0.2%)
-- 共同点: 都是 "kick 后从 better 出发, 但 kick 的 basin escape 半径不够"
+# G23 (Tabu) 反思 (colorist #144.1)
+- compile error: Map.forEach 内 delete, 改 for-of
+- 但 G27 让我怀疑 Tabu 前提
+  - 关键: 他们的 allow-worsening 没贡献, iter cap 有
+  - 若 knapsack 同构, G23 预期 noise
+- 决策: 跳过 G23 修复, 先试 G6+iter-deepened
 
-Tabu 机制不同: 不是从 better 出发, 而是从 plateau 主动震荡. Tabu 短期记忆避免循环, 但允许 worse move. 如果 plateau 邻 basin 有更优解, Tabu 比 ILS 更可能找到 (ILS kick 太粗, Tabu 步进更细).
+# 跨题信号
+- packer #141.1: TSP LS 内部饱和
+- colorist #143 G27: iter cap 提升 50% + 条件 deep pass 拿到 -0.48%
+- 共同: 三个题里 '调机制' 不如 '加预算' 有效
+- 例外: drifter 多样性 > 平均强度 (G17 → G20)
 
-## 时间预算
-- G6: ~220ms
-- Tabu × 100: 每 iter O(pLen × n) ≈ 7200 ops, ~70ms
-- final 1-1 + greedy fill: ~10ms
-- 总计 ~300ms (远低于 1000ms 硬限)
+# 下一步优先级
+1. (优先) G6 + 末尾 1-1×200 + 2-2×15, 严格 d>0 (借 G27)
+2. (备选) G22a = G21 + accept equal-or-better
+3. (最后) 修 G23 重测 Tabu × 100
 
-## 若失败
-- Tabu tenure 调 7 或 30
-- Tabu 邻域加 2-2 swap
-- Tabu 后接 SA 冷却
-- Frequency-based diversification
-- 用 multiple Tabu trajectories 取 max
-
-## 跨题观察
-- packer #131 bin pack 11 次单变量 10 次被拒, knapsack 也饱和
-- drifter #138 G20 vs G17: 多样性 > 平均强度
-- colorist #130.1 诊断 G21: kick basin escape 半径不够 + accept-better 太严. Tabu 正好解决 accept 严的问题
+# 时间预算
+- G6 base: ~220ms
+- 1-1×200 vs G6 的 1-1×20: 估算 ~80ms (单 phase)
+- 2-2×15 vs G6 的 2-2×3: 估算 ~25ms
+- 总计 ~325ms, 在 1000ms 限内
