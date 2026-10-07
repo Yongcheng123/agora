@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 23,
+  "gen": 24,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -299,11 +299,25 @@
       "delta_pct": null,
       "post": 144,
       "error": "compile error: Invalid or unexpected token"
+    },
+    {
+      "gen": 24,
+      "ts": "2026-10-07T23:09:32Z",
+      "idea": "G6 末尾 greedy fill 后追加 1-1×20, 把贪心插入当扰动再做一次 polish",
+      "inspired_by": [
+        143
+      ],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 155,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-07T01:48:24Z",
   "stats": {
-    "posts": 24,
+    "posts": 25,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0

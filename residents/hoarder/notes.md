@@ -1,34 +1,23 @@
-# 当前状态
-- 冠军: G6, holdout 0.9834
-- G21 (ILS restart) 拒 0.00%
-- G23 (Tabu) compile error, 未测
-- 30+ 单变量改动后, G6 basin 极紧
+# 状态
+- 冠军: G6, holdout 0.9834, train 0.9549
+- G19-G23 全部被拒/失败; G22 拿到 -0.04% (0.9830) 但仍超 0.9814 棘轮线
+- G24 = G6 + greedy fill 后 1-1×20 (单变量, 借 G27 思路把非-LS 步骤升级为扰动-抛光两步)
 
-# G22 计划反思 (colorist #130.3)
-- 原计划 5 变量同动 (accept/restart/kick/起点/protect top-5) 被 colorist 正确批评
-- 拆分: G22a/b/c 单变量 (按 colorist 建议顺序)
-- 但 #143 G27 揭示 iter 深度 > 搜索动态, G22 整组优先级应降级
+# 跨题信号 (#143 G27 colorist)
+- "给现有搜索更多预算" > "调机制" 在 coloring 里拿到 -0.48%
+- 推论: G21/G22 的 ILS restart 失败可能更多是因为 accept 太严 + kick 太弱, 而非"扰动本身不该加"
+- 推论 2: knapsack 里的 1-1 是确定性 steepest descent, 收敛快, 单纯加深可能 saturate. 但"扰动后重新抛光"是一个独立的优化机会, 不依赖现有 phase 是否收敛
 
-# G23 (Tabu) 反思 (colorist #144.1)
-- compile error: Map.forEach 内 delete, 改 for-of
-- 但 G27 让我怀疑 Tabu 前提
-  - 关键: 他们的 allow-worsening 没贡献, iter cap 有
-  - 若 knapsack 同构, G23 预期 noise
-- 决策: 跳过 G23 修复, 先试 G6+iter-deepened
+# G23 (Tabu) 暂搁
+- colorist #144.1 提示 G23 思路方向 OK, 但 G27 的 iter cap 思路更优先
+- 编译错误先放着, 不优先修
 
-# 跨题信号
-- packer #141.1: TSP LS 内部饱和
-- colorist #143 G27: iter cap 提升 50% + 条件 deep pass 拿到 -0.48%
-- 共同: 三个题里 '调机制' 不如 '加预算' 有效
-- 例外: drifter 多样性 > 平均强度 (G17 → G20)
-
-# 下一步优先级
-1. (优先) G6 + 末尾 1-1×200 + 2-2×15, 严格 d>0 (借 G27)
-2. (备选) G22a = G21 + accept equal-or-better
-3. (最后) 修 G23 重测 Tabu × 100
+# 下一步
+- 若 G24 接受 (任意幅度): 试 G6 + 把"扰动-抛光"模式推广到 phase 之间 (例如 2-2 后, 1-2 后都加一段 1-1×N)
+- 若 G24 拒绝 (0%): greedy fill 后的状态已局部最优, 改试加深 1-1×20 → 1-1×60 (借 G27 思路直接加深)
+- 若 G24 拒绝 (>+0.1% noise): 跳回机制路线, 优先 G22a (G21 + accept equal-or-better)
 
 # 时间预算
-- G6 base: ~220ms
-- 1-1×200 vs G6 的 1-1×20: 估算 ~80ms (单 phase)
-- 2-2×15 vs G6 的 2-2×3: 估算 ~25ms
-- 总计 ~325ms, 在 1000ms 限内
+- G6 base ~220ms
+- 新增 1-1×20 ~5-10ms
+- 总 ~230ms, 软限 250 内, 硬限 1000 内

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-07T23:09:32Z",
+  "title": "G15: 极小物品 (<0.1) 用 Worst Fit, 其余 BF",
+  "body": "## G15: 极小物品 (<0.1) 用 Worst Fit, 其余 BF (单变量, 相对 G1)\n\n### 改动\n仅在 size < 0.1 时, 改用 WF: 在能容纳的箱中选剩余空间最大者. 其余维持 BF.\n\n### 为什么认为可能有效\n- BF 把小物品堆入紧箱, 后续 0.4 级中物品无'新鲜箱'可放, 必须新开\n- WF 把小物品分散到多个箱, 每个箱保留中等余量; 后续 0.4 类可塞入其中一个'新箱'而非新开\n- 阈值 0.1 取'明确小'区间, 不与 G11/G14 试探的 0.2-0.5 中物品区间重叠\n- 机制比 G10-G14 的 'moderate fit 偏移' 更直接: 用 WF 防止小物品垄断紧箱\n- 关键例子: 0.5, 0.1, 0.1, 0.1, 0.5, 0.1, 0.4 → BF 3 箱 vs WF 2 箱 (最后一个 0.4 能塞入 0.1 散开的'新箱')\n\n### 风险\n- 14 代连败 (G2-G14), 新方向仍未验证\n- WF 理论渐近比 BF 差 (~1.7 vs ~1.22), 但 500 items 规模下可能不显\n- 对均匀小物品 (全 0.1) WF = BF, 不退化; 仅在多 bin 且 rem 不同时才有差异\n- 字节 ~380, 预算内\n- 阈值 0.1 是猜的, 0.05/0.15 可能更准\n\n### 不变量\n纯函数, 无状态, 无 random, 无 I/O.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 15,
+    "idea": "极小物品 (<0.1) 用 Worst Fit 散开保留新鲜箱, 其余 BF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0151,
+      "train_after": 1.0129
+    },
+    "delta_pct": 1.99,
+    "error": "ratchet: holdout 1.0151 > 0.9933 (champion × 0.998)",
+    "bytes": 395,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 153
+}

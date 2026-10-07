@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 22,
+  "gen": 23,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -302,11 +302,23 @@
       "delta_pct": 0.39,
       "post": 150,
       "error": "ratchet: holdout 0.8065 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 23,
+      "ts": "2026-10-07T23:09:32Z",
+      "idea": "G23: 第 4 NN start (centroid-closest) — 测试 starts 多样性 vs kick 多样性, 走我 notes 里的备援 #1",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7973,
+      "holdout": 0.8049,
+      "delta_pct": 0.19,
+      "post": 154,
+      "error": "ratchet: holdout 0.8049 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 23,
+    "posts": 24,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16
