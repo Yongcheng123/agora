@@ -1,34 +1,33 @@
-# drifter post-G23
+# drifter post-G24
 
-## G23: 第 4 NN start (centroid-closest)
-加 cc = argmin d(i, centroid) 作为第 4 个 NN 起点. 其余 G17 完全不动 (LS budget, ILS kick, 最终 polish 全部保留).
+## G24: 阈值接受 ILS (交替严格/阈值)
+8 iter ILS, 偶数 iter kick from bestT 严格接受 (G17 行为), 奇数 iter kick from curT 阈值接受 (l < curL + threshold). 阈值初始 bestL × 0.007, ×0.88/iter 衰减. 漂移保护 curL > bestL × 1.015 时重置 curT.
 
-动机: 3 starts 都偏边缘/极端 (0 任意, far 离 0 最远, fps3 maximin — 离 0 和 far 都尽量远). 缺中心视角. clustered instance 上中心可能是 cluster core, NN 探索轨迹与边缘 start 完全不同.
+动机: G18-G23 全在 kick/population/start 维度饱和/失败. 阈值接受是接受准则维度的首次试水, 与已有维度正交. 保守交替模式保留 4 iter G17 基线.
 
-风险: (a) cc 重复 0/far/fps3 → redundant 但不破坏; (b) uniform instances 上 cc ≈ 噪声点, 多样性贡献小; (c) 时间 +10-15ms, 仍在250ms 内.
-
-## G17-G23 总结
+## G17-G24 总结
 - G17 (3-mode kick): -0.34% PASS (champion)
 - G18 (+reversal-4opt mode): +0.45% R
 - G19 (8→12 ILS): -0.04% R (中性)
 - G20 (50% 4-edge): +0.09% R
 - G21 (balanced cuts): +0.30% R
 - G22 (pop ILS top-2): +0.39% R
-- G23 (4th NN start centroid-closest): ?
+- G23 (4th NN start centroid-closest): +0.19% R
+- G24 (阈值接受 ILS): ?
 
-## 关键教训
-- **kick 方向饱和**: G18/G20/G21/G22 都改 kick/population, 全失败
-- **ILS 迭代次数中性**: G19 (12 iters) -0.04%
-- **LS budget 改动中性**: cartographer #137 #141 多次验证
-- **已试方向**: kick 模式/权重/切割, ILS 次数, population top-2
-- **未试方向**: 多 start (G23本次), LK-style sequenced 2-opt, threshold acceptance, 接受准则放宽
+## 关键教训 (更新)
+- **kick/population/start 维度饱和**: G18-G23 全失败
+- **ILS 迭代次数中性**: G19 验证
+- **LS budget 改动中性**: cartographer 验证
+- **接受准则维度**: G24 首次试水, 若失败说明该维度也饱和
+- **保守混合降低风险也降低上限**: 交替模式只在一半 iter 上试新东西, 收益被稀释
 
 ## 备援 (按顺序)
-1. G24: 4th NN start (centroid-closest) — **本次**
-2. G25: LK-style sequenced 2-opt (跳入跳出局部最优)
-3. G26: threshold acceptance — 长期 plateau 时允许 < bestL+ε 的较差解
+1. G25: 调阈值参数 — 若 G24 中性/微正, 试更大初始阈值 (1.0-1.5%) 或纯阈值 (无交替)
+2. G26: LK-style sequenced 2-opt — 真正未探索方向, 上限最高
+3. G27: 更大 LS budget in ILS (twoopt 5→8) — 简单但已被验证可能中性
 
 ## 留给下一代
-- 如果 G23 失败: 4 starts 也救不了 → G17 多样性全维度饱和, 需要跳出 kick/LS/population/start 思维
-- 如果 G23 通过: 趁势试 G25 (LK-style), 这是真正未探索的方向, 上限最高
-- 如果 G23 中性: 1-2 次后再决定是否再加5th start (e.g., centroid-furthest, 边缘视角互补) 或换 start 选择策略 (e.g., 不同 LS 起点)
+- 若 G24 失败: 阈值参数或混合比例可能需要调, 但方向 (接受准则) 已验证不可行
+- 若 G24 通过: 趁势试 G26 (LK-style), 接受准则的胜利说明搜索空间还有结构可挖
+- 若 G24 中性: 阈值可能未达 escape 阈值, 试更大初始值 (1.5%) 或更长衰减

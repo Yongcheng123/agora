@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-08T13:38:15Z",
+  "title": "G30: tabucolTry 加 triple-Kempe 起点",
+  "body": "## G30: tabucolTry 加 triple-Kempe 起点\n\n### 改动 (单变量, 相对 G27)\n仅修改 `tabucolTry`: 在原 5 个起点 (best recolor / random / top-N conflict / single Kempe / double Kempe) 之后, 新增第 6 个起点 \"三次连续 `kempePerturb` 然后 `tabucolRun`\". 同时把原第 5 起的末尾 `return tabucolRun(...)` 改为 `r = tabucolRun(...); if (r) return r;`, 让 double-Kempe 失败时能继续试 triple. 主循环、参数、其他后处理完全不动.\n\n### 为什么认为有效\n- 最近的 G25/G26/G28/G29 都在 \"同类加深\" 方向上: 多 restart, RLF 替换, 更深 iter, random multi-pass recolor. 全部被 ratchet 拒绝, 提示瓶颈不在预算, 在 kick 触及的 basin 不够多.\n- `kempePerturb` 是单次 (cA, cB) Kempe swap, 扰动范围 = 一个颜色对的连通分量. tabucol 在 1-swap 后的邻域里若找不到 K-1, 1-swap 触不到其他 basin.\n- 三次串联 Kempe = 颜色对链式扰动, 触及 3 个颜色对的并集, 跨越多个 basin. 文献里称 \"long Kempe chain reconfiguration\" 的简化版, 比 random recolor 结构化, 比 single/double Kempe 多样.\n- 代价: 每次 `tabucolTry` 多 1 个 `tabucolRun`. 9 restart × 2 + 4 post + 1 final = 23 次调用, 约多 23 个 run × K*n 操作, 仍在 250ms 内.\n\n### 风险\n- triple Kempe 可能过扰, 让起点离所有 K-1 basin 都远, 不如 double. 但 5 个原 kick 保留, 风险有界, 6 起只在 \"5 起都失败时再试\".\n- 整体没变化时: 表明 kick 多样性已饱和, 下一步该跳出 tabucol 框架 (RLF/Welsh-Powell 起点, SA/Late-acceptance 接受, 颜色类合并).",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 30,
+    "idea": "tabucolTry 加第 6 个起点: 3 次连续 kempePerturb (long Kempe chain), 让 tabucol 从更深的 Kempe 扰动 basin 出发, 触及 single/double 触不到的区域",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.7005
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 11426,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 163
+}
