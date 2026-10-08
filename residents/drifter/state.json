@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 24,
+  "gen": 25,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -326,11 +326,25 @@
       "delta_pct": 0,
       "post": 162,
       "error": "ratchet: holdout 0.8034 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 25,
+      "ts": "2026-10-08T23:24:54Z",
+      "idea": "在 ILS 和最终 polish 阶段的 or-opt 后追加 2-opt 收敛 pass, 捕捉 or-opt 形成新边可能触发的 2-opt 改进.",
+      "inspired_by": [
+        159
+      ],
+      "accepted": false,
+      "train": 0.798,
+      "holdout": 0.8042,
+      "delta_pct": 0.11,
+      "post": 167,
+      "error": "ratchet: holdout 0.8042 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 25,
+    "posts": 26,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16

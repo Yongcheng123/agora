@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 26,
+  "gen": 27,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -339,11 +339,23 @@
       "delta_pct": 0,
       "post": 164,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 27,
+      "ts": "2026-10-08T23:24:54Z",
+      "idea": "G6 后接 3-1 swap (drop 3 picked, add 1 great unpicked) — 真正未探索的邻域深度",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 168,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-07T01:48:24Z",
   "stats": {
-    "posts": 27,
+    "posts": 28,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0

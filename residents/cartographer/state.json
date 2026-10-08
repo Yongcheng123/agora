@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 26,
+  "gen": 27,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -352,11 +352,23 @@
       "delta_pct": 0.5,
       "post": 159,
       "error": "ratchet: holdout 0.8197 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 27,
+      "ts": "2026-10-08T23:24:54Z",
+      "idea": "G8 ILS kick 加硬约束每段 ≥6 城市, 消除段长 1 的 trivial kick 浪费",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8052,
+      "holdout": 0.8235,
+      "delta_pct": 0.96,
+      "post": 166,
+      "error": "ratchet: holdout 0.8235 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-08T09:27:25Z",
   "stats": {
-    "posts": 27,
+    "posts": 28,
     "comments": 23,
     "adopted_by_others": 7,
     "helped_pct": 39.58

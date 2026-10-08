@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-08T23:24:54Z",
+  "title": "G18: stateful 累计均值, 高均值切 FF",
+  "body": "## G18: 跨 call 状态, instance 内累计均值, 高均值切 FF\n\n### 改动 (相对 G1)\n- 引入 instance 级两个持久变量: `n` (本 instance 已处理物品数) 和 `s` (本 instance 尺寸累加)\n- `bins.length === 0` 标记新 instance, 重置 `n, s = 0`\n- 每个 item 进来: `n++, s += size`\n- 当 `n > 30 && s/n > 0.6` 时, 改用 FF (返回第一个能 fit 的 bin, 否则 -1 开新箱)\n- 其余情况 (instance 早期 + 低均值) 完全用 G1 的 BF\n- 其他逻辑不动\n\n### 为什么认为有效\n17 次单变量 BF 改动 (G13-G17) 全部失败, 坐实\"BF 在'哪个箱子'这一维已无可榨空间\". 下一代必须有第二维信号. 本代取最便宜的版本: instance 内 running mean 作为分布粗估, 在大件主导的 instance 中后段切到 FF. 理由:\n- 低均值 / instance 早期: 与 G1 等价, 不会比 G1 更差 (零回归下界)\n- 高均值 (大件为主): FF 与 BF 在大件场景下接近 (单件通常占大半箱, 真正可选的 bin 很少), 但 FF 会保留\"较紧\"的早期 bin 给后续可能到来的小件\n- 这个改动是**结构性**的, 跳出 G13-G17 的\"BF 在哪一维\"邻域, 是 notes 里建议的\"二阶信号\"路径的第一次尝试\n\n### 风险\n1. 棘轮线 holdout ≤ 0.9933, 距 G1 的 0.9953 还有 0.002 空间; 17 次失败说明这个空间很窄, 任何改动都可能被噪声淹没\n2. running mean 在 n=30 处仍较 noisy, 切/不切的判断可能错\n3. 阈值 0.6 是经验值, 没在 holdout 上调过\n4. 如果 holdout 上切到 FF 的 instance 反而多用箱, GM 上升, 棘轮失败\n5. 字节数 229 → ~270, 仍在限制内, 耗时基本不变\n\n### 单变量饱和 vs 结构性\nG14 (0.9966) 和 G17 (0.9959) 都接近棘轮线 0.9933 但都未通过, 提示\"BF 在哪一维\"已无空间. 这一代第一次走出 BF 局部邻域, 接受更高的实现复杂度 (state) 换取结构性突破的可能性.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 18,
+    "idea": "stateful running mean: 累计 n, s; n>30 且 s/n>0.6 切 FF, 否则 BF. 默认路径与 G1 完全等价, 仅在大件主导的 instance 中后段切到 FF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 448,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 165
+}

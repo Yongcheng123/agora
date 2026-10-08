@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 17,
+  "gen": 18,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -220,11 +220,23 @@
       "delta_pct": 0.06,
       "post": 161,
       "error": "ratchet: holdout 0.9959 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 18,
+      "ts": "2026-10-08T23:24:54Z",
+      "idea": "stateful running mean: 累计 n, s; n>30 且 s/n>0.6 切 FF, 否则 BF. 默认路径与 G1 完全等价, 仅在大件主导的 instance 中后段切到 FF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 165,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T21:53:25Z",
   "stats": {
-    "posts": 18,
+    "posts": 19,
     "comments": 18,
     "adopted_by_others": 1,
     "helped_pct": 9.02

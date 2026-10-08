@@ -1,33 +1,33 @@
-# drifter post-G24
+# drifter post-G25
 
-## G24: 阈值接受 ILS (交替严格/阈值)
-8 iter ILS, 偶数 iter kick from bestT 严格接受 (G17 行为), 奇数 iter kick from curT 阈值接受 (l < curL + threshold). 阈值初始 bestL × 0.007, ×0.88/iter 衰减. 漂移保护 curL > bestL × 1.015 时重置 curT.
+## G25: 后 or-opt 2-opt (post-or-opt 2-opt)
+在 G17 ILS 内和最终 polish 阶段追加 2-opt 收敛 pass:
+- ILS 内 8 次: `twoOpt(5) + orOpt(2, 1) + twoOpt(5)` (新增)
+- 最终 polish: `orOpt(3, 4) + orOpt(8, 2) + twoOpt(10)` (新增)
+- 初始 NN 起点不动 (G18-G23 显示开始阶段已饱和)
 
-动机: G18-G23 全在 kick/population/start 维度饱和/失败. 阈值接受是接受准则维度的首次试水, 与已有维度正交. 保守交替模式保留 4 iter G17 基线.
+总时间 +15ms, 仍在 250ms 预算内.
 
-## G17-G24 总结
+动机: or-opt (尤其 L=1 节点迁移) 形成新边后, 2-opt 不再被调用, 改进机会被浪费. ILS 内 orOpt 较浅, 加 2-opt 收益更大.
+
+借鉴 cartographer #159 但不照搬: 他加在 runLS (主 LS) 末尾, 我加在 ILS + final polish. 主 LS 已多轮 polish, 再加可能冗余; ILS 内 orOpt 较浅, 后接 2-opt 收益更大.
+
+## G17-G25 总结
 - G17 (3-mode kick): -0.34% PASS (champion)
-- G18 (+reversal-4opt mode): +0.45% R
-- G19 (8→12 ILS): -0.04% R (中性)
-- G20 (50% 4-edge): +0.09% R
-- G21 (balanced cuts): +0.30% R
-- G22 (pop ILS top-2): +0.39% R
-- G23 (4th NN start centroid-closest): +0.19% R
-- G24 (阈值接受 ILS): ?
+- G18-G24: 全部 R, kick/pop/start/接受准则 维度饱和
+- G25: 后 or-opt 2-opt — 验证"邻域间补全"是否有效
 
-## 关键教训 (更新)
-- **kick/population/start 维度饱和**: G18-G23 全失败
-- **ILS 迭代次数中性**: G19 验证
-- **LS budget 改动中性**: cartographer 验证
-- **接受准则维度**: G24 首次试水, 若失败说明该维度也饱和
-- **保守混合降低风险也降低上限**: 交替模式只在一半 iter 上试新东西, 收益被稀释
+## 关键教训
+- **kick/pop/start/接受准则 维度均饱和**: G18-G24 全部失败
+- **新尝试方向**: 算法架构内的"邻域间补全" (post-or-opt 2-opt, 邻域组合) 还没被验证
+- **风险**: cartographer G26 类似思路已失败 (+0.50%), 我 context 不同但不确定
 
 ## 备援 (按顺序)
-1. G25: 调阈值参数 — 若 G24 中性/微正, 试更大初始阈值 (1.0-1.5%) 或纯阈值 (无交替)
-2. G26: LK-style sequenced 2-opt — 真正未探索方向, 上限最高
-3. G27: 更大 LS budget in ILS (twoopt 5→8) — 简单但已被验证可能中性
+1. G26: 后 or-opt 2-opt + 完整 2-opt ↔ or-opt 轮换 (2-opt, or-opt, 2-opt, or-opt 交替) — 若 G25 通过则深化
+2. G27: 真正 3-opt (3 边移除重连) — 邻域扩展, 高上限, 实现复杂
+3. G28: 时间预算再分配 — 给 ILS 更多 LS, 砍初始 LS (因为初始 LS 已多次 polish)
 
 ## 留给下一代
-- 若 G24 失败: 阈值参数或混合比例可能需要调, 但方向 (接受准则) 已验证不可行
-- 若 G24 通过: 趁势试 G26 (LK-style), 接受准则的胜利说明搜索空间还有结构可挖
-- 若 G24 中性: 阈值可能未达 escape 阈值, 试更大初始值 (1.5%) 或更长衰减
+- 若 G25 通过: 邻域补全有效, G26 试完整轮换 (2-opt ↔ or-opt 多次交替)
+- 若 G25 失败: 算法饱和确认, 试真正的 3-opt (G27)
+- 若 G25 中性: 单个 post-or-opt 2-opt 不够, 需要更深迭代或换方向

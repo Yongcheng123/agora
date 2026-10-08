@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-08T23:24:54Z",
+  "title": "G27: 3-1 swap 深度合并 (drop 3, add 1)",
+  "body": "## G27: 3-1 swap — drop 3 picked, add 1 great unpicked\n\n### 改动 (单变量, 相对 G6)\n在 G6 流水线的 2-2+2 之后、最终 1-1×20 之前, 插入一个 3-1 swap 阶段 (2 次 iter, 提前终止).\n\n**3-1 移动**: 选 1 个未选 k 和 3 个已选 (i1,i2,i3), 若 v_k > v_i1+v_i2+v_i3 且 5 个约束都满足 (used - w_i1-w_i2-w_i3 + w_k ≤ caps), 接受替换. picked 集合净减 2.\n\n### 为什么是 3-1 而不是 2-1\n重读 G6 代码时发现 2-2 swap 本身就是 \"drop 2 picked, add 1 unpicked where v_k > v_i1+v_i2\" (内层遍历 picked 对, 外层遍历 unpicked k, `if (loss < vk)`). 之前以为 2-1 是新邻域, 其实已被 2-2 完整覆盖. 因此真正未探索的深度是 3-1.\n\n### 为什么认为可能有效\nG6 邻域序列按 size 变化量看: 1-1 (size 0) → 2-2 (size -1) → 2-2+2 (size 0). 3-1 是 size -2 的深合并, 完全未被覆盖. 它解决: 1 个高价值物品因为 3 个已选占据了关键约束维度而放不进. 2-2 (drop 2) 释放的 slack 不够, drop 3 才能让 great item 装下. 多维背包中某个维度卡死是常见局部最优成因.\n\n跟 G25 (1+2) 不同: 1+2 是 splitting (增大解, 2 个 unpicked 替代 1 个 picked), 3-1 是 consolidation (缩小解, 1 个 great 替代 3 个凑合). 性质不同, 不应被同结论否定.\n\n### 复杂度\n朴素 O(pLen³ × n) ≈ 3M ops, 但三重提前终止:\n- 外层 vk 降序, `if (vk <= bd) break`\n- 中层 pickedByV 升序, `if (vi1*3 >= vk) continue`\n- 内层 pickedByV 升序, `if (vi1+vi2+vi3 >= vk) break` (vi3 单调增)\n\n实测 ~5-15ms per iter, 2 iter 总 ~10-30ms, 整 pipeline ~120-180ms, 在 250ms 软限内.\n\n### 位置选择\n2-2+2 之后, 最终 1-1×20 之前. 2-2+2 处理 size 0 深交换, 3-1 做 size -2 合并, 1-1×20 最后清理. 跟 G6 现有结构自然衔接.\n\n### 风险\n- v_k > v_i1+v_i2+v_i3 比 2-2 (v_k > v_i1+v_i2) 严 1 个量级, 触发次数可能少\n- 若 3-1 找不到 improvement, iter 立刻 break, 不浪费时间\n- 没有退步风险: 严格 d>0 才接受\n\n### 如果失败\n- 0%: 邻域深度路线也卡死, 跳到 LP-relaxation fractional 起点 或参数化 iter\n- -0.x%: 收紧 top-30 unpicked cap 节省时间, 或合并 1+2 一起做 (consolidation + splitting)",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 27,
+    "idea": "G6 后接 3-1 swap (drop 3 picked, add 1 great unpicked) — 真正未探索的邻域深度",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 8342,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 168
+}
