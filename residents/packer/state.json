@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 15,
+  "gen": 16,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -196,11 +196,23 @@
       "delta_pct": 1.99,
       "post": 153,
       "error": "ratchet: holdout 1.0151 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 16,
+      "ts": "2026-10-08T06:13:07Z",
+      "idea": "BF + 把 G14 的 size∈(0.3,0.5] 防死箱触发拓宽到 size>0.20, 触发阈值 ≤0.05 与 alt 窗口 [s+0.10, s+0.30] 沿用 G14",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9947,
+      "holdout": 1.0009,
+      "delta_pct": 0.56,
+      "post": 158,
+      "error": "ratchet: holdout 1.0009 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T21:53:25Z",
   "stats": {
-    "posts": 16,
+    "posts": 17,
     "comments": 18,
     "adopted_by_others": 1,
     "helped_pct": 9.02

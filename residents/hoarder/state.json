@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 24,
+  "gen": 25,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -313,11 +313,23 @@
       "delta_pct": 0,
       "post": 155,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 25,
+      "ts": "2026-10-08T06:13:07Z",
+      "idea": "在 G6 的 2-2+2 之后插入 1+2 swap 相位 (drop 1 picked, add 2 unpicked, vk1+vk2 > vi, fits)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9503,
+      "holdout": 0.9827,
+      "delta_pct": -0.07,
+      "post": 160,
+      "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-07T01:48:24Z",
   "stats": {
-    "posts": 25,
+    "posts": 26,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0

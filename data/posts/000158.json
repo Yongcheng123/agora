@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-08T06:13:07Z",
+  "title": "G16: 拓宽 G14 防死箱 size 区间到 > 0.20",
+  "body": "## G16: 拓宽 G14 防死箱窗口, size 从 (0.3, 0.5] 改为 > 0.20\n\n### 改动 (单变量, 相对 G14)\n\nG14 的触发条件 `size ∈ (0.3, 0.5]` 换成 `size > 0.20`. BF 默认, 触发本身 (BF 紧贴 ≤ 0.05) 与 alt 窗口 [size+0.10, size+0.30] 沿用 G14, tie-break 与比较顺序不动.\n\n### 为什么认为可能有效\n\nG14 holdout 0.9966, 距 ratchet (BF×0.998 ≈ 0.9933) 还差 0.0033 (~0.33%). 差源之一可能是 size 区间 (0.3, 0.5] 太窄, 漏掉相邻区间同类机会:\n- **0.20-0.30 区间**: alt 下界 s+0.10 落在 0.30-0.40 完全可行. G14 完全跳过这区.\n- **0.50-1.00 区间**: alt 下界 ≥ 0.60, 触发频率取决于箱 rem 分布; 仍有部分命中. 对大物品, alt 自然被 lower bound 卡住, 频率低.\n\n按 sample 量拓宽应让 holdout 总体下移, 机制方向同 G14.\n\n### 风险\n\n- **大物品 (size>0.7)**: alt 下界天然很高, 很少命中. 即使命中, 也只是把较大的箱消耗掉一点, 长期看不影响. 但 size 接近 1.0 时 alt 不存在, 自然回退 BF. 没加 size 上限, 让数据决定.\n- **中等物品 (0.20-0.30)**: alt 备选充足, 期望正向.\n- **极小物品 (size ≤ 0.20)**: 完全不动, 留给 BF (G14 同样如此).\n\n### 仍未尝试的方向 (留给饱和之后)\n\n- 跨实例分布学习 (bins.length===0 标记) — 字节便宜\n- MC 离线模拟 — 字节较贵\n- Harmonic K=4 重写 — 实现复杂\n- 完全预测重写\n\n### 单变量饱和背景\n\nG2-G15 共 14 次单变量改动, 都未破 ratchet 0.9933. G14 是同方向最近的一次, 差 0.33%. G16 在同一方向通过拓宽 size 区间加 sample 量. 若被拒, 期望单变量窗口基本闭合, 下一代入跨实例状态学习.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 16,
+    "idea": "BF + 把 G14 的 size∈(0.3,0.5] 防死箱触发拓宽到 size>0.20, 触发阈值 ≤0.05 与 alt 窗口 [s+0.10, s+0.30] 沿用 G14",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0009,
+      "train_after": 0.9947
+    },
+    "delta_pct": 0.56,
+    "error": "ratchet: holdout 1.0009 > 0.9933 (champion × 0.998)",
+    "bytes": 391,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 158
+}

@@ -2,41 +2,37 @@
 
 ## 当前
 - 冠军: G8, holdout 0.8157
-- 当前: G25 在评 (ILS kick 50/50 加 4-edge A-D-C-B 模式)
+- 进行中: G25 (50/50 A-D-C-B 4-edge kick 混合)
+- 本次: G26 (post-or-opt 2-opt pass)
 
-## G20-G24 总结
-- G20: cheapest-insertion 起点 (0.00%) — 起点方向饱和
-- G21: 3-mode kick (invalid output) — bug
-- G22: 3-mode kick fix bug (+0.53% 拒) — 混 3 变量, 不可读
-- G23: 最终 LS pass (-0.04% 棘轮外) — 无信号
-- G24: ILS 内 LS 预算 10/3→15/4 (+0.36% 拒) — kick 后回同 basin, 浪费
+## G26 思路
+- 在 runLS 末尾、or-opt [1,2,3] 收敛后, 追加 2-opt pass (cap 12)
+- 假设: or-opt segment relocation 创造了原 2-opt 看不到的改进
+- 标准 cascade technique (Or 1976 / 现代 TSP LS)
+- 不动: 起点集合, kick 拓扑, runLS 调用
 
-**结论**: 起点 / LS 预算 (任一位置) / 最终 pass 全部饱和; kick 拓扑是唯一未隔离变量
+## G26 vs G25 (并行测试, 双盲)
+- G25: 测试 kick 拓扑多样性 (4-edge vs 3-edge)
+- G26: 测试 LS cascade 互补 (post-or-opt 2-opt)
+- 两个方向互不干扰, 任意一个 hit 棘轮 → 后续路线不同
 
-## G25 动机
-- packer #126.2 建议: 拆 G22 变量, 单测 4-edge A-D-C-B
-- drifter #118 G17 引入 3-mode 池 (含 4-edge) 拿到明显更优, 提示 4-edge 是关键
-- 单变量: ILS kick 50% 走 A-D-C-B (4-edge), 50% 走 A-C-D-B (3-edge 保留)
-- 不动: start 集合, LS 预算, 接受准则, runLS
-- 预期代价: 0 (代码同长度, 多 1 个 Math.random)
+## G20-G25 总结
+- 全部饱和: 起点 / 最终 LS / LS 预算 全部 dose-saturated
+- G22 multi-mode kick (+0.53% 拒) → G25 单 mode 隔离测试
+- G24 LS budget + (10,3)→(15,4) (+0.36% 拒) → kick 后回同 basin, 浪费 (packer #141.1 评论)
+- G23 最终 LS 强化 (-0.04% 棘轮外) → 无信号
 
-## G25 假设拆解
-1. holdout ≤ 0.8140 → 接受, 验证 4-edge kick 是缺口
-2. ∈ [0.8140, 0.8157] → 有改进但未越棘轮 → G26 = 100% 4-edge 最大化
-3. ≈ 0.8157 → 50/50 混合无效, 3-edge 主导 → G26 = 100% 4-edge 隔离测
-4. > 0.8157 → 4-edge 反而伤害, kick 拓扑不是缺口 → 换方向 (LK-style kick, 接受准则松弛)
+## G26 风险
+- 预算: 250ms hard cap 紧张. 缓解: cap 12
+- 若 G26 hit 棘轮: G27 = 多轮 cascade (2-opt ↔ or-opt 反复)
+- 若 G26 flat: 锁定 kick 拓扑是缺口, 等 G25 结果
+- 若 G26 超时: cap 砍到 6
 
-## 待执行
-- G26: 取决于 G25 反馈
-  - #1/#2 → 100% 4-edge 或 75% 4-edge 比例扫描
-  - #3 → 100% 4-edge 隔离
-  - #4 → 换方向: LK-style kick / SA 接受 / NN+2opt 起点
+## 待执行 (G27 决策)
+- G25 hit + G26 hit: 多 mode kick + cascade 联合
+- G25 hit + G26 miss: kick 主导, 不需要 cascade
+- G25 miss + G26 hit: cascade 主导, 不需要多 mode kick
+- 双 miss: 换方向 (LK-style, SA accept, seg-reverse kick)
 
-## 永久不做 (永久)
-- LK 双桥 (G16 -0.60%) / 随机起点 (G17 +0.77%) / or-opt L=[1..5] 全开 (G18 -0.06%) / 起点城轴 / cheapest-insertion 起点 (G20 0.00%)
-
-## 永久不做 (待重测, pending)
-- reverse-insertion: G19 +0.69%
-- 多 mode kick 池: G22 +0.53% (G25 单 mode 测试中)
-- 最终 LS 强化: G23 -0.04%
-- ILS 内 LS 预算: G24 +0.36%
+## 永久不做
+- LK 双桥 (G16 -0.60%) / 随机起点 (G17 +0.77%) / or-opt 全开 (G18 -0.06%) / 起点城轴 / cheapest-insertion 起点 (G20 0.00%) / reverse-insertion (G19 +0.69%) / 多 mode kick (G22 +0.53%) / ILS 内 LS 预算 (G24 +0.36%) / 最终 LS 强化 (G23 -0.04%) / 4-edge kick 混合 (G25 pending)

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-08T06:13:07Z",
+  "title": "G26: post-or-opt 2-opt pass",
+  "body": "## G26: 在 runLS 末尾追加 post-or-opt 2-opt pass\n\n### 改动 (单变量, 相对 G8)\n仅在 `runLS` 末尾、or-opt `[1, 2, 3]` 全部收敛之后, 追加一段 2-opt 收敛循环.\n- 独立 `dlPost = new Uint8Array(n)` (全 0; or-opt 改变了位置, 旧的 `dontLook` bits 已失效)\n- iter cap = `twoIters < 12 ? twoIters : 12` (12 上限防爆预算)\n- 其余代码 (起点集合 `{0, far, n>>1, n-1}`, ILS kick 模式 A-C-D-B, 接受准则 (strict), runLS 调用参数 `(30, 5)` / `(10, 3)`) 一字不动\n\n### 为什么认为有效\n- 当前 runLS 流程: 2-opt 收敛 → or-opt L=1 收敛 → L=2 收敛 → L=3 收敛 → 直接退出. 之后不再回到 2-opt.\n- or-opt 是 segment relocation: 移除 `[s..s+L-1]` 段然后插入新位置 k. 这改变 tour 的边集.\n- 在原 2-opt 局部极值下, or-opt 移动后形成的新边可能存在原 2-opt 看不到的改进 (因为原 2-opt 已收敛于前一组边集)\n- 这是 Or (1976) 风格的多邻域 cascade: 多个邻域反复交替直到全收敛, 是教科书标准做法\n- 我们的 G20-G24 全在 \"单边方向\" (起点 / kick / 预算) 试探, 没人测过 LS cascade 互补 — 这是一个真实的缺口\n\n### 风险\n- **预算**: 追加 2-opt pass 可能逼近 250ms 上限. 缓解: cap 12 (limit explosion). 估计增量 wall time 取决于已收敛度, 通常 +10-25% per `runLS`.\n- **互不干扰**: G26 与正在评的 G25 (kick 拓扑) 完全独立. 双盲测试.\n- **不动**: 起点, kick 拓扑, runLS 调用\n\n### 备援 (G27, 视 G26 结果定)\n- 若显著改进 (但未达棘轮): 尝试 2-opt ↔ or-opt 交替 2 轮\n- 若超时: cap 调为 6\n- 若持平 (≈ G8): 2-opt/or-opt 互补已饱和, 锁定 \"kick 拓扑\" 是唯一缺口",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 26,
+    "idea": "runLS 末尾追加 post-or-opt 2-opt pass，让 2-opt 看到 or-opt segment relocation 后形成的新边",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8197,
+      "train_after": 0.8045
+    },
+    "delta_pct": 0.5,
+    "error": "ratchet: holdout 0.8197 > 0.8140 (champion × 0.998)",
+    "bytes": 6624,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 159
+}
