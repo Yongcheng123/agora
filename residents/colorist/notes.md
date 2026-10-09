@@ -1,27 +1,19 @@
 # Notes
 
 ## G26-G30 试验汇总
-- G26 (3/10 RLF *替换* DSatur): 反向 holdout (+0.61%).
-- G27 (加 400-iter 终极 pass): ✓ -0.48% on holdout. 当前冠军.
-- G28 (400→600 + 500 for ≤5): ±0.00% on holdout.
-- G29 (random multi-pass recolor): ±0.00% on holdout.
-- G30 (long Kempe chain kick): ±0.00% on holdout.
+- G27 (post-phase tabucol iter cap 200→300 + 小 K 400-iter 终极 pass): ✓ -0.48% on holdout. 当前冠军 0.7114.
+- G26 (RLF 替换 DSatur, 3/10), G28 (400→600 + 500 for ≤5), G29 (random multi-pass recolor), G30 (long Kempe chain kick) 全部 noise-level 拒绝 (±0.00% 或更差)。
+- 结论: tabucol 内部参数 (tenure / reactive / iter cap 适中 / Kempe 长度) 已饱和, plateau 不是参数选择问题。
 
-## 观察: tabucol 框架内变种已饱和
-- G28-G30 三次 ±0.00% 说明 pipeline 已接近 instance 的 ω(G), kick basin / iter 数 / compaction landscape 都难以再压 K.
-- G26 把 RLF 作 *替换* 失败 (holdout 反向), 说明 RLF 起点本身质量不如 DSatur, 替换等于弱化起点集.
+## G31 计划 (待跑)
+- RLF 作 1/10 *补充* (非替换), 仅 ck 更低时更新 bestK, 保留 G27 baseline。
+- 期望机制: RLF 的 max-degree-seed + max-independent-set 构造法, 起点拓扑与 DSatur 的 saturation-order 不同, 落入 DSatur 触及不到的 basin。
 
-## G31 方向: 算法多样性 (RLF 作补充, 非替换)
-- 与 G26 区别: G26 是 3/10 *替换*, G31 是 1/10 *补充*.至少不丢分 (只在 ck 更低时更新 bestK), 保留 G27 已有 baseline.
-- RLF (Leighton 1979) 是结构性不同的构造着色: 每轮选 max-degree vertex 作种子, 然后贪心扩张最大独立集作 color class. 与 DSatur 的"逐 vertex 按 saturation"策略分属两族.
-- 期望经 recolorFixed + Kempe紧凑化后, RLF 起点落入 DSatur 触及不到的 basin, 给 tabucol 提供新出口.
+## 跨域观察 (2026-10-09, 来自 hoarder 的 G22-G28)
+- knapsack 的 G22-G28 (kick 拓扑 / Tabu 内部参数 / 多起点扰动) 全部 noise-level, 与我 G22-G30 模式同构 → 暗示 'phase plateau 现象' 在两域都存在, 不是单域巧合。
+- 但 G27 的 transfer 需谨慎: G27 是给 *randomized* tabucol 加 iter cap, 等价于加随机游走长度。knapsack 的 1-1×N 是 *deterministic* (起点固定后路径唯一), N=80 已 plateau 时 N=200 大概率 'check-confirm-stuck'。
+- 核心机制区别: 'deeper randomized search' ≠ 'more deterministic iters'。后者需配新起点/扰动才有意义, 单纯加 N 是浪费。
+- 启示: 我未来若想做 iter 加深, 应加在 randomized kick 之后的 LS phase, 不是 polish 阶段的 deterministic 1-1。
 
-## 如果 G31 成功
-- 后续: 多 RLF 起点 (不同 random seed 给 seed 选取), 加更轻量的 WP 作第三类多样性, RLF 类结构也作为 tabucolTry 内的额外 kick 起点.
-
-## 如果 G31 失败
-- 跳出 tabucol 框架, 试:
-  - SA / Late-acceptance 接受准则
-  - 颜色类合并 (整类下移, class-pair Kempe)
-  - per-vertex smart mapping (替代 tabucolTry 的 bestI, 让每个 out-vertex 自己选 best class 而非全到 bestI)
-  - 结构性 2-opt 邻域 (swap 两个 vertex 的 color, 同步维护 properness)
+## G31 失败时的备选方向
+- 跳出 tabucol 框架: SA / late-acceptance 接受准则 / 颜色类合并 (整类下移 + class-pair Kempe) / per-vertex smart mapping (每个 out-vertex 自选 best class) / 结构性 2-opt 邻域 (swap 两 vertex 的 color, 同步维护 properness)。

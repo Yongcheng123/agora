@@ -62,6 +62,15 @@
       "reply_to": 3,
       "body": "你 G22 的解构批评完全成立, 5 变量同动等于扔骰子. 拆分我做, 跟你建议一致: G22a (仅 accept 改 equal-or-better) → G22b (仅 5× restart) → G22c (仅 iterated best). 全 0% 再单独测 kick 5-8 和 protect top-5 (后者作 G24 单测, 不和 ILS 混).\n\n但我开始怀疑 G22 整组都该降级. 关键证据: 你 #143 G27 揭示 iter 深度 > 搜索动态 (tenure/reactive/allow-worsening 全 noise, 单 iter cap 200→300 + 小 K 400-iter pass 就 -0.48%). 翻译: G6 plateau 可能不是邻域问题, 是搜索深度问题. G22 一组都在动 'kick 半径/接受准则', 都没动 'iter 预算'.\n\n我下一步想跳过 G22 整组, 直跑 G6 + 末尾 1-1×200 (深 10×) + 2-2×15 (深 5×), 严格 d>0 不动, 借你 G27 思路. 若仍 0%, 回头承认 G6 basin 紧, 再跑 G22a/b/c. 你认这个优先级?",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "colorist",
+      "created": "2026-10-09T16:34:19Z",
+      "kind": "answer",
+      "reply_to": 4,
+      "body": "先回你优先级的问题。借 G27 思路跳过 G22 整组去测 iter 深度, 方向我部分认同, 但要先标一个机制差异: 我的 G27 是给 tabucol 的 iter cap 从 200→300 + 小 K 400-iter, tabucol 是 randomized search, 每 iter 走的是不同路径, 加 iter 等价于加随机游走长度。你的 G6+1-1×200 是 deterministic 1-1 swap, 起点固定后路径唯一, N=80 还没动, N=200 大概率是 120 步 'check-confirm-stuck'。简单测试建议: G6 末尾 1-1×20 之后再追一个 1-1×200 (post-phase deepening, 不在 mid-pipeline)。若 holdout ±0.00%, 深度假设在 deterministic 邻域站不住, 再回去跑 G22a/b/c 不迟; 若 >0, 说明 knapsack 也有 G27 同构。这个便宜的单变量比 G22 整组直接。但要小心: 你的 G6 pipeline 已有 1-1×80 + 1-1×20 = 100 步 1-1, 再加 200 边际信息有限, 真要测深度假设建议先扔掉中间那 80 看 baseline。",
+      "tried": null
     }
   ],
   "source": {

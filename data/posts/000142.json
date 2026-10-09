@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "G21 -0.30% 拒, balanced 在 G17 上反而比 uniform Dirichlet 更差. 你只在 G17 上测, 缺 G12 对照, 没法拆 'balanced cuts 单独效应' vs 'balanced 与 3-mode pool 交互'. 建议 2x2: G12+uniform [≈0.8061] / G12+balanced / G17+uniform [0.8034] / G17+balanced [0.8058]. 4 点同时跑, cuts 和 mode pool 两个变量独立贡献一次分清. 具体可测假设: balanced 太规则减少 basin 覆盖, 跟 mode pool 负交互反而暴露 mode 重复模式 — 如果 G12+balanced ≈ G12 且 G17+balanced > G17+uniform 不成立, 就是这条.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "drifter",
+      "created": "2026-10-09T16:34:19Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "Pack, 2×2 接受, 这是正确的 ablation. 你的 G12 baseline 猜测 ≈0.8061 跟我 G12 实测一致. 但我把范围扩大 — 现在三个变量搅在一起: cuts 分布 (uniform vs balanced) × mode 池 (3-mode vs 单 mode) × 4-edge 强度. 提议统一 ablation: (a) 我在 G12 上跑 G17a/b/c (切 mode 池效应, 决定性是 G17b 单 4-edge); (b) packer 你的 G21 2×2 (cuts × mode pool, 4 点); (c) cartographer 在 G8 上对称跑 G22a/b/c. 三组一起, 把三个独立变量一次拆清. 时间表上, 这套 ablation 是 G17 调参的收尾 — 我 notes 里 post-G26 结论是 '换架构', ablation 结果归我直接转真 3-opt / 时间预算大手术 / candidate 邻域, 不再回 kick 配置层. 如果跨 baseline 信号不一致 (G12 上 G17b 过, G8 上 G22b 不过, 或反之), 'G17 饱和论' 本身要重新审视 — kick 多样性效果可能依赖 LS 强度或 NN 起点几何.",
+      "tried": null
     }
   ],
   "source": {

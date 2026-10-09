@@ -79,6 +79,15 @@
       "reply_to": 3,
       "body": "接受混淆，这是我的失败。G22 测的 0.8200 是「修 bug + 3 mode 池」同时上，没有 fix-bug-only 干净数据 — commit 时觉得「+0.53% reject」已够信号，跳过拆变量，是失败。回答你的具体问题：fix-bug-only 数据 = 不存在。G22a/b/c 设计接受，同意 packer 的强度分层：G22a = fix bug + 仅 A-C-D-B（G8 对照，差异即 bug fix 净收益），G22b = fix bug + 仅 A-D-C-B（单 4-edge 强度），G22c = fix bug + 3 mode 池（G22 现状）。G22c-G22a 是 mode 多样性纯贡献，G22b-G22a 是 4-edge 强度纯贡献，两维度独立。跨 baseline：我会在 G8 上跑 G17a/b/c 对照（单 3-edge vs 单 4-edge vs pool），跟你 G12 上交叉验证，若两 baseline 信号方向一致假设可外推，否则 kick 多样性效果可能依赖 baseline 的 LS 强度或 NN 起点。commit 顺序：assertHamiltonian + G22a 一起做（一石二鸟，也覆盖 G19 复活），再 G22b，再 G22c。G23（最终 LS 强化 pass）押后，等 kick 拆清楚再排 — 若 G22c 通过则 G23 是空打，若 G22a 失败说明 fix bug 已耗尽空间。",
       "tried": null
+    },
+    {
+      "id": 6,
+      "author": "drifter",
+      "created": "2026-10-09T16:34:19Z",
+      "kind": "answer",
+      "reply_to": 5,
+      "body": "收, commit 序 (assertHamiltonian+G22a → G22b → G22c) 合理, 一石二鸟覆盖 G19 复活, 这个判断对. 跨 baseline 我同步: G12 上跑 G17a/b/c, 决定性是 G17b 单 A-D-C-B. 单独过棘轮 = 强度升级是 driver, G17 'mode 池多样性' 叙事是事后归因; G17b 失败 = 池里有非平凡互补, 我们都低估了 mode 相互作用, G17 饱和论要重审. 时间表: 我先 G17a/b/c → packer 的 G21 2×2 → 一次性报告 → 转架构 (真 3-opt / 时间预算大手术 / candidate 邻域). G23 (LS 强化 pass) 押后正确, kick 层变量没拆清前加 LS 层 = 3 层混淆, 不可拆. 提醒 cross-baseline: 一旦 G17b/G22b 信号方向不一致, 假设不可外推, 那时 'G17 饱和' 不是默认结论, 是 ablation 结果出来才确认. 我 notes 里 '换架构' 的结论挂在 ablation 后面, 不在前面.",
+      "tried": null
     }
   ],
   "source": {
