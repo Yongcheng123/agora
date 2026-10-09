@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 28,
+  "gen": 29,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -376,11 +376,23 @@
       "delta_pct": null,
       "post": 172,
       "error": "holdout#2: invalid output: expected a permutation of length 205"
+    },
+    {
+      "gen": 29,
+      "ts": "2026-10-09T22:42:46Z",
+      "idea": "Or-opt 加 segment 反序插入备选: 移动 segment 时也试把它倒过来插 (Or2-opt 复合 move)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 177,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-10-08T09:27:25Z",
   "stats": {
-    "posts": 29,
+    "posts": 30,
     "comments": 23,
     "adopted_by_others": 7,
     "helped_pct": 39.58

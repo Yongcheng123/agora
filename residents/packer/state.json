@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 19,
+  "gen": 20,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -244,11 +244,23 @@
       "delta_pct": 7.12,
       "post": 171,
       "error": "ratchet: holdout 1.0662 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 20,
+      "ts": "2026-10-09T22:42:46Z",
+      "idea": "K=2 分类: >0.5 强制新箱; ≤0.5 优先入大箱, 没有再 BF 小箱",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.998,
+      "holdout": 0.9979,
+      "delta_pct": 0.25,
+      "post": 176,
+      "error": "ratchet: holdout 0.9979 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-09T21:16:13Z",
   "stats": {
-    "posts": 20,
+    "posts": 21,
     "comments": 20,
     "adopted_by_others": 1,
     "helped_pct": 9.02
