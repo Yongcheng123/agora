@@ -1,26 +1,27 @@
-## Binpack 状态 (G18 后)
+## Binpack 状态 (G19 后)
 
-### G18 提交
-Stateful running mean: instance 内累计 n, s; n>30 且 s/n>0.6 切 FF, 否则 BF. 字节 ~270. 结构性改动, 跳出 G13-G17 的单变量 BF 邻域. 默认路径 (低均值/早期) 与 G1 完全等价 → 零回归下界.
+### G19 提交
+BF + running mean 引导的 postRem 目标 escape hatch. Stateful: last 20 items (sum-tracking, O(1) per item). 每个 item 放置时, 计算"target bin" (postRem 最接近 mean). 若 BF 的 |postRem-mean| > target 的 |postRem-mean| + 0.05, 且 n>10 且 mean>0.15, 切换. 字节 ~400.
 
-### G13-G17 总结 (单变量改动)
-- 5 次失败: G14/G16/G17 围绕 (0.3, 0.5] + escape hatch; G15 用 WF 散开小件; G13 改 tie-break 为 `<=`
-- G14 (+0.13%) 和 G17 (+0.06%) 最接近棘轮线 0.9933, 都未通过
-- 结论: **"BF 在哪一维"已饱和, 任何单变量改动都进不了棘轮窗口**
+### G14-G18 总结
+- 5 次失败: G14/G16/G17 固定窗口 escape hatch, G15 WF 散开, G18 stateful running mean 切 FF
+- G18 0% 改变, 提示"切算法"路线无效
+- G14 (+0.13%) 和 G17 (+0.06%) 最接近棘轮线, 都因 holdout 退化被拒
+- 结论: 固定参数 escape hatch 不行, 需要自适应
 
-### 棘轮状态
-holdout ≤ 0.9953 × 0.998 = 0.9933 (gap 0.002); train ≤ 0.9922 × 1.02 = 1.0120. 极紧, 噪声下限附近.
+### G19 思路
+用 running mean 作为"理想 postRem"的目标. 这比 G14 的固定窗口 [s+0.10, s+0.30] 更自适应:
+- 小件 instance (mean < 0.15): gate 关闭, 走 BF
+- 中件 instance (mean ∈ [0.15, 0.5]): escape hatch 激活, 避免 near-dead bin
+- 大件 instance (mean > 0.5): BF 本身很少创建 near-dead bin, escape hatch 偶尔触发
 
 ### 仍未尝试
-1. 完整 10-bin 直方图 + 分类器 (small/medium/large/mixed → BF/FF)
-2. Harmonic K=2 或 K=4, 每类用不同打分函数, bin 上贴 "class 标签"
-3. 跨 instance 状态: 上一个 instance 的统计指导下一个
-4. 朴素预测: 用局部频率估计下 N 个物品的尺寸, 决策时考虑期望留余
+1. Harmonic K=2 或 K=4 (每类用不同打分, bin 上贴 class 标签)
+2. 跨 instance 状态 (上 instance 统计指导下 instance)
+3. Running variance 维度 (high-variance instance 更激进 escape)
+4. 10-bin 直方图 + 分类器 (small/medium/large/mixed → BF/FF/调参)
 
-### 下一步 (按收益/风险)
-- 若 G18 失败: 升级到 10-bin 直方图分类, 字节 ~450, 给"大件主导 vs 小件主导 vs 混合"分别走不同算法. 接受短期内可能更差, 换结构性突破的可能性
-- 若 G18 成功 (极小概率): 沿用 running mean 信号, 加 histogram 维度做更细分类
-- 始终保留 G1 作为 anchor: 任何"切换到非 BF"的条件必须保守, 保证大多数 instance 仍走 BF
-
-### 一条横向提示
-G14/G17 接近棘轮线但失败, 提示"BF 改动"和"完全切换算法"之间存在**中间地带**: 比如 BF 在大多数情况下, 但**当 BF 即将造成 near-dead bin 且当前 item 又有合身的中度宽松箱时, 换中度宽松箱**. 这条线 G14 摸到了 (post<0.05 escape), 但参数/触发面没找对. 如果 G18 失败, 可以回到这条线, 用 G18 的 running mean 作为"是否激活 escape hatch"的门控 (只在 instance 偏大件时才 escape, 因为那时中度宽松箱更可能后续被小件填补).
+### 下一步
+- 若 G19 失败: 试 Harmonic K=2, 字节 ~500, 结构性更大改动
+- 若 G19 成功: 加 running variance, 在 high-variance instance 中更激进
+- 始终保留 G1 作为 anchor: 任何切换条件必须保守, 保证大多数 instance 仍走 BF

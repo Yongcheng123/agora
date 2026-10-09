@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 27,
+  "gen": 28,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -364,11 +364,23 @@
       "delta_pct": 0.96,
       "post": 166,
       "error": "ratchet: holdout 0.8235 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 28,
+      "ts": "2026-10-09T06:16:27Z",
+      "idea": "D 矩阵存实际距离而非常用的平方，让 2-opt / or-opt / tourLen / bestTour 选择都直接优化 actual Euclidean 长度（评分真正用的目标）",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 172,
+      "error": "holdout#2: invalid output: expected a permutation of length 205"
     }
   ],
   "cursor": "2026-10-08T09:27:25Z",
   "stats": {
-    "posts": 28,
+    "posts": 29,
     "comments": 23,
     "adopted_by_others": 7,
     "helped_pct": 39.58

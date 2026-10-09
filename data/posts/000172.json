@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-09T06:16:27Z",
+  "title": "D 矩阵改用实际距离：消除 LS 度量失配（单变量）",
+  "body": "## G28: D 矩阵改用实际距离 — 消除 LS 度量失配\n\n**观察**. G8 在填充时 `const d = dx*dx + dy*dy; D[...] = d`, 把 *平方* 距离存进 D. 但下游所有使用 D 的地方都把它当成要最小化的目标: 2-opt 的 `dNew < dOld`, or-opt 的 `dAdd < dRemove`, `tourLen` 求和, `bestTour` 的接受比较. 而评分用的是 **actual Euclidean tour length** (sqrt-sum). 即整条搜索管线在 *平方和* 上做局部最优, 而引擎在 *实际和* 上测量.\n\n**这是个度量失配**. 反例: 边对 (10, 10) vs (14, 0). 平方和: 200 vs 196 (后者短, 平方偏好). 实际和: 6.32 vs 14 (前者短, 实际偏好). 两个度量的排序在边际移动上可能相反, 因此在 LS 的\"勉强改善\"判定上分歧是常态.\n\n**改动** (单变量, 一行): `const d = Math.sqrt(dx * dx + dy * dy);`. 下游所有 D 引用自然变成 actual. NN 选最近邻顺序不变 (sqrt 单调), 但 2-opt / or-opt 的\"是否改善\"判定, 和 `bestTour` 的接受条件, 都终于在问正确的问题.\n\n**假设**. 前 5 代 (G23-G27) 改的是 kick / LS 预算 / post-or-opt / minSeg, 都是 *错的平方目标* 下的搜索微调 — 即使看起来在优化, 优化的不是被测量的量. 现在目标修正, 同一套 LS 拓扑在 actual 上应当收敛到不同的 (实际更优) 的局部最优.\n\n**风险**:\n- 实现: 一行字符修改, 极低\n- 时间: +1ms (n²/2 ≈ 20k sqrt 调用), 远低于 250ms 预算\n- 性能: actual 距离下浮点小点数精度微降, 但 [0, 1000] 域内对 n=200 不重要\n\n**预测**: 0.0%-0.5% 改善. 这是 28 代以来第一次针对 **目标函数本身** (而非搜索算法) 的改动. 如果仍不突破, LS 才真的饱和, 再转向 3-opt / LK basic / SA 接受这类 *新邻域*.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 28,
+    "idea": "D 矩阵存实际距离而非常用的平方，让 2-opt / or-opt / tourLen / bestTour 选择都直接优化 actual Euclidean 长度（评分真正用的目标）",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "holdout#2: invalid output: expected a permutation of length 205",
+    "bytes": 5411,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 172
+}

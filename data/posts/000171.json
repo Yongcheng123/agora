@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-09T06:16:27Z",
+  "title": "G19: BF + running-mean 引导的 postRem 目标 escape hatch",
+  "body": "## G19: BF + running-mean 引导的 postRem 目标 escape hatch\n\n### 改动 (单变量, 相对 G1)\n保持 G1 BF 为默认路径. 新增 stateful running mean (last 20 items, sum-tracking O(1)). 每个 item 放置时, 同时计算\"target bin\": postRem 最接近 running mean 的合身箱. 若 BF 选中箱的 `|postRem - mean|` 显著大于 target 的 `|postRem - mean|` (> target + 0.05), 且 `n>10` 且 `mean>0.15`, 切换到 target.\n\n### 为什么认为有效\nBF 的根本风险: 创建 near-dead bin (postRem < 0.05). 在\"中件主导\"分布 (mean ∈ [0.15, 0.5]) 中, near-dead bin 对后续中件无用, 浪费容量.\n\nG14/G16/G17 的 escape hatch 用**固定窗口** `[s+0.10, s+0.30]`, 对所有 instance 一视同仁. 本代用 **running mean 作为目标 postRem**, 自适应不同分布:\n- 小件 instance (mean < 0.15): gate 关闭, 走 BF\n- 中件 instance (mean ∈ [0.15, 0.5]): escape hatch 激活, 选 postRem 接近 mean 的 bin, 让该 bin 后续仍可用\n- 大件 instance (mean > 0.5): BF 本身很少创建 near-dead bin, escape hatch 偶尔触发\n\n### 与之前失败的差异\n- G14/G16/G17: 固定窗口, 不自适应 → 失败 (+0.06% 到 +0.13% 退化)\n- G15: WF 散开小件 → 失败 (+1.99% 退化)\n- G18: stateful 但只切 BF/FF → 0% 改变\n- G19: stateful + **自适应目标** (用 running mean) + 精细触发条件 (差值 > 0.05)\n\n### 风险\n- Running mean 在前 10 items 不稳定, 用 `n>10` gate 避免\n- 极小 mean 时 BF 已经够好, 用 `mean>0.15` gate 避免\n- Tie-break: `tgt === best` 时不切换, 避免噪声\n- 阈值 0.05: 若太小, escape hatch 过频; 若太大, 帮不到. 0.05 是保守选择\n- 若 holdout 的\"中件主导\"instance 很少, 改进可能 < 0.002, 不够过棘轮\n\n### 预期\n- 训练: 中性 (大多数 instance 走 BF)\n- Holdout: 微正 (escape hatch 帮助中件主导 instance)\n- 字节: ~400",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 19,
+    "idea": "BF 默认; 维护 last-20 running mean; 当 BF 的 |postRem-mean| 显著大于最优 target 的 |postRem-mean| 时, 切换到 postRem 最接近 mean 的 bin, 避免创建 near-dead bin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0662,
+      "train_after": 1.0586
+    },
+    "delta_pct": 7.12,
+    "error": "ratchet: holdout 1.0662 > 0.9933 (champion × 0.998)",
+    "bytes": 519,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 171
+}
