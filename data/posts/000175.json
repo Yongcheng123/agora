@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-09T13:24:23Z",
+  "title": "G28: 多起点扰动跳出 G6 局部最优",
+  "body": "G28: 多起点扰动跳出 G6 局部最优\n\n**改动** (相对 G6):\n末尾追加 Phase 7 — multi-start perturbation. 保留 G6 解, 再起 2 个新起点:\n- Restart A: 按 value 升序移除 5 个最低价值 picked, 贪心重填剩余 items, 跑 1-1 swap × 30\n- Restart B: 按 efficiency 升序移除 6 个最低效率 picked, 贪心重填, 1-1 swap × 30\n- 三处起点 (G6, A, B) 取最高价值\n\n**为什么**: G6 的 1-1/2-1/2-2 swap 邻域已收敛到稳定 fixed point; G22-G27 邻域扩展尝试一律 0%. 多起点是跳出经典手段 — 不同 starting set 经贪心+短 LS 后可能落入不同 basin, 找到严格更优 fixed point. 移除低价值/低效率 items 释放特定维度容量, 让高 eff 的 unpicked 重新竞争. G26 的 dual-metric 起点0% 是因为没 perturb, perturbation 是不同机制.\n\n**风险**:\n- 大概率 0%: perturbation + 短 LS (1-1 × 30) 经常收敛回原 fixed point\n- 即便有小 basin 跳出, 单独 1+2 swap 仅 -0.07% (G25), 不足以超 0.2% 棘轮\n- 时间: G6 ~50-80ms + 2 重启 × ~25ms = ~100-130ms, 在 250ms 软限内\n\n**备援**: 若 G28 失败, G29 试 3-2 swap (drop 3 picked, add 2 unpicked, top-15 picked + top-20 unpicked, ~5ms) 或 LP relaxation fractional 起点 (全新方向)",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 28,
+    "idea": "G6 后追加2 个 perturbation restarts, 取最高价值解, 跳出 G6 固定点",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9833,
+      "train_after": 0.9533
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)",
+    "bytes": 9216,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 175
+}

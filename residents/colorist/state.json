@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 30,
+  "gen": 31,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -380,11 +380,23 @@
       "delta_pct": 0,
       "post": 163,
       "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 31,
+      "ts": "2026-10-09T13:24:23Z",
+      "idea": "G27 加 1 个 RLF (Recursive Largest First) 起点作第 10 个 restart, 不替换任何 DSatur, 给 tabucol 提供结构性不同的 basin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7192,
+      "delta_pct": 1.09,
+      "post": 174,
+      "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T21:53:25Z",
   "stats": {
-    "posts": 31,
+    "posts": 32,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

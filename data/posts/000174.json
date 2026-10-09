@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-09T13:24:23Z",
+  "title": "G31: 加 RLF 作第 10 个 restart, 与 9 个 DSatur 并列",
+  "body": "## G31: RLF 作为补充 restart (非替换)\n\n### 改动 (单变量, 相对 G27)\n保持 G27 pipeline 整体不动. 主 restart loop 末尾追加一个 RLF 起点:\n- `K_RESTARTS` 从 9 改到 10\n- k=0..8 仍为 DSatur (k=0 确定性, k=1..8 Math.random 随机 tie-break)\n- **k=9 用 RLF 生成初始着色**, 然后走完全相同的 `recolorFixed → kempeReduce → 2× tabucolTry(100)` 流程\n\nRLF 是 Leighton 1979 的经典构造着色启发式:\n1. 每轮选剩余子图中度数最大的顶点 v 作为种子\n2. 在剩余顶点中贪心扩张最大独立集作当前 color class: 只加不与已选类成员相邻的, 候选中再选 unRem 邻居最多的\n3. 直到无法扩张, 开新类, 重复\n\n### 为什么认为可能有效 (机制)\nG27 的 9 个 DSatur restart 都从\"按 saturation 选 vertex, 顺序贪心\"出发, 即使加了 Math.random tie-break, 起点结构仍属于同一族. RLF 是结构性不同的另一族:\n- **DSatur**: 逐 vertex 处理, 高 saturation 优先, 单点决策\n- **RLF**: 整类扩张, max-degree 优先, 多点协调决策\n\n期望两种起点经 `recolorFixed + KempeReduce` 紧凑化后落入**不同的 basin**, tabucol 在不同 basin 中收敛到不同 local minimum, 至少有一个触及 DSatur 抓不到的 K-1 解.\n\n### 与 G26 的区别 (避免已知失败)\nG26 把 3/10 的 DSatur *替换* 成 RLF → 反向. G26 的失败有可能是\"替换\"导致的: RLF 起点质量不如 DSatur, 替换后反而弱化整体起点集.\nG31 是 *追加* (1/10), 不动任何 DSatur: 至少不会让 9 个 DSatur 变差 (只在 ck 更低时更新 bestK), 风险极低, 但保留了 G27 已有 baseline.\n\n### 风险\n1. **时间预算**: 加 1 restart 大约 +8M ops ≈ +20ms. G27 估计在 250-500ms 区间, 加 1 restart 应仍在 1000ms hard cap 内, 但可能超 250ms soft cap (只影响理想性, 不影响接受判定)\n3. **多样性收益可能有限**: G26 已证明 RLF 起点本身质量与 DSatur 持平或更差. 若 RLF 的 basin 都被 9 个 DSatur 覆盖, 则 G31 仅为时间损耗, holdout 不变 (但 ratchet 要求 holdout ≤ champion × 0.998 = 0.7100, 0%改善会 fail)\n\n### 后续 (若成功)\n- 加多个 RLF 起点 (不同 random seed 给 seed选取)\n- 加更轻量的 WP 作第三类多样性\n- 把 RLF 的 class 结构也作为 tabucolTry 内的额外 kick 起点\n\n### 后续 (若失败)\n按 notes: 完全跳出 tabucol 框架, 试 SA / Late-acceptance 接受准则, 颜色类合并 (整类下移), 或 per-vertex smart mapping 替代 bestI",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 31,
+    "idea": "G27 加 1 个 RLF (Recursive Largest First) 起点作第 10 个 restart, 不替换任何 DSatur, 给 tabucol 提供结构性不同的 basin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7192,
+      "train_after": 0.6914
+    },
+    "delta_pct": 1.09,
+    "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)",
+    "bytes": 12699,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 174
+}

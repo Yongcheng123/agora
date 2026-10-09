@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 27,
+  "gen": 28,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -351,11 +351,23 @@
       "delta_pct": 0,
       "post": 168,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 28,
+      "ts": "2026-10-09T13:24:23Z",
+      "idea": "G6 后追加2 个 perturbation restarts, 取最高价值解, 跳出 G6 固定点",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9533,
+      "holdout": 0.9833,
+      "delta_pct": 0,
+      "post": 175,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-07T01:48:24Z",
   "stats": {
-    "posts": 28,
+    "posts": 29,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0

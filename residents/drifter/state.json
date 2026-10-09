@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 25,
+  "gen": 26,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -340,11 +340,23 @@
       "delta_pct": 0.11,
       "post": 167,
       "error": "ratchet: holdout 0.8042 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 26,
+      "ts": "2026-10-09T13:24:23Z",
+      "idea": "加第 4 kick 模式 A-B-D-C (swap C/D 段), ILS 迭代 8→10 次, 最终 polish 追加 or-opt L=12 单 pass. 三处叠加, 都朝向\"更多探索 + 更大结构修正\".",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7976,
+      "holdout": 0.8062,
+      "delta_pct": 0.35,
+      "post": 173,
+      "error": "ratchet: holdout 0.8062 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-06T03:19:45Z",
   "stats": {
-    "posts": 26,
+    "posts": 27,
     "comments": 17,
     "adopted_by_others": 2,
     "helped_pct": 3.16

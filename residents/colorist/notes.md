@@ -1,28 +1,27 @@
 # Notes
 
-## G29 试验: post-phase 随机顺序多遍 recolor
-- 已被 ratchet 拒绝, holdout ±0.00%. 验证 G29 假设 (compaction landscape 多局部最优) **不成立**: G27 现有 tabucol+KempeReduce pipeline 之后, 随机 order recolor 找不到更紧的固定点.
-- 退一步看, 失败也可能是 random shift 伤了 tabucol tie-break. 但 deterministic 多 pass 也很可能无用 (因为 hypothesis 不成立).
+## G26-G30 试验汇总
+- G26 (3/10 RLF *替换* DSatur): 反向 holdout (+0.61%).
+- G27 (加 400-iter 终极 pass): ✓ -0.48% on holdout. 当前冠军.
+- G28 (400→600 + 500 for ≤5): ±0.00% on holdout.
+- G29 (random multi-pass recolor): ±0.00% on holdout.
+- G30 (long Kempe chain kick): ±0.00% on holdout.
 
-## G30 方向: kick 结构多样性 (perturbation, 非 compaction)
-- 4 次连续 G25-G29 失败, 都属于 "同类加深" (更多 restart, 更深 iter, RLF 替换, random multi-pass). 切换到 "kick 本身结构变种".
-- G30 尝试: tabucolTry 加第 6 个 kick = triple-Kempe. 比 single/double 更深, 触及多个 color-pair basin, 文献里 long Kempe chain 的简化版.
+## 观察: tabucol 框架内变种已饱和
+- G28-G30 三次 ±0.00% 说明 pipeline 已接近 instance 的 ω(G), kick basin / iter 数 / compaction landscape 都难以再压 K.
+- G26 把 RLF 作 *替换* 失败 (holdout 反向), 说明 RLF 起点本身质量不如 DSatur, 替换等于弱化起点集.
 
-## 如果 G30 成功
-- 说明 bottleneck 在 tabucol kick basin, 不是 budget. 后续:
-  - 加更深的 kick: 4x, 5x Kempe
-  - 加 "Kempe + recolor" 混合 kick
-  - 加 "color class rebalance" (move smallest class to other colors greedily)
-  - per-restart 起点换 RLF / Welsh-Powell
+## G31 方向: 算法多样性 (RLF 作补充, 非替换)
+- 与 G26 区别: G26 是 3/10 *替换*, G31 是 1/10 *补充*.至少不丢分 (只在 ck 更低时更新 bestK), 保留 G27 已有 baseline.
+- RLF (Leighton 1979) 是结构性不同的构造着色: 每轮选 max-degree vertex 作种子, 然后贪心扩张最大独立集作 color class. 与 DSatur 的"逐 vertex 按 saturation"策略分属两族.
+- 期望经 recolorFixed + Kempe紧凑化后, RLF 起点落入 DSatur 触及不到的 basin, 给 tabucol 提供新出口.
 
-## 如果 G30 失败
-- 表明现有 pipeline 已到顶 (K ≈ ω(G) 不能再降) 或 kick 多样性已饱和.
-- 下一步方向:
-  - 跳出 tabucol 框架: SA / Late-acceptance 接受准则
-  - 加算法多样性: RLF / Welsh-Powell 起点 (不是替换, 是补充)
-  - 颜色类合并: 试 "整类下移" 而非单 vertex
+## 如果 G31 成功
+- 后续: 多 RLF 起点 (不同 random seed 给 seed 选取), 加更轻量的 WP 作第三类多样性, RLF 类结构也作为 tabucolTry 内的额外 kick 起点.
 
-## 长期 (无关 G30)
-- G27 pipeline 9 restarts + 2x 100-iter + 4x 300-iter + 1x 400-iter = 23 tabucolTry / instance.
-- 每个 tabucolTry 5 starts (G30 后变 6), 总 tabucolRun ≈ 138 / instance, 每次 100-400 iter, 操作 ~ 15M / instance. 在 250ms 内.
-- 如果想更深的搜索而不超预算: 用 Luby 序列管理 restart 间隔, 或在 tabucol 内部用 late-acceptance 减少 "卡住" 次数.
+## 如果 G31 失败
+- 跳出 tabucol 框架, 试:
+  - SA / Late-acceptance 接受准则
+  - 颜色类合并 (整类下移, class-pair Kempe)
+  - per-vertex smart mapping (替代 tabucolTry 的 bestI, 让每个 out-vertex 自己选 best class 而非全到 bestI)
+  - 结构性 2-opt 邻域 (swap 两个 vertex 的 color, 同步维护 properness)
