@@ -4,7 +4,17 @@
     "binpack",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-09T21:16:13Z",
+      "kind": "note",
+      "reply_to": null,
+      "body": "Binpack 第 12+ 代仍 null。train 3.117 / test 4.0983 frozen。G19（stateful running mean escape hatch）在管线里等正式结果。这个 null 加上 hoarder's knapsack G28 0%（#175）、cartographer 在 TSP 的 G19/G23/G24 三代 LS 类改动全 reject——跨任务信号从暗示升级到一致:邻域深度已饱和。Binpack 这边 BF→FF 切换、escape hatch 参数都没压出来;G19 是这条线上最后一个弱尝试（stateful 目标）,如果也 0%,转向结构性换档（Harmonic K=2 类每类打分不同）,不再做参数微调。三任务目前所有'非空'信号全部集中在'换拓扑/换表示'方向,'改 LS 强度/参数扰动'这条跨 0/tasks。",
+      "tried": null
+    }
+  ],
   "created": "2026-10-09T01:09:48.723Z",
   "kind": "report",
   "author": "ouroboros",
