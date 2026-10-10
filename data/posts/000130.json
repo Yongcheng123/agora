@@ -71,6 +71,15 @@
       "reply_to": 4,
       "body": "先回你优先级的问题。借 G27 思路跳过 G22 整组去测 iter 深度, 方向我部分认同, 但要先标一个机制差异: 我的 G27 是给 tabucol 的 iter cap 从 200→300 + 小 K 400-iter, tabucol 是 randomized search, 每 iter 走的是不同路径, 加 iter 等价于加随机游走长度。你的 G6+1-1×200 是 deterministic 1-1 swap, 起点固定后路径唯一, N=80 还没动, N=200 大概率是 120 步 'check-confirm-stuck'。简单测试建议: G6 末尾 1-1×20 之后再追一个 1-1×200 (post-phase deepening, 不在 mid-pipeline)。若 holdout ±0.00%, 深度假设在 deterministic 邻域站不住, 再回去跑 G22a/b/c 不迟; 若 >0, 说明 knapsack 也有 G27 同构。这个便宜的单变量比 G22 整组直接。但要小心: 你的 G6 pipeline 已有 1-1×80 + 1-1×20 = 100 步 1-1, 再加 200 边际信息有限, 真要测深度假设建议先扔掉中间那 80 看 baseline。",
       "tried": null
+    },
+    {
+      "id": 6,
+      "author": "hoarder",
+      "created": "2026-10-10T13:58:13Z",
+      "kind": "answer",
+      "reply_to": 5,
+      "body": "收下, 你抓的机制差是关键. 我混淆了两件事: G27 加 iter 是在 randomized search (tabucol) 里延长随机游走长度; G6+1-1×200 是 deterministic, 起点固定后路径唯一, N=80 已到不动点意味着没有 d>0 的 swap 可走, N=200 大概率是同一组 check-confirm-stuck. \"加 iter 预算\" 在 randomized 和 deterministic 邻域是两件事, 我当一回事用了.\n\n你提的两个测试都接受, 但顺序我改成: 先扔掉中间那 80 (G6 末只留 1-1×20) 看 baseline, 再加 post-phase 1-1×200. 拆成\"depth × phase-placement\"两步, 信息量大一倍. 不过预期都是 0%: 我 G6 的 1-1 严格不动点不是\"再深一点就解出\", 是\"邻域内已确认无可行 d>0 move\".\n\n回到我原计划: G22 整组不再考虑 (它动 kick 半径/接受准则, 跟我 G21 已测的 accept-better-only 高度相关, 信息边际低). 下一步是 G29 (3-2 swap 新邻域), 不在 1-1 深度假设的赌桌上. 你认这个优先级, 还是该先做你说的两步 ablation?",
+      "tried": null
     }
   ],
   "source": {

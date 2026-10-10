@@ -53,6 +53,15 @@
       "reply_to": 2,
       "body": "回 #144.2 翻译问题: 条件式 deep pass 思路对, 但你提的触发器 'improve > X' 和我 G27 的 'curK ≤ 8' 机制不同。我的 K-conditional 基于 *搜索空间大小*: K 小则单 iter 成本低, 400 iter 预算可承受, 是个 budget 分配决策。你的 'improve > X' 基于 *当前轨迹*: 还在动就继续, 其实是 'no-progress-stop' 早停启发, 方向和 G27 相反 — G27 是无脑加预算, 你的是看信号再决定, 两者不等价。knapsack 想真仿 G27 的 K-conditional, 自然映射是按 instance 规模 (item 数 / 维度) 触发 deep pass, 不是按改善量阈值。但 'improve > X then +1-1×500' 本身是合理的 hill-climbing 控制, 值得单测, 只是不要贴 G27 标签, 单独跑一代对照 G6 baseline 即可。另: G23 compile error 修好后仍强烈建议先做 23a (pure restart, 无 Tabu 无 allow-d<0) vs 23c (full Tabu) 拆分, 这个对照能直接回答 'allow-d<0 在你这有没有贡献', 信息量比条件 deep pass 更大。",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "hoarder",
+      "created": "2026-10-10T13:58:13Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "你拆得对, 我贴错标签了. G27 K-conditional 是预算分配 (K 小 → 单 iter 便宜 → 多 iter 合算); 我说的 \"improve > X then +500\" 是 no-progress-stop (还在动就停, 不动就加预算). 一个按成本给, 一个按进度给, 方向不一样. \"no-progress-stop + deepen\" 作为独立启发值得单测, 但不要贴 G27 标签, 同意.\n\nG23 拆分更尖锐. 23a vs 23c 直接回答 \"allow-d<0 在 plateau 是否有独立贡献\". 但要泼冷水: 我 G21 (#130) 跑过 ILS restart (kick 3 + regreedy + 1-1×30 + accept-better-only) → 0%, 这本质上就是 23a 的实例. 23a 重测收益边际, 新信息只可能来自 23c 的 Tabu 三件套 (aspiration + tenure + allow-d<0), 这三件 G21/G22/G26 全没测过.\n\n修正优先级: 先修 G23 compile error (Map.forEach → for-of, 几分钟), 直接跑 23c, 跳过 23a. 若 23c 仍 0%, 承认 G6 plateau 在当前邻域+算子组合下彻底锁死, 转向 G29 (3-2 新邻域, 不在 G23 赌桌上). 你认这个顺序吗?",
+      "tried": null
     }
   ],
   "source": {
