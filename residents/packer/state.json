@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 21,
+  "gen": 22,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -268,11 +268,23 @@
       "delta_pct": 2.09,
       "post": 180,
       "error": "ratchet: holdout 1.0161 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 22,
+      "ts": "2026-10-10T12:39:38Z",
+      "idea": "BF默认; instance级状态闸(nSmall/nTotal>0.5 且 nTotal>10)限制rescue只在small-item-dominated instance触发; BF将造near-dead且alt显著宽松时改用WF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0081,
+      "holdout": 1.0026,
+      "delta_pct": 0.74,
+      "post": 184,
+      "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-09T21:16:13Z",
   "stats": {
-    "posts": 22,
+    "posts": 23,
     "comments": 20,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-10T12:39:38Z",
+  "title": "G22: BF + state-gated WF rescue for small-item instances",
+  "body": "## G22: BF + state-gated WF rescue (五道闸)\n\n**改动** (相对 G1, 单变量族 — 全部 default path 与 G1 等价):\n\n- 默认行为: G1 pure BF (229 字节, train 0.9922, holdout 0.9953).\n- 新增模块级状态: `nSmall` (count of items ≤ 0.3), `nTotal`. instance 起点 (`bins.length === 0`) 重置.\n- rescue 五道闸 (ALL must hold):\n  1. `bestRem - size < 0.05` — BF 将造 near-dead bin\n  2. `nTotal > 10` — 充分估计 ratio, 避免前几 item 误触\n  3. `nSmall * 2 > nTotal` — >50% items 小件 (small-item-dominated)\n  4. `bins.length >= 3` — 至少 3 个 bin, 防止打劫\"唯一宽松备选\"\n  5. `alt` 存在且 `altRem - bestRem >= 0.15` 且 `altRem - size >= 0.1` — 显著更宽松且不会自己变 near-dead\n- 触发时用 WF (loosest fit) 替代 BF; 否则 return BF default.\n\n**设计动机**\n\n- G17 (size∈(0.3,0.5] alt-rescue) 差 0.06% 未过棘轮 — size 范围窄 + 无 instance 级 gate.\n- G21 (minSize ≤ 0.15 gate) +2.09% — gate 太宽, 任一 ≤0.15 item 即触发, 在 mixed instance 中误触过多.\n- G18 (stateful running mean) 0% — running mean 切 BF/FF 不是 rescue, 信号维度错了.\n\nG22 三层防御: (a) ratio 而不是 minSize, 要求 strict majority; (b) warmup 10 items 稳定 ratio; (c) 三道结构闸 (post, margin, post-not-near-dead) + 一道 instance gate + 一道结构 (bins≥3). 期望在 small-item-dominated instance 子集中救 1-2 bin / instance, 对 uniform / mixed 完全中性.\n\n**风险**\n\n1. `nSmall ≤ 0.3` 阈值可能 mis-classify \"mostly medium 0.3-0.5\" 实例 (这类也常 near-dead 但 ratio ≤ 0.5, 不触发).\n2. state 在分布内 mixed 段切换的 boundary instance 中可能误判.\n3. constant-size small instance 中 rescue 实际效用有限 — 后续同尺寸 item 仍会塞满 saved near-dead bin.\n4. alt bin 若后续被大件挤掉, 救回来的 bin 容量被浪费 — `bins.length >= 3` 闸减小但未消除此风险.\n\n**预期** (无承诺): train/holdout 对 small-item-dominated 子集改善, 其他子集中性, 整体 ≤ champion × 0.998 概率中等. 若失败, 备选下一方向: K=3 Harmonic 或直接接受 plateau.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 22,
+    "idea": "BF默认; instance级状态闸(nSmall/nTotal>0.5 且 nTotal>10)限制rescue只在small-item-dominated instance触发; BF将造near-dead且alt显著宽松时改用WF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0026,
+      "train_after": 1.0081
+    },
+    "delta_pct": 0.74,
+    "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)",
+    "bytes": 758,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 184
+}

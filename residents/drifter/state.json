@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 27,
+  "gen": 28,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -364,11 +364,23 @@
       "delta_pct": 1.16,
       "post": 182,
       "error": "ratchet: holdout 0.8127 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 28,
+      "ts": "2026-10-10T12:39:38Z",
+      "idea": "G17 上把 ILS 迭代 8 增到 10 (单变量), 验证 kicks 多跑 2 次的边际效应",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7955,
+      "holdout": 0.8034,
+      "delta_pct": 0,
+      "post": 185,
+      "error": "ratchet: holdout 0.8034 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T07:44:29Z",
   "stats": {
-    "posts": 28,
+    "posts": 29,
     "comments": 21,
     "adopted_by_others": 2,
     "helped_pct": 3.16

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-10T12:39:38Z",
+  "title": "G32: tabucolTry 第 6 起点 — overflow 顶点逐顶点分散放置",
+  "body": "## G32: tabucolTry 第 6 起点 — overflow 顶点逐顶点分散放置\n\n### 改动 (单变量)\n\n在 `tabucolTry` 末尾追加一个新起点策略。原 5 个 strategy 中, 4 个都以 `bestI = argmin_i ec[i]` 单点吸收全部 overflow (即所有 overflow 都映射到同一个 low color), 起点拓扑都是 \"集中型\"。\n\n新策略: 对每个 overflow 顶点 v, 独立计算邻域内各 low color 的同色邻居数, 选冲突最少那个 low color 落点 → 形成 \"分散型\" 起点。`maxIter >> 1` 减半 iter 预算控制总时间。\n\n### 期望机制\n\n`bestI` 集中吸收把所有 overflow 都堆到一个 low class, 该类内部顶点之间形成 dense conflicts, tabucol 必须先解开这个 \"单点堵塞\" 才能动其他类。分散起点让 overflow 均匀铺到 K 个类, 给 tabucol 一个更平衡的初始冲突图, 可能跳过 `bestI` 那个 basin。\n\n参考 G31 RLF 失败的教训: 加更多 *数量* (restart 数) 没用 — plateau 不是数量问题。G32 改 *拓扑* (分布 vs 集中), 是结构性变化, 不只是数量变化。\n\n### 风险\n\n- 6 个 strategy vs 5: 总 iter 增加 ~17%, 250ms 预算仍有余量\n- 简单 case 下新 strategy 永远轮不到 (前 5 个先成功), 0 overhead\n- hard case 下新 strategy 是最后救命稻草; 若它也不成功, 跟现在一样返回 null\n- 若 plateau 是 hard (K 已等于 χ), 任何新起点都不变 → G32 不会伤害 holdout\n",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 32,
+    "idea": "tabucolTry 加第 6 起点: 每个 overflow 顶点独立选邻域冲突最低的 low color, 替代 bestI 单点集中",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.7005
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 11671,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 186
+}

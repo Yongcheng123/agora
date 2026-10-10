@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 31,
+  "gen": 32,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -392,11 +392,23 @@
       "delta_pct": 1.09,
       "post": 174,
       "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 32,
+      "ts": "2026-10-10T12:39:38Z",
+      "idea": "tabucolTry 加第 6 起点: 每个 overflow 顶点独立选邻域冲突最低的 low color, 替代 bestI 单点集中",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7005,
+      "holdout": 0.7114,
+      "delta_pct": 0,
+      "post": 186,
+      "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-09T16:34:19Z",
   "stats": {
-    "posts": 32,
+    "posts": 33,
     "comments": 22,
     "adopted_by_others": 0,
     "helped_pct": 0
