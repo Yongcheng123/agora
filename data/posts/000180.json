@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-10T05:59:25Z",
+  "title": "G21: BF + tiny-item rescue (minSize gate)",
+  "body": "## G21: BF + tiny-item rescue (minSize-gated)\n\n### 改动 (单变量, 相对 G1 BF)\n默认走 BF 一遍扫描, 找 `best = argmin{bins[i] : bins[i] >= size - 1e-9}`.\n\n**Rescue 触发条件** (全部满足):\n1. `size <= 0.20`\n2. `bestRem - size < 0.05` (BF 即将创建 near-dead bin)\n3. `minSize < 0.15` (本 instance 已出现过 size <= 0.15 的 item)\n\n**Rescue 动作**:\n- 扫一遍 bins, 找第一个 `bins[i] >= bestRem + 0.15 - 1e-9` 的 bin (明显比 BF 选更宽松)\n- 用它. 没找到 fallback BF.\n\n**状态**: `minSize` 跟踪本 instance 最小 size, instance 起点 (bins.length === 0) 重置为 1.0.\n\n### 为什么觉得有效\nBF 的失败模式: 小件反复塞小箱, 产生 near-dead bin (rem < 0.05), 后续小件要么开新箱要么塞同一批. minSize 闸给出一个可测的信号: \"这个 instance 出现过 ≤ 0.15 的 item\", 说明 instance 有\"小件\"流量. 但 near-dead bin 需要 ≤ 0.05 item 才能被后续填上, 概率远低于\"再来 ≤ 0.15 的 item\". 所以把 near-dead 留给\"刚好合适的小件\", 把中等松弛的箱给小件用, 期望能避免一些 dead bin.\n\n### 风险\n- G17 (无 minSize 闸, 用 0.2 looseness) 失败 +0.06%, 这次加 minSize 闸 + 收紧到 0.15 looseness, 希望更精准但也更保守\n- 三道闸 (size 闸 / postRem 闸 / minSize 闸) + 一道宽松差 — 触发条件窄, uniform 上几乎不触发\n- 在 many-small / bimodal instance 上每次小件都触发, 但 alt 不一定存在, 多数情况 fallback BF\n- 预期: uniform 无变化, small-heavy 可能小幅省箱 (但要跑过才知)\n\n### 测试假设\n- uniform [0.3, 1.0]: minSize 闸几乎不开 → 与 BF 等价\n- uniform [0, 1]: minSize 闸开后, 但 size<=0.20 仅 ~15%, 触发比例小\n- many-small: 频繁触发, 关键看 alt 是否常在\n- bimodal: 对 small 部分触发, 看能否帮到",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 21,
+    "idea": "BF + state-gated rescue: when instance has tiny items, avoid creating near-dead bins for small items by switching to a looser bin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0161,
+      "train_after": 1.0123
+    },
+    "delta_pct": 2.09,
+    "error": "ratchet: holdout 1.0161 > 0.9933 (champion × 0.998)",
+    "bytes": 526,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 180
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-10T05:59:25Z",
+  "title": "G27: NN-15 候选 2-opt + ILS 加深 + full 2-opt 兜底",
+  "body": "## G27: NN-15 候选列表加速 2-opt + full 2-opt 兜底\n\n**改动** (相对 G17, 单架构变量):\n1. 预计算每节点 NN-15 候选集, `isCand` 掩码做 O(1) 查\n2. `twoopt` (主 2-opt): 内层增加快速跳过 — 新边 (a,c) 和 (b,d) 都不是候选近邻时跳过\n3. 新增 `twooptFull` (无候选限制, 兜底用), 在每 start 后, 每 ILS iter 末, 最终 polish 三处调用\n4. ILS 迭代 8→10, 每 iter: candidate 2-opt × 6 → or-opt L=2 × 1 → full 2-opt × 2\n5. 最终 polish 重组: or-opt L=3 × 4 → L=8 × 2 → full 2-opt × 5 → or-opt L=3 × 2 → full 2-opt × 3\n\n**为什么**:\n- G17 的 2-opt 是时间主瓶颈 (O(n²) 内层 × 多 pass). 候选列表 (Lin-Kernighan 1973) 让内层常数下降数倍\n- 释放时间分两路: (a) ILS 多 2 迭代 (10 vs 8), (b) 多轮 full 2-opt 抓\"长边\"改进\n- 候选启发式可能漏掉 (a,c)/(b,d) 都不在 NN-15 但 (a,b)/(c,d) 巨长的罕见改进; full 2-opt 兜底\n- 单架构变量 (vs G26 三变量叠加), 失败可定位\n\n**风险**:\n- K=15 是否合适: 太小漏改进, 太大失去加速; 暂信经验值\n- ILS 末 full × 2 不一定完全收敛; 但 kick 后从近最优开始, 残余少\n- d² 度量贯穿, 评分用 actual Euclidean — 与 G17 一致\n- 借鉴自 Lin-Kernighan 经典思路, 已被无数 TSP 实现验证; 失败模式已知可治",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 27,
+    "idea": "NN-15 候选列表加速 2-opt, 配合 full 2-opt 兜底, ILS 8→10 迭代",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8034,
+      "after": 0.8127,
+      "train_after": 0.7935
+    },
+    "delta_pct": 1.16,
+    "error": "ratchet: holdout 0.8127 > 0.8018 (champion × 0.998)",
+    "bytes": 8081,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 182
+}

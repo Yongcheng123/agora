@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-10T05:59:25Z",
+  "title": "G29: 3-2 swap (drop 3 picked, add 2 unpicked) 不对称深度邻域",
+  "body": "## G29: 3-2 swap（与 2-2/3-1 都不同形的不对称深度邻域）\n\n`#155`–`#168` 五个连续尝试全卡在 0%-0.07% 噪声内（ratchet 要求 0.2%）。G6 的 1-1/2-1/2-2 全部已在 fixed point，单点邻域扩展无效，多起点小扰动无效。\n\n本代试**结构性全新的邻域形状**：**3-2 swap**（drop 3 picked, add 2 unpicked，网络净 -1）。与已试过的都不重：\n- 2-2 (drop 2, add 2) 网络数守恒\n- 3-1 (G27) 是 +2 不对称的另一端\n- 1+2 (G25) 是反向不对称\n\n3-2 的\"亮点\"是允许被 drop 的三项里夹一个**极低值的拖累项**——它的移除没法用 1-1 单独补偿（因为搬走它后没有立刻的加项可放），但 +2 个高 v unpicked 后整组就值了。本质是\"卸掉拖累 + 引入大件\"，留给末尾 greedy fill 收尾补一个 -1 缺口。\n\n## 实现细节\n\n插在 G6 的 2-2 swap (×3) 之后、final 1-1 polish (×20) 与 greedy fill 之前：\n\n- **候选 picked**：按 v 升序取最低 12 个（最容易被替换的低值节点）\n- **候选 unpicked**：按 v 降序取最高 18 个（高值候选；其余基本无 fit 收益）\n- 枚举：12C3 × 18C2 ≈ 33,660 pairs/iter × 5 iter ≈ 170k 内层检查\n- 早退：内层 `if (v1+v2 <= vLoss) break`（y 单调下降）\n- 估算开销 ~5-10ms，总 ~60-90ms，远在 250ms 软限内\n\n只接受 `d = (v1+v2) - vLoss > 0` 的步；不动 G6 的任何其它 phase。\n\n## 风险\n\n1. **0.00% 风险**（最大）：如果 G6 fixed point 下确实不存在 3-2 strict-improving 步（跟 G27 的 3-1 一样），整个 phase 就是空转，value 与 G6 完全相同，连噪声都吃不到——ratchet 不会通过。G27 已给出的弱信号是\"3-1 全无 fire\"，3-2 没有理由乐观。\n2. **候选剪枝漏掉**：只取 12 picked / 18 unpicked。如果真正能 fit 的 (3, 2) 对里三项都偏高 v 或两项都偏低 v 会漏。但 picked 按 v 升序，前 12 个已经是 vLoss 最低的那批，几乎不会漏改善步。\n3. **可分解性**：3-2 与 2-2+1-1 在组合层面重合，但本地搜索只看单步。可能存在\"先 2-2、再 1-1 才能串到\"的步，本 phase 不捕获——但反过来，单步 3-2 改善也未必能被 2-2+1-1 串到，所以仍有差异点。\n\n## 备援（G30 候选）\n\n- 4-3 swap（更深、组合更多；同样 ~5-10ms）\n- 真正 LP relaxation start（fractional greedy + LP rounding）—— 全新方向，可能直接打破 basin\n- Tabu search / 概率接受 1-1（小 SA）—— 跳出固定点\n- 大幅 perturbation（随机 remove 30% picked, 重 greedy + 全 swap phases）\n\n代码尾会接 G6 的 final 1-1 polish (×20) 与 greedy fill，不动这俩。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 29,
+    "idea": "在 G6 的 2-2 后插入 3-2 swap (drop 3 picked, add 2 unpicked), top-12 picked × top-18 unpicked, 5 iter 早退",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9833,
+      "train_after": 0.9549
+    },
+    "delta_pct": -0.01,
+    "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)",
+    "bytes": 8566,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 183
+}

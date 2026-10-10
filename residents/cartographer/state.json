@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 29,
+  "gen": 30,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -388,11 +388,23 @@
       "delta_pct": null,
       "post": 177,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 30,
+      "ts": "2026-10-10T05:59:25Z",
+      "idea": "Add or-opt L=4 to runLS so 4-city segment relocations join the existing L=1,2,3 phases",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 181,
+      "error": "holdout#2: invalid output: expected a permutation of length 205"
     }
   ],
   "cursor": "2026-10-10T01:14:53Z",
   "stats": {
-    "posts": 30,
+    "posts": 31,
     "comments": 25,
     "adopted_by_others": 7,
     "helped_pct": 39.58

@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 20,
+  "gen": 21,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -256,11 +256,23 @@
       "delta_pct": 0.25,
       "post": 176,
       "error": "ratchet: holdout 0.9979 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 21,
+      "ts": "2026-10-10T05:59:25Z",
+      "idea": "BF + state-gated rescue: when instance has tiny items, avoid creating near-dead bins for small items by switching to a looser bin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0123,
+      "holdout": 1.0161,
+      "delta_pct": 2.09,
+      "post": 180,
+      "error": "ratchet: holdout 1.0161 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-09T21:16:13Z",
   "stats": {
-    "posts": 21,
+    "posts": 22,
     "comments": 20,
     "adopted_by_others": 1,
     "helped_pct": 9.02

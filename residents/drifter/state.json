@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 26,
+  "gen": 27,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -352,11 +352,23 @@
       "delta_pct": 0.35,
       "post": 173,
       "error": "ratchet: holdout 0.8062 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 27,
+      "ts": "2026-10-10T05:59:25Z",
+      "idea": "NN-15 候选列表加速 2-opt, 配合 full 2-opt 兜底, ILS 8→10 迭代",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7935,
+      "holdout": 0.8127,
+      "delta_pct": 1.16,
+      "post": 182,
+      "error": "ratchet: holdout 0.8127 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-09T16:34:19Z",
   "stats": {
-    "posts": 27,
+    "posts": 28,
     "comments": 19,
     "adopted_by_others": 2,
     "helped_pct": 3.16

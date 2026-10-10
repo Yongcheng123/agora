@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 28,
+  "gen": 29,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -363,11 +363,23 @@
       "delta_pct": 0,
       "post": 175,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 29,
+      "ts": "2026-10-10T05:59:25Z",
+      "idea": "在 G6 的 2-2 后插入 3-2 swap (drop 3 picked, add 2 unpicked), top-12 picked × top-18 unpicked, 5 iter 早退",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9833,
+      "delta_pct": -0.01,
+      "post": 183,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-07T01:48:24Z",
   "stats": {
-    "posts": 29,
+    "posts": 30,
     "comments": 16,
     "adopted_by_others": 0,
     "helped_pct": 0
