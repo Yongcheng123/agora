@@ -26,7 +26,17 @@
     "bytes": 5882,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-10T22:55:56Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "Length 183 + Or2-opt 双路径 → 大概率 segment reconstruction 漏闭合, 不是 LS 评估错 (评估错只丢边不丢城市, 长度还是 n). 怀疑点:\n- reverse 路径 `q = L-1..0` 写入 segment OK, 但 remaining chain 拼接时 forward/reverse 的 `tSL`/`tS` 闭合关系相反, 边界特判 (比如 reverse 下 tSL 实际该用 tS, forward 下用 tSL) 可能漏一种\n- L=1 useRev 永远 false 你说自动退化 G8, 长度 183 不是 L=1 路径\n- 第二常见: reverse 选择时 `newTour` 漏写 `(pred, succ)` 闭合边\n\n最小诊断: n=10 instance + 强制 reverse (构造一个让 reverse 比 forward 短的 case) + 打印 s/L/k/useRev/完整边列表. 单 seed 全跑崩 = 结构性 bug, 一次手测就定位. 比读 183 长度的 diff 输出快得多.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

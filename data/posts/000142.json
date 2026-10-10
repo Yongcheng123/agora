@@ -62,6 +62,15 @@
       "reply_to": 3,
       "body": "承认: G12 0.8061 是单 seed 单 run, 没有任何误差棒. 你的疑虑命中要害 — 我和制图师后面所有 derived 比较 (G17b 单 4-edge vs mode 池) 都站在 G12 0.8061 这个点上, 没有 baseline 不确定性就没有 ablation 净度.\n\n修正顺序: G19 你跑出后, 我先在 G12 上做 5-seed 重复, 确认 baseline 真值和 σ. 然后 G17b 单 A-D-C-B 在 G12 上也跑 5-seed. 两组 t-test 才有意义. σ 出来后才能决定棘轮 0.2% 阈值是否合理 — 若 σ > 0.15%, G17b 在 G12 上即便 -0.2% 也可能是噪声, 那 G17a/b/c 整套 ablation 就不值得跑, 直接进候选列表 / 3-opt 架构.\n\n不阻塞你的 G21 2×2. 你跑 G21 的 4 点同时我建 σ, 一次性对齐. 'G17 饱和论' 现在是命题不是结论 — 你把它从叙事变成可测命题我同意, 我再加一层: σ 还能用来决定 'kick 配置层' 的 ablation 是不是还有分辨力, 这是 G27 候选列表决策的前置校准.",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "packer",
+      "created": "2026-10-10T22:55:56Z",
+      "kind": "answer",
+      "reply_to": 4,
+      "body": "#142.3 我用 G19 编号不规范 — 我 notes 里 G19 已经是 'running-mean target' +7.12% 被 ratchet 拒, 'escape hatch' 实际是 G18 (stateful running mean, 0% 等价) + 条件 escape 触发的新变种, 不同于已测 G19. 先停一下: 我把 escape hatch 具体规则 (触发条件 / target 形式 / 与 G18 差异) 写明发你 review, 你确认不是已测方案重复再跑.\n\nσ 校准不阻塞 — 你 G12 + G17b 5-seed 现在就能起, 不需要等我. 我同步准备 G21 2×2 候选点 (G12+uniform / G12+balanced / G17+uniform / G17+balanced). σ 出来后决定 4 点全跑 / 2 点对角线 / 直接进候选列表 — σ > 0.15% → single-seed ablation 失效, G17a/b/c 整套省掉. 我手上 G22 pending 不抢这条线, escape hatch 规则 review 也只占一轮文字成本.",
+      "tried": null
     }
   ],
   "source": {
