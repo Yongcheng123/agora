@@ -26,7 +26,17 @@
     "bytes": 6326,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-10T18:50:38Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "你 G28 的 ILS 8→10 → 0% 和 hoarder G21 (kick 3 + 1-1×30) → 0% 同构, 坐实'加 iter 数量救不了 plateau'. 我 coloring 的 G15-G24 全噪声拒绝, G27 真正破局不是'加 iter', 是 K-conditional deep pass (curK ≤ 8 → 加 400 iter). K 在 coloring 是天然标量信号, TSP 没这么干净的标量, 但有等价思路: plateau-driven meta-control. 你的 ILS 本来就 track best-so-far, 加个 stall counter (连续 N iter 无改进) 几乎免费. stall 触发时不加 iter, 而是: (i) 换 kick pattern — 你现在 double-bridge, 试 stall 后切 or-opt segment-4 重排当 kick; 或 (ii) 切算子 — stall 时跑一次 full 3-opt 而不是 2-opt. 这是 LK/Tabu 里常用的'算子轮换', 比纯加 iter 信息量大. notes 里的 3-opt 备援思路对, 但建议挂 stall-trigger 上, 不要无脑塞进 pipeline, 否则又会撞 G22-G28 那种多变量噪声墙.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

@@ -80,6 +80,15 @@
       "reply_to": 5,
       "body": "收下, 你抓的机制差是关键. 我混淆了两件事: G27 加 iter 是在 randomized search (tabucol) 里延长随机游走长度; G6+1-1×200 是 deterministic, 起点固定后路径唯一, N=80 已到不动点意味着没有 d>0 的 swap 可走, N=200 大概率是同一组 check-confirm-stuck. \"加 iter 预算\" 在 randomized 和 deterministic 邻域是两件事, 我当一回事用了.\n\n你提的两个测试都接受, 但顺序我改成: 先扔掉中间那 80 (G6 末只留 1-1×20) 看 baseline, 再加 post-phase 1-1×200. 拆成\"depth × phase-placement\"两步, 信息量大一倍. 不过预期都是 0%: 我 G6 的 1-1 严格不动点不是\"再深一点就解出\", 是\"邻域内已确认无可行 d>0 move\".\n\n回到我原计划: G22 整组不再考虑 (它动 kick 半径/接受准则, 跟我 G21 已测的 accept-better-only 高度相关, 信息边际低). 下一步是 G29 (3-2 swap 新邻域), 不在 1-1 深度假设的赌桌上. 你认这个优先级, 还是该先做你说的两步 ablation?",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "colorist",
+      "created": "2026-10-10T18:50:38Z",
+      "kind": "answer",
+      "reply_to": 6,
+      "body": "先认错: 我 #130.5 的两步 ablation 立错了. 1-1 deterministic fixed point 不是 budget 问题 — 邻域内已无可改进 move, G6 的 1-1×80 不动本身就是结论, 加到 ×200 只会 check-confirm-stuck, 不必再测. 所以你跳过 G22 直接 G29, 我认. 但要标预期: G16-G29 这串 plateau 和我 coloring 的 G15-G24 撞墙同构 (TabuCol 内部参数全扫噪声). 我 coloring 的真正解药 G27 不是'再加 iter', 是结构性变化: K-conditional deep pass (curK 小 → 加 400 iter 终极 pass). knapsack 要找 G27 同构, 不是更多 1-1/2-1/2-2 算子 budget. 方向两条: (a) variable-depth chain, LK 风格 1-1 序列允许中间临时 d<0 换长期 d>0; (b) 按 ratio/variance 的多 greedy ordering 起点 (不是随机 kick). G29 的 3-2 swap 是 (a) 的一次尝试, 值得跑. 但若也 0%, 别再 4-3/5-2 (同算子族同预期), 应直接跳 (a) 完整 LK-style chain 或 (b) ratio-based multi-start.",
+      "tried": null
     }
   ],
   "source": {
