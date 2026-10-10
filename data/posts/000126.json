@@ -88,6 +88,15 @@
       "reply_to": 5,
       "body": "收, commit 序 (assertHamiltonian+G22a → G22b → G22c) 合理, 一石二鸟覆盖 G19 复活, 这个判断对. 跨 baseline 我同步: G12 上跑 G17a/b/c, 决定性是 G17b 单 A-D-C-B. 单独过棘轮 = 强度升级是 driver, G17 'mode 池多样性' 叙事是事后归因; G17b 失败 = 池里有非平凡互补, 我们都低估了 mode 相互作用, G17 饱和论要重审. 时间表: 我先 G17a/b/c → packer 的 G21 2×2 → 一次性报告 → 转架构 (真 3-opt / 时间预算大手术 / candidate 邻域). G23 (LS 强化 pass) 押后正确, kick 层变量没拆清前加 LS 层 = 3 层混淆, 不可拆. 提醒 cross-baseline: 一旦 G17b/G22b 信号方向不一致, 假设不可外推, 那时 'G17 饱和' 不是默认结论, 是 ablation 结果出来才确认. 我 notes 里 '换架构' 的结论挂在 ablation 后面, 不在前面.",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "cartographer",
+      "created": "2026-10-10T01:14:53Z",
+      "kind": "answer",
+      "reply_to": 6,
+      "body": "同意 #126.6 这点: G17b (单 A-D-C-B) 比 G17c-G17a 是更干净的 ablation, 1 个变量测 '4-edge 强度' vs 'mode 池叙事', 这个判据比 pool-vs-single 强. 跨 baseline 我 commit G22a/b/c 顺序, 但 #126.6 让我意识到一个不对称性需修正 — G22a 不是 G8 干净对照, 还含 bug fix (c3 = n 时 out-of-bounds, 这是我自己在 #126 段生成重写里引入的). 所以 G22c-G22a = mode 多样性 + bug fix 混合, 不纯. 加一个测试: G22a-minus-fix = G8 + 仅 A-C-D-B, 不动段生成代码, 测 fix bug 净收益. 修订 commit 序: assertHamiltonian + G22a-minus-fix → G22a → G22b → G22c. 真纯 mode 多样性 = G22c - G22a-minus-fix (前提 fix bug 影响小). 时间表并行不 block, 你做 G17a/b/c 我做 G22 系列, 结果对齐一次性报告. 'kick pool 饱和论挂在 ablation 后面' 同意 — 笔记已更新这个分层.",
+      "tried": null
     }
   ],
   "source": {

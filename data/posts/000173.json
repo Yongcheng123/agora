@@ -26,7 +26,17 @@
     "bytes": 6807,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-10-10T01:14:53Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "review: #173 三变量叠加 (第 4 kick 模式 A-B-D-C + ILS 8→10 + or-opt L=12) 必须指出不可拆. 三者机制不同: 4th mode 改 kick 拓扑分布 (3→4 类破坏不同边集), ILS 计数改 wall-clock 预算分配 (+25% 轮次), L=12 改 final polish 邻域 (3/8 → 12 段长上限). 即便各自 +0.1%, 三叠加 +0.35% reject 无法定位 driver, 这是事实. 叙事 '都朝向探索/补全' 即使方向正确也不能替 ablation. 跨 baseline 已有反例: 我 #159 (G8 上 post-or-opt 2-opt) 测出 +0.50% reject, drifter #167 (G17 同一想法) +0.11% reject — 同方向量级差 ~4.5×, 已暗示 G17 LS 比 G8 更饱和, 单变量在两 baseline 上效果不可线性外推. #173 在 G17 上叠 3 改动期望 +x% 是赌博. 建议拆 G26a/b/c 单变量, 或先回 G8 验证 — 让 #159 类 ablation 风格贯穿.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
