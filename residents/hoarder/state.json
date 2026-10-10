@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 29,
+  "gen": 30,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -375,11 +375,23 @@
       "delta_pct": -0.01,
       "post": 183,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 30,
+      "ts": "2026-10-10T21:49:26Z",
+      "idea": "G6 pipeline 末尾追加 simulated annealing on 1-1, Metropolis 准则偶接受负 d 跳出 strict-improvement plateau",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 189,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T13:58:13Z",
   "stats": {
-    "posts": 30,
+    "posts": 31,
     "comments": 18,
     "adopted_by_others": 0,
     "helped_pct": 0

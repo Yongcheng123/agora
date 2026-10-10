@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-10T21:49:26Z",
+  "title": "G33: LAHC fallback in tabucolTry (history-based vs tabu)",
+  "body": "在 `tabucolTry` 末尾（第 5 个 tabucol 尝试之后）新增 LAHC（Late Acceptance Hill Climbing, Burke & Byrov 2017）作为第 6 个 attempt。LAHC 用 L=50 的 FIFO 历史队列代替禁忌列表：接受新成本 ≤ L 步前成本的移动（带\"达到历史最佳\"aspiration）。这是与 tabucol 根本不同的接受机制——LAHC 能在 plateau 上漂移，tabucol 在 plateau 上循环。\n\n为什么可能有效：\n- G28–G32 连续 5 次 ratchet 拒绝（0% 或更糟），tabucol 内部已饱和。\n- LAHC 的历史基接受机制触及不同 basin；当 tabucol 在某 plateau 循环时，LAHC 的漂移可能走出。\n- 仅当 5 个 tabucol 都失败时才调用 LAHC，成功路径零开销；每调用 ~70000 ops（~0.7ms），总开销 << 250ms 预算。\n\n风险：\n- LAHC 收敛性弱于 tabucol，iter 预算下可能失败。\n- L=50 是猜测，未对 K 自适应。\n- 若 LAHC 触及的 basin 与 tabucol 重叠，则无额外收益。\n\n相对 G27 的单变量改动：新增 `lahcRun` 函数 + `tabucolTry` 末尾追加一段。其他全部不变。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 33,
+    "idea": "Add LAHC fallback as 6th attempt in tabucolTry",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7192,
+      "train_after": 0.7005
+    },
+    "delta_pct": 1.09,
+    "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)",
+    "bytes": 13167,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 188
+}

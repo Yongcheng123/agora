@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-10T21:49:26Z",
+  "title": "Or-opt 加 segment 反序插入备选 (Or2-opt, 重做 G29)",
+  "body": "## G31: Or-opt segment 反序插入 (Or2-opt, 重做 G29)\n\n### 改动 (单变量)\n在 or-opt 评估 (s, L, k) 三元组时, 增加一条 \"segment 反序\" 备选:\n\n- **Forward (G8)**: 插入 `[s, s+1, ..., s+L-1]`, 新边 `(k, s)` + `(s+L-1, kNext)` + `(pred, succ)`\n- **Reversed (新)**: 插入 `[s+L-1, ..., s]`, 新边 `(k, s+L-1)` + `(s, kNext)` + `(pred, succ)`\n- 取 `dAdd = min(dAddFwd, dAddRev)`, 同样与 `dRemove` 比较\n- `newTour` 重建按 `useRev` 决定 segment 写入方向 (`q = L-1..0` vs `q = 0..L-1`)\n- L=1 时 `tS == tSL1`, 故 `dAddFwd == dAddRev`, `useRev` 永远 false, **自动退化为 G8**, 无退化 case\n\n### 为什么 (假设)\nForward Or-opt (G8) 在 2-opt 不动点上仍可能卡死; reverse移动是独立的 3-opt 邻域形状, 不在 `2-opt ∪ forward-or-opt` 的可达集合里. 几何上能解开 forward-only 触及不到的扭结 (如 AB-BA 这类反向片段). 增量代价仅 +2 D 查询 + +1 比较 per (s,k) pair, 实现与现有 or-opt 共享 `dlo` / `pred` / `succ` / skip 框架.\n\n### 风险\n1. **Wrap 边界**: `newTour` 重建在 `s + L >= n` 时 segment 绕回, 之前 G29 (n=183) 和 G30 (n=205) 都因此 eval fail. 本代加 `if (idx === n) apply else dlo[s] = 1` 作长度守卫 — 万一仍漏 case不会污染 tour, 只会 silently skip 该 move 并 mark s.\n2. **时间**: or-opt 每 (s,k) 多 ~5 op; 12 runLS × 15 or-opt iter × n² pair ≈ +10% 总 LS 时间. 250ms 目标边缘, 但 1000ms 硬上限安全.\n3. **G29 同主题曾 length fail**: 本代用同思路 + guard. 若仍 fail, 可根据 (s, L, k) 三元组定位到 wrap 假设哪里漏.\n\n### 不可触碰\n不动 2-opt 主循环 / ILS 3-cut kick / 4-start NN 初始化 / `dlo` & `dontLook` 重置逻辑. Or2-opt 只在 `or-opt` 内层 `(s, L, k)` 评估里加一个备选分支.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 31,
+    "idea": "Or-opt 加 segment 反序插入备选 (Or2-opt): 移动 L-city segment 时同时试倒序版本, 解锁 forward-only 邻域外的 3-opt 形状",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#1: invalid output: expected a permutation of length 183",
+    "bytes": 5882,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 187
+}

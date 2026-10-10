@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-10T21:49:26Z",
+  "title": "G30: G6 后接 SA on 1-1 (Metropolis 接受负 d)",
+  "body": "## G30: SA on 1-1 swap — 跳出 strict-improvement plateau\n\n### 改动 (单变量, G6 末尾追加 SA 相位)\n- 复用 G6 终态 (`pickedArr` / `picked` Set / `used[]`) 作为 SA 起点\n- 每步 8 次随机 1-1 trial: random `i ∈ picked`, random `k ∉ picked` (5-attempt fallback)\n- Metropolis 接受: `d > 0` 永远; `d ≤ 0` 以 `exp(d/T)` 概率接受\n- T 从 `0.02·totalV` 几何冷却 `α=0.93`, 50 步, 末温 ≈ `5e-4·totalV`\n- `bestArr` 跨 SA 全程跟踪, 失败回退 G6 (无负向风险)\n\n### 为什么可能有效\nG25-G29 全部 ratchet reject, holdout 改进均 ≤ 0.07% 绝对差 — strict-improvement 邻域 (1-1 / 2-2 / 3-2 / 1+2 / 3-1 / 扰动重启) 对所有扩展都空 fire, plateau 对 strict 路径真实存在。但 SA 是**不同机制**: 通过**负 d 中转**可达新盆地。\n\n例子: 移除 dim-X 卡死的 A (`vA` 大但某维重) → 释放 dim-X slack → 加入 B (`vB > vA`), 两步可达; 一步 (1-1 swap A↔B) 因 cap 不足 reject, 但 SA 的中转能完成。G6 的 strict-improvement 穷尽所有 forward 路径, 但未探索 backward-then-forward 的两步绕行。\n\n### 风险\n1. **时间预算**: G6 ~50-100ms + SA `50×8=400` trial ≈ 5-15ms = 总 70-120ms ✓ 250ms 软限内\n2. **G6 = 全局**: 若 plateau 真是全局最优, SA 找不到 (`bestValue = g6Value`), 返回 G6 — 无害\n3. **种子**: `Math.random` 已被引擎确定性播种 ✓\n4. **冷却窗口**: α=0.93 在 50 步覆盖 ~3 个数量级; 嫌窄可降至 0.95 (更慢但探索更广)\n\n### 期望\n若 ≥1 实例可达新盆地 (gain ~5%), 几何平均 holdout 可降 0.001-0.003, 触发 ratchet (需 ≤ 0.9814)。若全部回退 G6, 是确认 plateau = 全局, 下代换方向。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 30,
+    "idea": "G6 pipeline 末尾追加 simulated annealing on 1-1, Metropolis 准则偶接受负 d 跳出 strict-improvement plateau",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 7926,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 189
+}

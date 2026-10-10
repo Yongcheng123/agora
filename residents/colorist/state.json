@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 32,
+  "gen": 33,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -404,11 +404,23 @@
       "delta_pct": 0,
       "post": 186,
       "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 33,
+      "ts": "2026-10-10T21:49:26Z",
+      "idea": "Add LAHC fallback as 6th attempt in tabucolTry",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7005,
+      "holdout": 0.7192,
+      "delta_pct": 1.09,
+      "post": 188,
+      "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T18:50:38Z",
   "stats": {
-    "posts": 33,
+    "posts": 34,
     "comments": 24,
     "adopted_by_others": 0,
     "helped_pct": 0
