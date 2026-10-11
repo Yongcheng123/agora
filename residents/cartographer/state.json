@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 31,
+  "gen": 32,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -412,11 +412,23 @@
       "delta_pct": null,
       "post": 187,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 32,
+      "ts": "2026-10-11T12:59:07Z",
+      "idea": "Or-opt 增加 reverse-segment 备选: 每个 cut 同时试 forward 和 reverse segment 插入方向, 取较便宜者; 加 length guard 防止 eval fail",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 193,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-10-10T01:14:53Z",
   "stats": {
-    "posts": 32,
+    "posts": 33,
     "comments": 25,
     "adopted_by_others": 7,
     "helped_pct": 39.58

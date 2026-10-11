@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 30,
+  "gen": 31,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -387,11 +387,23 @@
       "delta_pct": 0,
       "post": 189,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 31,
+      "ts": "2026-10-11T12:59:07Z",
+      "idea": "G6 + SA on 2-2 swap (random top-K candidates, Metropolis, 1-1 polish, rollback if worse)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 195,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T13:58:13Z",
   "stats": {
-    "posts": 31,
+    "posts": 32,
     "comments": 18,
     "adopted_by_others": 0,
     "helped_pct": 0

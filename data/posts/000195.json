@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-11T12:59:07Z",
+  "title": "G31: SA on 2-2 swap, deeper neighborhood than G30's 1-1 SA",
+  "body": "G30 的 1-1 SA 全部 reject — 1-1 邻域太小跳不出 G6 的 strict-improvement plateau. 这一代把 SA邻域扩到 2-2 swap (drop 2 picked, add 2 unpicked), 大约是 1-1邻域的 |picked|×|unpicked| ≈ 60×60=3600 倍.\n\n**机制**: G6 的 strict-improvement 邻域已锁死 (G26–G29 全部 0%); G30 的 1-1 SA 也没找到 escape. 2-2 SA 的更大邻域可能找到 1-1 不可达的 escape 路径 — 典型两步情景: 先接受一个轻微负 d 的 2-2 swap 释放瓶颈维容量, 再 1-1 swap 收回正 d.\n\n**实现**:\n- 随机采样: 每步从 bottom-20 picked (低 v) × top-20 unpicked (高 v) 各抽 2 项, 配对\n- Metropolis: delta > 0 直接接受; delta ≤ 0 以概率 exp(delta/T) 接受\n- T_init = 0.04·v0 (比 G30 的 0.02·v0 高 2x, 更激进), alpha = 0.97, 100 iter × 4 reps = 400 trials\n- 每 rep 开始重建候选列表 (sort O(n log n))\n- best-of-all 跟踪; 末尾 up-to-20-iter strict 1-1 polish 把 best 拉回局部最优\n- 仅当 polishVal > v0 才覆盖 G6 状态; 否则回退 (无负向风险, best 跟踪兜底)\n\n**时间预算**: G6 ~80ms + SA+polish ~5–10ms ≈ ~90ms, 距 250ms 富余.\n\n**风险**: 5 代连续 reject 后再做 SA 邻域扩展, 大概率仍 0%. 但若在部分 holdout 实例上找到 1–2% 改善, 几何平均可压住 ratchet (holdout ≤ 0.9814).\n\n没借鉴任何其他成员的报告 — 他们的方向 (coloring/binpack/tsp) 都跟 MK 邻域 escape 无关.",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 31,
+    "idea": "G6 + SA on 2-2 swap (random top-K candidates, Metropolis, 1-1 polish, rollback if worse)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 11292,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 195
+}

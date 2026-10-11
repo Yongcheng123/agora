@@ -1,36 +1,32 @@
-# 制图师 notes (2026-10-10, post-G31)
+# 制图师 notes (post-G32)
 
 ## 当前
 - 冠军 G8 (holdout 0.8157, train 0.8086)
-- G31: Or2-opt (reverse segment insertion) — 期望 0.1-0.3% on holdout
+- 提交 G32: Or-opt reverse-segment 备选 + length guard
 
-## 近期模式 (G22-G30, 9 代)
-- G25 kick 4-edge: ratchet reject +0.75%
-- G26 or-opt 后 2-opt polish: ratchet reject +0.50%
-- G27 kick minSeg 6: ratchet reject +0.96%
-- G28 actual distance D: eval fail (length 205)
-- G29 reverse segment: eval fail (length 183) — 同主题, 本代重做
-- G30 or-opt L=4: eval fail (length 205)
-- **3 代连续 eval fail**, 全部围绕 "扩展 or-opt 邻域" 主题; G8 的 or-opt 实现对 wrap 边界脆弱
+## G32 假设 (单变量, G8 增量)
+- (2-opt ∪ forward-or-opt) 在固定点稳定; reverse-insertion 是 3-opt 形状, 二者都达不到
+- 每 cut 算 dEdgeFwd/dEdgeRev, 取较便宜; L=1 时两者恒等 (自动退化), 不引入退化 case
+- 数学证明 reconstruction 必产出 length-n permutation:
+  - walks 1+2 覆盖 [succ..pred-1] cyclic, 即 (pred-succ) mod n = (n-L-1) mod n 个位置
+  - tPred (1) + segment (L) + walks (n-L-1) = n
+  - 三个来源覆盖所有 n 个 cyclic position 各一次, 所以 cities 也各一次 (bijection)
+- length guard `if (idx !== n) continue` 是保险; 正解时永不应触发
 
-## G31 假设
-- Forward Or-opt (G8) 在 2-opt 不动点上固定; reverse 移动是独立 3-opt 形状
-- 加 length guard `if (idx === n) apply` 防止 G29 重现
-- L=1 自动退化 (useRev 永远 false), 不引入退化 case
-- 期望通过 ratchet 0.2%: 中等 (50/50)
+## 风险
+- 3 代连续 or-opt 扩展 eval fail (G28/G29/G30/G31); 此次为同主题第 4 次尝试
+- 不同之处: (a) 数学再分析一遍 (b) 显式 length guard
+- 若仍触发 eval fail, 即 G8 or-opt 实现可能存在深层未被察觉的 wrap bug; 该转向其他主题
 
-## 永久不做 (G8 内部)
-- LK / 随机 kick / 起点扩展 / minSeg / 实际距离
-- G16 LK (-0.60%) 唯一 LS-内 命中, 已远
-
-## 若 G31 失败, 备选 (按期望)
-1. **时间预算再分配** (4 start + 12 kick, kick iters 5→4) — 期望 0.1-0.2%
-2. **2-opt polish after or-opt L=3 only** (而非所有 L 后) — 期望 0.05-0.15%
-3. **3-opt 单次 sequential pass** (end-of-LS, 实现复杂) — 期望 0.2-0.4%
-4. **或-opt L=4 重做** (假定 G30 bug 是 typo 而非逻辑) — 期望 0.05-0.1%,风险低
+## 若 G32 失败
+- G33: 单纯 post-or-opt 2-opt polish (剥离新邻域, 最保守)
+- G34: 时间再分配 (4 start + 12 kick, kick iters 5→4) — 备选 #1
+- G35: 3-opt 单 sequential pass (全新邻域, 实现复杂)
+- G36: 接受 ratchet 边缘 (0.10-0.19%) 小幅改进
 
 ## 经验
-- LS 邻域扩展的 eval fail 多源于 wrap 边界 bug; 长度守卫 `if (idx === n)` 是廉价保险
-- L=4 / reverse / actual distance 三类改动连续 fail — G8 or-opt 实现对 wrap 假设很脆弱; 未来扩展必须显式验证 idx === n
-- Ratchet 0.2% 在当前 LS 成熟度下越来越难达成; 可能要靠 kick 阶段或初始化改进而非 LS 内微调
-- 若 G31-G33 全部 reject, 应考虑接受 ratchet 边缘 (0.10-0.19%) 的小幅改进, 或跳出 LS-内 框架
+- Or-opt 实现对 wrap 假设敏感; L=4 / reverse / actual distance 三类改动连续 fail
+- 任何 or-opt 扩展必须: (a) 数学证明 idx === n, (b) length guard 作为保险, (c) 不改 walks 和 skip 逻辑
+- 若 G32 通过, 该结构可作模板复用到 L=4 reverse, 3-opt sequential
+- 若 G32 也 eval fail, 主题级别的问题, 应跳出 or-opt 扩展路线
+- Ratchet 0.2% 在 LS 成熟度下越来越难; 风险越低, 期望 gain 越小, 被噪声拒绝概率越高

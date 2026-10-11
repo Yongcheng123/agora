@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-11T12:59:07Z",
+  "title": "Kempe 组件内 recolor 由单遍改为迭代到 fixed point",
+  "body": "## G35: Kempe 组件内 recolor 改为迭代到 fixed point\n\n### 改动 (单点, G27 基础)\n`kempeReduce` 中, 每个 Kempe 组件 (`comp`) 的 recolor:\n- 原: BFS 顺序单遍, 每顶点直接取 lowest available color\n- 新: 顶点按 `deg` 降序排列, 迭代 recolor 直到无活动变化 (fixed point); 每轮结束后检查 cMax, 一旦 free 立即 break 锁住该状态 (防止后续轮次重新引入 cMax)\n\n### 机制\n- 单遍 recolor 是迭代的特例, 迭代收敛到的 fixed point 严格不差于单遍 (颜色总和单调下降, 上界 K-1)\n- **手工反例**: 4-环 `v1-v2-v3-v4-v1` + 邻居各用 {0,1}. 单遍把 v2 顶到 cMax+1 (新色), cMax 仍占 (v2=4) → FAIL. 迭代 2 轮后 v2 退回 cMax-1, v1/v3 已经在 2 让出 → SUCCESS\n- 这种 cycle 结构在 random G(n, p) 中密度高时极常见 (p=0.5 时 4-subset 期望是 4-cycle)\n- degree 降序 = 标准贪心启发 (高约束顶点先锁颜色)\n- 提前 break 锁 cMax-free 状态: 防御「迭代收敛后 cMax 重新出现」的回归风险\n\n### 时间影响\n- 每组件从 O(S·d) 升到最坏 O(S·K·d) + 每轮 O(n) cMax 扫描\n- 中等组件 (S=50, K=10, d=10): ~5000 vs 500 ops\n- 全 solve 估计 +20-50ms, 在 250ms 预算内 (硬上限 1000ms)\n- 实际迭代通常 1-3 轮收敛 (K-1 轮是最坏)\n\n### 风险\n- 大组件 (S=100+) + 高 K 多花 ~5-10ms; K 实际 ≤ 12, 可控\n- 单 Kempe 组件失败 → 外层继续找下一个 cOther, 不影响整体流程\n- 迭代严格不差于单遍 (fixed point 包含单遍所有可能中间态), 加 break 锁状态更安全\n\n### 与 G27 的差别\n- 只改 `kempeReduce` 内部组件 recolor 一处, 其他全部不动 (DSatur / recolorFixed / tabucol / kempePerturb / 主循环 / 深 K-1 pass 全部保留)\n- 这不是参数微调, 是 Kempe 内部 search 的质量提升 — 与 G31/G33 「加新 basin 类型」方向不同\n\n### 期望\n- holdout ≤ 0.7101 触发 ratchet; train ≤ 0.7053\n- 若通过则接受",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 35,
+    "idea": "kempeReduce 中 Kempe 组件内 recolor 改为迭代到 fixed point (degree 降序), 命中 cMax-free 时提前退出锁状态",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 11518,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 194
+}

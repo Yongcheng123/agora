@@ -1,36 +1,33 @@
-# Notes (G34)
+# Notes (G35)
 
-## G27–G33 试验汇总
+## G27-G34 试验汇总
 - G27: tabucol 200→300 + curK≤8 400-iter 终极 pass → ✓ 当前冠军 0.7114
-- G28 (400→600 + ≤5 500-iter): 0% (iter 不是瓶颈)
-- G29 (随机多遍 recolor): 0%
+- G28 (iter ↑): 0%
+- G29 (随机 recolor): 0%
 - G30 (长 Kempe chain kick): 0%
-- G31 (RLF 第 10 restart): +1.09% (结构性不同 basin 不是越多越好)
-- G32 (per-vertex independent best color): 0%
-- G33 (LAHC fallback): +1.09% (拒绝, 备份算法引入噪声)
+- G31 (RLF 第 10 restart): +1.09% (新 basin 类型反伤)
+- G32 (per-vertex best color): 0%
+- G33 (LAHC fallback): +1.09% (备份算法引入噪声)
+- G34 (K-2 跳级 + bipart): 0%
 
-## G34 (执行)
-- 早期 BFS 2-coloring 检测 — 二部图立即返回 2-着色 (跳过全部下游)
-- 晚期 K-2 跳级攻击 (curK ∈ {4,5,6}) — 直接试 curK-2 而非 curK-1, 然后 K-1 标准下降
-- 完整 G27 主流程不动
+## G35 (执行)
+- `kempeReduce` 中, Kempe 组件 recolor 由 BFS 单遍改为**迭代到 fixed point**
+- 组件顶点按 `deg` 降序 (标准贪心启发)
+- 每轮迭代后扫一次 cMax, 一旦 free 立即 break 锁状态 (防止后续轮次重新引入 cMax 引起回归)
 
 ## 机制
-- 二部图: P(bipartite|G(n=150, p)) ≈ exp(-pn/2). p=0.05 时 ~2.4%, 后续密度更低. 命中时省大量时间且保证最优
-- K-2 跳级: 当 K-1 攻击失败 (basin stuck), K-2 直接攻击有时能进入 K-2 local-min basin 而不经过 K-1. tabucolTry 的 5 个 kick 是入口机制
+- 单遍 recolor 是迭代的中间态, 找到的不是 fixed point
+- 迭代收敛到 no-单顶点-可下移 的 fixed point (颜色总和最小)
+- 4-环反例已验证: 单遍让 v2 顶到 cMax+1 (FAIL); 迭代 2 轮后 v2 退回 cMax-1 (SUCCESS)
+- cycle 结构在 random G(n, p=0.3~0.5) 中极常见, 期望影响多个 instance
 
 ## 风险
-- K-2 攻击大多数情况失败 (~5ms 浪费)
-- 二部图检测是非二部实例的固定 1-2ms 开销
+- 大组件 + 高 K 时迭代慢, 但 K 实际 ≤ 12, 估计 +20-50ms 在预算内
+- 早 break 锁 cMax-free 状态是关键防御, 防止迭代收敛后回归
+- 理论上迭代 ≥ 单遍 (fixed point 是单遍所有可能中间态的超集), 加 break 后 ≥ 单遍 baseline
 
 ## 下一步
-- 更狠的 K-3 / K-4 跳级 (成本递增, 收益递减, 谨慎)
-- Adaptive tenure: tenure 跟 stuck 时长联动
-- Cross-restart information sharing: 多 coloring 投票
-- Memetic / population-based: 但代码量太大, 先观望
-
-## 观察
-- 5 代连续的 0% 噪声说明 G27 本身的 tabucol+Kempe 已经找到 instances 的本地最优
-- 任何"参数更优"的版本 (iter / kick / tenure) 都饱和
-- 真正能 break 的是不同 basin 类型 (RLF, LAHC) 或不同步长 (K-2)
-- K-2 跳级是未尝试的步长变化
-- 二部图早期检测是免费优化
+- 若 G35 通过, 同样思路可应用到 tabucolTry overflow 初始化 (但 G32 已试类似, 谨慎)
+- Kempe swap 后 recolor 也可迭代 (本来没有 recolor step, 只是裸 swap, 或许可以加)
+- Kempe 组件按大小排序优先处理 (largest first)
+- 若 G35 仍 0%, 说明 single-pass 已经基本饱和, 必须走 tabucol operator 改进或 population-based 路线
