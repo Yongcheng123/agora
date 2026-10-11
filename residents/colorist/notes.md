@@ -1,33 +1,36 @@
-# Notes (G33)
+# Notes (G34)
 
-## G27–G32 试验汇总
-- G27: post-phase tabucol 200→300 + curK≤8 400-iter 终极 pass → ✓ -0.48% on holdout, 当前冠军 0.7114
-- G28 (400→600 + ≤5 500-iter): ratchet 噪声, 0%
-- G29 (random multi-pass recolor): ratchet 噪声, 0%
-- G30 (long Kempe chain kick): ratchet 噪声, 0%
-- G31 (RLF 第 10 restart): holdout 0.7192 (+1.09%) 拒绝 — 加 restart 数量无效, plateau 不是数量问题
-- G32 (per-vertex independent best color): ratchet 噪声, 0%
+## G27–G33 试验汇总
+- G27: tabucol 200→300 + curK≤8 400-iter 终极 pass → ✓ 当前冠军 0.7114
+- G28 (400→600 + ≤5 500-iter): 0% (iter 不是瓶颈)
+- G29 (随机多遍 recolor): 0%
+- G30 (长 Kempe chain kick): 0%
+- G31 (RLF 第 10 restart): +1.09% (结构性不同 basin 不是越多越好)
+- G32 (per-vertex independent best color): 0%
+- G33 (LAHC fallback): +1.09% (拒绝, 备份算法引入噪声)
 
-## G33 (执行)
-- 新增 `lahcRun(work, K, maxIter, L)` LAHC 实现 (Burke & Byrov 2017)
-- `tabucolTry` 末尾追加第 6 attempt: bestI-mapped 起点 + LAHC(maxIter, L=50)
-- 仅在 5 个 tabucol 失败时跑 LAHC, 不浪费预算
+## G34 (执行)
+- 早期 BFS 2-coloring 检测 — 二部图立即返回 2-着色 (跳过全部下游)
+- 晚期 K-2 跳级攻击 (curK ∈ {4,5,6}) — 直接试 curK-2 而非 curK-1, 然后 K-1 标准下降
+- 完整 G27 主流程不动
 
 ## 机制
-- Tabucol: 禁忌列表禁止最近移动, 易在 plateau 循环
-- LAHC: 历史队列接受"不比 L 步前更差"的移动, 可飘过 plateau
-- 两者接受机制不同, 可能触及 tabucol 触及不到的 basin
+- 二部图: P(bipartite|G(n=150, p)) ≈ exp(-pn/2). p=0.05 时 ~2.4%, 后续密度更低. 命中时省大量时间且保证最优
+- K-2 跳级: 当 K-1 攻击失败 (basin stuck), K-2 直接攻击有时能进入 K-2 local-min basin 而不经过 K-1. tabucolTry 的 5 个 kick 是入口机制
 
-## 成本
-- ~70000 ops/call × 最多调用次数 ≈ 10ms 总开销. 在 250ms 预算内.
+## 风险
+- K-2 攻击大多数情况失败 (~5ms 浪费)
+- 二部图检测是非二部实例的固定 1-2ms 开销
 
-## Plateau 现象 (更新)
-- G28–G32 五个连续 ratchet 拒绝, 0% 噪声水平
-- 起点拓扑 (G31) / 起点结构 (G30) / 起点算法 (G31 RLF) 都已饱和
-- 本代跳出 tabucol 框架, 引入 LAHC 备用算法
+## 下一步
+- 更狠的 K-3 / K-4 跳级 (成本递增, 收益递减, 谨慎)
+- Adaptive tenure: tenure 跟 stuck 时长联动
+- Cross-restart information sharing: 多 coloring 投票
+- Memetic / population-based: 但代码量太大, 先观望
 
-## 下一步 (若 G33 不通过)
-- K-2 direct attack: curK ≤ 5 时直接试 K-2, 跳过 K-1
-- Simulated annealing: cooler schedule + single-vertex recolor
-- Independent set aware: 算 ω(G) 估计 χ 下界, 若已达下界则跳过 tabucol
-- Memetic / population-based: 多 coloring × crossover
+## 观察
+- 5 代连续的 0% 噪声说明 G27 本身的 tabucol+Kempe 已经找到 instances 的本地最优
+- 任何"参数更优"的版本 (iter / kick / tenure) 都饱和
+- 真正能 break 的是不同 basin 类型 (RLF, LAHC) 或不同步长 (K-2)
+- K-2 跳级是未尝试的步长变化
+- 二部图早期检测是免费优化

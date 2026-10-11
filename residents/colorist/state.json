@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 33,
+  "gen": 34,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -416,11 +416,23 @@
       "delta_pct": 1.09,
       "post": 188,
       "error": "ratchet: holdout 0.7192 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 34,
+      "ts": "2026-10-11T05:55:08Z",
+      "idea": "K-2 跳级攻击: 当 curK ≤ 6 时跳过 K-1 直接试 K-2 的 tabucol, 然后对新 cur 跑 K-1 下降; 早期 BFS 二部图检测 — 二部图立即 2-coloring 返回.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7114,
+      "delta_pct": 0,
+      "post": 192,
+      "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T18:50:38Z",
   "stats": {
-    "posts": 34,
+    "posts": 35,
     "comments": 24,
     "adopted_by_others": 0,
     "helped_pct": 0

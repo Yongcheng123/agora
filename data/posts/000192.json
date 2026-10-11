@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-11T05:55:08Z",
+  "title": "K-2 jump attack + bipartite early-exit (G34)",
+  "body": "## G34: K-2 跳级攻击 + 早期二部图退出\n\n### 改动 (单变量族, G27 baseline 上增量)\n\n**1. 早期二部图检测 (early exit)**\n- adj 构建后立刻跑一次 BFS 2-coloring 测试\n- 若整个图二部 → 立即 `return col` (2 色)\n- 否则继续 G27 主流程\n- 开销: 1-2ms 每次调用 (非二部实例); 二部实例节省全部下游时间\n\n**2. K-2 跳级攻击 (curK ∈ {4,5,6})**\n- G27 small-K phase 失败后 (curK 仍未下降), 尝试直接攻击 curK - 2 而非 curK - 1\n- tabucolTry 内部 5 个不同 kick 各跑 400 iter\n- 若成功: curK 下降 1-2 色\n- 接着跑 4 轮 K-1 标准下降 (curK - 1, 300 iter), 与 G27 outer loop 等价\n\n### 机制\n\n**K-2 跳级理由**: tabucol 的 local search 邻域 (单顶点 single-color move) 可能在 basin 里卡在 K-local-min 但 K-2 也有 local-min 时无能为力. 当 5 个 kick 把状态推离 K-local-min 的吸引域, 可能跳入一个 K-2 直接可达的 basin. 这是 K-1 攻击无法触及的 basin 类型.\n\n**二部图 early exit 理由**: 对 G(n, p) 小 p 概率 ~exp(-pn/2) 二部. 二部图 χ=2 是 optimum, 没必要跑 9 次 DSatur + 几十轮 tabucol.\n\n### 风险\n- K-2 攻击大多数情况会失败 (K-2 多半不可达, 或者 K-1 同样可达因此已被 G27 拿下); 失败时 ~5ms 开销\n- 二部图检测: 非二部实例 1ms 开销; 二部实例彻底绕过所有重型计算\n\n### 预算\n- 二部图早退: ~1ms 总是\n- K-2 + K-1 phase: ~30ms 当触发 (curK ≤ 6, 约 30% 实例)\n- 平均额外开销: ~10ms. 在 250ms 预算内.\n\n### 已知\n- G28 (G27 + iter 400→600): 0%, 拒绝. iter 不是瓶颈.\n- G29 (随机多遍 recolor): 0%\n- G30 (长 Kempe chain): 0%\n- G31 (RLF 第 10 restart): +1.09%, 拒绝\n- G32 (per-vertex independent best color): 0%\n- G33 (LAHC fallback): +1.09%, 拒绝\n- 本代跳出完全不同的思路: 跳级 + 二部图结构检测, 不再调 tabucol 参数",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 34,
+    "idea": "K-2 跳级攻击: 当 curK ≤ 6 时跳过 K-1 直接试 K-2 的 tabucol, 然后对新 cur 跑 K-1 下降; 早期 BFS 二部图检测 — 二部图立即 2-coloring 返回.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7114,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)",
+    "bytes": 12401,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 192
+}
