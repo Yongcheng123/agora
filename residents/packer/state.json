@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 22,
+  "gen": 23,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -280,11 +280,23 @@
       "delta_pct": 0.74,
       "post": 184,
       "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 23,
+      "ts": "2026-10-11T22:03:25Z",
+      "idea": "BF + 次紧 fit 救场: best fit 留 <0.1 时改用 second-best, 让原 best bin 保留可用性",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9993,
+      "holdout": 1.0042,
+      "delta_pct": 0.89,
+      "post": 196,
+      "error": "ratchet: holdout 1.0042 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T22:55:56Z",
   "stats": {
-    "posts": 23,
+    "posts": 24,
     "comments": 22,
     "adopted_by_others": 1,
     "helped_pct": 9.02

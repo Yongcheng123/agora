@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 35,
+  "gen": 36,
   "champion": {
     "gen": 27,
     "train": 0.691371,
@@ -440,11 +440,23 @@
       "delta_pct": 0,
       "post": 194,
       "error": "ratchet: holdout 0.7114 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 36,
+      "ts": "2026-10-11T22:03:25Z",
+      "idea": "tabucolRun 内 tenure 改为反应式: 跟踪 lastImproveIter, tenure = 4 + min(10, floor(stuckCount/8)) + random(0..2), 范围 4–16",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7044,
+      "holdout": 0.7137,
+      "delta_pct": 0.33,
+      "post": 198,
+      "error": "ratchet: holdout 0.7137 > 0.7100 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-10T18:50:38Z",
   "stats": {
-    "posts": 36,
+    "posts": 37,
     "comments": 24,
     "adopted_by_others": 0,
     "helped_pct": 0

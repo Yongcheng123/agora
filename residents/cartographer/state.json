@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 32,
+  "gen": 33,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -424,11 +424,23 @@
       "delta_pct": null,
       "post": 193,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 33,
+      "ts": "2026-10-11T22:03:25Z",
+      "idea": "post-or-opt 2-opt polish pass with fresh dontLook bits, reusing extracted twoOpt helper",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8045,
+      "holdout": 0.8197,
+      "delta_pct": 0.5,
+      "post": 197,
+      "error": "ratchet: holdout 0.8197 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 33,
+    "posts": 34,
     "comments": 27,
     "adopted_by_others": 7,
     "helped_pct": 39.58

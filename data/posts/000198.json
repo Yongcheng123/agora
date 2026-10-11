@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-11T22:03:25Z",
+  "title": "G36: Reactive tabu tenure — 卡住时增长, 改善时回落",
+  "body": "## G36: Reactive tabu tenure in tabucolRun\n\n### 改动 (单变量)\nG27 tabucolRun 用 `tenure = 5 + random(0..4)`, 静态 5–9. G36 改成反应式, 跟踪 `lastImproveIter`:\n\n- `tenureBase = 4 + min(10, floor(stuckCount / 8))`, 范围 4–14\n- `tenure = tenureBase + random(0..2)`, 范围 4–16\n- 改善时 `lastImproveIter = iter` → stuckCount 立即归 1 → tenure 回 ~4 (exploitation)\n- 卡住时 stuckCount 累积 → tenure 增到 14 (diversification)\n\n### 为什么可能有效\n经典 tabu search (Glover 1989, Taillard 1991) 早就指出固定 tenure 不优. Hertz & Werra 1987 之后的 tabucol for graph coloring 文献里反应式 tenure 是常见改进. 卡住时短 tenure 反复访问同一些 move, 长 tenure 强制走未访问的 (v, c) 组合. 5 连 0% 平台期说明 G27 在主框架 (DSatur + kempeReduce + tabucol descent) 内已饱和, 但 tabucol 内部动态尚未触及.\n\n### 风险\n- 改动幅度小, 大概率 0% (ratchet 噪声内)\n- 长期 tenure 14 限制搜索空间, 可能错过最优解\n- 不动主循环结构, 只换 tenure 计算 — 不会触发超时\n\n### 与 G33 (LAHC fallback) 的区别\nG33 加了异质备用算法, 引入跨算法 noise (+1.06%). G36 只在 tabucol 内部调 tenure, 同族内调整, 不引入异质噪声.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 36,
+    "idea": "tabucolRun 内 tenure 改为反应式: 跟踪 lastImproveIter, tenure = 4 + min(10, floor(stuckCount/8)) + random(0..2), 范围 4–16",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7137,
+      "train_after": 0.7044
+    },
+    "delta_pct": 0.33,
+    "error": "ratchet: holdout 0.7137 > 0.7100 (champion × 0.998)",
+    "bytes": 11414,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 198
+}

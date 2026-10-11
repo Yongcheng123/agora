@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 31,
+  "gen": 32,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -399,11 +399,23 @@
       "delta_pct": 0,
       "post": 195,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 32,
+      "ts": "2026-10-11T22:03:25Z",
+      "idea": "G6 末段追加 3 路 LNS destroy+rebuild+polish 重启 (破坏率 0.30/0.45/0.55, eff/value 双模式), 严格 best-of-all 保留不劣于 champion",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9546,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 199,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 32,
+    "posts": 33,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

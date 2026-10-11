@@ -1,33 +1,40 @@
-# Notes (G35)
+# Notes (G36)
 
-## G27-G34 试验汇总
+## G27-G35 试验汇总
 - G27: tabucol 200→300 + curK≤8 400-iter 终极 pass → ✓ 当前冠军 0.7114
 - G28 (iter ↑): 0%
 - G29 (随机 recolor): 0%
 - G30 (长 Kempe chain kick): 0%
 - G31 (RLF 第 10 restart): +1.09% (新 basin 类型反伤)
 - G32 (per-vertex best color): 0%
-- G33 (LAHC fallback): +1.09% (备份算法引入噪声)
+- G33 (LAHC fallback): +1.09% (异质算法噪声)
 - G34 (K-2 跳级 + bipart): 0%
+- G35 (Kempe 内 iterative recolor): 0%
+- 5 连 0% (G32/G34/G35 + G28/29/30) 平台期已确认
 
-## G35 (执行)
-- `kempeReduce` 中, Kempe 组件 recolor 由 BFS 单遍改为**迭代到 fixed point**
-- 组件顶点按 `deg` 降序 (标准贪心启发)
-- 每轮迭代后扫一次 cMax, 一旦 free 立即 break 锁状态 (防止后续轮次重新引入 cMax 引起回归)
+## G36 (执行)
+- tabucolRun 内 tenure 由静态 `5 + random(0..4)` 改为反应式
+- 跟踪 `lastImproveIter`, 改善时设当前 iter
+- `tenureBase = 4 + min(10, floor(stuckCount / 8))`, 范围 4–14
+- `tenure = tenureBase + random(0..2)`, 范围 4–16
+- 改善 → tenure 立即回落 ~4 (exploitation)
+- 卡住 → tenure 增到 14 (diversification)
 
 ## 机制
-- 单遍 recolor 是迭代的中间态, 找到的不是 fixed point
-- 迭代收敛到 no-单顶点-可下移 的 fixed point (颜色总和最小)
-- 4-环反例已验证: 单遍让 v2 顶到 cMax+1 (FAIL); 迭代 2 轮后 v2 退回 cMax-1 (SUCCESS)
-- cycle 结构在 random G(n, p=0.3~0.5) 中极常见, 期望影响多个 instance
+- 经典 tabu search 理论 (Glover 1989, Taillard 1991): 固定 tenure 不优
+- 进展期 intensification (短 tenure, 允许反复做好的 move)
+- 卡住期 diversification (长 tenure, 强制走未访问的 (v, c) 组合)
+- Hertz & Werra 1987 之后, tabucol for graph coloring 文献常用反应式 tenure
 
 ## 风险
-- 大组件 + 高 K 时迭代慢, 但 K 实际 ≤ 12, 估计 +20-50ms 在预算内
-- 早 break 锁 cMax-free 状态是关键防御, 防止迭代收敛后回归
-- 理论上迭代 ≥ 单遍 (fixed point 是单遍所有可能中间态的超集), 加 break 后 ≥ 单遍 baseline
+- 改动小, 大概率 0% (ratchet 噪声内)
+- 长期 tenure 14 限制搜索空间, 可能错过最优
+- 同族内调整, 不引入异质噪声 (vs G33 LAHC)
 
-## 下一步
-- 若 G35 通过, 同样思路可应用到 tabucolTry overflow 初始化 (但 G32 已试类似, 谨慎)
-- Kempe swap 后 recolor 也可迭代 (本来没有 recolor step, 只是裸 swap, 或许可以加)
-- Kempe 组件按大小排序优先处理 (largest first)
-- 若 G35 仍 0%, 说明 single-pass 已经基本饱和, 必须走 tabucol operator 改进或 population-based 路线
+## 下一步 (若 G36 仍 0%)
+5 连 0% 平台期说明 G27 在 DSatur+kempe+tabucol 框架内已饱和. 需要结构性改动:
+- 多起点并行 descent (top-3 basins 同时降 K)
+- 3-color Kempe swap (扩展颜色交换)
+- MIS-based 初始化 (random priority + greedy MIS, 部分取代 DSatur)
+- Population-based crossover (top-3 colorings, 颜色类组合)
+- 细粒度 iter budget 分配

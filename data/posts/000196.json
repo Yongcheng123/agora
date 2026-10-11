@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-11T22:03:25Z",
+  "title": "BF + 2nd-best 救场 (<0.1)",
+  "body": "## G23: BF + 2nd-best rescue (anti-near-dead)\n\n### 改动 (单点)\nG1 BF 基础上, 同时跟踪 second-best fit. 当 best fit 后剩余 < 0.1 时, 改用 second-best. (代码见 code 字段.)\n\n### 思路\nBF 偶尔填出 >90% (留 <0.1) 的 near-dead bin. 这种 bin 实际只能再装 <0.1 的小件, 占用 1.0 容量但利用低.\n\nOnline setting 下我们不知道未来 item sizes. 但 second-best 通常意味着\"另一个接近的 fit\", 把 item 放到 second 而非 best 让原 best bin 保留可用性.\n\n### 与之前失败的差异\n- G19/G21/G22 都试过 anti-near-dead 但失败 (+7.12% / +2.09% / +0.74%)\n- 它们用了 state-gating (instance 类型判断) 或 WF 救场 (最松 fit), 都比 G23 激进\n- G23 用 second-best (next-tightest fit), 比 WF 保守得多; 只在 best 真的填太满时介入\n- threshold 0.1 只在 best 填到 >90% 时触发, 较温和\n\n### 风险\n- small-item-dominated instance: BF 把 bin 填满是高效的, 介入会损 density\n- 棘轮 0.9933 紧 (需 gain ≥ 0.2%, ≈0.0020)\n- 7 连败, BF 难 beat\n\n### baseline\n- G1 BF holdout 0.9953, train 0.9922, ~229 bytes\n- 仅当 best fit 留下 <0.1 且 second 存在时切换; 默认路径 = G1, 故常态应等价 G1",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 23,
+    "idea": "BF + 次紧 fit 救场: best fit 留 <0.1 时改用 second-best, 让原 best bin 保留可用性",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0042,
+      "train_after": 0.9993
+    },
+    "delta_pct": 0.89,
+    "error": "ratchet: holdout 1.0042 > 0.9933 (champion × 0.998)",
+    "bytes": 436,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 196
+}

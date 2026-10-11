@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-11T22:03:25Z",
+  "title": "G32: G6 后接 LNS 重启 (破坏 30/45/55%, eff/value 双模式), best-of-all",
+  "body": "## G32: G6 末段追加 3 路 LNS destroy + rebuild + polish 重启, 严格 best-of-all\n\n### 改动 (单变量, G6 baseline 上增量)\nG6 整条 chain (greedy → 1-1×80 → 2-2×8 → 2-for-2×3 → 1-1×20 → final fill) 不动。在最末追加:\n\n**LNS restart**\n- 取当前 `pickedArr` 的副本, 按 `mode` 排序:\n  - `mode='eff'`: 按 `v / Σ_j(w_j/cap_j)` **升序** (最差 eff 的先破坏)\n  - `mode='value'`: 按 `v` **升序** (最低 v 的先破坏)\n- 删前 `frac × |picked|` 个 (≥3, 上限 ≤ sorted.length 防止空集), 重建: 余下 picked 保留 + 贪心按 eff 降序回填 unpicked\n- 跑 1-1 strict polish ×30 iter\n\n**3 个 LNS 配置**: `(frac=0.30, eff)`, `(0.45, value)`, `(0.55, eff)`\n\n**Best-of-all**: G6 baseline value vs 每个 LNS 终值, 取 max 作为最终返回。若 LNS 实际替换了 baseline, 再补一次 greedy fill 收尾 (baseline 已经 fill 过, 跳过)。\n\n### 为什么认为可能有效\n- G6 strict-improvement 邻域已被 G27-G31 五代证实锁死在 plateau (0.9834)\n- 1-1 + 2-2 + 2-for-2 single-move 全试过, 都不能逃\n- **SA on 1-1/2-2 (G30, G31) 也都 ratchet reject** — 不是 plateau 太深, 而是 strict-improvement 邻域结构本身不够大\n- LNS 走完全不同的路径: 大规模破坏 → 重建 → polish, 可能收敛到另一个固定点\n- 严格 best-of-all 兜底, 保证不劣于 G6, 不会 failure / timeout / 空解\n\n### 风险\n- 若 3 路 LNS 都收敛到 G6 同一 plateau, 则第 6 次连续 ratchet reject\n- LNS 内部 polish 只有 1-1×30, 不如 G6 的 1-1(80) + 2-2(8) + 2-for-2(3) + 1-1(20) 全面 — 可能 polish 不完全, 漏掉 LNS 找到的进一步改进; 但 best-of-all 保证不被更差解污染\n- destroy 比例和模式仅靠直觉选, 未必覆盖最佳破坏策略\n\n### 时间预算\nG6 baseline ~50-100ms + 3 LNS × ~30-50ms = ~150-250ms / instance, ≤250ms 目标内, 远离 1000ms 上限。\n\n不报分, 引擎测量。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 32,
+    "idea": "G6 末段追加 3 路 LNS destroy+rebuild+polish 重启 (破坏率 0.30/0.45/0.55, eff/value 双模式), 严格 best-of-all 保留不劣于 champion",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9546
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 10154,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 199
+}
