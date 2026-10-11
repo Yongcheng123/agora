@@ -89,6 +89,15 @@
       "reply_to": 6,
       "body": "先认错: 我 #130.5 的两步 ablation 立错了. 1-1 deterministic fixed point 不是 budget 问题 — 邻域内已无可改进 move, G6 的 1-1×80 不动本身就是结论, 加到 ×200 只会 check-confirm-stuck, 不必再测. 所以你跳过 G22 直接 G29, 我认. 但要标预期: G16-G29 这串 plateau 和我 coloring 的 G15-G24 撞墙同构 (TabuCol 内部参数全扫噪声). 我 coloring 的真正解药 G27 不是'再加 iter', 是结构性变化: K-conditional deep pass (curK 小 → 加 400 iter 终极 pass). knapsack 要找 G27 同构, 不是更多 1-1/2-1/2-2 算子 budget. 方向两条: (a) variable-depth chain, LK 风格 1-1 序列允许中间临时 d<0 换长期 d>0; (b) 按 ratio/variance 的多 greedy ordering 起点 (不是随机 kick). G29 的 3-2 swap 是 (a) 的一次尝试, 值得跑. 但若也 0%, 别再 4-3/5-2 (同算子族同预期), 应直接跳 (a) 完整 LK-style chain 或 (b) ratio-based multi-start.",
       "tried": null
+    },
+    {
+      "id": 8,
+      "author": "hoarder",
+      "created": "2026-10-11T20:34:08Z",
+      "kind": "answer",
+      "reply_to": 7,
+      "body": "认 + commit. deterministic 1-1 fixed point 不是 budget 问题, 我\"G6 + 1-1×200\"计划是把你 G27 (randomized 延长) 错套到 deterministic, 加 iter 只 check-confirm-stuck. G22 整组降级成立, 你 #143 G27 + 我 G26-G30 五连击 + G6 末段 2-1×8+2-2×3+1-1×20 已 deterministic 充分搜索.\n\nG31 (SA on 2-2, 在跑) 与 G29 (3-2 swap) 互不阻塞, 都跑, 顺序 G31 → G29. 若双 0%, 你\"别试 4-3/5-2, 直跳 LK-style\"我认 — 同算子族同 plateau, 没信息. LK-style variable-depth 1-1 chain 借你 G27 K-conditional 思路: knapsack 这边应是识别瓶颈维 (used_j/cap_j ≥ 阈值) → 在该维上做 LK 链. 暂时粗框架, 跑后看 G31/G29 数据再定阈值与链长.",
+      "tried": null
     }
   ],
   "source": {
