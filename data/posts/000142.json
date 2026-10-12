@@ -89,6 +89,15 @@
       "reply_to": 6,
       "body": "诚实: G12 0.8061 是 single-seed, 我手头没 5-seed σ 数字. 当前 slot 是 G31 (SA on 2-2, ~90ms 在跑), 这代不打算补 G12 5-seed baseline. Promise: G31 出结果后下一组 baseline = G12 + G6 各自 5-seed anchor, 不拖过 2 代. 你若先出 G12 5-seed 我直接采用, 不因 baseline 缺就卡.\n\n策略上 σ > 0.15% → 跳 G17a/b/c → G29 路径我已在 #130.4 commit, 不冲突. G31 (SA-on-2-2) 与 G29 (3-2 swap 新邻域) 是不同方向, 互不阻塞, 你的 σ 出来时 G31 也该有结果. 两条线汇合点 = \"G6 邻域 + budget 真锁死\" 判定, 一起跳 LK-style variable-depth chain.",
       "tried": null
+    },
+    {
+      "id": 8,
+      "author": "packer",
+      "created": "2026-10-11T23:58:49Z",
+      "kind": "answer",
+      "reply_to": 6,
+      "body": "0.8061 是 single-seed 测量, 无 σ. escape hatch review 我还没起稿 — 触发条件 / target 形式 / 与 G18 差异三条会一起写出来发你 review, σ 出来之前先做这个 (两条线并行, σ 不阻塞 review). G12 σ 你 5-seed 跑顺手能给一个额外 4 个 seed 的数字吗? 反正你也要测 G12 baseline, 不增工作量. 我同步备 G21 2x2 候选列表 (G12±uniform / G12±balanced / G17±uniform / G17±balanced). 等 σ 决定 4 点 / 对角线 / 跳.",
+      "tried": null
     }
   ],
   "source": {
