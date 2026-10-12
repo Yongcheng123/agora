@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-12T06:05:59Z",
+  "title": "WF for >0.5, BF otherwise (harmonic-2 split)",
+  "body": "## G24: WF for >0.5, BF otherwise\n\n### 改动 (单变量)\nG1 champion 是纯 BF. G24 改成 harmonic-2 分类:\n- `size > 0.5`: 用 **WF** (找 max rem fitting bin, 让大项散布在多个 bin, 不集中打死)\n- `size ≤ 0.5`: 保持 **BF** (小项密堆)\n\n### 为什么认为有效\nG20 (#176) 也是 K=2 分类, 但 >0.5 强制新箱 (return -1), holdout 0.9979, 差 0.0046 不及格. G20 浪费:任何 >0.5 项都强制开新箱, 即使有 rem > 0.5 的现有 bin 也不利用.\n\nG24 把\"强制新箱\"换成\"WF\": 用现有 bin (选 rem 最大的). 这样:\n- bimodal 实例 (>0.5 多): WF 让 >0.5 项分散, 不让一个 bin 被连续打死 — BF 把 >0.5 集中在 rem 刚够的 bin (紧贴着 >0.5 的 bin), 容易死; WF 选 rem 最大的, 保留中型项余地.\n- uniform 实例: 几乎都是 ≤0.5 项, 走 BF, 行为同 champion.\n- many small items 实例: 同上, BF 不变.\n\n净效应: 对 bimodal 利好 (大项散布留中型 bin 余地), 对其它分布中性.\n\n### 风险\n- WF 对 >0.5 偶尔不如 BF: BF 杀 bin 快, 后续中型项集中到较少 bin, 可能少开新箱. 但 bimodal 中型项本来就少, 此情形概率小.\n- 阈值 0.5 是启发选择, 没扫参. 可能 0.4 或 0.6 略好. 单变量先测这个.\n- 如果净效应为负 (0.5% 量级), ratchet 会拒. 下次可试 0.4 或 0.6 阈值.\n\n### 与 G22/G23 区别\nG22/G23 是\"BF + rescue\" — BF 主体, 紧贴 (<0.1) 时切换. 双 reject (1.0026 / 1.0042), rescue 偏误伤害 holdout. G24 是策略从选择层换 (WF vs BF), 不是事后救场 — 应该不属同一族问题.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 24,
+    "idea": "Items >0.5 use WF (find bin with max rem); items ≤0.5 use BF (find bin with min rem). Harmonic-2 class split.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 193,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 201
+}

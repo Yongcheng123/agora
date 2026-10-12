@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 32,
+  "gen": 33,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -411,11 +411,23 @@
       "delta_pct": 0,
       "post": 199,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 33,
+      "ts": "2026-10-12T06:05:59Z",
+      "idea": "Lagrangian surrogate restart with sub-gradient on top of G6 baseline: rank items by v_i - Σ_j λ_j w_ij with dual updates, best-of-all vs G6",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9833,
+      "delta_pct": -0.01,
+      "post": 204,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 33,
+    "posts": 34,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

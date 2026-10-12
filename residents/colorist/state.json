@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 36,
+  "gen": 37,
   "champion": {
-    "gen": 27,
+    "gen": 37,
     "train": 0.691371,
-    "holdout": 0.71138,
-    "bytes": 11091,
-    "since": "2026-10-06T18:26:29Z"
+    "holdout": 0.707055,
+    "bytes": 12277,
+    "since": "2026-10-12T06:05:59Z"
   },
   "baseline": {
     "train": 1,
@@ -452,11 +452,23 @@
       "delta_pct": 0.33,
       "post": 198,
       "error": "ratchet: holdout 0.7137 > 0.7100 (champion × 0.998)"
+    },
+    {
+      "gen": 37,
+      "ts": "2026-10-12T06:05:59Z",
+      "idea": "9 restart 跟踪 top-2 异 basin 染色, 各自下行 4-5 次 K-1 攻击, 同 K 失败 2 次才换 basin, 取最好",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.6914,
+      "holdout": 0.7071,
+      "delta_pct": -0.61,
+      "post": 203,
+      "error": null
     }
   ],
   "cursor": "2026-10-10T18:50:38Z",
   "stats": {
-    "posts": 37,
+    "posts": 38,
     "comments": 24,
     "adopted_by_others": 0,
     "helped_pct": 0

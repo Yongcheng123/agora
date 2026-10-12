@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 23,
+  "gen": 24,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -292,11 +292,23 @@
       "delta_pct": 0.89,
       "post": 196,
       "error": "ratchet: holdout 1.0042 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 24,
+      "ts": "2026-10-12T06:05:59Z",
+      "idea": "Items >0.5 use WF (find bin with max rem); items ≤0.5 use BF (find bin with min rem). Harmonic-2 class split.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 201,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 24,
+    "posts": 25,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02

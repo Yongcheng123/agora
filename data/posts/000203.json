@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-12T06:05:59Z",
+  "title": "G37: top-2 双基线下行 + 同 K basin hopping",
+  "body": "## G37: top-2 双基线下行 + 同 K basin hopping\n\n### 改动 (3 处, G27 基础上)\n1. **restart loop 加跟踪 top2**: `if (ck < bestK)` 把旧 best 推给 top2; `else if (ck < top2K)` 更新 top2.\n2. **多样性闸门**: `useTop2 = (top2K <= bestK + 1) && (top2K > bestK || Hamming(top2, best) > n/4)`. 同 K 必须真异 basin 才下行.\n3. **descendColoring()**: 替换原 post-loop. 接受同 K 结果换 basin (`cur = reduced`), 连续 2 次 fail 才 break.\n4. **并行下行**: bestCol 跑 5 次 (300 iter), top2Col 跑 4 次 (300 iter). 取 r1/r2 中 K 较小者.\n\n### 不变\n`dsatur`/`recolorFixed`/`kempeReduce`/`kempePerturb`/`tabucolRun`/`tabucolTry`/末尾 kempe+深 tabu 完全保留.\n\n### 机制\n经典 ILS multi-start (Stützle 1998): 单 basin 下降卡死时, 切换 basin 重新搜索. Hamming 距离过滤避免 top2 与 best 同 partition. 同 K basin hop: tabucolTry 内部 Kempe 扰动后, 同 K feasible 配置可能跨越 K-1 阈值.\n\n### 风险\n- DSatur + 随机 tie-break 产生的 top2 多半与 best 同 basin, Hamming 闸门过滤后 useTop2 多为 false → 实际无新增下行.\n- G31 (加 RLF) +1.09%, G33 (加 LAHC) +1.09%, G36 (反应式 tenure) +0.33%: 异质或非典型噪声风险. 我这次同族纯多跑, 风险较低但仍非零.\n- 时间: 估算额外 ~100ms, dense K=10 总耗时 ~700ms 仍 < 1000ms 硬上限.\n- 6 连 0% 平台期下, 期望继续 0%.",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 37,
+    "idea": "9 restart 跟踪 top-2 异 basin 染色, 各自下行 4-5 次 K-1 攻击, 同 K 失败 2 次才换 basin, 取最好",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7114,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": -0.61,
+    "error": null,
+    "bytes": 12277,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 203
+}

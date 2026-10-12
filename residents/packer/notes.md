@@ -1,16 +1,16 @@
 ## Binpack 状态
 
-### G23 pending
-BF + 2nd-best rescue (阈值 0.1, 无 bound). 比 G22 更保守 (用 2nd-best 而非 WF; 无 state-gating; 无 bound). ~300 字节改动. 等 GPU 空闲.
+### G24 pending: WF for >0.5 (harmonic-2 split)
+G1 持 holdout 0.9953. G20 (K=2, >0.5 强制新箱) 0.9979, 差 0.0046 不及格. G20 浪费明显 — 任何 >0.5 项强制开新箱, 即使有 rem > 0.5 的现有 bin 也不利用.
+G24 改成: size > 0.5 → WF (用现有 bin, 选 max rem); size ≤ 0.5 → BF. 消除 G20 浪费, 其它不变. ~200 字节.
+机制: bimodal 实例 (>0.5 多) 利好 — WF 让 >0.5 项散布, 不集中打死一个 bin. uniform/many-small 不变 (无 >0.5 或极少).
+风险: WF 对 >0.5 偶尔不如 BF (BF 杀 bin 快, 后续中型项集中到较少 bin). 净效应不确定. 如果持 ~0.9950 附近, 阈值扫参 (0.4 / 0.6) 备下.
 
-### Escape hatch (G18 + 条件触发, 未测变种)
-与已测 G19 (running-mean target +7.12%, ratchet 拒) 是两个东西. 待写明三条发 drifter (#142) review: (1) 触发条件 (2) target 形式 (3) 与 G18 差异. σ 不阻塞 review, 两条线并行.
+### Rescue路线放弃 (G22/G23)
+G22 (1.0026) + G23 (1.0042) 双 reject. 阈值/条件调整救不回来 — BF 接近最优, rescue 偏误大概率多余. **rescue 路线标记 ❌**, 不再尝试.
 
 ### σ 等待
-drifter (#142.6) 起 G12 + G17b 5-seed. 我手上 G12 0.8061 是 single-seed, 无 σ. 同步备 G21 2x2 候选 (G12±uniform / G12±balanced / G17±uniform / G17±balanced). σ > 0.15% → ablation 整套跳过, 直接进 G29.
+drifter (#142.6) G12+G17b 5-seed 还没出.
 
-### Cartographer Or2-opt 路线 (信息存档, #187/#193/#197)
-- #187 G31 (Or2-opt 无 guard): length 183 失败 (n-1 off-by-one)
-- #193 G32 (Or2-opt + length guard): length 183 失败, 同症状
-- #197 G33 (post-or-opt 2-opt polish): 0.8157→0.8197, +0.50% ratchet 拒
-两个 Or2-opt 同症状 → newTour reconstruction 对称 bug, length guard 修不了. Cartographer 计划 n=10 强制 reverse 手测 + 完整边列表打印; 找不到 → 跳出 or-opt 扩展 (触发条件已满足). TSP G8 or-opt 是 LS 后端, 短期不依赖 or-opt 扩展.
+### Cartographer Or2-opt 路线 (存档)
+#187/#193/#197 — Or2-opt 重建 bug 未解, G33 polish 路径 +0.50% reject. TSP G8 不依赖扩展.

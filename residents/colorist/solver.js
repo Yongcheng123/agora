@@ -145,7 +145,7 @@ function solve(n, edges) {
     for (let v = 0; v < n; v++) {
       if (work[v] === cA) {
         const d = deg[v];
-        if (d > startDeg) { startDeg = d; start = v; ties = 1; }
+        if (d > startDeg) { startDeg = d; ties = 1; start = v; }
         else if (d === startDeg) { ties++; if (Math.random() * ties < 1) start = v; }
       }
     }
@@ -318,9 +318,12 @@ function solve(n, edges) {
     return tabucolRun(work, K, maxIter);
   }
 
+  // === G37: track top-2 distinct basins from restarts ===
   const K_RESTARTS = 9;
   let bestCol = null;
   let bestK = Infinity;
+  let top2Col = null;
+  let top2K = Infinity;
   for (let k = 0; k < K_RESTARTS; k++) {
     const rng = k === 0 ? null : Math.random;
     const col = dsatur(rng);
@@ -338,21 +341,67 @@ function solve(n, edges) {
       ck = ck2;
     }
     if (ck < bestK) {
+      top2Col = bestCol;
+      top2K = bestK;
       bestCol = new Int32Array(cur);
       bestK = ck;
+    } else if (ck < top2K) {
+      top2Col = new Int32Array(cur);
+      top2K = ck;
     }
   }
-  let cur = new Int32Array(bestCol);
-  let curK = bestK;
-  for (let attempt = 0; attempt < 4 && curK > 2; attempt++) {
-    const reduced = tabucolTry(cur, curK - 1, 300);
-    if (!reduced) break;
-    recolorFixed(reduced);
-    const newK = numColors(reduced);
-    if (newK >= curK) break;
-    cur = reduced;
-    curK = newK;
+
+  // Diversity gate: top2 must be in a different basin than best
+  let useTop2 = false;
+  if (top2Col && top2K <= bestK + 1) {
+    if (top2K > bestK) {
+      useTop2 = true;
+    } else {
+      let diff = 0;
+      for (let v = 0; v < n; v++) if (top2Col[v] !== bestCol[v]) diff++;
+      if (diff > (n >> 2)) useTop2 = true;
+    }
   }
+
+  // === G37: multi-baseline descent with basin hopping ===
+  function descendColoring(startCol, startK, attempts, iter) {
+    let cur = new Int32Array(startCol);
+    let curK = startK;
+    let fails = 0;
+    for (let attempt = 0; attempt < attempts && curK > 2; attempt++) {
+      const reduced = tabucolTry(cur, curK - 1, iter);
+      if (!reduced) {
+        fails++;
+        if (fails >= 2) break;
+        continue;
+      }
+      recolorFixed(reduced);
+      const newK = numColors(reduced);
+      cur = reduced;
+      if (newK < curK) {
+        curK = newK;
+        fails = 0;
+      } else {
+        fails++;
+        if (fails >= 2) break;
+      }
+    }
+    return {col: cur, k: curK};
+  }
+
+  const r1 = descendColoring(bestCol, bestK, 5, 300);
+  let cur = r1.col;
+  let curK = r1.k;
+
+  if (useTop2) {
+    const r2 = descendColoring(top2Col, top2K, 4, 300);
+    if (r2.k < curK) {
+      cur = r2.col;
+      curK = r2.k;
+    }
+  }
+
+  // Final kempe reduce + extra deep tabucol for small K (preserved from G27)
   const kemped = kempeReduce(cur);
   recolorFixed(kemped);
   const finalK = numColors(kemped);
@@ -360,7 +409,6 @@ function solve(n, edges) {
     cur = kemped;
     curK = finalK;
   }
-  // G27 ADD: extra deep tabucolTry for small K
   if (curK > 2 && curK <= 8) {
     const reduced = tabucolTry(cur, curK - 1, 400);
     if (reduced) {
@@ -372,6 +420,5 @@ function solve(n, edges) {
       }
     }
   }
-  bestCol = cur;
-  return Array.from(bestCol);
+  return Array.from(cur);
 }

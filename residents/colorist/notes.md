@@ -1,6 +1,6 @@
-# Notes (G36)
+# Notes (G37)
 
-## G27-G35 试验汇总
+## G27-G36 试验汇总
 - G27: tabucol 200→300 + curK≤8 400-iter 终极 pass → ✓ 当前冠军 0.7114
 - G28 (iter ↑): 0%
 - G29 (随机 recolor): 0%
@@ -10,31 +10,28 @@
 - G33 (LAHC fallback): +1.09% (异质算法噪声)
 - G34 (K-2 跳级 + bipart): 0%
 - G35 (Kempe 内 iterative recolor): 0%
-- 5 连 0% (G32/G34/G35 + G28/29/30) 平台期已确认
+- G36 (反应式 tenure): +0.33%
+- 6 连 0% (G28/29/30/32/34/35) + 3 次负向 (G31/33/36) 平台期已硬
 
-## G36 (执行)
-- tabucolRun 内 tenure 由静态 `5 + random(0..4)` 改为反应式
-- 跟踪 `lastImproveIter`, 改善时设当前 iter
-- `tenureBase = 4 + min(10, floor(stuckCount / 8))`, 范围 4–14
-- `tenure = tenureBase + random(0..2)`, 范围 4–16
-- 改善 → tenure 立即回落 ~4 (exploitation)
-- 卡住 → tenure 增到 14 (diversification)
+## G37 (执行)
+- 假设: 单一 basin 内 K-1 攻击卡死, 但其他 basin 可能可降
+- 9 restart 跟踪 top-2 (K 优先, 同 K 时 Hamming > n/4 才用)
+- descendColoring(): 允许同 K 换 basin, 失败 2 次退出
+- bestCol 5 次尝试 + top2Col 4 次尝试 (各 300 iter)
 
 ## 机制
-- 经典 tabu search 理论 (Glover 1989, Taillard 1991): 固定 tenure 不优
-- 进展期 intensification (短 tenure, 允许反复做好的 move)
-- 卡住期 diversification (长 tenure, 强制走未访问的 (v, c) 组合)
-- Hertz & Werra 1987 之后, tabucol for graph coloring 文献常用反应式 tenure
+- 经典 ILS multi-start (Stützle 1998): 单 basin 下降卡死时切换 basin
+- Hamming 距离过滤: 避免 top2 与 best 实际同 partition (浪费算力)
+- 同 K basin hop: tabucolTry 内部 Kempe 扰动后的同 K feasible 配置可能跨越 K-1 阈值
 
 ## 风险
-- 改动小, 大概率 0% (ratchet 噪声内)
-- 长期 tenure 14 限制搜索空间, 可能错过最优
-- 同族内调整, 不引入异质噪声 (vs G33 LAHC)
+- DSatur + 随机 tie-break 产生的 top2 多半与 best 同 basin, 闸门过滤后 useTop2 多 false
+- 6 连 0% 平台期, G37 也大概率 0%
+- 时间: 额外 ~100ms, dense 总耗时 ~700ms < 1000ms
 
-## 下一步 (若 G36 仍 0%)
-5 连 0% 平台期说明 G27 在 DSatur+kempe+tabucol 框架内已饱和. 需要结构性改动:
-- 多起点并行 descent (top-3 basins 同时降 K)
-- 3-color Kempe swap (扩展颜色交换)
-- MIS-based 初始化 (random priority + greedy MIS, 部分取代 DSatur)
-- Population-based crossover (top-3 colorings, 颜色类组合)
-- 细粒度 iter budget 分配
+## 下一步 (若 G37 仍 0%)
+7 连 0% + 3 负向, 框架已饱和, 需要**真结构性**改动:
+- 取消 DSatur, 改 random-greedy MIS-based 初始化 (independent sets 联合生成)
+- 引入颜色类交叉重组 (取两 top-2 染色, 合并颜色类做 Kempe/重染)
+- 主下降换成 HEA / GROUPING-X (population-based memetic)
+- 双 tabu 链并行 + 周期性交换 best

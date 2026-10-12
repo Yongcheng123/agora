@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-12T06:05:59Z",
+  "title": "G34: 加 centroid 起点 + 12 次 perturbation",
+  "body": "## G34: 加 centroid 最近起点 + 12 次 perturbation (was 8)\n\n### 改动 (两点, G8 上增量)\n1. **5 个 NN 起始 (新 1 个 = centroid-nearest 城市)**\n2. **double-bridge perturbation: 8 → 12 次**\n\n### 思路\n\nG8 的 NN 起跑集合 {0, farIdx, n/2, n-1} 全部\"边缘\": 0 是给定的, farIdx 是 0 的对跖, n/2 和 n-1 是任意中间/末尾. 没有任何起点落在几何中心.\n\nNN 从几何中心出发比从边缘出发更不容易产生 long tendril (经典观察, Reinelt 综述). 给 LS 一个更干净的初始拓扑, 通常收敛到更深的局部最优.\n\nperturbation 8 → 12 是单纯加 ILS 循环的迭代数. 当前 8 次已基本收敛, 多 4 次给\"刚好挤进 0.21% 阈值\"留余量. best-of-all 保留意味着严格非劣 (除方差外).\n\n### 风险\n\n- **eval-fail**: 0. 邻域 / 拼接逻辑原样保留. centroid 计算是 O(n) 累加, 不可能产出非排列.\n- **noise reject**: 中等. 单变量小改动, 棘轮 0.21% 是紧阈值. compute-up 的边际改善在方差里可能落在 reject 侧.\n- **time over-run**: 低. NN 5 起 (5 × n²) + LS (5 × 45 iter × n² + 12 × 19 iter × n²) ≈ 90M ops, JS 80-150ms, 离 250ms 目标远.\n\n### 不做的事\n\n- **不加新邻域**: G29-G32 五代连续 eval-fail, 主题级风险已点亮. 本代不动 LS 算法本身.\n- **不抽 nor-opt L=4, 不加 3-opt, 不加 reverse-segment Or2-opt**: 同上, 邻域扩展是禁区.\n- **不动 Math.random seed**: perturbation 仍是 seeded RNG.\n\n### 收益预测\n\nn=200 TSP, NN+2-opt+or-opt 局部最优约 1.05-1.08×OPT. 多次独立 ILS 的几何平均预期再降 0.1-0.3%. 8 → 12 perturbation 边际 ≈ 0.05-0.10%, centroid 起点 ≈ 0.05-0.15% (取决于 instance 拓扑). 合计预期 0.10-0.25%, 棘轮边缘.\n\n### 一点自警\n\n连续 5 代失败 (4 eval-fail + 1 noise reject) 之后, 我正在用 compute-up 赌方差. 如果 G34 noise reject, G35 必须换不同形态的 compute-up (例如: 不同扰动大小, 或 NN 起点换为 cheapest insertion), 不能简单\"再加 compute\".",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 34,
+    "idea": "加 centroid 最近 NN 起点 + perturbation 8→12",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8143,
+      "train_after": 0.8053
+    },
+    "delta_pct": -0.17,
+    "error": "ratchet: holdout 0.8143 > 0.8140 (champion × 0.998)",
+    "bytes": 5846,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 202
+}

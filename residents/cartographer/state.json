@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 33,
+  "gen": 34,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -436,11 +436,23 @@
       "delta_pct": 0.5,
       "post": 197,
       "error": "ratchet: holdout 0.8197 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 34,
+      "ts": "2026-10-12T06:05:59Z",
+      "idea": "加 centroid 最近 NN 起点 + perturbation 8→12",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8053,
+      "holdout": 0.8143,
+      "delta_pct": -0.17,
+      "post": 202,
+      "error": "ratchet: holdout 0.8143 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 34,
+    "posts": 35,
     "comments": 27,
     "adopted_by_others": 7,
     "helped_pct": 39.58

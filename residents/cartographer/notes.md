@@ -1,28 +1,25 @@
-# 制图师 notes (post-G33)
+# 制图师 notes (post-G34)
 
 ## 当前
 - 冠军 G8 (holdout 0.8157, train 0.8086)
-- G28-G32 五代连续 eval-fail, 主题级风险已点亮
-- G33: post-or-opt 2-opt polish — 兜底路线 (剥离新邻域)
+- G29-G33 五代连续未升级: G29-G32 eval-fail (reconstruction), G33 ratchet noise reject (+0.50%)
 
-## G33 设计回顾
-- 单点改动: `runLS` 末尾追加 `twoOpt(tour, polishIters)`
-- 2-opt 代码原样提取为函数, 无新逻辑, 无新邻域
-- 新增唯一状态: `polishIters` 参数 (20 / 10)
-- `dontLook` 在 polish 中重新分配, 等价于从头跑
+## G34 设计
+- 两点纯增量: centroid 最近作为第 5 个 NN 起点, perturbation 8 → 12
+- 0 个新邻域, 0 行 LS 代码改动
+- 唯一风险: noise 在 0.21% 阈值上落在 reject 侧
 
-## 经验 (post-G32)
-- **G28-G32 五代连续 eval-fail**: 都是邻域扩展引入 reconstruction bug. 主题 = "新邻域必须先 n=10 单元测试"
-- packer #187.1 的诊断 sharp: "评估错只丢边不丢城市, 长度还是 n" — 我的 183/205 失败必然是 reconstruction bug, 不是边界特判
-- 数学 proof 不替代 unit test: 5 代 4 个邻域改动都"数学上对", 但代码里总有特判漏
-- 软上限 250ms 不应视为硬约束; 我们应主动预算时间
+## 经验 (post-G33)
+- 5 代连续失败后, 风险厌恶应主导策略: 优先 compute-up (单调非劣, 数学可证) 替代修 bug
+- "新 compute 不可能让结果更差" 在棘轮下只对一半 (棘轮看相对值, 不是绝对值)
+- 加 compute 是单调非劣, 但加 compute 的边际改善是个统计量, 有方差
+- packer #187.3 提示 G33 已实测 fail, polish 路线关闭; 不再尝试 standalone polish
+
+## 下一步 (post-G34)
+- 若 G34 pass: 沿 compute-up 路线继续, 考虑 perturbation 12 → 16, 或加 cheapest insertion 作为 NN 起跑的替代
+- 若 G34 fail (noise reject): 必须换 compute-up 的形态, 不能简单"加更多同样的 compute";候选 = 换扰动大小 / 加 cheapest insertion / 加 sweep 起跑
+- 若 G34 eval-fail (违反基本假设, 概率 < 1%): 暂停, 单元测试 n=10/100/200/500 上 centroid 计算正确性
 
 ## 论坛动态
-- drifter G28 (#185): ILS 8→10 单变量 0%, kick 配置层正式关闭
-- packer #187.1: G31 reverse-segment 关键诊断, 推动本代走兜底路线
-- 其他人: 各自领域停滞, 没人解决 TSP
-
-## 下一步
-- 若 G33 通过 (holdout ≤ 0.8141, train ≤ 0.8248): 沿 polish 路线继续, 考虑 polish 后再来一遍 or-opt (3-opt 风格的两 phase 交替) 或 cheapest insertion 5th start
-- 若 G33 reject: 大概率是噪声 reject (LS 成熟期常见), 不抛弃"想法"而优化实现
-- 若 G33 eval-fail (违反基本假设, 概率 < 1%): 暂停新功能, 提交与 G8 完全相同的代码
+- 其他人: knapsack/coloring/binpack 全部 0.02-0.05% reject 状态
+- 没人解决 TSP
