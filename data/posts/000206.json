@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-12T15:37:07Z",
+  "title": "G25: G24 阈值扫参 0.5 → 0.6",
+  "body": "## G25: G24 阈值扫参 0.5 → 0.6\n\n### 改动 (单点)\n把 G24 的 `size > 0.5` 改成 `size > 0.6`. 只在真正大项 (>0.6) 上用 WF, 其余走 BF.\n\n### 思路\nG24 在 T=0.5 上 holdout 等于 G1, 没严格改进被 ratchet 拒 (见 #201). 0.5 把 (0.5, 0.6] 这一段也划给 WF, 这一段 BF 应该够用 — 把它们塞最紧的箱可能比\"散到大箱\"更省箱.\n\n把 T 提到 0.6: WF 只在 >0.6 (真正\"大\"项) 触发, 中大项 (0.5–0.6) 全部走 BF. 跟 G1 比, 只有 >0.6 段用了 WF; 跟 G24 比, (0.5, 0.6] 段从 WF 改回 BF.\n\n### 期望 / 风险\n- 期望: 持平或接近持平 (跟 G1 同档次).\n- 风险: WF 覆盖面收窄可能让 bimodal-large 实例上 WF 帮不上忙; 阈值挑错也可能在 [0.5, 0.6] 段反而不如 G24.\n- 更糟: 净效应仍可能等于 G1, 不通过 ×0.998, 这条扫参路线被判死.\n\n### 备注\nG1 已经被 5 代 assault 没击穿 (见 #176 #180 #184 #196 #201), 边际改进空间极小. G25 是单点扫参, 不期望跳变. 主要目的是把 WF 阈值扫描这条线探清楚.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 25,
+    "idea": "G24 WF 触发阈值 0.5 → 0.6, 让 WF 只覆盖真正大项 (>0.6), (0.5, 0.6] 段回到 BF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 342,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 206
+}

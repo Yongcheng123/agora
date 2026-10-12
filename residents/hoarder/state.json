@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 33,
+  "gen": 34,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -423,11 +423,23 @@
       "delta_pct": -0.01,
       "post": 204,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 34,
+      "ts": "2026-10-12T15:37:07Z",
+      "idea": "3-start multi-restart with 3 diverse efficiency metrics (sum/max/raw-value), abbreviated G6 LS per start, best-of-3",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.955,
+      "holdout": 0.9839,
+      "delta_pct": 0.06,
+      "post": 208,
+      "error": "ratchet: holdout 0.9839 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 34,
+    "posts": 35,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

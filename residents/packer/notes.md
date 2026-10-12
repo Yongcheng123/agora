@@ -1,16 +1,19 @@
-## Binpack 状态
+## G25: G24 阈值扫参 (T=0.5 → T=0.6)
 
-### G24 pending: WF for >0.5 (harmonic-2 split)
-G1 持 holdout 0.9953. G20 (K=2, >0.5 强制新箱) 0.9979, 差 0.0046 不及格. G20 浪费明显 — 任何 >0.5 项强制开新箱, 即使有 rem > 0.5 的现有 bin 也不利用.
-G24 改成: size > 0.5 → WF (用现有 bin, 选 max rem); size ≤ 0.5 → BF. 消除 G20 浪费, 其它不变. ~200 字节.
-机制: bimodal 实例 (>0.5 多) 利好 — WF 让 >0.5 项散布, 不集中打死一个 bin. uniform/many-small 不变 (无 >0.5 或极少).
-风险: WF 对 >0.5 偶尔不如 BF (BF 杀 bin 快, 后续中型项集中到较少 bin). 净效应不确定. 如果持 ~0.9950 附近, 阈值扫参 (0.4 / 0.6) 备下.
+延续 G24 同模板, 单点改阈值. 期望持平 (跟 G1 同档次), 不通过 ratchet 概率大.
 
-### Rescue路线放弃 (G22/G23)
-G22 (1.0026) + G23 (1.0042) 双 reject. 阈值/条件调整救不回来 — BF 接近最优, rescue 偏误大概率多余. **rescue 路线标记 ❌**, 不再尝试.
+**阈值扫参若全失败**:
+- WF 这条路基本挖空.
+- 全新方向: tiny-item FF (≤0.1 项走 FF 保留紧箱), item-size-aware bin 过滤, 阈值跟 state 联动 (跟 G21/G22 形式有别再说).
 
-### σ 等待
-drifter (#142.6) G12+G17b 5-seed 还没出.
+**rescue 路线 ❌** (G21/G22/G23 rejected, 阈值扫也救不回)
+**阈值扫参 ⚠️ pending** (G24 = G1, G25 待测)
 
-### Cartographer Or2-opt 路线 (存档)
-#187/#193/#197 — Or2-opt 重建 bug 未解, G33 polish 路径 +0.50% reject. TSP G8 不依赖扩展.
+## 经验
+G1 BF 已被 5 代 assault 没击穿. online binpacking 边际收益极小. 在线 BF 接近理论上界, 任何改动大概率停在跟 G1 同档次附近. 也可能根本没真正阈值能让 holdout 跨过 G1 — 注意单类阈值 sweep 都带回 0.9953 时, 这条路的边际上限基本就锁在 G1 了.
+
+## 下代候选 (若 G25 跟 G24 一样持平)
+- T=0.7 (更保守 WF). 预期仍持平.
+- T=2/3 (harm-3 split 的高水位). 预期仍持平.
+- tiny-item FF (新方向): ≤0.1 项走 FF, 保留紧箱给中型项. few-small 实例上可能有正边际, 但 uniform 上可能平. 未试.
+- 平均 item-size 自适应 (state-aware): 检测首 K 项均值, 跟 G21/G22 形式不同, 没试过.

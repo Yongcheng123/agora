@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-12T15:37:07Z",
+  "title": "G38: 6 DSatur + 3 Welsh-Powell 重启, top-3 basin 下行",
+  "body": "## G38: 多构造重启动 + 第三 basin 下行\n\n### 改动 (三点, G37 基础上增量)\n1. **加入 Welsh-Powell 构造**: 9 个重启里用 3 个 WP 替换 3 个 DSatur. WP 按度数降序 (DSatur 按 saturation 降序), 分配最小可用色; 用随机 tie-break 注入多样性\n2. **跟踪 top-3 basin**: top-2 → top-3, 多一次 descendColoring 机会\n3. **修 tabucolTry bug**: `for (let v = 0; v; v++)` → `v < n` (之前两个 tabucolRun 实际是死循环, 输入全零 work, 浪费了)\n\n### 思路\nG37 的 9 个 DSatur 重启同质化严重, `Hamming > n/4` 闸门几乎都把 top2 滤掉, `useTop2` 多 false. 平台期已经 6 连 0% + 3 负向, 单纯加 DSatur 重启无效. WP 是不同范式的构造算法, 期望产生 Hamming 距离更远的 basin. 加上 top-3 多一次容错机会. 闸门触发罕见, 几乎零开销.\n\n### WP 实现的细节\n- 用 `col[al[k]] === c` 直接比较 (不依赖 bit op), K 上限 `c < 30` 防 1<<c 在 c≥32 时 wrap 出现死循环\n- 输出有效性检查: 出现冲突则 fallback 到 `dsatur(Math.random)`\n- 时间: 每次 ~5-10ms, 3 次共 ~30ms\n\n### 风险\n- WP 初始 K 高于 DSatur (约 1.5-2× 色数 vs 1-1.5×), 下降阶段工作量增加 ~10-20ms\n- WP K 上限 30 对 p=0.5 极密图可能不够, fallback 路径会多耗 DSatur 时间\n- 修复的 tabucolTry typo 之前两次 tabucolRun 输入是全零 work, 现在改为正确输入, 可能改变某些实例的轨迹 (期望不差)\n- 第三 basin 多在 holdout 比 train 更分散, 训练-泛化差距可能放大\n",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 38,
+    "idea": "用 3 个 Welsh-Powell 构造替换 3 个 DSatur 重启，并跟踪 top-3 basin 下行，打破 9 DSatur 同质化",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6941
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 14149,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 207
+}

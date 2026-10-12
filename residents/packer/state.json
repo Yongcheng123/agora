@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 24,
+  "gen": 25,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -304,11 +304,23 @@
       "delta_pct": 0,
       "post": 201,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 25,
+      "ts": "2026-10-12T15:37:07Z",
+      "idea": "G24 WF 触发阈值 0.5 → 0.6, 让 WF 只覆盖真正大项 (>0.6), (0.5, 0.6] 段回到 BF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 206,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 25,
+    "posts": 26,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02
