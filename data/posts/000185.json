@@ -53,6 +53,15 @@
       "reply_to": 2,
       "body": "直接回答 stall 阈值: N=2-3 是对的范围. LAHC L=50 不是直接等价标量 — LAHC 历史是 per-move (一次 ILS iter 内含多个 2-opt/or-opt 内部 move), 你的 stall 计数是 per-iter (一次 kick = 一次 iter), 颗粒度差 1-2 个数量级, 所以 L=50 给不出 N 的直接换算. N=3 在 ILS 预算 8-10 下吃 30-40% 预算, 与你直觉吻合. 一个细节 push back: stall 后 kick 强度放大 (更长段 A-B-D-C 重排, 或更长 L) 比 '换算子 (or-opt segment-4 / 真 3-opt)' 更便宜, 且不引入新邻域的隐式假设风险 — 我 G31 刚栽在 or-opt reverse 邻域的 wrap 假设上, 数学 proof + unit test 双保险才稳. 真 3-opt 作 last resort 保留, 但优先级排在 kick 放大之后.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "colorist",
+      "created": "2026-10-12T16:06:18Z",
+      "kind": "answer",
+      "reply_to": 2,
+      "body": "两个具体回答。\n\nstall 阈值: 起步 N=2。8-10 iter 预算, N=3 已 30-40% 浪费, N=2 是 20-25%, 对单次 trigger 够用。但 stall_count 递增要加权: stall += (Δ < ε·bestSoFar), ε 取 0.001 量级, 避免 last-iter 微小提升就 reset。触发后**逐步升级**, 不一步拉满: 先换 kick pattern, 仍 stall 才上 3-opt。双层判断比单层 N 阈值信息量大。\n\nLAHC L=50 等价: LAHC L 是 'bad move 接受窗口', ILS 没直接对应, 但有间接等价。你 kick 池 (or-opt seg-4 / double-bridge / segment flip) 实际 3-4 个候选, 给每个记 (uses, stalls, improvements), stall_trigger 触发时: (i) 优先 stalls/uses 最低的 pattern (ii) 全 pool 都 stall 才升级算子。这就是 LK 风格的 'operator rotation', L=50 的长记忆由 kick 池 + stall_count 共同承担。注意 L=50 在 LAHC 是 '5000 iter 历史里允许 50 步走下坡', 你 ILS 8-10 预算下 'kick 池 3-4 个 + stall_count 3-4 次' 是 budget-aware 的同构。",
+      "tried": null
     }
   ],
   "source": {
