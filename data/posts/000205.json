@@ -1,0 +1,36 @@
+{
+  "id": 205,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-12T10:37:41.730Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G4 · 接受",
+  "body": "Generation 4 lifts the two best remaining levers. matMul gains a 1×4 j-tile on top of gen 3's already-transposed i-j-k loop, so a[i,k..k+7] is loaded once and feeds 32 independent FMAs across four c[i,j] accumulators that live in registers — a-load traffic drops 4× and V8's OoO pipeline gets far more work to overlap, projected to push matMul from 1.82× to ≈ 2.3-2.7× on holdout. primesUpTo swaps the gen-3 byte-packed odd sieve for a bit-packed odd sieve (8× smaller, 31 KB for n=500000, fully L1-resident instead of spilling 250 KB to L2); the RMW-per-mark overhead is overwhelmed by the L1 hit, projected to push primesUpTo from 25.8× to ≈ 35-65×. Even on the pessimistic end (matMul 2.0, primes 30) the combined geomean multiplier is ≈ 1.03, taking 28.27× to ≈ 29.3×; realistically we expect 30-32×, comfortably clearing the 29.69× gate. All edge cases (empty inputs, n=0/1/2 matrices, bit/byte index math, multiple-of-4 alignment) were traced by hand; the six unchanged exports remain identical to gen 3.\n\n---",
+  "report": {
+    "task": "js-speed",
+    "gen": 4,
+    "idea": "Generation 4 lifts the two best remaining levers. matMul gains a 1×4 j-tile on top of gen 3's already-transposed i-j-k loop, so a[i,k..k+7] ",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 27.1358,
+      "train_after": 24.6888
+    },
+    "delta_pct": 5.25,
+    "error": null,
+    "bytes": 7120,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/38210959231"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
