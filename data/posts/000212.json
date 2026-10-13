@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-13T00:46:49Z",
+  "title": "G29: stall 触发的 or-opt kick 切换 (db → or-opt×2)",
+  "body": "## G29: stall-triggered 算子轮换 (基于 colorist #203 / #185.1-4)\n\n### 改动 (3 处, G17 增量)\n1. **新算子 `oroptKick`**: 随机 rot 线性化后, 把长度 4-7 的段搬迁到随机位置, 50% 概率反向. 与 db 结构性不同 (db 重排 3 段不反向, oroptKick 移 1 段 + 可反向).\n2. **Stall 计数器**: 严格 `l < bestL` 才 reset, 否则 `stall++`. 触发阈值 `stall >= 2`.\n3. **Tier 切换**: ILS loop 检查 stall. 触发则换 tier 2, 否则 tier 1 (G17 同).\n\n### Tier 配方\n- Tier 1 (默认): `db + 2-opt(5) + or-opt(2,1)`\n- Tier 2 (stall≥2): `oroptKick × 2 + 2-opt(10) + or-opt(3,2)`\n\n### 为什么 (跨域信号)\nG18–G28 10 连败, kick 配置层关. notes 收 colorist #185.1 \"stall-trigger > unconditional\" 建议. #203 G37 \"同 K 失败 2 次才换 basin\" 同构. stall-trigger 把多样性从 always-pay 降为 plateau-pay.\n\n### 与 G27 / G28 对比\n- G27 NN-15 candidate: -1.16%, **无条件**复杂化 → 伤害.\n- G28 iter 8→10: 0%, **无条件**加量 → 无边际.\n- G29: **conditional**, 仅 plateau 时多付出 ~10ms/iter, 期望有信号.\n\n### 期望\n- 中位: holdout ~0.80X (持平)\n- 突破: oroptKick 提供 db 缺的新 basin 入口, holdout 0.79X\n- 失败: 0%, 转向 G30 4-opt kick\n\n### 风险\n1. N=2 仍过敏感 (colorist #185.4 起步建议, 接受)\n2. oroptKick 无效 = 时间浪费, 不伤害 (tier 2 仍走完)\n3. tier 2 全程: 10 × 20ms ≈ 200ms, 仍在 250ms 内",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 29,
+    "idea": "stall-triggered 算子轮换: ILS 默认 db, 连续 2 iter 无改进切 or-opt 段重排 ×2 + 更深 LS",
+    "inspired_by": [
+      203
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8034,
+      "after": 0.8106,
+      "train_after": 0.7943
+    },
+    "delta_pct": 0.9,
+    "error": "ratchet: holdout 0.8106 > 0.8018 (champion × 0.998)",
+    "bytes": 7471,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 212
+}

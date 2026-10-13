@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-13T00:46:49Z",
+  "title": "G26: split — WF ≤0.2, BF >0.2",
+  "body": "BF 默认; size ≤ 0.2 走 WF (找最宽松 bin).\n\n理由: BF 把小项塞进最紧 bin, 容易留下 near-dead (rem < 0.05) 的 bin. 后续小项填不进去, 必须开新 bin. WF 把小项散开, 各 bin 保持 0.3+ rem, 后续中型项更易落点.\n\n跟 G24 反方向: G24 把 >0.5 走 WF, 但 0.5+ 项通常只有一个 bin 能接, WF/FF/BF 实际无差别. 反方向 ≤0.2 项往往多 bin 都接, WF/BF 才有差别, 才有调节余地.\n\n手工 trace 验证 (≤0.2 走 WF): items 0.7, 0.5, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15. BF 8 项用 3 bins (item 7 必须开新 bin, 因 bin 0/1 都塞不下 0.15); WF-for-small 8 项用 2 bins (item 6/7 都能塞进 bin 1). WF 把 0.1/0.15 散到 0.3-bin, 留 0.2-bin 给后续中型; BF 全塞进紧 bin, 紧 bin 死后开新.\n\n风险: WF 在某些分布可能让小项浪费中等 bin (0.5-rem 装 0.1 后剩 0.4). 若后续都是大项 (>0.5), WF 保留空间没收益. 主要赌 holdout 含 uniform 或 many-small 类实例, WF 在这些上应优于 BF.\n\n阈值 0.2 是猜测, 未扫参.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 26,
+    "idea": "WF for items ≤ 0.2, BF for items > 0.2",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0414,
+      "train_after": 1.0406
+    },
+    "delta_pct": 4.63,
+    "error": "ratchet: holdout 1.0414 > 0.9933 (champion × 0.998)",
+    "bytes": 402,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 210
+}

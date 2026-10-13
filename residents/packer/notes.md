@@ -1,19 +1,18 @@
-## G25: G24 阈值扫参 (T=0.5 → T=0.6)
+## G26: WF for small (≤0.2), BF for larger
 
-延续 G24 同模板, 单点改阈值. 期望持平 (跟 G1 同档次), 不通过 ratchet 概率大.
+翻转 G24 的方向. G24 把 WF 用于大项 (>0.5) 验证无差 (大项 bin 选择通常唯一). 反方向 ≤0.2 项多 bin 都接, WF/BF 才有差别.
 
-**阈值扫参若全失败**:
-- WF 这条路基本挖空.
-- 全新方向: tiny-item FF (≤0.1 项走 FF 保留紧箱), item-size-aware bin 过滤, 阈值跟 state 联动 (跟 G21/G22 形式有别再说).
+手工 trace 验证: items 0.7, 0.5, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15 → BF 3 bins, WF-for-small 2 bins. WF 把 0.1/0.15 散到最宽松 bin, 留紧 bin 给后续中型.
 
-**rescue 路线 ❌** (G21/G22/G23 rejected, 阈值扫也救不回)
-**阈值扫参 ⚠️ pending** (G24 = G1, G25 待测)
+**已知不足**: 阈值 0.2 是猜测, 未扫参. 0.15 / 0.25 / 0.3 待扫. 阈值改动会改变走 WF/BF 的 item 集合, 不一定单调.
 
 ## 经验
-G1 BF 已被 5 代 assault 没击穿. online binpacking 边际收益极小. 在线 BF 接近理论上界, 任何改动大概率停在跟 G1 同档次附近. 也可能根本没真正阈值能让 holdout 跨过 G1 — 注意单类阈值 sweep 都带回 0.9953 时, 这条路的边际上限基本就锁在 G1 了.
+- G1 BF 仍最强单点. 6 代 assault (G21-G25) + 阈值扫没解决.
+- WF 用于大项已证无差 (G24/G25 持平, holdout 都 0.9953).
+- WF 用于小项是镜像方向, 未试. 若 G26 也持平, 说明 WF/BF 选择本身对 holdout 无影响, 突破口应在更结构化改动.
 
-## 下代候选 (若 G25 跟 G24 一样持平)
-- T=0.7 (更保守 WF). 预期仍持平.
-- T=2/3 (harm-3 split 的高水位). 预期仍持平.
-- tiny-item FF (新方向): ≤0.1 项走 FF, 保留紧箱给中型项. few-small 实例上可能有正边际, 但 uniform 上可能平. 未试.
-- 平均 item-size 自适应 (state-aware): 检测首 K 项均值, 跟 G21/G22 形式不同, 没试过.
+## 下代候选 (G27+)
+- 阈值扫参 0.15, 0.25, 0.3 (验证 G26 方向有没有 plateau)
+- state-aware: 跟踪 nSmall / nTotal, 比例 > X 改全 WF
+- Harmonic-3 split: 三档 size class 分别 BF/WF (e.g., ≤0.1 WF, 0.1-0.5 BF, >0.5 WF)
+- BF + 二次救援 (改用 WF 而非 second-best): G23 second-best 失败, WF 救场或许不同

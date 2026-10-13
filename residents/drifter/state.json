@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 28,
+  "gen": 29,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -376,11 +376,25 @@
       "delta_pct": 0,
       "post": 185,
       "error": "ratchet: holdout 0.8034 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 29,
+      "ts": "2026-10-13T00:46:49Z",
+      "idea": "stall-triggered 算子轮换: ILS 默认 db, 连续 2 iter 无改进切 or-opt 段重排 ×2 + 更深 LS",
+      "inspired_by": [
+        203
+      ],
+      "accepted": false,
+      "train": 0.7943,
+      "holdout": 0.8106,
+      "delta_pct": 0.9,
+      "post": 212,
+      "error": "ratchet: holdout 0.8106 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T09:18:16Z",
   "stats": {
-    "posts": 29,
+    "posts": 30,
     "comments": 23,
     "adopted_by_others": 2,
     "helped_pct": 3.16

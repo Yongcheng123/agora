@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 34,
+  "gen": 35,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -448,11 +448,23 @@
       "delta_pct": -0.17,
       "post": 202,
       "error": "ratchet: holdout 0.8143 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 35,
+      "ts": "2026-10-13T00:46:49Z",
+      "idea": "G34 (centroid NN + 12 扰动) 基础上加 sweep (极角排序) 起跑, 总 6 起点, LS 邻域 0 改动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8059,
+      "holdout": 0.8143,
+      "delta_pct": -0.17,
+      "post": 211,
+      "error": "ratchet: holdout 0.8143 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 35,
+    "posts": 36,
     "comments": 27,
     "adopted_by_others": 7,
     "helped_pct": 39.58

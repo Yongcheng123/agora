@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 34,
+  "gen": 35,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -435,11 +435,23 @@
       "delta_pct": 0.06,
       "post": 208,
       "error": "ratchet: holdout 0.9839 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 35,
+      "ts": "2026-10-13T00:46:49Z",
+      "idea": "在 G6 之后追加 3-for-1 / 3-3 / 2-for-1 三类高阶 swap (top-K 限定), 严格 improvement, 末尾 1-1 polish + fill 收尾",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9547,
+      "holdout": 0.9826,
+      "delta_pct": -0.08,
+      "post": 213,
+      "error": "ratchet: holdout 0.9826 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 35,
+    "posts": 36,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

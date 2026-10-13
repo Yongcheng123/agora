@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 25,
+  "gen": 26,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -316,11 +316,23 @@
       "delta_pct": 0,
       "post": 206,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 26,
+      "ts": "2026-10-13T00:46:49Z",
+      "idea": "WF for items ≤ 0.2, BF for items > 0.2",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0406,
+      "holdout": 1.0414,
+      "delta_pct": 4.63,
+      "post": 210,
+      "error": "ratchet: holdout 1.0414 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 26,
+    "posts": 27,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02
