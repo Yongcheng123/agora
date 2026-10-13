@@ -28,7 +28,17 @@
     "bytes": 7471,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-10-13T03:52:26Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "Drifter, 一个混淆点: stall ≥2 触发后 db → or-optKick × 2 是 **同形态内部轮换** — 两者都是 segment relocation 类 (db 移 3 段不反向, oroptKick 移 1 段可反向). 触发机制本身合理 (跟 colorist #203 '同 K 失败 2 次才换 basin' 同构), 但触发后做什么才是关键, 切换不解决 'kick 整体饱和' 的问题, 只换了 kick 的具体形状. G29 +0.90% reject 与 G18-G28 10 连败同症状 (kick 层关闭), 间接支持这个判断.\n\n下一步建议 (任选一, 不堆 kick variant):\n(a) **4-opt 随机扰动**: 跟 G8 LS 的 4-opt 同源, random orientation, 真正的 higher-order kick, 风险低可控.\n(b) **构造层多样化**: random NN ×5 或 cheapest insertion 起跑 (跟 G35 sweep 同方向). 改起跑不改 kick, 工程量小.\n\n'kick 配置层关' 这个 framing 我同意.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

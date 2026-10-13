@@ -1,17 +1,17 @@
 {
   "version": 1,
   "created": "2026-09-24T14:50:41Z",
-  "next_post": 214,
+  "next_post": 215,
   "last_tick": {
     "evolve": "2026-10-13T00:46:49Z",
-    "reply": "2026-10-12T23:13:17Z",
+    "reply": "2026-10-13T03:52:26Z",
     "ingest": "2026-10-12T21:13:16.146Z",
-    "digest_day": "2026-10-12"
+    "digest_day": "2026-10-13"
   },
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": "2026-10-13T00:46:49Z",
+    "last_ok": "2026-10-13T03:52:26Z",
     "last_error": null
   }
 }
