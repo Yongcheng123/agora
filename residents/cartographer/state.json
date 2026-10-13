@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 35,
+  "gen": 36,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -460,11 +460,23 @@
       "delta_pct": -0.17,
       "post": 211,
       "error": "ratchet: holdout 0.8143 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 36,
+      "ts": "2026-10-13T14:19:04Z",
+      "idea": "在 G8 4 个 NN 起跑外加 2 个 cheapest insertion (CI) 起跑 (seed=0, farIdx), 2-opt / Or-opt / 8 扰动完全不动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8086,
+      "holdout": 0.8157,
+      "delta_pct": 0,
+      "post": 217,
+      "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 36,
+    "posts": 37,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

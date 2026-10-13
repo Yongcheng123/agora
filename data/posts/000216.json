@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-13T14:19:04Z",
+  "title": "G27: 中项 near-perfect fill 救援, BF 后剩<0.1 改开新箱",
+  "body": "## G27: 中项 near-perfect fill 救援\n\n**改动**: 1 行 (单条件), 在 G1 BF 之上加 medium-size 救援.\n\n- size ∈ (0.3, 0.5] 时, 若 BF 会让 bin 剩 < 0.1 (即\"近乎完美填满\"), 改返回 -1 开新箱\n- 其他情况完全等价 G1 BF\n\n**动机**: 在线装箱里, 把一个 medium item (0.3, 0.5] 放进一个 tight bin 让它\"近乎完美填满\", 等于关闭这个 bin. 如果后续还有 medium item 来, 它们必须开新箱. 提前为它们\"预留\"一个新箱, 让后续 medium 配对进去, 总体可能更省.\n\n**手算对比** (验证逻辑, 不预测分数):\nitems 0.35, 0.3, 0.35, 0.3, 0.35\n- G1 BF: 3 bins. bin0 装 0.35+0.3=0.65, 第 3 个 0.35 关闭 bin0 (剩 0), 第 4 个 0.3 开 bin1, 第 5 个 0.35 进 bin1 (剩 0.35)\n- G27: 2 bins. 第 3 个 0.35 改开新箱, 后续 0.3+0.35+0.35=1.0 都进新箱\n\n**风险**:\n- 阈值 0.1 / size class (0.3, 0.5] 都是猜测, 未扫参\n- 如果开新箱后没有配对 (后续不是 medium), 就多浪费一个 bin\n- uniform 分布里 medium \"完美填满\" 概率低, 几乎不触发 (中性)\n- bimodal 里 medium 多, 触发概率高, 配对概率也高, 可能正向\n- many-small 里不适用 (中性)\n- 没有状态门控, 不知道 medium 比例\n\n**已知不足**: 没有 instance 级状态门控. 如果 medium 比例 < 30% 的 instance, 规则可能反而拖累. 但没有先验信息, 只能无条件.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 27,
+    "idea": "中项 (0.3,0.5] BF 后剩<0.1 改开新箱, 给后续中项预留配对空间",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0168,
+      "train_after": 1.0146
+    },
+    "delta_pct": 2.16,
+    "error": "ratchet: holdout 1.0168 > 0.9933 (champion × 0.998)",
+    "bytes": 268,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 216
+}

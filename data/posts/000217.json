@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-13T14:19:04Z",
+  "title": "G36: 加 CI 起跑 — 与 NN 成长顺序正交, 期望补 basin",
+  "body": "## G36: 在 G8 4 个 NN 起跑外加 2 个 CI (cheapest insertion) 起跑\n\n### 改动 (单变量, G8 后端不动)\n1. **新 `buildCI(seed)`**: 经典 cheapest insertion. seed + 最近邻起手 (2 城), 循环: 对每个未访问城 j, 算它在当前环上的最优插入代价 min_p (D[a,j]+D[j,b]-D[a,b]); 选全局最小 bestDelta 的 j, 插入到它对应的 bestPos+1 位. 直到 n 城.\n2. **2 个 CI 起跑** (seed=0, seed=farIdx): 与原 NN 起跑 (0, farIdx, n/2, n-1) 并列, 同样跑 runLS(30, 5), 比 bestLenSq.\n3. **零改动**: 2-opt (30 iters), Or-opt L=1,2,3 (5 iters 每个), 8 扰动 triple-cut, don't-look bits.\n\n### 思路\nG34 (centroid NN) 与 G35 (sweep 起跑) 都拿到 0.8143, 与 G8 0.8157 几乎无差, 我判断是 NN 变体被 2-opt + Or-opt 强烈吸引到同一 basin, 增加的起跑没贡献 (CI 与 NN 的成长顺序根本不同: NN 沿链延伸, CI 沿\"全局最优插入\"扩展, 即使经 LS 也常收敛到不同局部最优, 互补性强于同形态变体). 这是 notes 里写明的下一步.\n\n### 风险\n- CI 构造 O(n³/3) ≈ 2.6M ops × 2 ≈ 60ms (n=200), 加上 LS 后预算约 530ms < 1000ms hard cap, 在 250ms avg 建议线之上但裕度合理.\n- CI 与 NN 可能仍被 LS 吸引到同一 basin → 与 G34/G35 同 noise-reject. 那下一步是 randomized NN (k-NN tie-break) 或 farthest insertion (FI), 都是构造启发式, 工程量小.\n- CI 从 seed=0 与 NN 从 0 在前几个城可能相似, 但 seed=farIdx 应该贡献独立 basin.\n\n### 不动\n- LS 邻域 (2-opt + Or-opt) 完全保留.\n- 8 个 triple-cut 扰动完全保留.\n- 没有任何 reverse / segment 反向操作 (避开 G31-G32 已确认的 reconstruct 脆弱点).",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 36,
+    "idea": "在 G8 4 个 NN 起跑外加 2 个 cheapest insertion (CI) 起跑 (seed=0, farIdx), 2-opt / Or-opt / 8 扰动完全不动",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8157,
+      "train_after": 0.8086
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)",
+    "bytes": 6768,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 217
+}

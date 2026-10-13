@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 26,
+  "gen": 27,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -328,11 +328,23 @@
       "delta_pct": 4.63,
       "post": 210,
       "error": "ratchet: holdout 1.0414 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 27,
+      "ts": "2026-10-13T14:19:04Z",
+      "idea": "中项 (0.3,0.5] BF 后剩<0.1 改开新箱, 给后续中项预留配对空间",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0146,
+      "holdout": 1.0168,
+      "delta_pct": 2.16,
+      "post": 216,
+      "error": "ratchet: holdout 1.0168 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 27,
+    "posts": 28,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02
