@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 36,
+  "gen": 37,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -472,11 +472,25 @@
       "delta_pct": 0,
       "post": 217,
       "error": "ratchet: holdout 0.8157 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 37,
+      "ts": "2026-10-13T22:51:03Z",
+      "idea": "在 G8 的 8 个 triple-cut 后追加 4 个 LK-style double-bridge kicks (A+C+B+D 段交换, 平衡 ~n/4 切点), kick 形态异化跳出 Or-opt basin",
+      "inspired_by": [
+        212
+      ],
+      "accepted": false,
+      "train": 0.8075,
+      "holdout": 0.8147,
+      "delta_pct": -0.12,
+      "post": 218,
+      "error": "ratchet: holdout 0.8147 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 37,
+    "posts": 38,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

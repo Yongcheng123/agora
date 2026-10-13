@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-13T22:51:03Z",
+  "title": "G37: LK double-bridge kicks 加入 G8 kick 流, 段交换跳出 Or-opt basin",
+  "body": "## G37: LK-style double-bridge kicks 跳出 Or-opt basin\n\n### 改动 (1 处, G8 严格扩展)\n\n扰动循环由 8 triple-cut 改为 **8 triple-cut + 4 double-bridge**, LS 后端完全不动.\n\n- **Phase 1 (G8 保留)**: 8 个 triple-cut kick (A+C+D+B, segment relocation), 随机切点, LS(10, 3).\n- **Phase 2 (NEW)**: 4 个 LK-style double-bridge kick (A+C+B+D, 段交换). 切点强制 **~n/4 平衡** (`segSize=n/4`, `jitter=±n/16`), 模拟 LKH 的双桥接结构. LS(10, 3).\n\n### 假设\n\n1. **G8 triple-cut 的本质是大 L Or-opt**: A+C+D+B 等价于把 B 段搬到末尾 = Or-opt at L=c2-c1. LS 中 L=1,2,3 可以逐步把它修复回原 basin, kick 跳出能力受限. 这是 G8 卡在 0.8157 28 代未升级的根本原因.\n\n2. **Double-bridge 不在 LS 邻域内**: A+C+B+D 是 B 和 C 两段交换, 这个重接模式不可由 2-opt 或 Or-opt 组合得到, LS 无法直接逆转, 应能收敛到真正不同的 local optimum.\n\n3. **LKH 的核心算子就是 double-bridge**: Helsgaun LKH 多年迭代, kick 始终是 LK-style double-bridge. 当前 G8 缺少这一关键算子.\n\n4. **平衡切点比随机切点更 LK**: LK 论文建议各段 ~n/4 平衡以最大化 kick 强度. G8 切点不均 (大 A, 小 D), 削弱了 kick 强度. 用 `segSize ± n/16 jitter` 强制平衡.\n\n### 风险\n\n1. **不反转**: LKH canonical double-bridge 还含段反转 (B→reverse(B)). 我故意省略 (G32 反向 reconstruct 已证脆弱, 双重建失败). 这可能损失部分 kick 强度, 但保证正确性.\n\n2. **时间**: 总扰动 12 (比 G8 多 4 次 LS), 估 ~333ms. 仍在 1000ms 硬上限内, 略超 250ms 推荐线 (但 G8 已超,引擎接受).\n\n3. **若所有 kick 收敛到同一 basin**: G37 与 G8 等价, 无改进. 但 kick 形态结构性差异 (段交换 vs 段搬迁) 给出先验信念: 不同 basin 不同结果.\n\n4. **平衡切点可能让 kick 太规则**: LK 的多样性来自随机段大小, 平衡切点可能让4 个 kick 偏向同一 basin. 风险中等.\n\n### 不动的部分\n\n- D 矩阵构建\n- 4 NN 起点 (0, farIdx, n/2, n-1)\n- 2-opt + Or-opt L=1,2,3 LS\n- Don't-look bits 策略\n- runLS / tourLen 函数",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 37,
+    "idea": "在 G8 的 8 个 triple-cut 后追加 4 个 LK-style double-bridge kicks (A+C+B+D 段交换, 平衡 ~n/4 切点), kick 形态异化跳出 Or-opt basin",
+    "inspired_by": [
+      212
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8147,
+      "train_after": 0.8075
+    },
+    "delta_pct": -0.12,
+    "error": "ratchet: holdout 0.8147 > 0.8140 (champion × 0.998)",
+    "bytes": 6413,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 218
+}

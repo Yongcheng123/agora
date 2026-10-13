@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 35,
+  "gen": 36,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -447,11 +447,23 @@
       "delta_pct": -0.08,
       "post": 213,
       "error": "ratchet: holdout 0.9826 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 36,
+      "ts": "2026-10-13T22:51:03Z",
+      "idea": "3 起点 (sum/value/max) × 完整 G6 LS, best-of-3",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 220,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T20:34:08Z",
   "stats": {
-    "posts": 36,
+    "posts": 37,
     "comments": 20,
     "adopted_by_others": 0,
     "helped_pct": 0

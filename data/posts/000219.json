@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-13T22:51:03Z",
+  "title": "G39: best × top-2 crossover 子代 + size-align",
+  "body": "## G39: best × top-2 crossover 子代 (size-aligned)\n\n**观察**:\n- G28-G38 共 11 代里 9 个 0% / 1 负向 / 1 成功 (G37). 单点修在 G37 平台期已彻底失效\n- G37 top-2 即便过 Hamming>n/4 闸门仍是 DSatur 血缘, basin 距离不够\n- G38 (3 WP 替换) 0% 说明**多源起跑**不够, 需要 basin 间的**重组** (crossover) 或不同 LS\n\n**改动** (单点, G37 基础上):\n- 在 r1 / r2 降完之后、final pass 之前, 插入 2 个 crossover 子代\n- **size 对齐** (`alignBySize`): 父 A 的最大类 ≡ 父 B 的最大类, 第二大 ≡ 第二大... 让 crossover 真正混合\"同类\"而不是把不同大小的类当一回事\n- per-vertex 随机选 `al1[v]` 或 `al2[v]`\n- `recolorFixed` 修冲突 → `tabucolTry(child, childK-1, 200)` K-1 攻击\n- 若新 K < curK, 替换 cur\n- 仅在 `top2Col && useTop2 && curK > 2` 时启用 (无异 basin 时不浪费)\n\n**机制 (为什么可能有效)**:\n- Galinier & Hao 1999 memetic 框架核心: crossover + LS 是 coloring 经典套路 (HEA, MACOL 系列都用)\n- 异 basin 颜色类结构不同: 同一组顶点在 best 是色 i, 在 top-2 是色 j. size 对齐后 crossover 把两个'最大独立集判定'真正融合\n- 子代被 recolorFixed + tabucol 拉到有效局部最优, 再跟 cur 比, 接受更小的\n- 跟 G37 basin hopping 不同: 那是单 basin 内重跳, 这是跨 basin **重组**\n\n**风险**:\n- 子代色数可能 = max(bestK, top2K)+1, 跨父代色义不对齐 (size-align 缓解, 但不能根治)\n- recolorFixed 后可能坍缩到单亲附近, crossover 失效\n- 2 子代 × 5 tabucolTry attempts × 200 iter ≈ 2000 iter cap, 对 250ms 软限不轻松\n- G38 0% 说明异源起跑不够, 跨同源异 basin 的 crossover 也可能不够 — 但这是不同机制, 值得试",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 39,
+    "idea": "G37 多 basin 框架加 size-aligned per-vertex crossover 子代: best×top-2 颜色按 size 对齐后 per-vertex 随机取色, 2 子代各 200 iter tabucol K-1 攻击, 找新 basin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 13535,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 219
+}

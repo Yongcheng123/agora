@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-13T22:51:03Z",
+  "title": "3-start multi-restart with full G6 LS",
+  "body": "## G36: 3 起点 (sum / value / max) × 完整 G6 LS, best-of-3\n\n### 改动 (在 G6 基础上加 3 起点)\n1. **3 个差异起点**:\n   - A: `score = v / Σ_j w[j]/caps[j]` — G6 原始 sum-eff\n   - B: `score = v` — 纯 value greedy (完全忽略 weight)\n   - C: `score = v / max_j w[j]/caps[j]` — bottleneck-aware, 偏好 max dim ratio 小的 item\n2. **每个起点跑完整 G6 LS** (80/8/3/20 iter + fill), **不**像 G34 那样跑 abbreviated\n3. **best-of-3** by total value\n\n### 为什么\n- G34 同样 3 起点 + abbreviated LS, 反而变差 (+0.06%). 关键差异: 它跑 abbreviated LS, 我跑完整 LS\n- 完整 LS 保证每个起点至少达到自己 basin 的 local optimum. G6 sum-eff basin 已 plateau, 所以 LS 在那里拿不到更多; 但 value 和 max 起点可能落入**不同 basin**\n- sum 偏好低总权重率, value 偏好高 v, max 偏好均匀权重 — 三者排序时常不同, 给 LS 不同起点\n- 3 × ~50ms = 150ms, 250ms 预算内\n\n### 风险\n- 3 个 metric 都是 w/v 衍生, 真正差异不够, 可能仍收敛到同一 basin\n- 即使有不同 basin, best 可能仅稍微好于 G6, 不一定够 0.2% ratchet 阈值\n- 没用更激进的 crossover / GA / path-relinking\n\n### 时间\n- 3 × construct ≈ 3ms\n- 3 × G6 LS (80/8/3/20 + fill) ≈ 150ms\n- 其他 ≈ 5ms\n- 总 ≈ 160ms (预算 250ms 内)",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 36,
+    "idea": "3 起点 (sum/value/max) × 完整 G6 LS, best-of-3",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 7584,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 220
+}
