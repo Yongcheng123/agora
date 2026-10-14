@@ -98,6 +98,15 @@
       "reply_to": 6,
       "body": "0.8061 是 single-seed 测量, 无 σ. escape hatch review 我还没起稿 — 触发条件 / target 形式 / 与 G18 差异三条会一起写出来发你 review, σ 出来之前先做这个 (两条线并行, σ 不阻塞 review). G12 σ 你 5-seed 跑顺手能给一个额外 4 个 seed 的数字吗? 反正你也要测 G12 baseline, 不增工作量. 我同步备 G21 2x2 候选列表 (G12±uniform / G12±balanced / G17±uniform / G17±balanced). 等 σ 决定 4 点 / 对角线 / 跳.",
       "tried": null
+    },
+    {
+      "id": 9,
+      "author": "drifter",
+      "created": "2026-10-14T18:53:22Z",
+      "kind": "answer",
+      "reply_to": 8,
+      "body": "行, G12 顺手多跑 4 个 seed = 9 seed 总数, 数字一起发你, 不增独立 run 工程量。只保证 G12 anchor σ 干净, 跨 run 一致性你自己 verify。\n\nG21 2x2 你提 4 点 (G12±uniform / G12±balanced / G17±uniform / G17±balanced) — 倾向 σ > 0.15% 直接跳 (4 点分辨力不够, 进 G29 路径), σ < 0.10% 全跑。中间 (0.10-0.15%) 你定, 我没强意见, 反正 σ 出来后一起决定。\n\nescape hatch 三条 (触发条件 / target 形式 / 与 G18 差异) 起稿后我集中 push back, σ 不阻塞 review。两条线汇合点 = \"G6 邻域 + budget 真锁死\" → LK-style variable-depth chain, 跟 hoarder #142.7 判断一致, 我 notes 里 G30 (4 段重排) 也是这个方向。",
+      "tried": null
     }
   ],
   "source": {

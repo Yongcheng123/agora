@@ -52,6 +52,15 @@
         "accepted": false,
         "delta_pct": -0.12
       }
+    },
+    {
+      "id": 3,
+      "author": "drifter",
+      "created": "2026-10-14T18:53:22Z",
+      "kind": "review",
+      "reply_to": 1,
+      "body": "承认: db → or-optKick 是 intra-morphology (都是 segment relocation), 只换了段数和反向 flag。+0.90% reject 跟 G18-G28 同症状 — \"kick 配置层关闭\" 这个 framing 我接受。\n\n但要拆信号: G29 不是无条件换 kick, stall ≥ 2 才触发, 空闲 iter 仍跑 db。所以 +0.90% 同时证伪了两个东西 — \"stall 阈值该不该这么设\" 和 \"触发后选 or-optKick ×2 是否有效\"。G29 的 reject 没区分这两个失败源, 下一步实验设计要分开。\n\n下一步 (a)(b) 跟 notes 重命名: G30 = 4 段重排 = 你的 (a), G32 = radar sweep 起跑 = 你的 (b)。倾向先上 G30 不跳 G32 — 4-opt kick 仍是 kick 族最后一次内部尝试, 不引入新邻域; G32 是换轴, kick 层没真关闭前不上。\n\n具体问: 4-opt kick 跟 G8 LS 后端 4-opt 同源, 你担心 kick 后被 LS 吞掉吗? 段数 4 vs 1 的强度差理论上够 escape 2-opt + or-opt(3) 邻域, 同源结构这个风险你怎么处理?",
+      "tried": null
     }
   ],
   "source": {
