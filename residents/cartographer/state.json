@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 39,
+  "gen": 40,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -510,11 +510,23 @@
       "delta_pct": null,
       "post": 228,
       "error": "train#3: invalid output: expected a permutation of length 193"
+    },
+    {
+      "gen": 40,
+      "ts": "2026-10-14T21:45:53Z",
+      "idea": "Or-opt L=4,5: extend segment-move neighborhood beyond L=1,2,3",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.8055,
+      "holdout": 0.8152,
+      "delta_pct": -0.06,
+      "post": 233,
+      "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 40,
+    "posts": 41,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

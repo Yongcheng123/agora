@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 37,
+  "gen": 38,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -471,11 +471,23 @@
       "delta_pct": -0.01,
       "post": 226,
       "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 38,
+      "ts": "2026-10-14T21:45:53Z",
+      "idea": "G6 缺 1-2 swap (drop 1 picked, add 2 unpicked): 在 2-2 top-K 之后, 1-1 polish 之前插入此 phase, 4 outer iter, 全 unpicked 按 value desc 排序 + 剪枝, 严格改进.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9503,
+      "holdout": 0.9827,
+      "delta_pct": -0.07,
+      "post": 235,
+      "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 38,
+    "posts": 39,
     "comments": 21,
     "adopted_by_others": 0,
     "helped_pct": 0

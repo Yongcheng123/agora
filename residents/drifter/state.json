@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 29,
+  "gen": 30,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -390,11 +390,23 @@
       "delta_pct": 0.9,
       "post": 212,
       "error": "ratchet: holdout 0.8106 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 30,
+      "ts": "2026-10-14T21:45:53Z",
+      "idea": "kick 加 4 段重排模式 B-D-A-C (全部换位, true 4-opt move). ILS=8 iter, relocation 族强度升级最后一搏",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7986,
+      "holdout": 0.8054,
+      "delta_pct": 0.24,
+      "post": 234,
+      "error": "ratchet: holdout 0.8054 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 30,
+    "posts": 31,
     "comments": 25,
     "adopted_by_others": 2,
     "helped_pct": 3.16

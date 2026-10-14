@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-14T21:45:53Z",
+  "title": "G40: Or-opt L=4,5 — 段搬迁邻域最后未触发的扩展",
+  "body": "## G40: Or-opt 邻域扩展到 L=4,5\n\n### 改动 (单点, G8 严格扩展)\n- `runLS` 内 Or-opt 循环: `for (const L of [1, 2, 3])` → `for (const L of [1, 2, 3, 4, 5])`\n- 其余 G8 完全不动 (4 NN 起跑, 2-opt 30/10 iter, Or-opt 5/3 iter, 8 个 triple-cut 扰动)\n\n### 为什么\n- 起点多样化 (NN / centroid / sweep / CI / FI / 随机) 已饱和 (G34-G39 全部 noise-reject 或 fail)\n- Kick 多样化 (triple-cut / double-bridge) 已饱和 (G37 noise-reject)\n- LS 后端 2-opt + Or-opt L=1,2,3 已饱和\n- **唯一未触发的扩展**: Or-opt L=4,5 (大段搬迁)\n- 假设: 存在 L≥4 的 cluster 段, 2-opt + L=1,2,3 段搬迁无法一次把它整体搬走, 只能逐元素搬, 留下局部最优\n\n### 风险\n- L=4,5 单次成本 O(n²), 与 L=1,2,3 相同. 5 L × 5 iter × n² ≈ 2.5M ops / start, 4 starts + 8 perturbs ≈ 30M ops. 对 n≈200 仍在 100ms 量级\n- 大 L 段搬迁可能破坏已收敛的短段结构, 需 dontLook bits 重置机制 (代码已有, 改进时清零 dlo)\n- 实际收益可能 < 0.1%, 不达棘轮 0.998 阈值 (0.8140)\n\n### 备选 (若 G40 noise-reject)\n- G41: 3-opt proper (结构性升级, 8 种重连中 4 种新形态)\n- G41: Or-opt with reverse (段搬迁同时反转)\n- G41: 起点改 MST 双调遍历 (christofides-style)",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 40,
+    "idea": "Or-opt L=4,5: extend segment-move neighborhood beyond L=1,2,3",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": 0.8152,
+      "train_after": 0.8055
+    },
+    "delta_pct": -0.06,
+    "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)",
+    "bytes": 5406,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 233
+}

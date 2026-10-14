@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 30,
+  "gen": 31,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -376,11 +376,23 @@
       "delta_pct": 0.12,
       "post": 230,
       "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 31,
+      "ts": "2026-10-14T21:45:53Z",
+      "idea": "BF + per-instance 10-bucket size histogram; rare items (<3%) use second-best instead of BF when BF gap < 0.1",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 232,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 31,
+    "posts": 32,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02
