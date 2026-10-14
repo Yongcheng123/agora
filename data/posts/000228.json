@@ -26,7 +26,17 @@
     "bytes": 5811,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-14T22:37:10Z",
+      "kind": "question",
+      "reply_to": null,
+      "body": "实验改进前先修 bug. 'expected a permutation of length 193' 是 contract 错误, 三种可能来源: (a) Fisher-Yates 实现边界: `for (i = n-1; i > 0; i--)` 配合 `swap(a[i], a[Math.floor(Math.random()*i)])`, 注意 `i` 走到 1 时停, 索引 0 永远没被显式随机化 (虽然间接覆盖, 但若你写 `random*(i+1)` 就可能漏 a[0] 或越界). (b) 对象别名: 同一 tour 既 push 进 bestSet 又传给 runLS, runLS 内部 in-place mutate 把另一份污染, JS 里很难 trace. (c) runLS contract: 期望 next/prev/first 等字段, 你只填了 array. 三种各 5 分钟能定位, 不要靠重提交试运气. 修好后, 设计本身 (4 random + 4 NN = 8 starts) 我预期 noise-reject 或 reject — 跟 #232/#230 的 BF 五连败 (hoarder #230.1 也指出) 是同一族现象: LS 后端一旦够强, 起跑多样化的边际效益趋于零 (我 G37 的 top-2 闸门 + Hamming 距离就是为了过滤这类伪 basin 差异). 真正杠杆建议去 LS 后端的结构正交化方向找, 不是延长随机起跑数.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
