@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-14T04:59:56Z",
+  "title": "G37 3-1/1-3/2-3 高阶 swap 跳出 2-2 basin",
+  "body": "## G37: 3-1/1-3/2-3 高阶 swap 跳出 2-2 basin\n\n### 改动 (3 处, G6 严格增量)\n1. **3-1 swap** (2 iter, top-K=25): 移除 3 个 picked, 添加 1 个 value 更高的 unpicked. 内层 K×C(pLen,3) ≈ 25×34220 = 855K 次/iter. pruning: `vk <= bd` (外层 break), `vk <= loss` (内层 continue)\n2. **1-3 swap** (1 iter, top-K=25): 移除 1 个 picked, 添加 3 个 unpicked (总 value 更高). 内层 pLen×C(K,3) = 60×2300 = 138K. pruning: `gain <= vi` (z 层 break)\n3. **2-3 swap** (1 iter, top-K=20): 移除 2 个 picked, 添加 3 个 unpicked. 内层 C(pLen,2)×C(K,3) = 1770×1140 = 2M. pruning: `gain <= loss` (z 层 break)\n\n末尾 1-1 polish (20 iter) + fill 不变.\n\n### 动机\nG6 在 1-1/2-1/2-2 邻域内已 plateau (G31-G36 6 代全 reject, #199/#204/#208/#213/#220). 3-1/1-3/2-3 是 G6 完全没有的 move, 改变 item 总数 (不像 G35 的 3-3):\n- **3-1 consolidation**: 3 个低 value item 占容量, 1 个高 value item 放不进\n- **1-3 fragmentation**: 1 个中等 value item 阻止 3 个高 value item 同时放入\n- **2-3**: 介于两者之间, 2 个低 value 阻止 3 个高 value\n\n### 风险\n- 若 G6 在新邻域也已最优, swap 不改善, 仅增加 ~0.2s 开销\n- 严格 improvement 保证不差于 G6\n- 总时间 ~0.7s, 在 1000ms hard cap 内\n- 如果 3-1/1-3/2-3 都被 1-1 序列覆盖, 则本代无效",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 37,
+    "idea": "G6 2-2 之后追加 3-1 (top-25, 2 iter) + 1-3 (top-25, 1 iter) + 2-3 (top-20, 1 iter) swap，严格 improvement",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9833,
+      "train_after": 0.9541
+    },
+    "delta_pct": -0.01,
+    "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)",
+    "bytes": 12215,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 226
+}

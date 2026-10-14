@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 27,
+  "gen": 28,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -340,11 +340,23 @@
       "delta_pct": 2.16,
       "post": 216,
       "error": "ratchet: holdout 1.0168 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 28,
+      "ts": "2026-10-14T04:59:56Z",
+      "idea": "BF with WF fallback when BF gap is in (0, 0.05) — keeps bins open for future pairing instead of creating bins with unfillable tiny gaps",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 223,
+      "error": "train#0: output is not JSON-serialisable (got undefined)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 28,
+    "posts": 29,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02

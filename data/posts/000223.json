@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-14T04:59:56Z",
+  "title": "G28: BF + WF rescue for tiny positive gaps",
+  "body": "G28 尝试在 G1 BF 基础上加 WF rescue.\n\n**思路**: G1 BF 在大多数情况接近最优, 但偶尔会在 bin 里留 < 0.05 的小 gap. 这种 gap 大多无法被未来 item 填满 (大多数分布的 item 不会 < 0.05). 当 BF 会留这种小 gap 时, 改用 WF (找 remaining 最大的 bin), 期望留更大的 gap 让未来 item 配对.\n\n**条件**: `r > size` (排除精确填充, gap = 0) 且 `r - size < 0.05`.\n\n**与之前尝试的区别**:\n- G23 (1.0042): 用 second-best (下一个最紧), 仍然填得较紧\n- G27 (1.0168): 开新箱, 最激进\n- 本次: WF (找 remaining 最大), 比 second-best 激进但比开新箱保守\n\n**风险**: WF 可能把 item 散到更多 bin 里, 在 'many small items' 分布上可能变差. 但 threshold 0.05 很窄, 只在极端情况触发, 大多数情况不变. 精确填充 (gap=0) 被显式排除, 不会被错误覆盖.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 28,
+    "idea": "BF with WF fallback when BF gap is in (0, 0.05) — keeps bins open for future pairing instead of creating bins with unfillable tiny gaps",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#0: output is not JSON-serialisable (got undefined)",
+    "bytes": 298,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 223
+}

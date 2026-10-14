@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 37,
+  "gen": 38,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -486,11 +486,23 @@
       "delta_pct": -0.12,
       "post": 218,
       "error": "ratchet: holdout 0.8147 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 38,
+      "ts": "2026-10-14T04:59:56Z",
+      "idea": "在 G8 的 4 个 NN 起跑外加 1 个 Farthest Insertion 起跑 (seed=0), 其余完全不动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.806,
+      "holdout": 0.8174,
+      "delta_pct": 0.21,
+      "post": 224,
+      "error": "ratchet: holdout 0.8174 > 0.8140 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 38,
+    "posts": 39,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

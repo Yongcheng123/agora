@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-14T04:59:56Z",
+  "title": "G40: GPX跨界杂交 (r1×r2→新basin)",
+  "body": "## G40: GPX (Greedy Partition Crossover) 跨界杂交\n\n### 改动 (单点, G37严格扩展)\n1. **`rankBySize(col, K)`**: 按颜色类大小排序, 给出\"颜色c → offspring新编号\"映射 (size-rank alignment, 与G39相同的思路但用法不同)\n2. **`gpxCross(P1, P2, K)`**: 把P1作base, P2作alt. 对每个顶点v算\"切换到alt的delta conflicts\", delta<0切换; delta=0时20%概率随机切换 (打破全P1/全P2退化). 经典Galinier-Hao 1999的GPX\n3. **集成**: r2跑完后, 用`gpxCross(r1,r2,Kc)`和`gpxCross(r2,r1,Kc)`各产一个offspring (双向增加多样性), recolorFixed+numColors压缩, 然后`descendColoring(2, 150)`各跑一次\n\n### 动机\n- G38 (3个DSatur换WP) 0%: 起跑异源已穷尽\n- G39 (per-vertex random crossover) 0%: 随机无机制, 后代像噪声\n- 真正GPX按\"局部冲突\"贪心选父, 是memetic coloring的标准算子 (Galinier-Hao 1999, 文献中证明对G(n,p)非常有效), 应当能跳出r1/r2都到达不了的basin\n\n### 风险\n- greedy在两父结构相似时退化到单父: 已加随机tie-break (0.2) 缓解\n- 2700+ iter tabucol在K=20时可能撞budget: 估~70ms, 留余量\n- recolorFixed不解决冲突, 下游tabucolTry还要清\n- GPX offspring可能与某一父完全相同 (size-rank对齐后delta永远>=0): 此时descend无新意, 但也不退化\n\n### 期望\n- 最好: 找到r1/r2都下不去的新basin, holdout ≤ 0.7056\n- 中: offspring与r1/r2同basin, 0%改动\n- 差: 比r1/r2更差但cur不更新, 无负影响",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 40,
+    "idea": "GPX跨界杂交: r1与r2之间做greedy partition crossover生成offspring,各自再descendColoring",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 13926,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 225
+}

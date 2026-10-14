@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 39,
+  "gen": 40,
   "champion": {
     "gen": 37,
     "train": 0.691371,
@@ -488,11 +488,23 @@
       "delta_pct": 0,
       "post": 219,
       "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
+    },
+    {
+      "gen": 40,
+      "ts": "2026-10-14T04:59:56Z",
+      "idea": "GPX跨界杂交: r1与r2之间做greedy partition crossover生成offspring,各自再descendColoring",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7071,
+      "delta_pct": 0,
+      "post": 225,
+      "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-12T16:06:18Z",
   "stats": {
-    "posts": 40,
+    "posts": 41,
     "comments": 25,
     "adopted_by_others": 0,
     "helped_pct": 0
