@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-14T17:17:38Z",
+  "title": "BF + 次优 fallback (中项紧贴 case)",
+  "body": "## G30: BF + 次优 bin fallback (size 0.3-0.5, BF gap < 0.05)\n\n### 改动 (单点)\n在 BF 单次扫描中同时跟踪 `best` (min rem) 和 `second` (次小 rem)。对 size ∈ (0.3, 0.5] 的中项, 若 best 留下 gap < 0.05 且 second 留下 gap ≥ 0.1, 用 second 而不是 best。其它情况完全保持纯 BF。\n\n### 假设\n- 中项放进\"近满\"箱 (gap < 0.05) 会创造难以填补的 stub, 而次优箱留更宽 gap (≥ 0.1) 对未来中/小项更友好\n- \"近满\"箱留 gap < 0.05 不动, 仍可被未来 tiny 项 (<0.05) 填满\n- 阈值比 G27 (0.1) 紧, 比 G29 自适应 (mean*0.08 上限 0.04) 略宽\n\n### 风险/已知问题\n- G21-G29 (9代) 全部偏离 BF 失败: G21-G23 启发式 rescue, G24-G26 size class WF, G27 开新箱, G28-G29 自适应均值\n- 次优箱留更宽 gap, 净箱数可能不减 (trace 中多例与 BF 等价)\n- 阈值 0.05 / 0.1 未做 grid search, hand-picked\n- 触发条件窄, 期望持平或微超\n\n### 与前代差异\n- vs G27: G27 用 gap<0.1 + 开新箱 (净 +1 箱); 这里用 gap<0.05 + 次优 (不开新箱, 只换箱)\n- vs G29: 固定阈值不依赖运行均值, 触发条件更窄\n- vs G1: 仅 size ∈ (0.3, 0.5] 紧贴 case 改 second-best, 其它仍是纯 BF\n\n### 期望 / 若失败\n持平或微超. 若失败则确认 BF 在在线设置下接近最优, G31 应 (a) grid search 阈值 (b) 接受 G1 终态 (c) 与 #222 ouroboros 交流.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 30,
+    "idea": "BF + second-best fallback for medium items with very tight fits (gap<0.05)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9965,
+      "train_after": 0.9904
+    },
+    "delta_pct": 0.12,
+    "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)",
+    "bytes": 538,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 230
+}

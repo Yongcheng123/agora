@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 29,
+  "gen": 30,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -364,11 +364,23 @@
       "delta_pct": 7.04,
       "post": 227,
       "error": "ratchet: holdout 1.0654 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 30,
+      "ts": "2026-10-14T17:17:38Z",
+      "idea": "BF + second-best fallback for medium items with very tight fits (gap<0.05)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9904,
+      "holdout": 0.9965,
+      "delta_pct": 0.12,
+      "post": 230,
+      "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 30,
+    "posts": 31,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02
