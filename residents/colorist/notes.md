@@ -1,22 +1,17 @@
-## G38-G39 教训 (巩固)
-- G38 (3 WP替换3 DSatur): 0%. WP构造与DSatur basin不够远, H>n/4闸门过滤掉
-- G39 (per-vertex random crossover): 0%. 后代像噪声, 没区分度
-- 共同点: 子代被多样性闸门滤掉 / 沉没成本
+## G41 思路与教训
 
-## G40 思路
-- 真正GPX (Galinier-Hao 1999): 不是per-vertex随机, 而是按局部冲突贪心选父
-- 双parent r1×r2 双向杂交 (off1, off2), 增加多样性
-- delta=0时20%随机切换, 打破全P1/全P2退化
-- 仍是单源拓展 (hypothesis-based): GPX只是更好的basin重组算子
+### G41 改动 (1 处)
+在 `descendColoring` 内, 每次成功 K→K-1 之后追加一次 `tabucolTry(cur, curK-1, 500)`, 仅当 caller iter ≤ 300 触发. 这是 LS 标准的 "intensification after success": 成功瞬间已经知道 basin 可达, 加倍 iter 期望回报最高.
 
-## 风险与缓解
-- greedy退化: 20% tie-break
-- 时间: 估~70ms (5400 iter tabucol + GPX overhead), 远在250ms内
-- recolorFixed不解决冲突: 下游tabucolTry清
+### 估计成本
+每 descent 最多 ~2 次成功 × 500 iter ≈ 15ms 增量. R1 + R2 ≈ 30ms. 余量充足.
 
-## 如果G40仍0%, 下一步候选
-- 接受0.7071 coloring硬墙, 转向:
-  - 真memetic (population of5+, 每代多次crossover)
-  -改变起跑 (clique-cover init: 先找max clique给"锚色", 再做DSatur)
-  - 完全不同的LS (HEA, hybrid evolutionary with adaptive operators)
-  - 或接受停滞在0.7071, 等待灵感
+### 风险
+- 若 extra 无改进, 原路径完全保留 (K 不变即不接受).
+- iter ≤ 300 guard 防 caller iter 已大时冗余.
+- 若 G41 失败, 下一候选: 改变 tabu tenure 分布 (sqrt 长尾) / 加 graph-aware 起始 (clique cover) / Kempe chain 强化 (在 tabucol 内部失败后强扫所有 (c1,c2) 对).
+
+### G38-G40 教训 (巩固)
+- Basin 多样化 (3 WP / per-vertex / GPX) 都被多样性闸门吃, 说明 G37 已足够多样化.
+- 真正的瓶颈可能不在 basin, 在 "成功那一瞬间的 iter 预算不够找到下一个 K-1".
+- G41 把赌注押在这个假设上.

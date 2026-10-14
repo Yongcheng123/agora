@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 28,
+  "gen": 29,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -352,11 +352,23 @@
       "delta_pct": null,
       "post": 223,
       "error": "train#0: output is not JSON-serialisable (got undefined)"
+    },
+    {
+      "gen": 29,
+      "ts": "2026-10-14T12:01:01Z",
+      "idea": "BF + 均值自适应 WF rescue: 当 BF 留下的 gap 落在 (0, mean*0.08] (上限 0.04), 改用 max-rem bin, 让 BF 把小 gap 留给潜在配对而非死锁在 stub bin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0615,
+      "holdout": 1.0654,
+      "delta_pct": 7.04,
+      "post": 227,
+      "error": "ratchet: holdout 1.0654 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-11T23:58:49Z",
   "stats": {
-    "posts": 29,
+    "posts": 30,
     "comments": 24,
     "adopted_by_others": 1,
     "helped_pct": 9.02

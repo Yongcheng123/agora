@@ -1,34 +1,36 @@
-## G28: BF + WF rescue for tiny gaps (gap in (0, 0.05) → WF)
+## G29: BF + 均值自适应 WF rescue (thres=mean*0.08 封顶 0.04)
 
-8 代 assault (G21-G28) 都没能改 G1 BF. 本次试 WF rescue (找 remaining 最大), 不同于 G23 的 second-best 和 G27 的开新箱.
+### 改动 (3 处)
+1. 顶层 `S, N` 维护 running sum, 实例开始重置
+2. 一次扫描同时收集 bf (min rem) 和 wf (max rem)
+3. BF gap ∈ (0, min(0.04, mean*0.08)) 且 wf≠bf → 用 WF
 
-**核心改动**:
-- BF 留 gap 在 (0, 0.05) 时, 改用 WF (max remaining)
-- 排除精确填充 (gap = 0): 精确填充是完美的, 不应被覆盖
-- `r > size` 条件保证只覆盖正 gap, 不是 exact fit
+### 假设
+- "many small" mean≈0.1 → thres≈0.008 → BF 优势保留 (gap 通常=0)
+- "uniform" mean≈0.5 → thres=0.04 → 只救 gap<0.04 的尴尬 case
+- "bimodal/mixed" mean≈0.4 → thres=0.032 → 中等触发
 
-**为什么可能有效**:
-- BF gap < 0.05 几乎肯定浪费 (大多数分布 item > 0.05)
-- WF 把 item 放到 remaining 更大的 bin, 留更大 gap, 期望未来 item 配对
-- WF 比 second-best 更激进 (找最大 vs 下一个最大), 比开新箱保守 (用现有 bin)
+### 风险/未知
+- thres 参数 (0.04, 0.08) hand-picked, 没 grid search
+- 前 ~20 个 item 时 mean 波动大, 早期判断不稳
+- WF 倾向于把 item 散到 loose bin, 可能 net 增加 bin 数 (如果小 gap 后续真被填)
+- G28 (类似机制, hardcoded 0.05) 上次 eval 失败, 没拿到数据
 
-**与之前 rescue 机制对比**:
-- G23 second-best (1.0042): 仍填得较紧, gap 仍小
-- G27 开新箱 (1.0168): 最激进, 浪费 bin
-- 本次 WF: 介于两者之间, 保留现有 bin 但 remaining 更大
+### G21-G28 (8 代) 都没破 G1 BF 的总结
+- G21-G23: second-best / WF rescue — 缺适配, 效果差
+- G24-G26: size class (WF for large) — 越界越多, 几乎持平
+- G27: gap-threshold 开新箱 — 太激进, 1.0168
+- G28: hardcoded WF rescue — eval 失败
+- 共同点: 都试图偏离 BF. BF 在在线设置下已经很接近 best-known (FF ratio ≈ 1.0).
 
-**风险**:
-- WF 散 item 到更多 bin, 'many small items' 上可能变差
-- threshold 0.05 很窄, 只在极端情况触发
+### 下代思路
+1. **grid search thres**: 把 0.04 / 0.08 横扫, 找局部最优
+2. **stddev-based**: 用 S2 跟踪方差, 只在方差大的实例启用 rescue (low-variance means BF 良好)
+3. **size class 二次过滤**: >0.5 完全不触发 (大 item 本就 BF 不留空隙)
+4. **跨实例学习**: 收集各实例 mean 分布, 用历史决定策略
+5. **接受 baseline**: 如果 G29 还是持平, 认输并把 G1 作为终态
 
-**手算 trace 验证**:
-- bins=[0.5, 0.8, 0.42], size=0.4: BF 选 bin2 (gap=0.02), WF 改选 bin1 (gap=0.4) ✓
-- bins=[0.5, 0.8, 0.3], size=0.4: BF 选 bin0 (gap=0.1), 不触发 WF ✓
-- exact fit bins=[0.4], size=0.4: BF 选 bin0 (gap=0), `r > size` 为假, 不触发 ✓
-
-**下代候选 (G29+)**:
-- threshold 扫参 0.03, 0.08, 0.1 (看有没有 plateau)
-- WF 改成 'second-worst' (remaining 第二大, 比 WF 保守)
-- size-class 阈值: 大项 (>0.5) 不触发, 小项 (≤0.2) 阈值更小 (0.02)
-- 阶梯式 rescue: BF → second-best → WF → 开新箱 (按 gap 严重程度)
-- 双门控: WF rescue + 状态门控 (只在 medium 比例高时启用)
+### 不要做的
+- 不要改 G1 的 BF 主循环结构
+- 不要引入 O(bins²) 操作 (100ms 上限)
+- 不要用 Set/Map/WeakMap (JSON 不能序列化)

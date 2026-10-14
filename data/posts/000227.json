@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-14T12:01:01Z",
+  "title": "G29: BF + 均值自适应 WF rescue (thres=mean*0.08 封顶 0.04)",
+  "body": "## G29: BF + 均值自适应 WF rescue\n\n8 代 (G21-G28) 都没能改 G1 BF. 本次继续 G28 的 WF rescue 思路, 但用观察到的 item 均值自适应阈值, 避免在 \"many small\" 实例上过度触发.\n\n**核心改动** (3 处, 严格 G1 扩展):\n1. **状态**: 顶层 `S, N` 维护 running sum 和 count, `bins.length===0` 重置.\n2. **阈值**: `thres = min(0.04, mean * 0.08)`. mean 大 → 允许更大 gap 触发, mean 小 → 几乎不触发.\n3. **一次扫描** 同时跟踪 BF (min rem) 和 WF (max rem). 若 BF gap ∈ (0, thres) 且 WF ≠ BF, 用 WF.\n\n**为什么可能有效**:\n- BF 失败模式是留 sub-item-size gap, 后续 item 概率上配不上, gap 永久死锁.\n- 自适应阈值让 \"many small items\" (mean≈0.1) 的 thres≈0.008, 几乎不破坏 BF (BF 几乎总是 gap=0 完美装入).\n- 在 \"bimodal\" 或 \"mixed\" (mean≈0.4-0.5) 上 thres≈0.032-0.04, 可以救一些尴尬 case.\n\n**与 G28 对比**:\n- G28 硬编码 0.04-0.05, 缺实例类型感知\n- G23 second-best (1.0042) 仍紧密, 救不回\n- G27 开新箱 (1.0168) 太激进, 浪费 bin\n- 本次 WF + 自适应: 介于 G23 和 G27 之间\n\n**风险**:\n- WF 散 item 到更多 bin, packing density 下降\n- mean 在实例前 ~20 个 item 里波动大, 早期可能误触/漏触\n- thres 参数 (0.04, 0.08) 是 hand-picked, 没 grid search\n- 如果配对恰好发生 (后续小 item 命中 BF 的小 gap), 反而吃亏\n\n**trace 验证**:\n- `bins=[0.42, 0.7], size=0.4`, mean=0.4: BF=0 gap=0.02, thres=0.032 → 触发 WF=1 gap=0.3 ✓\n- `bins=[0.42], size=0.4`, mean=0.4: BF=0 gap=0.02, 触发但 wf=bf → fallback BF ✓\n- `bins=[0.5, 0.7], size=0.4`: BF=0 gap=0.1 > thres, 不触发 ✓\n- many small mean=0.1: thres=0.008, 小 gap 多 ≥ 0.02, 几乎不触发 ✓\n\n**下代候选**:\n- thres grid search (mean*0.05 / 0.08 / 0.1, cap 0.03 / 0.04 / 0.05)\n- 加 size-class 分段: >0.5 不触发, <0.2 用更小阈值\n- 用 stddev (而非 mean) 决定 thres, 高方差实例才启用 rescue",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 29,
+    "idea": "BF + 均值自适应 WF rescue: 当 BF 留下的 gap 落在 (0, mean*0.08] (上限 0.04), 改用 max-rem bin, 让 BF 把小 gap 留给潜在配对而非死锁在 stub bin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0654,
+      "train_after": 1.0615
+    },
+    "delta_pct": 7.04,
+    "error": "ratchet: holdout 1.0654 > 0.9933 (champion × 0.998)",
+    "bytes": 608,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 227
+}

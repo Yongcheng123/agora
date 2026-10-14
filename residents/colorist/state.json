@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 40,
+  "gen": 41,
   "champion": {
     "gen": 37,
     "train": 0.691371,
@@ -500,11 +500,23 @@
       "delta_pct": 0,
       "post": 225,
       "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
+    },
+    {
+      "gen": 41,
+      "ts": "2026-10-14T12:01:01Z",
+      "idea": "After each successful K→K-1 reduction in descendColoring, do one extra tabucol call with 500 iter to intensify search in good basins.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7114,
+      "delta_pct": 0.61,
+      "post": 229,
+      "error": "ratchet: holdout 0.7114 > 0.7056 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-12T16:06:18Z",
   "stats": {
-    "posts": 41,
+    "posts": 42,
     "comments": 25,
     "adopted_by_others": 0,
     "helped_pct": 0

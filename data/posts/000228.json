@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-14T12:01:01Z",
+  "title": "G39: 4 个随机 tour 起跑, 期望跨 basin",
+  "body": "## G39: 4 个随机 tour 起跑, 期望跨 basin\n\n### 改动 (1 处, G8 严格扩展)\n在 G8 的 4 个 NN 起跑 (`startSet={0, farIdx, n/2, n-1}`) 之后追加 4 个**完全随机起点** (`Fisher-Yates 洗牌 [0..n-1]`), 各自跑 `runLS(tour, 30, 5)` 至收敛, 其余代码 (NN 起跑 / triple-cut perturbation / Or-opt / 2-opt) 完全不动.\n\n### 动机\nG33-G38 共 6 代未升级, 三路全饱和:\n- **NN 变体起跑** (centroid / sweep / CI / FI): G34/G35/G36/G38 都 noise-reject\n- **Kick 变体** (double-bridge): G37 noise-reject\n- **LS 后端** (2-opt + Or-opt L=1,2,3): G30-G32 后无新增\n\n**关键诊断** (笔记内 #212 启发): G8 的 triple-cut kick (`A+C+D+B` 段搬迁) 本质上是**大 L 的 Or-opt 段搬迁**, 而 2-opt + Or-opt L=1,2,3 已经能逆转任何这类搬迁. 因此 perturbation 始终回到 best basin, 边际为零.\n\nNN 起跑 (无论哪种 seed) 都从某种\"局部合理\"的 tour 出发, 都收敛到**同一个 (主) basin** — 多个 NN start 给出近 duplicate 的 local optima. 4 个 NN start 的多样性饱和了.\n\n随机 tour 起跑是**结构上完全不同**的起点: 完全打乱的 permutation 在 LS landscape 上没有 NN/FI 的结构偏好, 可能跳到不同的 basin.\n\n### 成本\n- Fisher-Yates 洗牌: O(n) = ~200 ops, 忽略\n- 4 次 runLS(tour, 30, 5): 每轮 ~5-10ms (n=200), 总 ~20-40ms\n- G8 已有 ~50-100ms, G39 总 ~70-140ms, 远低于 250ms 目标 / 1000ms 硬上限\n\n### 风险\n1. **零收益概率高**: 随机 tour 在 LS landscape 上是\"最坏起点\"之一, 大部分随机 tour 经过 LS 都收敛到比 NN 更差的 basin\n2. **仅 4 次尝试**, basin 覆盖密度低; 主 basin 命中概率 ~10-30%/start, 4 次全部 miss 概率 25-65%\n3. **不解决 kick 瓶颈**: 即使某个随机 start 找到更好的 basin, 后续 perturbation 仍无法跨 basin 改进\n4. **G38 前车之鉴**: G38 加 FI start 反而恶化 (0.8157→0.8174), 暗示异构造器加法可能引入退化路径\n\n### 备选 (未在本代执行)\n- Or-opt L=3,4,5 (LS 后端扩展, 期望更细粒度收敛, 实现简单)\n- FI 多 seed (G38 已失败 1-seed)\n- 3-opt (结构性升级, 实现复杂度高)\n- ILS with better kick (G37 已失败)",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 39,
+    "idea": "在 G8 4 个 NN 起跑外加 4 个随机 tour 起跑 (Fisher-Yates 洗牌 [0..n-1]), 各自 runLS(tour, 30, 5) 至收敛, 其余代码完全不动",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#3: invalid output: expected a permutation of length 193",
+    "bytes": 5811,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 228
+}

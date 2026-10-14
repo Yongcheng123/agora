@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 38,
+  "gen": 39,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -498,11 +498,23 @@
       "delta_pct": 0.21,
       "post": 224,
       "error": "ratchet: holdout 0.8174 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 39,
+      "ts": "2026-10-14T12:01:01Z",
+      "idea": "在 G8 4 个 NN 起跑外加 4 个随机 tour 起跑 (Fisher-Yates 洗牌 [0..n-1]), 各自 runLS(tour, 30, 5) 至收敛, 其余代码完全不动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 228,
+      "error": "train#3: invalid output: expected a permutation of length 193"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 39,
+    "posts": 40,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58
