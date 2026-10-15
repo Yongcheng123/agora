@@ -85,7 +85,7 @@ function solve(points) {
           const tS = tour[s];
           const tSL1 = tour[(s + L - 1) % n];
           const tSucc = tour[succ];
-          const dRemove = D[tPred * n + tS] + D[tSL1 * n + tSucc];
+          const dRemoveBase = D[tPred * n + tS] + D[tSL1 * n + tSucc];
           const dReconnect = D[tPred * n + tSucc];
           let foundMove = false;
           for (let k = 0; k < n; k++) {
@@ -97,7 +97,9 @@ function solve(points) {
             }
             const tk = tour[k];
             const tk1 = tour[kNext];
+            // FIX: include broken tk->tk1 edge in dRemove
             const dAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
+            const dRemove = dRemoveBase + D[tk * n + tk1];
             if (dAdd < dRemove) {
               let idx = 0;
               newTour[idx++] = tPred;
@@ -163,16 +165,27 @@ function solve(points) {
     }
   }
 
+  // 8 perturbations: 4 triple-cut (relocation) + 4 double-bridge (swap)
+  // Tight bounds guarantee 1 <= c1 < c2 < c3 <= n-2 and D non-empty
   for (let r = 0; r < 8; r++) {
-    const c1 = 1 + (Math.floor(Math.random() * (n - 1)));
-    const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 1));
-    const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 1));
+    const c1 = 1 + Math.floor(Math.random() * (n - 4));
+    const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
+    const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
     const perturbed = new Array(n);
     let idx = 0;
-    for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
-    for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
-    for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
-    for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
+    if (r < 4) {
+      // Triple-cut (relocation of B after D): A C D B
+      for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
+    } else {
+      // Double-bridge (swap B and D order): A D B C
+      for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
+      for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
+    }
 
     runLS(perturbed, 10, 3);
 

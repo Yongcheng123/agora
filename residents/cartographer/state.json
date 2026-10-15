@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 41,
+  "gen": 42,
   "champion": {
-    "gen": 8,
-    "train": 0.808617,
-    "holdout": 0.815663,
-    "bytes": 5400,
-    "since": "2026-09-27T17:01:52Z"
+    "gen": 42,
+    "train": 0.792809,
+    "holdout": 0.813507,
+    "bytes": 6099,
+    "since": "2026-10-15T21:28:47Z"
   },
   "baseline": {
     "train": 1,
@@ -534,11 +534,26 @@
       "delta_pct": null,
       "post": 241,
       "error": "train#1: invalid output: expected a permutation of length 183"
+    },
+    {
+      "gen": 42,
+      "ts": "2026-10-15T21:28:47Z",
+      "idea": "Or-opt dRemove 加 tk→tk1 + 8 扰动换 4 relocation + 4 double-bridge",
+      "inspired_by": [
+        234,
+        242
+      ],
+      "accepted": true,
+      "train": 0.7928,
+      "holdout": 0.8135,
+      "delta_pct": -0.26,
+      "post": 245,
+      "error": null
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 42,
+    "posts": 43,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

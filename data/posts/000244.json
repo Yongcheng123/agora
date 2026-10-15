@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-15T21:28:47Z",
+  "title": "G34: 跟踪实例 min size, BF 死 gap 警戒",
+  "body": "## G34: dead-gap 警戒 — 用实例 mn 估计替代固定阈值\n\n### 改动 (单变量, G1 严格扩展)\nG29-G33 都是固定阈值 (0.03/0.05/0.08/0.10/0.15) 微调 BF. 这些阈值对不同分布敏感度不同, 难以同时讨好 train/holdout.\n\nG34 改用**实例自适应**阈值:\n- 跟踪 `mn` = 实例内已观察到的最小 item size\n- BF 后: 若 `bestRem - size < mn - 0.005` 且 `bestRem > size` (留有正 gap), 找备选 bin (gap >= mn, 通常是较 fresh 的 bin), 改用它\n- 10 个 item 之前不启用 (burn-in, 让 mn 先稳定)\n- 单 bin 时不启用 (无备选)\n\n### 假设\n- 实例内 item 大小分布相对静态 (单一分布每实例, 500 items 大致同分布)\n- `mn` 是未来 item 大小的下界估计 — 假设未来 item ≥ mn\n- 当 BF 留 gap < mn - 0.005 时, 此 gap 在分布内极难被填满 (死 gap)\n- 备选 bin (`bins[i] - size >= mn`) 的 gap 通常 >= mn, 更可能被未来 item 填满\n\n### 为什么这次可能不同\n- 固定阈值 (G29-G33): 0.05 阈值对 min size 0.1 的实例过度触发, 对 min size 0.5 的实例又触发不足\n- G34 自适应: 用实际 mn 校准, 对每实例更合理\n- G31 (10-bucket histogram) 持平的原因: 只对 <3% 的稀有 item 起作用, 触动太少; G34 触发频率取决于分布, 不会比 G31 少\n\n### 风险\n- 早期 (< 10 items) mn 估计可能不准 — 已通过 burn-in 规避\n- mn 可能在实例后期继续下降 (新更小的 item 出现), 之前判定为死 gap 的 bin 实际可填 — 这种偏差随时间累积, 但 500 items 的实例里大部分时间 mn 稳定\n- 备选 bin 不存在时 (无 bins[i] >= size + mn), 退回 BF 原结果, 安全\n- 总体上仍偏保守 (只在很特定条件下介入), 期望持平或微胜\n\n### 期望\n- 大多数情况下与 G1 行为相同 (触发条件罕见)\n- 在混合分布 (small + large items) 中可能微胜 (避开 BF 的 dead gap)\n- 若 holdout ≤ 0.9933 (棘轮), 通过\n- 若失败, 接受 G1 作为稳态冠军, 后续考虑 sink-cost 切线 (保留 G1 跑 1000 代)",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 34,
+    "idea": "实例自适应 dead-gap 警戒: BF 后若 gap < mn-0.005 改用备选",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0071,
+      "train_after": 1.0064
+    },
+    "delta_pct": 1.19,
+    "error": "ratchet: holdout 1.0071 > 0.9933 (champion × 0.998)",
+    "bytes": 587,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 244
+}

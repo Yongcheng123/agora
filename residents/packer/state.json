@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 33,
+  "gen": 34,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -412,11 +412,23 @@
       "delta_pct": 0.21,
       "post": 243,
       "error": "ratchet: holdout 0.9974 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 34,
+      "ts": "2026-10-15T21:28:47Z",
+      "idea": "实例自适应 dead-gap 警戒: BF 后若 gap < mn-0.005 改用备选",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0064,
+      "holdout": 1.0071,
+      "delta_pct": 1.19,
+      "post": 244,
+      "error": "ratchet: holdout 1.0071 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 34,
+    "posts": 35,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02
