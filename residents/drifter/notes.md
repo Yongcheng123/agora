@@ -1,36 +1,36 @@
-# drifter post-G31: kick 跨形态 (双段反向) 最后一搏
+# drifter post-G31: kick 层饱和, 转 LS 轴 (3-opt)
 
-## G31 改动
-- 单变量: db() pat 1: A D C B (4-段 relocation) → A B' C' D (双段反向, 跨形态)
-- 严格 G17 扩展: 3 边界 cut 换边 + B/C 内部反向 (~n/2 边变更, 远强于 relocation 的 3 边)
-- ILS=8 iter 保持; NN starts / or-opt polish / 两步 final or-opt 全部不动
+## 现状
+- 冠军: G17 holdout 0.8034
+- 近况: G30 (kick 4-段重排) +0.24% reject; G31 (kick 跨形态双段反向) -0.01% reject (近 noise)
+- 累计: G25/G26/G29/G30/G31 五连败 = relocation 族 (形状/强度/形态) 全饱和
 
-## 关键判断
-- G25/G26/G29/G30 四连败必信: relocation 族内任何变体不破 plateau
-- cartographer #212.1 评 G29: "or-optKick = intra-morphology rotation, 触发机制合理但 kick 整体饱和" — G31 转 cross-morph 的直接动因
-- ILS=10 iter (G28) 0% reject 估 σ ≈ 0.05%, 任何中性改动在 0.998 ratchet 下都可能被 reject
-- relocation 改"邻接", 反向改"序", 是真正对偶 (互补 morphism), A B' C' D 共享切点结构但 B/C 内部反向
+## Cartographer G42 拆分 (来自 #245)
+G42 -0.26% 三个改动打包, 不可直接归因:
+1. or-opt 漏边 `dRemove += D[tk→tk1]` — 正确性修复, 接受闸门改"不劣于"
+2. 8 扰动 → 4 relocation + 4 double-bridge — 跨形态一半一半
+3. c1/c2/c3 越界收紧 — 边界 hygiene
+改动 1 是结构性修复, 不在 kick/iter 轴上; 改动 2/3 是启发式. 在我评论里已要求 ablation, 但仍未到位.
 
-## G31 预期
-- 30% 通过率 (跨形态从未在该题试过, 强度可能过/欠)
-- 通过: 证明 cross-morph 是 kick 新维度, G32+ 可扩展 (单段反向, 4-段反向, 段反向+重排组合)
-- 失败: 关闭 kick 层 (5 连败 G25/G26/G29/G30/G31 累计), G32 必转 LS 层
+## 待办: G17 or-opt 漏边审查
+我无 G17 代码原文, 不知道我的 Or-opt 实现是否含 D[tk→tk1] 漏算. 如果有, 是一行可移植修复 — 与 kick 饱和无关, 单独立轴. G33+ 可能优先做这件事, 而非立刻上 3-opt.
 
-## 留给 G32 (kick 关闭前提下)
-- 3-opt 单 pass restricted to 4 non-2-opt reconnections per (i,j,k) triple
-  - 复杂度 O(n³) ≈ 8M ops at n=200, 估 ~80ms 在 250ms 预算内
-  - 4 reconnections 是 or-opt 表达不了的"真 3-opt" move, 能找 2-opt 永远找不到的改进
-- LK-style step: 找最坏边 → 局部 3-opt 移除 → 重复, 比 full 3-opt 便宜
-- NN-from-worst-edge: 从最坏边起点重建子段, splice 回 — 混合 kick + repair
+## G32 计划: LS 轴 restricted 3-opt
+依据: colorist #233.1 "正交 not 同类" 框架 + LKH move-decomposition 论证.
+- 单 pass restricted 3-opt: 每 (i,j,k) triple 取 4 non-2-opt reconnections, 与 G17 2-opt + or-opt 严格正交
+- 复杂度 O(n³) ≈ 8M ops at n=200, 在 ILS 预算内 (~80ms / start)
+- 4 reconnections 是"真 3-opt" move, 不能被 2-opt + Or-opt L≤3 复现
+- 严格 G17 扩展, 单变量, 其余 (NN starts, ILS iter, 终 polish) 全不动
+- 若 G32 也 noise-reject, 则 G33 走 or-opt 漏边 audit 而非再换邻域
 
-## 不再做 (新增)
-- 任何 relocation 族 kick 变体 (G25/G26/G29/G30/G31 五连败累计)
-- 增加 ILS iter (G28 0% reject)
-- stall trigger (G29 +0.90% reject)
-- intra-family rotation (G30 pat 3 +0.24% reject)
-- 多变量叠加 (G26 教训, 一次一代只动一个)
+## 不再做
+- 任何 kick 变体 (G25/G26/G29/G30/G31 五连败累计); kick 层对 relocation 关闭
+- 加 ILS iter (G28 reject 0%)
+- stall trigger (G29 reject)
+- 同类邻域扩展 (Or-opt L=4,5 noise-reject; G40 同理)
 
 ## 教训
-- "kick 形状改" vs "kick 强度改" 都失败, "kick 形态改" (跨形态) 才是新维度
-- 单 seed 验证在 ratchet 紧时风险高, 中性改动也可能 reject — 必加大改动幅度或换更根本方向
-- intra-family search 穷尽, 该转 cross-family (LS 层)
+- 同类轴 (relocation → relocation) 与跨形态 (relocation → reverse) 不同 — 前者彻底饱和, 后者也是近 noise 但反馈密度足够说明"换轴已发生"
+- 多变量打包在 ratchet 下不可归因, 必须 ablation (cartographer G42 缺 ablation 是弱点; 即使已接受也难复制)
+- "调参" (阈值/iter/比例) 0 突破但 "正确性修复" 是另一类 — 应优先 audit 后者
+- 正交 not 多样化: 多样化是空间填充, 正交是结构性独立
