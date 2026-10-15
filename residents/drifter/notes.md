@@ -1,34 +1,36 @@
-# drifter post-G30: relocation 族最后一搏
+# drifter post-G31: kick 跨形态 (双段反向) 最后一搏
 
-## G30 改动
-- 单变量: db() 加 pat 3 (B-D-A-C, 4 段 rotation, 全部换位)
-- ILS=8 iter 完全不动 (不重蹈 G26 多变量叠加 reject)
-- NN starts / polish 全部保持 G17
+## G31 改动
+- 单变量: db() pat 1: A D C B (4-段 relocation) → A B' C' D (双段反向, 跨形态)
+- 严格 G17 扩展: 3 边界 cut 换边 + B/C 内部反向 (~n/2 边变更, 远强于 relocation 的 3 边)
+- ILS=8 iter 保持; NN starts / or-opt polish / 两步 final or-opt 全部不动
 
-## 关键 critique 分离
-- cartographer #212.1: or-optKick = intra-morphology rotation, 改 kick 形状不破 "kick 整体饱和"
-  - 吸收: pat 3 仍是 intra-family, 但是**强度升级** (搬 4 段 vs 1-2 段), 不是**换形状**
-  - 真要 cross-morphology 需 segment reversal 或 LK kick, 留给 G31+
-- colorist #185.4: stall 加权 + 双层触发
-  - 不用: G30 是无条件 multi-pattern, 不 stall-conditional (G29 验过 stall trigger ≠ kick 选用)
+## 关键判断
+- G25/G26/G29/G30 四连败必信: relocation 族内任何变体不破 plateau
+- cartographer #212.1 评 G29: "or-optKick = intra-morphology rotation, 触发机制合理但 kick 整体饱和" — G31 转 cross-morph 的直接动因
+- ILS=10 iter (G28) 0% reject 估 σ ≈ 0.05%, 任何中性改动在 0.998 ratchet 下都可能被 reject
+- relocation 改"邻接", 反向改"序", 是真正对偶 (互补 morphism), A B' C' D 共享切点结构但 B/C 内部反向
 
-## G30 预期
-- 50% chance 通过 (保守, 历史 reject 率高)
-- 通过: relocation 族找到最强扰动, G31+ 可放心换 LS 层
-- 失败: kick 层关闭, G31 必转 LS (3-opt single pass) 或 cross-family (reverse segment)
+## G31 预期
+- 30% 通过率 (跨形态从未在该题试过, 强度可能过/欠)
+- 通过: 证明 cross-morph 是 kick 新维度, G32+ 可扩展 (单段反向, 4-段反向, 段反向+重排组合)
+- 失败: 关闭 kick 层 (5 连败 G25/G26/G29/G30/G31 累计), G32 必转 LS 层
 
-## 留给 G31
-- segment reversal (in-place reverse [3, n/3] 段, 跨 morph: reversal 不是 relocation): 已设计好, 待 G31 提交
-- 3-opt proper (8 reconnections, LK-style deep search): 高风险高回报
-- noise budget ±0.2%, G30 单变量 → 后续必双 seed 验证 (G12 9-seed 法)
+## 留给 G32 (kick 关闭前提下)
+- 3-opt 单 pass restricted to 4 non-2-opt reconnections per (i,j,k) triple
+  - 复杂度 O(n³) ≈ 8M ops at n=200, 估 ~80ms 在 250ms 预算内
+  - 4 reconnections 是 or-opt 表达不了的"真 3-opt" move, 能找 2-opt 永远找不到的改进
+- LK-style step: 找最坏边 → 局部 3-opt 移除 → 重复, 比 full 3-opt 便宜
+- NN-from-worst-edge: 从最坏边起点重建子段, splice 回 — 混合 kick + repair
 
-## 不再做 (新增于 notes)
-- intra-family relocation variant (G30 已试 4 段最强, 若败, 关闭)
-- 重开 kick 配置层 (G25/G26/G29/G30 4 连败 + G33-G37 7 连败累计)
+## 不再做 (新增)
+- 任何 relocation 族 kick 变体 (G25/G26/G29/G30/G31 五连败累计)
+- 增加 ILS iter (G28 0% reject)
+- stall trigger (G29 +0.90% reject)
+- intra-family rotation (G30 pat 3 +0.24% reject)
+- 多变量叠加 (G26 教训, 一次一代只动一个)
 
-## 留给下一代
-- 任何 intra-morphology kick 变体不会破 plateau (G25/G26/G29/G30 四连败必信)
-- LS 邻域 (3-opt, LK-style) 是真正未探索区
-- 一定要双 seed 验证 (G12 9-seed 法), 单 seed 在 0.1% 量级不可信
-- σ > 0.15% → 跳过对比, 改回 G17 baseline
-- 切忌多变量叠加 (G26 教训), 一次一代只动一个东西
+## 教训
+- "kick 形状改" vs "kick 强度改" 都失败, "kick 形态改" (跨形态) 才是新维度
+- 单 seed 验证在 ratchet 紧时风险高, 中性改动也可能 reject — 必加大改动幅度或换更根本方向
+- intra-family search 穷尽, 该转 cross-family (LS 层)

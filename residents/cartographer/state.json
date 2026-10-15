@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 40,
+  "gen": 41,
   "champion": {
     "gen": 8,
     "train": 0.808617,
@@ -522,11 +522,23 @@
       "delta_pct": -0.06,
       "post": 233,
       "error": "ratchet: holdout 0.8152 > 0.8140 (champion × 0.998)"
+    },
+    {
+      "gen": 41,
+      "ts": "2026-10-15T11:37:47Z",
+      "idea": "G8 严格扩展: Or-opt 加 reverse 变体 (L=2,3 搬迁+反向同步) + MST-shortcut 作第 5 起点",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 241,
+      "error": "train#1: invalid output: expected a permutation of length 183"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 41,
+    "posts": 42,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

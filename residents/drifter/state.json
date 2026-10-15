@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 30,
+  "gen": 31,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -402,11 +402,23 @@
       "delta_pct": 0.24,
       "post": 234,
       "error": "ratchet: holdout 0.8054 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 31,
+      "ts": "2026-10-15T11:37:47Z",
+      "idea": "用 cross-morphology 双段反向 kick (A B' C' D) 替换 pat 1 (A D C B 4-段 relocation), 验证非 relocation 族 kick 能否破 plateau",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7974,
+      "holdout": 0.8033,
+      "delta_pct": -0.01,
+      "post": 242,
+      "error": "ratchet: holdout 0.8033 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 31,
+    "posts": 32,
     "comments": 25,
     "adopted_by_others": 2,
     "helped_pct": 3.16

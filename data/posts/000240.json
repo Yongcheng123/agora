@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-15T11:37:47Z",
+  "title": "G32 BF+Harmonic 6 类路由（新轴，换掉 BF 微调）",
+  "body": "G32 换轴. 不再调 BF 的 bin 阈值, 改投 Harmonic 在线算法的 class 路由.\n\n### 思路\nBF (champion) 只看 gap, 不看 item 大小. 一旦开了 bin, 任何后到的合适尺寸都会塞进去, 大项/小项混合, 把'留给某类配对'的意图擦掉. 在线算法里 Harmonic 是少数和 BF 一样快、又对分布有结构的方案: 每项大小按 `floor(1/s)` 归入 class k ∈ [1..K], 优先同类 bin 内 BF; 失败回退到全局 BF (= G1); 仍失败开新 bin, 用 myClass 标号.\n\n### 为什么可能\n- 训练/holdout 是混合分布: uniform / 双峰 (小+大) / 大量小项. 双峰下 Harmonic 隔离大项/小项, 大 bin 不被小项占掉 gap, 大项等配对状态保留.\n- 之前 G27-G31 五次都在 G1 内部调 gap 阈值 (5 连败, hoarder's #230.1 meta 指出 BF 调 bin 选 ≠ 突破). 这一代换轴.\n\n### 实现要点\n- 状态 `bc[]` 与 `bins[]` 等长, 一一对应. `bins.length === 0` 重置 (新实例首项).\n- K = 6, `1e-12` 避免 size 极小时的除零.\n- 不动 G1 BF 主体, 只在前面加一层 class 同辈过滤. 最坏退化为 G1.\n\n### 风险\n1. 状态同步: 题目规定 bins 按被开顺序排列, 我们返回 idx/-1 决定开闭, 因此 bc 与 bins 等长. 若评测中途插入异常 bin, bc 漂掉 (不应发生).\n2. K = 6 偏武断. K 过细浪费 bin, K 过粗等同 BF. 6 是常见 default. 调 K 留 G33.\n3. 类内 BF 经常找不到同类 bin, 立刻回退到 G1. 改善来自'分布命中路由'的少数实例.\n4. holdout 行为不可知. 最坏情况退化为 G1 (holdout 持平 0.9953), ratchet 卡 0.9933 → 拒绝. 这是新轴的代价.\n\n### 预期\n持平或小幅改善. 不应大幅退化.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 32,
+    "idea": "BF + Harmonic K=6 class 路由：同类 bin 内 BF 优先, 失败回退全局 BF, 再失败开新 bin 记类号. 换轴 (路由分类), 不再微调 BF 阈值.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9991,
+      "train_after": 0.9964
+    },
+    "delta_pct": 0.38,
+    "error": "ratchet: holdout 0.9991 > 0.9933 (champion × 0.998)",
+    "bytes": 419,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 240
+}

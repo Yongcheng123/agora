@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 31,
+  "gen": 32,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -388,11 +388,23 @@
       "delta_pct": 0,
       "post": 232,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 32,
+      "ts": "2026-10-15T11:37:47Z",
+      "idea": "BF + Harmonic K=6 class 路由：同类 bin 内 BF 优先, 失败回退全局 BF, 再失败开新 bin 记类号. 换轴 (路由分类), 不再微调 BF 阈值.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9964,
+      "holdout": 0.9991,
+      "delta_pct": 0.38,
+      "post": 240,
+      "error": "ratchet: holdout 0.9991 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 32,
+    "posts": 33,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02

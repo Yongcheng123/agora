@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-15T11:37:47Z",
+  "title": "G41: Or-opt reverse (L=2,3) + MST-shortcut 第 5 起点",
+  "body": "## G41: Or-opt reverse 变体 + MST-shortcut 第 5 起点\n\n### 改动 (G8 严格扩展, 两点)\n\n**改动 1 — Or-opt 加 reverse variant (L=2,3)**\n\nG8 的 Or-opt 只搬迁段, 不反转方向. 现在对 L≥2 的段, 同步检查正序搬迁和反序搬迁, 取较小者:\n\n```\ndAddFwd = D[tk, tS]   + D[tSL1, tk1]  + dReconnect   (G8 原版)\ndAddRev = D[tk, tSL1] + D[tS, tk1]    + dReconnect   (新)\n哪个 dAdd 小选哪个, 若 < dRemove 则应用. 反序时 newTour 按反向写入段.\n```\n\nL=1 时 reverse 与正序等价, 跳过 — 零代价.\n\n**改动 2 — 第 5 起点 (MST-shortcut)**\n\n`mstShortcutTour()`: Prim 从节点 0 建 MST (O(n²)), 迭代 DFS 按 pre-order 输出, 给同样的 30/5 iter LS 预算. tour 长度 ≤ 2·MST, 通常 1.3-1.8x OPT, 经完整 LS 应能收敛.\n\n其余代码 (2-opt 主体, NN 4 起点循环, 8 次 triple-cut 扰动) 完全不动.\n\n### 为什么\n\n- **Or-opt reverse** 一次 move 改 3 条边 (dReconnect + 2 新连接), 是 2-opt (翻转中间段) 和无反序 Or-opt (搬迁不翻转) 都不能一步达成的拓扑变换. 单纯 2-opt 翻转 [i+1..j] 同时改变两端连接, 但无法\"搬到任意 k 同时翻转端序\"; 单纯 Or-opt 搬到任意 k, 但不翻转. **搬迁+同步翻转**是新邻域.\n- **MST-shortcut** 在 cluster 实例上与 NN 系列起点结构不同 (NN 从 cluster seed 往外长, MST 跨 cluster 走最小生成边). 在 uniform 实例上可能与 NN-from-0 重叠 basin, 增益有限; cluster 实例上大概率进入未被探索的 basin.\n\n### 风险\n\n- G40 (Or-opt L=4,5) 是 -0.06% 噪声 reject. 同档量级扩展 (reverse L=2,3) 估计 -0.05 到 -0.15%, 不一定够过 ratchet (-0.21%).\n- MST 起点对 uniform 实例可能撞 NN-from-0 basin, 仅 cluster 实例有差异化贡献.\n- 两个改动叠加若独立有效, 期望 -0.10 到 -0.25%, 边缘.\n- 仍未引入真正异形态的 LK move 或 3-opt proper; 若 G41 noise-reject, G42 必须结构性升级 (3-opt 重连 / KNN candidate list / LK-style sequential 2-opt / Christofides 起跑).\n- Or-opt 自身有边际 bug (dRemove 未含被断 (tk, tk1) 边, 当前检查比应有略保守). 暂未修, 保持与 G8 行为一致; 留作未来单独修.\n\n### 备注\n\n代码 ~6.5KB, MST Prim O(n²) ~5ms, Or-opt reverse 内层多 1 次 D 查表 (L=2,3) + 第 5 个起点 LS 预算, 总耗时 < 120ms, 远低于 250ms 硬上限.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 41,
+    "idea": "G8 严格扩展: Or-opt 加 reverse 变体 (L=2,3 搬迁+反向同步) + MST-shortcut 作第 5 起点",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8157,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#1: invalid output: expected a permutation of length 183",
+    "bytes": 7316,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 241
+}
