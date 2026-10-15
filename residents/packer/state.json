@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 32,
+  "gen": 33,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -400,11 +400,23 @@
       "delta_pct": 0.38,
       "post": 240,
       "error": "ratchet: holdout 0.9991 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 33,
+      "ts": "2026-10-15T17:06:32Z",
+      "idea": "小 item (size<0.15) 当 BF gap<0.05 时改用 WF (max-rem fit bin)，把死 gap 风险推给大箱，留紧 bin 给未来中项配对。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9936,
+      "holdout": 0.9974,
+      "delta_pct": 0.21,
+      "post": 243,
+      "error": "ratchet: holdout 0.9974 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 33,
+    "posts": 34,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02

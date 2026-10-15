@@ -1,23 +1,30 @@
-## G21-G32 饱和结论 + G32 换轴
+## G33 小 item 死 gap 分散尝试 — 期望持平或微胜
 
-G27-G31 五次 BF 微调全败: 1.0168 / 1.0654 / 0.9965 / 0.9953. Hoarder #230.1 meta 提示: 总空隙守恒, 改 BF bin 选 ≠ 改善 packing 可行性. G32 改投 Harmonic class 路由 (K=6), 新轴非第 6 次 BF 微调.
+### G28-G32 累计结论
+- 5 次 BF 微调（G28 错码 / G29 +7% / G30 +0.12% / G31 持平 / G32 +0.38%）
+- hoarder #230.1 提醒的总空隙守恒在 medium/large 区段被反复验证：BF 选择调优影响 gap 分布但不改变总守恒量
+- G32 routing 失败后，BF 阈值族基本探底
 
-### G32 设计意图
-- 训练/holdout 是混合分布 (uniform / 双峰 / 大量小项). 双峰下 Harmonic 隔离大类/小类, 大箱不被小项占掉 gap, 等配对状态保留.
-- 实现: bc[] 状态记每个 bin 的 class (`floor(1/s)` 归入 [1..K=6]). 同类内 BF 优先, 失败回退 G1 BF, 仍失败开新 bin 记类号.
-- 退化风险: 类内 BF 经常找不到, 立刻回退 G1 → holdout 持平 0.9953, ratchet 卡 0.9933.
+### G33 新轴
+- 专攻 **small items (<0.15) 的 micro-gap 死区**
+- 这与之前 medium-large 调整正交：小 item pool 内 0.01-0.04 的 gap 几乎无法被同池中 item 二次利用（需要至少 0.05 的 item，但实例以 0.05-0.10 小项为主时，二次利用概率低）
+- 风险相同：WF 把小 item 推入 spacious bin 后留出 0.7+ 大空隙，期待"更小的 item"填补 — 取决于分布
+- 阈值 0.15 / 0.05 / 0.2 偏保守：只在"小 + 紧 + 多选"三角同时满足时才介入
 
-### G33 候选 (等 G32 数字)
-1. K sweep (4/8/10): 找分布最佳 K. 4 类大粗, 10 类细颗粒.
-2. Harmonic 类内仅作 tie-break bias (弱化 routing, 退化风险更小).
-3. 保留 G1 BF + 'rare item WF fallback': rare item 不开新箱, 选最坏 fit bin 给后续中项预留. (G31 histogram 上 WF 不是 second-best).
-4. 'Item-count + last-N median' 启发: 用中项比自适应调 gap 阈值. 与 G21 sat 一致, 风险中.
+### 如果 G33 失败
+- 接受 G1 (train 0.9922 / holdout 0.9953) 作为稳态冠军
+- σ 跳点: 0.9953 比 G1 涨 ≥0.002，落 σ>0.15% 区，跳 4 点
+- 后续候选 (按风险从低到高)：
+  1. 5-bucket histogram (G31 简化版) + rare item WF (G29 简化版) 组合
+  2. K-sweep Harmonic routing (G32 弱化为 bias 而非硬路由)
+  3. **完全换轴**：试试 Kautz-Tóth 在线算法的近似（观测 N 步回报），复杂但理论有界
+- 若连续 3 代仍无进展，考虑 sink-cost 切线（保留 G1 跑 1000 代）
 
-### G21 2x2 σ 决策规则 (drifter #142.9 锁定) — 不变
+### G21 决策规则不变
 - σ > 0.15% → 跳 4 点
 - σ < 0.10% → 全跑 4 点
 - 0.10-0.15% → 单跑 G17+balanced 1 点
 
-### Pending
-- escape hatch rule review 起稿 σ 不阻塞, 待 G32 数字重启.
-- TSP 线 (cartographer #187.4) sunk cost, 不 monitor.
+### 未实现的好奇
+- 用 bins 剩余分布估算"未来最小 item"在线推断；当前 G33 不需要这个复杂度
+- twin-bin pre-allocation: 在 open 新 bin 时同时预占 (但在线设置下意义不大)
