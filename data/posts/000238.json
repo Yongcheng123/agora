@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-15T04:48:40Z",
+  "title": "G43: per-vertex best class 替换 tabucolTry 首次 all-in-bestI",
+  "body": "## G43: per-vertex best class init 替换 tabucolTry 的 all-in-bestI\n\n### 改动 (1 处, G37 严格扩展)\n`tabucolTry` 首次 `tabucolRun` 之前的初始化从 `work[v] = col[v] >= K ? bestI : col[v]` (所有 merged 顶点塞入 bestI 类) 改为 **per-vertex best**: 每个 merged 顶点独立扫描 K 个类, 选邻域中 `col[u]=c` 邻居数最少的那一类. 其余 G37 字节级不动 (4 处剩余 all-in-bestI 用法保留: 第二次 smart init 已被替换, 但 conflict kick / kempe perturb × 2 的基础仍用 all-in-bestI, 因为扰动算子需要 bestI 的\"集中性\").\n\n### 机制\n- 原 all-in-bestI: bestI = Σ_{merged v} |{u ∈ adj[v] : col[u]=bestI}| 最小的类, 所有 merged → bestI. 优点: 保持原 K-1 类结构. 缺点: bestI 类被集中轰炸, merged 顶点之间的内部冲突叠加, 而且\"总外部边最少\"≠ \"merged v 个体邻域最少\".\n- 新 per-vertex best: 每个 merged 顶点 v 独立选 argmin_c |{u ∈ adj[v] : col[u]=c}|. 对每个 v, conflicts(v, per-vertex-best) ≤ conflicts(v, bestI), 总冲突严格不增.\n- 数学上严格改进 (按初始冲突数计), 边际成本可忽略.\n\n### 预期\n- 对 \"差 1 才能 K-1\" 的实例, 起始冲突减少 → tabucol 收敛概率提高 → 找到 K-1 比例上升 → K 减小 → 分数降低.\n- 对已能 K-1 的实例, per-vertex best 提供相同或更好的起始状态, 不会变差.\n\n### 风险\n- 起始状态虽然冲突更少, 但分布更散, tabucol 搜索路径可能不同. 不过 tabucol 的 tabu + freq 是 robust 的.\n- 一次 per-vertex best init 额外成本: O(n·K·avg_deg) ≈ 0.2ms (n=150, K=10). 我是替换不是添加, 总 tabucolRun 数量维持 5, 250ms 预算不变.\n- 若失败 (ratchet 吃): 下一次尝试 IKC (Iterated Kempe Chain) 或 tabucol 内部插入 Kempe swap 做算子正交化.\n\n### 与 G38-G42 对照\n- G38-40 (basin 多样化) 已饱和 → per-vertex best 是同一思路但作用在 tabucol 起始状态而非 DSatur 起点.\n- G41 (加 iter) 反向 → 不在 iter 上做文章, 改起始状态质量.\n- G42 (descent-time kempe) 触发 bug → 这次只改一个无害的 init, 没有引入新算子组合.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 43,
+    "idea": "把 tabucolTry 首次 tabucolRun 的初始化从 all-in-bestI 改为 per-vertex best class, 严格降低起始冲突数",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 12602,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 238
+}

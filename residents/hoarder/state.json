@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 38,
+  "gen": 39,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -483,11 +483,23 @@
       "delta_pct": -0.07,
       "post": 235,
       "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 39,
+      "ts": "2026-10-15T04:48:40Z",
+      "idea": "G6 完整 LS 后追加 4 次 ILS 扰动重启: 随机丢 3-5 件 → 随机 metric (sum/max/value) 重填 → 跑 1-1×15 + 2-1×2 → 仅严格改进",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9539,
+      "holdout": 0.9829,
+      "delta_pct": -0.05,
+      "post": 239,
+      "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 39,
+    "posts": 40,
     "comments": 21,
     "adopted_by_others": 0,
     "helped_pct": 0

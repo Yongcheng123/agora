@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-15T04:48:40Z",
+  "title": "G39: G6 + ILS 扰动重启跳出 basin",
+  "body": "## G39: ILS 扰动跳出 G6 局部最优\n\n### 改动 (单点, G6 严格扩展)\n完整保留 G6 的全部 LS 阶段 (1-1×80 + 2-1×8 + 2-2×3 + 1-1×20 + fill) 作为 baseline. 之后追加 4 次 ILS 重启:\n\n每次重启:\n1. 从当前 best 复制状态 (`bestArr.slice()` / `new Set(bestSet)` / `bestUsed.slice()`).\n2. 随机丢 `k = 3..5` 件 picked (用 Math.random 选索引).\n3. 用随机选取的 metric (`effSum` / `effMax` / `effVal`) 贪心重填剩余容量.\n4. 跑 abbreviated LS: `swap11 × 15` + `swap21 × 2` + 末次 `greedyFill`.\n5. 仅当 `newVal > bestVal` 时更新 best.\n\n### 为什么\nG34-G38 连续 5 次被棘轮拒绝, 都死在 0.9827-0.9839 (噪声级波动, 离 G6 的 0.9834 不到 0.001). G6 的 {1-1, 2-1, 2-2} 严格 LS 已是该起点的局部最优 — G35/G37/G38 在附近加高阶 swap (3-x, 1-2) 找不到任何真改进. 唯一剩下的路子是 **ILS**: 用扰动跳出当前 LS basin, 在别的 basin 找更高峰. 重填时换 metric 是关键: 纯 sum 重填通常还在原 basin 附近, 换成 max(value) 或纯 value 能跳得更远.\n\n### 风险\n- **4 次重启可能不够**: 若扰动力度 k=3..5 太小, 跳不远; 若太大, 失去 G6 的好前缀, 难恢复. 没有自适应.\n- **metric 多样性有限**: 只用 3 个手写 metric, 可能还不够 basin 多样化.\n- **耗时**: G6 ~30M ops + 4 重启 × ~5M ops ≈ 50M ops ≈ 500ms (硬上限 1s 内, 但建议 250ms 内, 偏紧).\n- **若 ILS 找不到改进**: 返回 G6 baseline (严格保证, 但也过不了棘轮).\n\n### 验证手段\n- 比较 train 和 holdout: ILS 若有效, train 和 holdout 应同步下降, 不应出现单边恶化.\n- 看 ILS 实际命中频率: 4 次重启里若平均 0-1 次找到改进, 说明扰动力度不够.\n\n### 如果失败, G40+ 路径\n1. **自适应扰动力度**: 跟当前 best 与 G6 的距离差挂钩.\n2. **多起点并行**: 每次重启从 G6 baseline 重启, 不从当前 best (更独立 basin).\n3. **更激进扰动**: 丢 50% picked 整片重填.\n4. **多扰动算子**: 随机丢 + 随机 swap (k1 picked, k2 unpicked).\n5. **温度接受**: 偶尔接受 d=0 中性解, 拓展搜索范围.\n6. **更多 metric**: `v / Σ(w_j²)`, `v / geometric mean(w_j/cap_j)`.",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 39,
+    "idea": "G6 完整 LS 后追加 4 次 ILS 扰动重启: 随机丢 3-5 件 → 随机 metric (sum/max/value) 重填 → 跑 1-1×15 + 2-1×2 → 仅严格改进",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9829,
+      "train_after": 0.9539
+    },
+    "delta_pct": -0.05,
+    "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)",
+    "bytes": 8107,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 239
+}
