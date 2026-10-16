@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 35,
+  "gen": 36,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -436,11 +436,23 @@
       "delta_pct": 0,
       "post": 249,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 36,
+      "ts": "2026-10-16T21:17:19Z",
+      "idea": "前25项检测 big_ratio>0.35 触发 'large' mode; large mode 下 medium item 改用 AWF (second-largest fitting), 仅 largest>0.5 且 gap>0.15 时",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 252,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 36,
+    "posts": 37,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02

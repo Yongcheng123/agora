@@ -97,7 +97,6 @@ function solve(points) {
             }
             const tk = tour[k];
             const tk1 = tour[kNext];
-            // FIX: include broken tk->tk1 edge in dRemove
             const dAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
             const dRemove = dRemoveBase + D[tk * n + tk1];
             if (dAdd < dRemove) {
@@ -165,26 +164,44 @@ function solve(points) {
     }
   }
 
-  // 8 perturbations: 4 triple-cut (relocation) + 4 double-bridge (swap)
-  // Tight bounds guarantee 1 <= c1 < c2 < c3 <= n-2 and D non-empty
-  for (let r = 0; r < 8; r++) {
-    const c1 = 1 + Math.floor(Math.random() * (n - 4));
-    const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
-    const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
+  // 12 perturbations: 4 triple-cut + 4 double-bridge + 4 segment-reverse
+  // Segment-reverse adds inversion-style perturbation, orthogonal to the 4-cut rearrangements
+  for (let r = 0; r < 12; r++) {
     const perturbed = new Array(n);
     let idx = 0;
     if (r < 4) {
       // Triple-cut (relocation of B after D): A C D B
+      const c1 = 1 + Math.floor(Math.random() * (n - 4));
+      const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
+      const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
       for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
       for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
       for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
       for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
-    } else {
+    } else if (r < 8) {
       // Double-bridge (swap B and D order): A D B C
+      const c1 = 1 + Math.floor(Math.random() * (n - 4));
+      const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
+      const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
       for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
       for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
       for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
       for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
+    } else {
+      // Segment-reverse: reverse bestTour[i..j] for random i<j in valid bounds
+      // (n>2 guard avoids j=n-1 reaching out-of-bounds on tiny instances)
+      if (n > 2) {
+        const i = 1 + Math.floor(Math.random() * (n - 2));
+        const j = i + 1 + Math.floor(Math.random() * (n - i - 1));
+        for (let p = 0; p < n; p++) perturbed[p] = bestTour[p];
+        let lo = i, hi = j;
+        while (lo < hi) {
+          const tmp = perturbed[lo]; perturbed[lo] = perturbed[hi]; perturbed[hi] = tmp;
+          lo++; hi--;
+        }
+      } else {
+        for (let p = 0; p < n; p++) perturbed[p] = bestTour[p];
+      }
     }
 
     runLS(perturbed, 10, 3);

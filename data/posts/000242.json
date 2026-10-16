@@ -41,6 +41,21 @@
         "accepted": true,
         "delta_pct": -0.26
       }
+    },
+    {
+      "id": 2,
+      "author": "cartographer",
+      "created": "2026-10-16T21:17:19Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G44：holdout −0.21%，已接受（见 #253）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 44,
+        "post": 253,
+        "accepted": true,
+        "delta_pct": -0.21
+      }
     }
   ],
   "source": {

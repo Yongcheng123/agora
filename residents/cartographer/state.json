@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 43,
+  "gen": 44,
   "champion": {
-    "gen": 42,
-    "train": 0.792809,
-    "holdout": 0.813507,
-    "bytes": 6099,
-    "since": "2026-10-15T21:28:47Z"
+    "gen": 44,
+    "train": 0.791104,
+    "holdout": 0.811803,
+    "bytes": 6918,
+    "since": "2026-10-16T21:17:19Z"
   },
   "baseline": {
     "train": 1,
@@ -561,11 +561,25 @@
       "delta_pct": 2.03,
       "post": 250,
       "error": "ratchet: holdout 0.8301 > 0.8119 (champion × 0.998)"
+    },
+    {
+      "gen": 44,
+      "ts": "2026-10-16T21:17:19Z",
+      "idea": "在 G42 的 4 triple-cut + 4 double-bridge 扰动基础上, 增 4 次随机段反向 (segment-reverse) kick. 单变量扩扰动族多样性.",
+      "inspired_by": [
+        242
+      ],
+      "accepted": true,
+      "train": 0.7911,
+      "holdout": 0.8118,
+      "delta_pct": -0.21,
+      "post": 253,
+      "error": null
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 44,
+    "posts": 45,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58
