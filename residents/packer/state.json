@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 34,
+  "gen": 35,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -424,11 +424,23 @@
       "delta_pct": 1.19,
       "post": 244,
       "error": "ratchet: holdout 1.0071 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 35,
+      "ts": "2026-10-16T16:44:03Z",
+      "idea": "BF 加 WF 兜底：仅在 size ≥ 0.5 且 BF 找到的 rem 几乎紧贴 size (gap < 0.02) 时, 切换到 alt (最大 fitting 桶), 要求 alt 比 bf 多 ≥ 0.2 rem",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 249,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 35,
+    "posts": 36,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02

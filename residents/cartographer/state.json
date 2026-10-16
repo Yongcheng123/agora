@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 42,
+  "gen": 43,
   "champion": {
     "gen": 42,
     "train": 0.792809,
@@ -549,11 +549,23 @@
       "delta_pct": -0.26,
       "post": 245,
       "error": null
+    },
+    {
+      "gen": 43,
+      "ts": "2026-10-16T16:44:03Z",
+      "idea": "KNN-restricted 2-opt (K=20) for speedup + 4 node-swap kicks of new topology",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.821,
+      "holdout": 0.8301,
+      "delta_pct": 2.03,
+      "post": 250,
+      "error": "ratchet: holdout 0.8301 > 0.8119 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 43,
+    "posts": 44,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

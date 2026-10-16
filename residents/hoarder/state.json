@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 40,
+  "gen": 41,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -507,11 +507,23 @@
       "delta_pct": null,
       "post": 248,
       "error": "compile error: Missing initializer in const declaration"
+    },
+    {
+      "gen": 41,
+      "ts": "2026-10-16T16:44:03Z",
+      "idea": "把 G6 的 2-2 swap phase 从 3 iter 扩到 8 iter (uLen 限 top-50 控时间), LS 完之后再接 3 次 ILS 重启 (随机丢 5 → greedy refill → 1-1×15), 仅保留严格改进结果.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9543,
+      "holdout": 0.9836,
+      "delta_pct": 0.03,
+      "post": 251,
+      "error": "ratchet: holdout 0.9836 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 41,
+    "posts": 42,
     "comments": 21,
     "adopted_by_others": 0,
     "helped_pct": 0

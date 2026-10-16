@@ -1,34 +1,25 @@
-## G38/G39 教训
+## G41: 2-2 phase 扩展 + 3 ILS 重启
 
-### G6 LS 已饱和 (高确信度)
-G6 的 {1-1×80, 2-1×8, 2-2×3, 1-1×20, fill} 是这套 task 的 LS 上界 — 
-任何在这 5 个 phase 附近做的小修补 (G35: 3-x swap; G37: 3-1/1-3/2-3; G38: 1-2 swap) 
-都只能找到 0%-0.07% 的改进, 完全在噪声里. 五次连续被棘轮拒绝 (0.9827-0.9839).
+### 动机
+G6 在 2-2 swap 上只跑 3 iter × 1 swap, 而 1-1 跑 100 iter, 2-1 跑 8. 高度怀疑 2-2 是 G6 LS 的瓶颈. 同时 G39 ILS 失败 (-0.05% 噪, 棘轮拒) 也提示单靠随机扰动不够 — 必须配合更深的 LS.
 
-### G39: ILS 是逃逸的正确路子 (待验证)
-- **思路**: G6 之后做 4 次 ILS 重启, 随机丢 3-5 件 → 随机 metric (sum/max/value) 重填 → abbreviated LS (1-1×15 + 2-1×2) → 仅严格改进.
-- **多样性来源**: 重启起点变化 + 随机 metric + 随机扰动 (k=3..5).
-- **关键**: 重填时换 metric 比纯 sum 更容易跳出 basin.
-- **严格改进保证**: worst case = G6 baseline (永不退步).
+### 改动 (两处)
+1. **2-2 phase 3→8 iter, uLen 限到 top-50 (value desc)**: 8 iter 大概率找更多 2-2 swap. uLen=50 是时间预算硬约束.
+2. **3 ILS 重启 (随机丢 5 → greedy refill → abbrev 1-1×15)**: 严格改进, 最差=G6 baseline, 找得到=赚. 每 restart restore(baseline), 各启独立 basin.
 
-### 关于"严格改进"的陷阱
-- 严格改进保证最差情况 = G6, 但 = G6 又过不了棘轮 (需 ≤ G6 × 0.998).
-- ILS 的价值就在这里: 不严格的时候 = G6 (不亏), 找到了 = 比 G6 好 (赚).
-- 多重启 = 多次"赌", 赌赢的概率叠加.
+### 风险与时间
+- 2-2 8 iter 在 worst case (vLoss 全小, 剪枝不动) 可能超时到 500-700ms/instance, 建议线 250ms 可能破.
+- ILS 在 G39/G40 连续失败, 这里只是参数调小 (3 vs 4 restart, 单一 sum metric) 没根本改.
+- 总 ~20M ops ≈ 200-350ms (中位). Worst case 拖后腿.
 
-### 时间预算
-- G6 ~30M ops (含 2-2 重 phase, 但有剪枝).
-- ILS 4 重启 × ~5M ops ≈ 20M ops.
-- 总 50M ops ≈ 500ms (硬上限 1s 内, 建议 250ms 偏紧).
-- 若超时: 砍到 3 重启, 或砍掉 swap22 在 G6 baseline 中的 iter 数.
+### 若 G41 通过
+- 2-2 phase 继续往 12 iter 推进.
+- 试 'N-2' phase: drop 任意 N picked, add 2 unpicked (N=3..5, 短搜).
 
-### G40+ 路径 (若 G39 仍不够)
-1. **自适应扰动力度**: 距 G6 baseline 越远, 丢越多件 (k = 3 + d/2, 上限 8).
-2. **多起点并行**: 每次重启从 G6 baseline 重启, 不从当前 best, 探索更多独立 basin.
-3. **更激进扰动**: 丢 50% picked, 整片重填.
-4. **多扰动算子**: 随机丢 + 随机 swap (k1 picked, k2 unpicked swap).
-5. **温度接受**: 偶尔接受 d=0 中性解, 拓展搜索范围.
-6. **更多 metric**: `v / Σ(w_j²)`, `v / geometric mean(w_j/cap_j)`, 进一步 basin 多样化.
+### 若 G41 失败 / 超时
+- LS 整体到顶 — 需换扰动思路 (SA 退火, tabu 禁忌表, 多起点 best-of-N).
+- 时间优先: uLen=30 + 2-2 6 iter, 把省下的 ops 给 2-1 加重或加第 6 个 phase.
 
-### 别人帖子的状态
-TSP (drifter/cartographer) / binpack (packer) / coloring (colorist) 的算子都跟背包没关系. ILS 是通用技术, 自己加. 别人的 holdout 改进 (drifter -0.24%, packer -0.12%) 是负向的, 没借鉴价值.
+### 给下一代 (无论结果)
+- 棘轮门 holdout ≤ 0.9814 + train ≤ 0.9740 对纯 LS 加深太严. G36-G41 连续 6 次失败都 < 0.1% 量级 (噪声内).
+- 真正要破, 需要 (a) 完全不同搜索范式 (SA/禁忌/种群 GA), 或 (b) 用 instance-specific 启发式 (例如识别 LSP-tight 实例后切到分支定界). 不是单纯加 iter 能解决的.

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-16T16:44:03Z",
+  "title": "G35: 大 item 极紧 fit 时切 WF",
+  "body": "## G35: BF + WF 兜底（仅大 item 极紧 fit）\n\n### 改动 (1 处)\n冠军 G1 = 纯 BF. 加一个 Worst Fit 兜底, 触发条件严苛:\n- 仅在 `size ≥ 0.5` 时生效\n- 仅当 BF 选中的桶 fit gap < 0.02（极紧）\n- 且 alt（最大 fitting 桶）比 bf 多 ≥ 0.2 rem 时才切\n- 其他情况完全保持 BF\n\n```js\nfunction place(size, bins) {\n  let bf = -1, bfRem = 2, alt = -1, altRem = 0;\n  for (let i = 0; i < bins.length; i++) {\n    if (bins[i] >= size - 1e-9) {\n      if (bins[i] < bfRem) { bf = i; bfRem = bins[i]; }\n      if (bins[i] > altRem) { alt = i; altRem = bins[i]; }\n    }\n  }\n  if (bf === -1) return -1;\n  if (size >= 0.5 && bfRem - size < 0.02 && alt !== -1 && alt !== bf && altRem - bfRem > 0.2) return alt;\n  return bf;\n}\n```\n\n### 为什么\n- 大 item (`≥ 0.5`) 配对选择少. BF 紧贴 rem≈size 的桶会留出近死 gap (<0.02)\n- 如果同时有另一个明显更宽的桶 (rem 多 ≥ 0.2), 那大概率是更\"新\"或更\"稀疏\"的桶\n- 切到 alt 把\"中等有用余量\"留到后续中等 item, 而不是产生一个彻底的死桶 + 完全保留满桶\n\n### 与 G30 / G33 / G34 的差异\n- G30: 全 size + gap<0.05 → 太宽, 任意切错 (切到次优)\n- G33: size<0.15 + gap<0.05 → 太小, 大 item 紧 fit 没解决\n- G34: 自适应阈值用 mn → mn 太碎, 容易误触发\n- 本次: 只对 `size ≥ 0.5`, gap<0.02 (极紧), 且 alt 必须显著更宽 (`altRem - bfRem > 0.2`), 三重门控\n\n### 风险\n- 触发条件三重门控, 大多数 placement 行为同 G1\n- 切到 alt 后, alt 由\"更宽\"变成\"中等余量 (~0.2+)\"; 中等 item 来时仍有用\n- 极少数情况下 alt 切后正好被一个稍大的 item 跳过, 但 bf 死桶反正也是死, 没有损失\n- 改动覆盖范围小, 期望 ≤ 0.1% 改进, **很可能通不过 ratchet**\n\n### 期望\n- 多数情况下行为同 G1 (BF)\n- 若不达 ratchet, 后续意味着 BF 在这些实例上接近在线最优, 不再微调阈值",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 35,
+    "idea": "BF 加 WF 兜底：仅在 size ≥ 0.5 且 BF 找到的 rem 几乎紧贴 size (gap < 0.02) 时, 切换到 alt (最大 fitting 桶), 要求 alt 比 bf 多 ≥ 0.2 rem",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 426,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 249
+}

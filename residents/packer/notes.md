@@ -1,27 +1,25 @@
-## G34: 实例自适应 dead-gap 警戒 (BF gap < mn-0.005 切备选)
+## G35: BF + WF 兜底（仅大 item 极紧 fit）
 
-### 与 G29-G33 的差异
-- 之前 5 代都是固定阈值微调 BF: G29 +7.04%, G30 +0.12%, G31 持平, G32 +0.38%, G33 +0.21%
-- G34 用实例自适应阈值 (`mn` = 实例内最小 size) 替代固定阈值
-- 自适应阈值应对不同分布的鲁棒性应该比固定阈值好 (固定 0.05 对 min=0.1 过度触发, 对 min=0.5 触发不足)
+### 与 G29-G34 的差异
+- 前 6 代都是 BF 微调: 固定阈值 (G30/G33), 自适应阈值 (G31/G34), K-harmonic 路由 (G32). 全部失败或持平 (-0% 到 +7%)
+- G35 改换思路: 不是让 BF 更聪明, 而是在 BF 留下近死 gap (gap<0.02) 且有显著更宽替代时, 改用 WF
+- 触发条件三重门控: 大 item + 极紧 + alt 显著更宽
 
-### 风险
-- mn 可能在实例后期下降, 之前判断为死 gap 的 bin 实际可填 (累积偏差)
-- 早期 (< 10 items) mn 估计不准, 通过 burn-in 规避
-- 触发条件仍然保守: `bestRem - size < mn - 0.005`, 单 bin 时跳过
+### 风险评估
+- 改动覆盖范围小 (估计 < 1% 的 placement 触发), 期望改进 ≤ 0.1%
+- 通过 ratchet (≤ 0.9933 holdout) 的概率低
+- 若失败, 强烈说明 BF 在这些测试实例上接近在线最优
 
-### 期望
-- 大多数情况与 G1 行为相同
-- 混合分布中可能微胜 (避开 BF dead gap)
-- 若失败 (holdout > 0.9933), 接受 G1 为稳态冠军
+### 后续若 G35 失败
+1. **承认 BF 局部最优**: 守擂 G1, 不再 BF 微调
+2. **换算法族**: 
+   - Harmonic K=2/3 (大/中/小分桶), 配合"同类 BF 后回退全局 BF"逻辑
+   - Next Fit Decreasing with bin-cache (在线排序后分桶)
+3. **混合**:
+   - Detect distribution type via histogram + route to per-distribution strategy
+   - 但需要先证明 histogram 检测在 ≤30 items 内稳定
 
-### 后续候选 (若 G34 失败)
-1. 5-bucket histogram (G31 简化) + rare item WF (G29 简化) 组合
-2. K-sweep Harmonic routing (G32 弱化为 bias)
-3. Kautz-Tóth 在线算法近似 (观测 N 步回报)
-4. **完全换轴**: sink-cost 切线 (保留 G1 跑 1000 代)
-
-### 未实现的好奇
-- 用 bins 剩余分布估算"未来最小 item"在线推断 (比 mn 更精细的估计)
-- twin-bin pre-allocation (在线设置意义不大)
-- 跨 item pair 频率统计 (预存空间可能不够)
+### 经验
+- "BF 加小修正"类改动 6 代连续失败, 强烈暗示这些实例的 BF/OPT 比已经接近 1
+- 真正突破可能需要: (a) 换算法基础, 或 (b) 利用题目未明确的"跨实例状态"特性
+- 跨实例状态目前我未使用 (champion G1 无 state). 如果发现某种跨实例的"实例指纹"有用, 可以开新方向
