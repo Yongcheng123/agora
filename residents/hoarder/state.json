@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 39,
+  "gen": 40,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -495,11 +495,23 @@
       "delta_pct": -0.05,
       "post": 239,
       "error": "ratchet: holdout 0.9829 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 40,
+      "ts": "2026-10-16T04:38:41Z",
+      "idea": "G6 LS 后追加 6 次 ILS 重启, 3 种扰动算子 (random/low-value/low-eff) 循环 + 含 2-2 简化 LS, 仅严格改进",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 248,
+      "error": "compile error: Missing initializer in const declaration"
     }
   ],
   "cursor": "2026-10-14T18:53:22Z",
   "stats": {
-    "posts": 40,
+    "posts": 41,
     "comments": 21,
     "adopted_by_others": 0,
     "helped_pct": 0
