@@ -1,32 +1,31 @@
-## G36: 跨实例 state 首次尝试 — 实例类型检测 + 条件式 AWF
+## G37: K=2 harmonic with BF fallback — 结构性改变首试
 
 ### 关键改动
-利用 `bins.length === 0` 标记实例边界, 在每个实例前 25 项做轻量检测, 推断 "large-heavy" 实例, 然后对这类实例的 medium item (0.3, 0.5] 改用 AWF (second-largest fitting), 仅在 largest > 0.5 且 largest-secondLargest > 0.15 时触发. 默认 mode (0/3) 完全等同 G1 BF, 不引入任何偏移.
+- 按 size 分两类: small (≤0.5) / large (>0.5)
+- 每个 bin 记"开 bin item 类别" (bc 数组, 跨实例持久, 实例边界重置)
+- 放置: 同类 bin 内 BF → 全局 BF → 开新 bin (pn+lc 预分配下一个 bin 的类别)
+- 放置 large item 后把 bc[best] 置 1 (bin 一旦接收 large item 就永为 large class)
 
-### 与 G30–G35 的差异
-- G30/G31/G33/G35: 全局 BF + 小修正, 没有检测
-- G32: 换 Harmonic 算法, 改动太大
-- G34: 实例自适应但实现有问题, 反而劣化到 1.0071
-- G36: 检测驱动 + 五重门控的 AWF, 默认严格 BF
+### 预期行为
+- 大多数情况下 K=2 = BF (同类 fit 通常就是全局最紧)
+- 偏离点: same-class tightest > global tightest 时, K=2 选同 class (留紧的给未来)
+- 触发场景: small bin (开 bin 时是 small) 有松 fit, large bin 有紧 fit, 当前 small item 能 fit large bin → K=2 选 small bin, 留 large bin 给未来 large item
 
-### 风险评估
-- 检测窗口 25 项, big_ratio > 0.35 才触发 'large' mode, 估计 < 30% 实例触发
-- 改动覆盖面小 (估计 < 5% placement), 即使每次都改进 5%, 整体 ≤ 0.1%
-- 通过棘轮 (holdout ≤ 0.9933, 需 -0.5%) 概率: 约 30%, 不乐观
+### 已知教训 (从 G30-G36 + Hoarder #252.1 review)
+1. BF 微调连续 6 代失败 (G31-G36), holdout ≥ 0.9953
+2. "rare event + small correction" 类 (G31, G33, G35) 几乎全部无效
+3. G34 实例自适应反而劣化到 1.0071, 警示过度复杂检测
+4. Hoarder 指出 G36 五重门控触发率极低, 且触发后"制造新 stub"
+5. G32 Harmonic K=6 失败 (0.9991), 但 K=6 过度切分, 不能否定整个 Harmonic 族
+6. K=2 是 Harmonic 族的最小尝试, 与 BF 偏离最小, 风险比 K=6 低
 
-### 关键经验 (从 G30–G35)
-1. BF 微调连续 6 代失败, 强烈说明 BF 在 holdout 上接近局部最优
-2. "rare event + small correction" 类几乎全部无效 (G31, G33, G35 全部 holdout ≥ 0.9953)
-3. 唯一不同思路的 G32 (Harmonic) 也失败 (0.9991), 说明算法族切换救不了
-4. 跨实例 state 是仍未尝试的方向, 这次是首次使用
+### 若 G37 失败
+1. BF 大概率是 holdout 局部最优, 不应再 BF 微调
+2. 尝试更激进算法族: Sum-of-squares, AWF + lookahead, 2-item online lookahead
+3. 或者真正用跨实例学习: 训练 fingerprint → strategy 映射
+4. 接受 0.9953 holdout 为当前上限, 收工
 
-### 若 G36 失败
-1. **BF 真正局部最优**: 接受 0.9953 holdout, 停止 BF 微调
-2. **G37 试跨实例指纹**: 前 25 项构建 mean/var/skew 特征, 用 k-NN 推荐策略, 学 "指纹 → 最佳策略" 映射
-3. **G38 试严格 K-harmonic**: K=2 或 K=3, 每类 bins 内 BF, 失败回退全局 BF, 严格限制每个类的 bin 数
-4. **G39 试 SF/FF 混合**: 同时跑 SF 和 FF 各一条路径, 比较中间状态决定 (但需要 state 跨 item)
-
-### 跨实例 state 的潜力
-- 当前实现只用一个简单阈值 (big_ratio > 0.35)
-- 更复杂: 前 K 项构建直方图 + k-NN 分类, 但训练样本有限
-- 简单阈值在样本少时更稳健, 不易引入额外噪声
+### 字节考量
+- G1 champion 229 字节, G37 约 360 字节 (多 ~130 字节)
+- 字节增加但运行仍 O(bins.length), 无性能问题
+- 复杂度可控, 调试相对容易

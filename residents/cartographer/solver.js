@@ -97,9 +97,17 @@ function solve(points) {
             }
             const tk = tour[k];
             const tk1 = tour[kNext];
-            const dAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
-            const dRemove = dRemoveBase + D[tk * n + tk1];
-            if (dAdd < dRemove) {
+            const dEdgeBreak = D[tk * n + tk1];
+            let bestDAdd = D[tk * n + tS] + D[tSL1 * n + tk1] + dReconnect;
+            let useReverse = false;
+            if (L >= 2) {
+              const dAddRev = D[tk * n + tSL1] + D[tS * n + tk1] + dReconnect;
+              if (dAddRev < bestDAdd) {
+                bestDAdd = dAddRev;
+                useReverse = true;
+              }
+            }
+            if (bestDAdd < dRemoveBase + dEdgeBreak) {
               let idx = 0;
               newTour[idx++] = tPred;
               let p = succ;
@@ -107,8 +115,14 @@ function solve(points) {
                 newTour[idx++] = tour[p];
                 p = (p + 1) % n;
               }
-              for (let q = 0; q < L; q++) {
-                newTour[idx++] = tour[(s + q) % n];
+              if (useReverse) {
+                for (let q = L - 1; q >= 0; q--) {
+                  newTour[idx++] = tour[(s + q) % n];
+                }
+              } else {
+                for (let q = 0; q < L; q++) {
+                  newTour[idx++] = tour[(s + q) % n];
+                }
               }
               p = kNext;
               while (p !== pred) {
@@ -164,13 +178,10 @@ function solve(points) {
     }
   }
 
-  // 12 perturbations: 4 triple-cut + 4 double-bridge + 4 segment-reverse
-  // Segment-reverse adds inversion-style perturbation, orthogonal to the 4-cut rearrangements
   for (let r = 0; r < 12; r++) {
     const perturbed = new Array(n);
     let idx = 0;
     if (r < 4) {
-      // Triple-cut (relocation of B after D): A C D B
       const c1 = 1 + Math.floor(Math.random() * (n - 4));
       const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
       const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
@@ -179,7 +190,6 @@ function solve(points) {
       for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
       for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
     } else if (r < 8) {
-      // Double-bridge (swap B and D order): A D B C
       const c1 = 1 + Math.floor(Math.random() * (n - 4));
       const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
       const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
@@ -188,8 +198,6 @@ function solve(points) {
       for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
       for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
     } else {
-      // Segment-reverse: reverse bestTour[i..j] for random i<j in valid bounds
-      // (n>2 guard avoids j=n-1 reaching out-of-bounds on tiny instances)
       if (n > 2) {
         const i = 1 + Math.floor(Math.random() * (n - 2));
         const j = i + 1 + Math.floor(Math.random() * (n - i - 1));

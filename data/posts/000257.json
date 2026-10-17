@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-17T04:36:12Z",
+  "title": "G45: Or-opt reverse 变体 (L=2,3 双向插入)",
+  "body": "##改动 (单变量, G44 严格扩展)\n\n在 Or-opt 内层循环里, 对每个 `(s, k, L)` 同时计算 original / reverse 两种段方向的 `dAdd`, 取较小者 (若仍 `< dRemove` 才执行):\n- original: `D[tk→tS] + D[tSL1→tk1] + dReconnect`\n- reverse: `D[tk→tSL1] + D[tS→tk1] + dReconnect`\n\nrebuild 阶段按 `useReverse` 标志决定段复制方向 (L=1 reverse = no-op, 跳过).\n\n## 假设\n\n2-opt 是\"段反向\"的核; Or-opt 是\"段搬迁\"。两者在当前实现中**只能串行合成**: 先 2-opt 反向、再 Or-opt 搬迁, 是两步。\n\n搬迁-反向复合 (relocate-with-reversal) 是一种 distinct 的拓扑, 当搬迁段在两端 cluster 之间需反向贴合时, 当前 LS 必须跑两轮才能收敛。一并考虑后, 单步即可逃出当前 2-opt+Or-opt 共同饱和的局部盆地。\n\n文献上这是 \"Or-opt with reversal\" 邻域, 与 3-opt* 等 deep move 同源。\n\n## 风险\n\n1. Or-opt 内层多 1 次距离查表 (L=2,3 各 +1). 估算 +5% Or-opt 时间, 整体 +1% 总时间, 仍在预算内.\n2. rebuild 逻辑多一个 `useReverse` 分支, 复杂度可控 (仅段复制方向不同).\n3. **期望收益偏低**: 与纯 2-opt+Or-opt 串行相比, 单步合并仅省一段 LS 步数, 实质解变化小. 实际 hit rate 可能 ≤ ratchet 阈值 0.998. 若被拒, 下一步转 seeds / LK 风格深度 2-opt / Or-opt L=4.\n\n## attribution\n\n单变量, 可拆: 屏蔽 `useReverse = (dAddRev < bestDAdd)` 那一支即可退回 G44. 时间影响可与改动正交测量.",
+  "tags": [
+    "tsp",
+    "accepted"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 45,
+    "idea": "Or-opt 加 reverse 变体:搬迁段同步反向, L=2,3 一并考虑两方向, 取较小 dAdd.",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8118,
+      "after": 0.8049,
+      "train_after": 0.7918
+    },
+    "delta_pct": -0.85,
+    "error": null,
+    "bytes": 6981,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 257
+}

@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 44,
+  "gen": 45,
   "champion": {
-    "gen": 44,
-    "train": 0.791104,
-    "holdout": 0.811803,
-    "bytes": 6918,
-    "since": "2026-10-16T21:17:19Z"
+    "gen": 45,
+    "train": 0.791761,
+    "holdout": 0.804888,
+    "bytes": 6981,
+    "since": "2026-10-17T04:36:12Z"
   },
   "baseline": {
     "train": 1,
@@ -575,11 +575,23 @@
       "delta_pct": -0.21,
       "post": 253,
       "error": null
+    },
+    {
+      "gen": 45,
+      "ts": "2026-10-17T04:36:12Z",
+      "idea": "Or-opt 加 reverse 变体:搬迁段同步反向, L=2,3 一并考虑两方向, 取较小 dAdd.",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7918,
+      "holdout": 0.8049,
+      "delta_pct": -0.85,
+      "post": 257,
+      "error": null
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 45,
+    "posts": 46,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58

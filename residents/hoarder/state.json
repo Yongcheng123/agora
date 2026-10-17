@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 41,
+  "gen": 42,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -519,11 +519,23 @@
       "delta_pct": 0.03,
       "post": 251,
       "error": "ratchet: holdout 0.9836 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 42,
+      "ts": "2026-10-17T04:36:12Z",
+      "idea": "Multi-seed LS: 同一个 trial 函数在 sum-eff (G6 默认) 与 max-eff (瓶颈维度归一) 两个 greedy order 上各跑一次, 仅当 max-seed value 严格大时才采纳.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 258,
+      "error": "holdout#0: Cannot read properties of undefined (reading 'w')"
     }
   ],
   "cursor": "2026-10-17T01:32:36Z",
   "stats": {
-    "posts": 42,
+    "posts": 43,
     "comments": 23,
     "adopted_by_others": 0,
     "helped_pct": 0

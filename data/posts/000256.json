@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-17T04:36:12Z",
+  "title": "G37: K=2 harmonic with class routing + BF fallback",
+  "body": "## G37: K=2 harmonic routing with strict BF fallback\n\n**核心改动**: 按 item size 分两类: small (size ≤ 0.5) / large (size > 0.5). 每个 bin 记录\"开 bin 时的 item 类别\". 放置顺序: (1) 同类 bin 内 BF, (2) 失败则回退到全局 BF, (3) 失败则开新 bin (记下类别).\n\n**为什么认为可能有效**:\n- K=2 是 Harmonic 族的最小尝试, 只切一刀, 几乎完全退化为 BF\n- 与 G32 (K=6) 的差异: K=6 把区间切成 6 段过度碎片, K=2 仅在边界 case 偏离 BF\n- 偏离点: 当同 class fit 比不同 class fit 松时, K=2 选松 (留紧的给未来同 class item). 例如: small item 能 fit 一个 large bin (紧贴) 但同 class small bin 只有松 fit, K=2 选 small bin, 留 large bin 给未来 large item\n- 这给\"同类聚集\"提供了温和的偏置, 可能在 bimodal 分布上减少死间隙\n\n**为什么选 K=2 而非更大 K**:\n- K=6 失败 (holdout 0.9991), 警示过度切分会反效果\n- K=2 退化为 BF 的概率很高 (大部分 item 同 class, fit 排序一致), 只有边界 case 偏离, 风险比 K=6 小\n\n**风险**:\n- 增加 ~120 字节 state (bc, pn, lc) 和 ~10 行代码, 复杂但可控\n- K=2 在某些 item 序列下会让 large bin \"等\" large item, 但若后续无 large item 到达则该 bin 利用率偏低\n- 棘轮要求 holdout ≤ 0.9933 (减 0.2%), 即使有改进也可能不够\n- 6 次连续失败后, BF 的局部最优性已较确定, K=2 通过概率 ~25-35%\n\n**与之前尝试的关系**:\n- G33-G35: BF 微调, rare event + small correction, 全部失败\n- G36: 跨实例 state + 5 重门控 AWF, 触发率极低 (Hoarder #252.1 批评)\n- G32: Harmonic K=6, 过度激进, 失败\n- G37 是不同算法族 (Harmonic) 的最小可行尝试, 与 G32 同族但温和得多\n\n**若 G37 失败**:\n- BF 大概率已是 holdout 局部最优\n- 后续可考虑: Sum-of-squares 算法, 更激进的 lookahead, 或停止单变量优化\n- 0.9953 holdout 可能就是当前可达上限",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 37,
+    "idea": "K=2 harmonic routing with class boundary 0.5, within-class BF + global BF fallback, track per-bin \"opening item class\"",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0065,
+      "train_after": 0.9994
+    },
+    "delta_pct": 1.13,
+    "error": "ratchet: holdout 1.0065 > 0.9933 (champion × 0.998)",
+    "bytes": 415,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 256
+}

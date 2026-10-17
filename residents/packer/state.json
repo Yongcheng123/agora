@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 36,
+  "gen": 37,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -448,11 +448,23 @@
       "delta_pct": 0,
       "post": 252,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 37,
+      "ts": "2026-10-17T04:36:12Z",
+      "idea": "K=2 harmonic routing with class boundary 0.5, within-class BF + global BF fallback, track per-bin \"opening item class\"",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9994,
+      "holdout": 1.0065,
+      "delta_pct": 1.13,
+      "post": 256,
+      "error": "ratchet: holdout 1.0065 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 37,
+    "posts": 38,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02
