@@ -1,38 +1,35 @@
-# 制图师 notes (post-G46 proposal)
+# 制图师 notes (post-G46 rejection)
 
 ## 当前状态
 - **G45 冠军**: holdout 0.8049, train 0.7918
-- G46 提案: Or-opt L=4,5 with reverse (G45 reverse axis 的 L 范围扩展)
+- G46 reject: 0.8049 → 0.8051 (+0.02%, 棘轮) — Or-opt reverse L=4,5 noise
 
-## G46 假设与风险
-- 假设: colorist "正交 not 同类" 框架预测 L=4,5 reverse 也应有正向改进
-- 论据: "relocate-with-reversal" 不能被 2-opt + 搬迁单步复现, 对任意 L 成立
-- 风险: G40 显示 L=4,5 无 reverse 仅 -0.06%, reverse 增量可能 < 0.2%, 不够 ratchet
+## G46 失败的约束提取
+- #260.1 drifter: L=4,5 reverse 跨 LS/kick 边界 (搬迁一段倒着塞回), 已属 kick 形态, LS 内改进信号被噪声淹
+- "正交 AND 仍属 LS 才赢" 双约束 (drifter 明确) — G40 / G46 同源, 三连 noise-reject 确认 L=4,5 是 LS 邻域天花板
 
-## 历史 holdout 累积
-- G8: 0.8157
-- G42: 0.8135 (-0.26%, dRemove 修复)
-- G44: 0.8118 (-0.21%, seg-reverse kick)
-- G45: 0.8049 (-0.85%, Or-opt L=2,3 reverse) ← 当前冠军
-- G46: 目标 ≤ 0.8033 (ratchet 0.998)
+## G39 bug 修复路径 (#228.1 colorist)
+- 三个可能来源 (a) Fisher-Yates 边界 / (b) 对象别名 / (c) runLS contract
+- 最可能: (a) — 索引 0 间接覆盖, mutation 错位 length 200→193
+- 执行: G40 accepted 链加断言先通过, 再 diff G39 random build 路径
 
-## 历史教训 (更新)
-- KNN 限邻 (G43, +2.03% 拒): 漏长边大 Δ, 不可用于 2-opt, 也避免用于 Or-opt
-- Or-opt L=4,5 无 reverse (G40, -0.06% 拒): 边际饱和, 但加 reverse 后可能不同
-- Or-opt reverse (G45, -0.85% 接受): "relocate-with-reversal" 是新 move
-- kick 多样性 (G42/G44, 各 -0.2%): 边际递减, drifter 共识饱和
+## 待补 ablation 债 (#245.1 drifter)
+- G42 三改动打包, 应分 G42a (dRemove 单独) + G42b (+4+4 kick)
+- `dRemove += D[tk→tk1]` 是**正确性修复**而非调参, 单行可移植
+- 下代必分 ablation, 不再打包
 
-## 论坛方向共识
-- #233.2 drifter: kick 多样性饱和, 转 LS 深度
-- #257.1 colorist: "正交" 改动优于 "同类加大"
-- 共识: G46 沿 G45 路线继续 (LS 加深) 是合理下一步
+## 共识方向
+- 起点多样化饱和 (G33-G38 + G39 fail)
+- kick 多样化饱和 (G37, G42 增到位)
+- LS 邻域已及边界 (L=4,5 是天花板)
+- 唯一未触发的正交轴: 真 3-opt (drifter G32 / hoarder 3-opt*), O(n³), 实现复杂
 
-## 若 G46 拒: 备选
-1. **4→8 NN 起点扩展**: 4 个 random seed 补充几何极端, 期望 -0.2% ~ -0.5%
-2. **LK 风格深度 2-opt**: 链式 2-opt, 单步 negative 但累积 positive, 复杂度高
-3. **3-opt rotation**: 真正的 3 边改动, 期望 -0.3% ~ -0.6%, 实现复杂
+## G47 备选 (待排序)
+1. **G42a ablation** (仅 dRemove 修复) — 期望 ≈0% 但正确性债务
+2. **真 3-opt rotation subset** — 与 2-opt+Or-opt 严格正交, 复杂度高
+3. **修 G39 + 8 starts 重测** — 假设修复后重新判定, 不直接拒
 
-## 时间预算估计
-- G45 总时间 ~30ms (n=200)
-- G46 +L=4,5: ~32ms (+2ms Or-opt 开销)
-- 即使加 4 seeds 备选: ~45ms, 远低于 250ms 建议上限
+## 历史教训 (再更新)
+- '正交 AND 仍属 LS' 双约束 (#260.1)
+- G42 whole-attribution 难拆 (#245.1), 下代必分 ablation
+- 多代 noise-reject 后再加大改动不是信号, 是赌博
