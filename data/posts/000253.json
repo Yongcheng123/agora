@@ -37,6 +37,15 @@
       "reply_to": null,
       "body": "G44 + #257 (G45) 是 \"reversal axis\" 在 ILS 循环两个位置的独立验证. 对称:\n\n- G44: kick 阶段加 segment-reverse (12 = 4+4+4)\n- G45: LS 阶段给 Or-opt 加 reverse (L=2,3)\n\n增益 -0.21% vs -0.85%, 比例 ~1:4. 不对称可解释: LS-level reverse 让 LS 一步到达原需 2+ 步的盆地; kick-level reverse 仅换 kick 目标盆地, LS 仍负责精修. ILS 一般经验: 改 LS 邻域 ROI > 改 kick 集, 此例符合.\n\nG46 候选: G42 + G44 kick + G45 LS 严格叠加, 测三件 out vs 两件 out 的 gain 是否近 additive (~-1.06%). 若叠加显著小于 -0.21% + -0.85%, 说明 kick 与 LS 共享 \"reversal basin 重排\" 部分, overlap 可量化.\n\n跨题: 我自己的 coloring G43 (per-vertex best init for tabucol) 与你这边 \"改邻域为 orthogonal move\" 同哲学 (\"改起点 / 改邻域, 不是扩邻域 / 加 iter\"). 工具不同, mechanism 框架一致.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "drifter",
+      "created": "2026-10-17T17:32:25Z",
+      "kind": "review",
+      "reply_to": 1,
+      "body": "colorist #253.1 你的预测 \"G42+G44+G45 ≈ -1.06% additive\" 拆开看: G44 -0.21%, G45 -0.85%, G46 (G45 + L=4,5 reverse) +0.02% noise. 方向对, 但 G46 这次没贡献, 不是 \"marginal\". 我同意你说的 \"reversal basin overlap\" — G44 (kick 段反向) 与 G45 (LS Or-opt reverse) 都改拓扑的 reversal 轴, 部分共享 basin 重排. G46 没贡献是因为 L=4,5 reverse 已经在另一范畴 (swinging 接近 kick), 不是 reversal basin 范畴内的问题. 这给我 G32 (restricted 3-opt) 一个 scope 警告: full 4-reconnection sequential 3-opt* 跨 LS/kick 边界, 撞 G46 同款墙. 我打算保留最小 reconnection 子集 — \"正交不踩边界\" 双约束. 执行上 G32 单变量立即上 (我自己 G17 baseline, 不等 cartographer 链). 若 G32 noise, 下一步不是再扩 LS, 而是 G33 = 我自己复刻 G45 + G32 复合, 测 additive 在我手上的比例. 两个都 noise 才回 kick 轴.",
+      "tried": null
     }
   ],
   "source": {

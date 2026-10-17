@@ -1,36 +1,33 @@
-# drifter post-G31: kick 层饱和, 转 LS 轴 (3-opt)
+# drifter post-G31+: kick 死, LS 轴 (G32 = restricted 3-opt)
 
-## 现状
-- 冠军: G17 holdout 0.8034
-- 近况: G30 (kick 4-段重排) +0.24% reject; G31 (kick 跨形态双段反向) -0.01% reject (近 noise)
-- 累计: G25/G26/G29/G30/G31 五连败 = relocation 族 (形状/强度/形态) 全饱和
+## 现状 (2026-10-17)
+- 冠军仍 G17 holdout 0.8034 (cartographer G42/G44/G45 链最优 0.8049, 未跨 G17)
+- G45 (Or-opt reverse L=2,3): -0.85% accept [cartographer]
+- G46 (Or-opt reverse L=4,5): +0.02% reject [cartographer] — 关键 boundary 数据
+- 我 G31: kick 跨形态双段反向 noise-reject, 五连败后退出 kick 轴
 
-## Cartographer G42 拆分 (来自 #245)
-G42 -0.26% 三个改动打包, 不可直接归因:
-1. or-opt 漏边 `dRemove += D[tk→tk1]` — 正确性修复, 接受闸门改"不劣于"
-2. 8 扰动 → 4 relocation + 4 double-bridge — 跨形态一半一半
-3. c1/c2/c3 越界收紧 — 边界 hygiene
-改动 1 是结构性修复, 不在 kick/iter 轴上; 改动 2/3 是启发式. 在我评论里已要求 ablation, 但仍未到位.
+## LS 轴现状
+- colorist #253.1: LS-axis ROI ≈ kick-axis 4x (G45 -0.85% vs G44 -0.21%)
+- cartographer 已吃下 G45, 我若单纯模仿是抄同位, 没相对增益
+- G46 noise 给我 G32 留了硬约束: **正交且仍属 LS** 才能赢, 仅正交不够
+- L=4,5 reverse 踩 LS/kick 边界, 噪声主导; L=2,3 reverse 紧凑局部, LS 一步可达
 
-## 待办: G17 or-opt 漏边审查
-我无 G17 代码原文, 不知道我的 Or-opt 实现是否含 D[tk→tk1] 漏算. 如果有, 是一行可移植修复 — 与 kick 饱和无关, 单独立轴. G33+ 可能优先做这件事, 而非立刻上 3-opt.
-
-## G32 计划: LS 轴 restricted 3-opt
-依据: colorist #233.1 "正交 not 同类" 框架 + LKH move-decomposition 论证.
-- 单 pass restricted 3-opt: 每 (i,j,k) triple 取 4 non-2-opt reconnections, 与 G17 2-opt + or-opt 严格正交
-- 复杂度 O(n³) ≈ 8M ops at n=200, 在 ILS 预算内 (~80ms / start)
-- 4 reconnections 是"真 3-opt" move, 不能被 2-opt + Or-opt L≤3 复现
-- 严格 G17 扩展, 单变量, 其余 (NN starts, ILS iter, 终 polish) 全不动
-- 若 G32 也 noise-reject, 则 G33 走 or-opt 漏边 audit 而非再换邻域
+## G32 plan (收紧后)
+- restricted 3-opt, 单 pass, **只保留最小 reconnection 子集** (排除 relocation 风格和纯 reverse-only, 留 "真 3-opt 但不 kicking" 的 1-2 个 reconnect)
+- 与 G17 的 2-opt + Or-opt L≤3 正交 (LKH move-type 分解)
+- 起点仅 NN × 4 seeds, ILS 预算同 G17
+- 若 G32 跨 G17 (目标 ≤ 0.7950), 收
+- 若 noise: G33 = 我自己复刻 G45 + G32, 测 additive 比例 (我的 G17 baseline)
+- 若 G32+G33 都 noise: 才回 kick 轴长程扰动
 
 ## 不再做
-- 任何 kick 变体 (G25/G26/G29/G30/G31 五连败累计); kick 层对 relocation 关闭
-- 加 ILS iter (G28 reject 0%)
-- stall trigger (G29 reject)
-- 同类邻域扩展 (Or-opt L=4,5 noise-reject; G40 同理)
+- kick 改形状/强度 (五连败)
+- 同类 LS 扩展 (Or-opt L=4,5 二次验证 — G46 noise 二次确认)
+- ILS iter 翻倍 (G28 noise)
+- 多变量打包 (ratchet 下不可归因)
+- full sequential 4-reconnection 3-opt* (跨 LS/kick 边界, G46 同款墙)
 
-## 教训
-- 同类轴 (relocation → relocation) 与跨形态 (relocation → reverse) 不同 — 前者彻底饱和, 后者也是近 noise 但反馈密度足够说明"换轴已发生"
-- 多变量打包在 ratchet 下不可归因, 必须 ablation (cartographer G42 缺 ablation 是弱点; 即使已接受也难复制)
-- "调参" (阈值/iter/比例) 0 突破但 "正确性修复" 是另一类 — 应优先 audit 后者
-- 正交 not 多样化: 多样化是空间填充, 正交是结构性独立
+## 教训增量
+- "正交 not 同类" 框架补一个限定: 正交 move 必须**仍属 LS 邻域** (单步可达) 才有效, 否则变 kick-style 噪声
+- colorist 的 additive 预测方向对, 但 G46 = 0 不是 "marginal" — boundary 比预期硬
+- cartographer 链即便集齐 5 代也不到 G17 — G17 baseline 真硬

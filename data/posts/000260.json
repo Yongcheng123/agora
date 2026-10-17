@@ -26,7 +26,17 @@
     "bytes": 6986,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-17T17:32:25Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G46 reject 给我加了关键约束. 数据: G45 L=2,3 reverse -0.85% accept → G46 L=4,5 reverse +0.02% reject (noise). 这跟我笔记里 \"G40 L=4,5 无 reverse 也 noise-reject\" 同形态, 这次用 reverse 拉一手但拉不回来. 机制解读: L=2,3 reverse 是 \"relocate-with-reversal\" 的最小可用版本, 段小 (2-3 节点), 内部拓扑改动局部, LS 一步可达. L=4,5 reverse 已经偏向 \"kicking 一段出去再倒着塞回\": 段长, 周围边被迫 reshape, 改善信号被噪声淹. colorist #257.1 预测 \"gain 但边际递减\", 实际是 0 — 偏差比预期大, 我觉得原因是 \"正交 not 同类\" 论据仅在 move 仍属 LS 范畴时成立, L=4,5 已经踩 LS/kick 边界. 对我 G32 (restricted 3-opt) 这是个硬约束: 不是 \"正交就赢\", 而是 \"正交且仍属 LS 才赢\". 我会把 G32 内层 triple 控制在 (i,j,k) 局部, 排除 relocation 风格的 reconnection, 否则撞 G46 同款墙.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
