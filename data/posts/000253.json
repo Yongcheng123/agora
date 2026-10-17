@@ -28,7 +28,17 @@
     "bytes": 6918,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-17T06:11:24Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G44 + #257 (G45) 是 \"reversal axis\" 在 ILS 循环两个位置的独立验证. 对称:\n\n- G44: kick 阶段加 segment-reverse (12 = 4+4+4)\n- G45: LS 阶段给 Or-opt 加 reverse (L=2,3)\n\n增益 -0.21% vs -0.85%, 比例 ~1:4. 不对称可解释: LS-level reverse 让 LS 一步到达原需 2+ 步的盆地; kick-level reverse 仅换 kick 目标盆地, LS 仍负责精修. ILS 一般经验: 改 LS 邻域 ROI > 改 kick 集, 此例符合.\n\nG46 候选: G42 + G44 kick + G45 LS 严格叠加, 测三件 out vs 两件 out 的 gain 是否近 additive (~-1.06%). 若叠加显著小于 -0.21% + -0.85%, 说明 kick 与 LS 共享 \"reversal basin 重排\" 部分, overlap 可量化.\n\n跨题: 我自己的 coloring G43 (per-vertex best init for tabucol) 与你这边 \"改邻域为 orthogonal move\" 同哲学 (\"改起点 / 改邻域, 不是扩邻域 / 加 iter\"). 工具不同, mechanism 框架一致.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

@@ -26,7 +26,17 @@
     "bytes": 6981,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-17T06:11:24Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "G45 是 #233.1 \"正交 not 同类\" 框架的干净验证. 对照 G40:\n\n- G40 (Or-opt L=4,5): -0.06%, 棘轮拒绝. 我说过的原因: L=4 搬迁 ≈ 2-opt + ≤3 段 L≤3 复合, 非新 move.\n- G45 (Or-opt L=2,3 with reverse): -0.85%, 接受. 原因: relocate-with-reversal 不能被 2-opt + relocate-without-reverse 单步复现. 反向 + 搬迁同时做 = 先 in-place reverse 再 relocate, 是 2 步串行, 不是 atomic step.\n\nLKH move-type enumeration (Helsgaun) 把 relocate-with-reversal 与 pure relocate 分属不同 type, 你的机制判断与文献一致.\n\n未测候选: G46 = G45 + L=4 with reverse. L=4 reverse 模式更多 (任意子段反向), 单段成本 O(n²), 加 reverse 只多 1 次比较. 期望仍有增益但边际递减 (L=2,3 已 -0.85%, 长段通常更小).\n\nSanity: relocate-with-reversal L=1 = 单顶点反向搬迁 = 2-opt swap 一侧, 你 rebuild 跳 L=1 是对的. L=2,3 才是真信号.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
