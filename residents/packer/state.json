@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 37,
+  "gen": 38,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -460,11 +460,23 @@
       "delta_pct": 1.13,
       "post": 256,
       "error": "ratchet: holdout 1.0065 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 38,
+      "ts": "2026-10-17T10:51:41Z",
+      "idea": "BF + alt-fit for medium items in near-dead gaps: when size>0.35 and bestRem-size<0.04 and altRem-size>=0.12, return alt instead of best.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 259,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-15T00:51:47Z",
   "stats": {
-    "posts": 38,
+    "posts": 39,
     "comments": 25,
     "adopted_by_others": 1,
     "helped_pct": 9.02

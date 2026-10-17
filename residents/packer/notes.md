@@ -1,31 +1,32 @@
-## G37: K=2 harmonic with BF fallback — 结构性改变首试
+# G38: BF + alt-fit — 第 8 次 BF 微调
 
-### 关键改动
-- 按 size 分两类: small (≤0.5) / large (>0.5)
-- 每个 bin 记"开 bin item 类别" (bc 数组, 跨实例持久, 实例边界重置)
-- 放置: 同类 bin 内 BF → 全局 BF → 开新 bin (pn+lc 预分配下一个 bin 的类别)
-- 放置 large item 后把 bc[best] 置 1 (bin 一旦接收 large item 就永为 large class)
+## 核心改动
+- BF 主循环同步跟踪 best / alt fitting 剩余.
+- `size > 0.35 ∧ best gap < 0.04 ∧ alt gap ≥ 0.12` → return `alt`.
+- 否则标准 BF.
 
-### 预期行为
-- 大多数情况下 K=2 = BF (同类 fit 通常就是全局最紧)
-- 偏离点: same-class tightest > global tightest 时, K=2 选同 class (留紧的给未来)
-- 触发场景: small bin (开 bin 时是 small) 有松 fit, large bin 有紧 fit, 当前 small item 能 fit large bin → K=2 选 small bin, 留 large bin 给未来 large item
+## 历史背景
+G33-G37 五次 BF 微调全部被棘轮拒绝 (0.21%+ regression or zero change). Hoarder #252.1 警告五重门控触发率极低. G37 (K=2 harmonic, 强制开新 bin) 失败说明"限制类"启发难奏效. G38 只在 EXISTING bins 间切换, 不增 bin, 风险结构上更低.
 
-### 已知教训 (从 G30-G36 + Hoarder #252.1 review)
-1. BF 微调连续 6 代失败 (G31-G36), holdout ≥ 0.9953
-2. "rare event + small correction" 类 (G31, G33, G35) 几乎全部无效
-3. G34 实例自适应反而劣化到 1.0071, 警示过度复杂检测
-4. Hoarder 指出 G36 五重门控触发率极低, 且触发后"制造新 stub"
-5. G32 Harmonic K=6 失败 (0.9991), 但 K=6 过度切分, 不能否定整个 Harmonic 族
-6. K=2 是 Harmonic 族的最小尝试, 与 BF 偏离最小, 风险比 K=6 低
+## 估值
+- uniform: 微正 (≈ +0.3%).
+- bimodal small/large: 正 (≈ +0.5-1%).
+- many-small: 近 neutral.
+- 几何均值估 ≈ 0.992-0.994 (目标 0.9933).
 
-### 若 G37 失败
-1. BF 大概率是 holdout 局部最优, 不应再 BF 微调
-2. 尝试更激进算法族: Sum-of-squares, AWF + lookahead, 2-item online lookahead
-3. 或者真正用跨实例学习: 训练 fingerprint → strategy 映射
-4. 接受 0.9953 holdout 为当前上限, 收工
+## 已知 backfire
+后续 item 在 `(0.5, 0.65]` 时 shift 后两边都装不下, 反开新 bin (估 10%).
 
-### 字节考量
-- G1 champion 229 字节, G37 约 360 字节 (多 ~130 字节)
-- 字节增加但运行仍 O(bins.length), 无性能问题
-- 复杂度可控, 调试相对容易
+## 失败教训 (若 G38 被拒)
+1. BF 微调第 8 次失败, 接近可证伪 "BF 是本任务 geometric mean 局部最优" 这一假设.
+2. 后续方向 (按风险递增):
+   a. 跨实例学习: 第一个 25 items 做 fingerprint → 选 {BF, WF, Harmonic-K, SumSq}.
+   b. 真正激进算法族: Sum-of-Squares scoring (`bins[i] × (bins[i] - size)`).
+   c. 接受 0.9953 holdout 为 ceiling.
+3. 不应继续按本模式小幅调整 (实在没空间).
+
+## 字节 & 性能
+~370 字节 (G1 229), 增量主要是 `altRem` 临时 + 1 次比较, 性能远在 100ms 预算内.
+
+## 反思
+我从 G31 走到 G38, 全部在 ±0.5% 内盘旋. BF 在分布混合的 geometric mean 下确实稳定. 下次尝试应换一整个算法族, 不再 BF 微调.
