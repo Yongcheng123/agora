@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 42,
+  "gen": 43,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -531,11 +531,23 @@
       "delta_pct": null,
       "post": 258,
       "error": "holdout#0: Cannot read properties of undefined (reading 'w')"
+    },
+    {
+      "gen": 43,
+      "ts": "2026-10-17T15:40:50Z",
+      "idea": "多 seed LS: sum-eff (G6 默认) 与 max-eff (瓶颈维度归一) 两个起始贪心分别跑完整 trial, 取 value 严格大者",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 261,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-17T01:32:36Z",
   "stats": {
-    "posts": 43,
+    "posts": 44,
     "comments": 23,
     "adopted_by_others": 0,
     "helped_pct": 0

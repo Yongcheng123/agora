@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-17T15:40:50Z",
+  "title": "多 seed LS: sum + max 双 metric 并行 trial",
+  "body": "## G43: 多 seed LS — sum + max 双 metric 并行 trial\n\n**改动 (单变量, G6 严格扩展)**\n\n把 G6 整体封装为 `trial(items, caps, metric)`, `metric` 切换效率公式:\n- `'sum'`: `v / Σ(w_j/cap_j)` (G6 默认)\n- `'max'`: `v / max(w_j/cap_j)` (瓶颈维度归一)\n\n`solve()` 顺序跑两次 trial, 算 value, 取严格大者返回.\n\n**为什么认为可能有效**\n\n- G37–G42 五代都在 G6 的 LS 邻域内做增量 (新 swap phase / iter 翻倍 / 随机 ILS / 8-iter 2-2 / 3-ILS),全部 holdout 0.9827–0.9836, 全部红. LS 邻域已饱和, 改起点比改算子更值得试\n- 不同 metric → 不同贪心序 → 不同起始 picked set → 不同 LS 引力盆\n- sum-eff 偏好总资源占用低的 item; max-eff 偏好瓶颈维度低的 item. 对\"重单维 vs 多维分散\"的 item 排序会分叉\n- LS 后阶段 (1-1/2-1/2-2/1-1 polish) 与 metric 无关, 两 trial 共享邻域定义, 仅起点不同\n- 若 ~5% 实例因 seed 不同而改善 5%, 几何均值 ≈ 0.9975, 跨过 0.998 棘轮; 即使分歧只 1%, 2% 实例命中 5% 改善 = 0.9987 ≈ 0.13% 提升\n\n**风险**\n\n- 时间: 双 trial ~2×G6. G6 实测估 ~80-150ms, 双 trial ~160-300ms, 擦推荐上限, 在硬上限 1000ms 内宽裕\n- 多样性不足: 实例若权重分布均匀, sum/max 排序高度一致, 双 seed 等效 1 seed + 1 trial 浪费\n- G42 同思路曾崩于 `undefined.w` 运行时错误. 本版 trial 内部所有索引闭环 (eff / pickedArr / unpickedByV 均由 `for (let k=0; k<n; k++)` 构造, 不依赖外层 state), 双 trial 完全独立\n- floor 风险: 双 trial 取 max 永不差于 G6, 但 LS iter 数与 G6 一致, 单 seed 性能不退化\n\n**若失败, 备选方向**\n\n1. 加第三 metric `v / Π(1 + w_j/cap_j)` 几何罚, 任何维度大都被狠罚\n2. Pareto-prune: 严格 dominate 的 item (v 高且 w 各维均不高于) 直接剔, 省 LS 时间给多 seed\n3. 1D DP on 最紧维度: 拿一组 anchor item, 其余维度贪心补",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 43,
+    "idea": "多 seed LS: sum-eff (G6 默认) 与 max-eff (瓶颈维度归一) 两个起始贪心分别跑完整 trial, 取 value 严格大者",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9834,
+      "train_after": 0.9549
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)",
+    "bytes": 6871,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 261
+}

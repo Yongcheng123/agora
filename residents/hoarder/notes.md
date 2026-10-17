@@ -1,27 +1,29 @@
-## G42: 多起点 LS 测试 — sum + max 双种子
+## G43: 多 seed LS — sum + max 双 metric
 
-### 观察
-- G37–G41 五次都在 *扩 G6 LS*: 加 3-1/1-3/2-3 swap、1-2 swap、6-iter 2-2、8-iter 2-2、3-ILS 重启. 全部 holdout 0.9827–0.9836, 全被 ratchet 拒. LS 邻域已近饱和, 在 G6 内深挖没有空间.
-- 没试过的杠杆: *换起点*. 不同 greedy 排序 → 不同起始集合 → 不同引力盆.
+### 五代回顾 (G37–G42)
+- G37–G38: 加 swap phase (1-3, 3-1), 全红
+- G39: 纯随机 ILS 扰动, 红
+- G40: 编译错 (const 缺初始化)
+- G41: 8-iter 2-2 + 3-ILS, 红
+- G42: 多 seed trial (sum + max), 崩于 `undefined.w` 运行时错
 
-### G42 设计
-- 双 metric: sumEff (=G6 默认) 与 maxEff (瓶颈维度归一)
-- 双 seed: 用同一 trial() 各跑一次, 取 value 严格大者
-- iter 削幅: trial1=(60,6,2,12) 比 G6 略短 (~75%), trial2=(5,1,1,3) 很浅, 总时间估 180–240ms
-- strict gate: max-seed 不严格大于 sum-seed 就退回 sum-seed
+### G43 思路
+LS 邻域已饱和, 改起点比改算子更值得试. 同 G42 思路但 trial 严格纯函数:
+- 所有索引闭环: eff / pickedArr / unpickedByV 均由 `for (let k=0; k<n; k++)` 构建, 不引用外层 state
+- 双 trial 完全独立, 无共享 mutation
+- LS 阶段与 metric 无关, 两 trial 共享邻域定义, 仅起点不同
 
-### 关键风险
-- **时间**: 双 trial 1.0–1.2×G6, 擦 250ms 红线. 若 G6 实际 >230ms, 我超时.
-- **floor**: trial1 iter 削了 25%, 孤立存在时比 G6 略弱. 最坏 holdout 略升 0.05–0.10%.
-- **多样性**: 仅当实例的 sum/max 排序分歧大时多 seed 才有意义. 实例分布决定上限.
+### 期望机制
+- sum-eff: `v / Σ(w_j/cap_j)` — 总资源占用低优先
+- max-eff: `v / max(w_j/cap_j)` — 瓶颈维度低优先
+- 对"重单维 vs 多维分散"的 item 排序会分叉, 给 LS 不同起始 picked set, 进入不同引力盆
 
-### 若失败, 下一步
-1. 加第三 metric: v/Π(1+w_j/cap_j) (几何, 任何维都狠罚) 或 v/(Σ(w_j/cap_j))² (二次罚, 偏小 item)
-2. Pareto-front pruning: 跑 LS 前先剔被 dominate 的 item (~n/2 item 数砍半, LS 能跑两倍 iters)
-3. instance-adapt: 检测最紧维度, 对该维跑一维 knapsack DP 拿一组 item 固定, 其余维度贪心补
+### 风险
+- 时间: 双 trial ~2×G6, 擦 250ms 推荐上限, 1000ms 硬上限宽裕
+- 多样性: 实例若权重分布均匀, sum/max 高度一致, 双 seed 等效浪费
+- 若分歧极小, 0 收益 + 100% 时间代价. 缓解看 holdout 是否动
 
-### 不再试方向
-- 更多 swap phase (3-1/3-3/2-3): G37/G38 试过, 红
-- 纯随机 ILS 扰动: G39 红
-- iter 数暴力翻倍: G41 红
-- 加 finalizer (BF-style online fill): knapsack 没 bin, 不适用
+### 若 G43 被拒
+1. 加第三 metric (几何罚 `v / Π(1 + w_j/cap_j)`) 拉大多样性 → 3 seed
+2. Pareto-prune dominated item → n 砍 10-30% → 节省 LS 时间给多 seed
+3. 1D DP on 最紧维度拿 anchor item, 其余维度贪心补

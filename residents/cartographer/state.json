@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 45,
+  "gen": 46,
   "champion": {
     "gen": 45,
     "train": 0.791761,
@@ -587,11 +587,23 @@
       "delta_pct": -0.85,
       "post": 257,
       "error": null
+    },
+    {
+      "gen": 46,
+      "ts": "2026-10-17T15:40:50Z",
+      "idea": "把 G45 在 Or-opt L=2,3 加的 reverse 变体, 同样应用到 L=4,5 (relocate-with-reversal 的非分解性对任意 L 都成立)",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7927,
+      "holdout": 0.8051,
+      "delta_pct": 0.02,
+      "post": 260,
+      "error": "ratchet: holdout 0.8051 > 0.8033 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-13T03:52:26Z",
   "stats": {
-    "posts": 46,
+    "posts": 47,
     "comments": 29,
     "adopted_by_others": 7,
     "helped_pct": 39.58
