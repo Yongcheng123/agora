@@ -1,32 +1,45 @@
-# G38: BF + alt-fit — 第 8 次 BF 微调
+# G32: BF + offline swap finalizer (top-K=8, gated by fingerprint)
 
 ## 核心改动
-- BF 主循环同步跟踪 best / alt fitting 剩余.
-- `size > 0.35 ∧ best gap < 0.04 ∧ alt gap ≥ 0.12` → return `alt`.
-- 否则标准 BF.
+- BF 填所有 item (G1 不动)
+- bins load desc 排, top-K=8 进 finalizer
+- 1-1: 每 item 移他箱, bin 数严格减 OR max_load 严格降才接
+- 1-2: 两箱互移, 严格改进才接
+- 候选 value desc top-30
+- 时间硬限 50ms
 
-## 历史背景
-G33-G37 五次 BF 微调全部被棘轮拒绝 (0.21%+ regression or zero change). Hoarder #252.1 警告五重门控触发率极低. G37 (K=2 harmonic, 强制开新 bin) 失败说明"限制类"启发难奏效. G38 只在 EXISTING bins 间切换, 不增 bin, 风险结构上更低.
+## 触发门
+- 前 25 项 big_ratio = (#items > 0.5) / 25
+- big_ratio > 0.35 跑 finalizer, 否则纯 BF
+- fingerprint 借 G36, AWF 部件全删
+
+## 设计来源
+- hoarder #230.3 全 spec
+- hoarder #252.1: 跨实例 state = control budget, not change BF
+- 自己 G21-G38 17 代 BF 微调饱和史
+
+## 历史
+G21-G38 BF 微调 17 代全 reject. G30-G36 跨 6 代 BF choice 变种 (次优/histogram/均值/AWF) 全失败. G36 AWF 双死 framing 准. G32 换轴: 不改 BF, post-BF polish + cross-instance 触发.
 
 ## 估值
-- uniform: 微正 (≈ +0.3%).
-- bimodal small/large: 正 (≈ +0.5-1%).
-- many-small: 近 neutral.
-- 几何均值估 ≈ 0.992-0.994 (目标 0.9933).
+- uniform / many-small: 中性 (finalizer 候选少)
+- bimodal: 微正 (救回 1-2 bin)
+- large-heavy: 正 (fingerprint 命中)
+- 几何均值估 0.990-0.993
 
-## 已知 backfire
-后续 item 在 `(0.5, 0.65]` 时 shift 后两边都装不下, 反开新 bin (估 10%).
-
-## 失败教训 (若 G38 被拒)
-1. BF 微调第 8 次失败, 接近可证伪 "BF 是本任务 geometric mean 局部最优" 这一假设.
-2. 后续方向 (按风险递增):
-   a. 跨实例学习: 第一个 25 items 做 fingerprint → 选 {BF, WF, Harmonic-K, SumSq}.
-   b. 真正激进算法族: Sum-of-Squares scoring (`bins[i] × (bins[i] - size)`).
-   c. 接受 0.9953 holdout 为 ceiling.
-3. 不应继续按本模式小幅调整 (实在没空间).
+## 风险
+- top-K=8 可能太小, n=200 漏候选
+- 1-2 在 top-K 内 28 对, 迭代紧
+- 50ms 硬限紧张
+- 触发门仅 big_ratio>0.35, many-medium 漏掉
 
 ## 字节 & 性能
-~370 字节 (G1 229), 增量主要是 `altRem` 临时 + 1 次比较, 性能远在 100ms 预算内.
+~250 字节增量. 总 <50ms, 预算内.
+
+## 失败回退
+1. G33 = 接受 G1 0.9953 ceiling + 归档
+2. G34 = G32 + 动态 finalizer iter (按 n 调)
+3. 不再做 BF 微调 (17 代实锤饱和)
 
 ## 反思
-我从 G31 走到 G38, 全部在 ±0.5% 内盘旋. BF 在分布混合的 geometric mean 下确实稳定. 下次尝试应换一整个算法族, 不再 BF 微调.
+我 G21-G38 全在 BF, 错. BF geometric mean 局部最优不是假设是事实. 改 BF choice = 拿不到信号. 真信号在 polish (offline swap) 或 算法族切换 (LP, SumSq). 这次 polish + cross-instance 触发是一次合轴尝试.

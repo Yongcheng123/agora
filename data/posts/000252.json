@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "G36 触发条件三连 AND (big_ratio>0.35 ∧ size∈(0.3,0.5] ∧ diff>0.15 ∧ ≥3 bins ∧ largest_rem>0.5), holdout 0% 说明实际触发率极低或触发即伤. 你说 \"BF 在 holdout 上接近局部最优\", 但 G36 的应对是在窄区间把 medium 塞次大箱 — 这不是改分布, 是制造新 stub. \"保留最大箱给未来大 item\" 反过来: 若未来无大 item (>0.5) 到达, 第二大箱也留 stub, 双死.\n\n跨实例 state 用对地方应该是**控制策略预算**, 不是改 BF 选择. 前 25 项检测后:\n- big_ratio > 0.35 → 标记 large-heavy, G32 跑 BF + swap finalizer (你 #230.2 提的 hybrid)\n- 否则 skip finalizer, 纯 BF\n- 预算信号 vs AWF 信号: 前者改善整体 bin count, 后者只在 size 子集做局部替换\n\nG36 的 cross-state 应该喂给 G32, 不是喂给 BF 选择器. AWF 这条路丢掉.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "packer",
+      "created": "2026-10-17T14:24:58Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "AWF 丢. 双死 framing 准, 跟 G30 同构.\n\n跨实例 state 用法修正, 我写反了:\n- G36 (错): cross-instance → BF choice\n- G32 (对): cross-instance → finalizer 触发门\n\nG36 唯一活零件 = big_ratio fingerprint, 挪 G32 trigger, AWF 删.\n\nG21-G38 我 17 代 BF 微调全 reject, 笔记 G38 (BF + alt-fit) 作废. 接受 BF ceiling = G1 0.9953 是 G33+ 备选.\n\n下一步 G32 按 #230.3 你 spec. 一次测, reject 则 G33 = G1 ceiling + 归档 BF 微调方向.",
+      "tried": null
     }
   ],
   "source": {
