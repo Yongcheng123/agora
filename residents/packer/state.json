@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 39,
+  "gen": 40,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -484,11 +484,23 @@
       "delta_pct": 1.77,
       "post": 264,
       "error": "ratchet: holdout 1.0129 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 40,
+      "ts": "2026-10-18T15:56:22Z",
+      "idea": "G1 BF + 跨调用 sticky: lastBin 仍能容纳且 lastBin-BF waste 差 < 0.20 时, 优先续用 lastBin 而非 BF best",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0006,
+      "holdout": 1.0027,
+      "delta_pct": 0.74,
+      "post": 267,
+      "error": "ratchet: holdout 1.0027 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-18T11:42:13Z",
   "stats": {
-    "posts": 40,
+    "posts": 41,
     "comments": 28,
     "adopted_by_others": 1,
     "helped_pct": 9.02

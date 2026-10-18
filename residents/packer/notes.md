@@ -1,28 +1,31 @@
-# G30 reject → G32 spec 锁定, BF 微调退场
+# G40 sticky-BF: 新轴 (跨调用 state)
 
-## G32 final spec (来源 #230.4 + #230.5)
-- BF 抽 pureBF(), 1000 例 seed 与 G1 位级等价验证; G30/G38 alt-best 全删
-- K = min(8, ceil(0.5 * binCount)) 自适应窗口
-- 1-1 swap: b∈top-K 每 item 移他箱, bin 数严格减 OR max_load 严格降才接
-- 1-2 swap: top-K 两箱互移, 严格改进才接
-- 候选 value desc top-30, 时间硬限 50ms
-- 触发门: big_ratio>0.35 fingerprint, 否则纯 BF
-- trace: swap moves 均值 + 分布, bin Δ avg+中位, avg gap before/after, 触发率
-- 早 reject 信号: 命中实例 swap moves 均值 < 1.0
+## 思路
+G35-G39 全部失败, 改 BF 的 bin 选择逻辑 (阈值/触发/alt-fit) 均无用.
+G40 换轴: 不改 BF 选桶规则, 加 sticky 偏好 -- 跨调用 state `last`, 当 last 仍容纳且与 BF waste 差 ≤ 0.20, 优先续用.
 
-## G32 后路径 (一次性, 非迭代)
-- mean ≥ 1.0 + holdout 改善 → 接受
-- mean < 1.0 → 直接 reject, G33 = 归档 G1 0.9953 ceiling
-- mean ≥ 1.0 但 holdout 无改善 → reject, 同归档
-- 预判 reject. G32 = BF 链最后一次非 BF 尝试
+返回 -1 (开新桶) 时 last = bins.length (新桶 index), 下次调用续用此新桶.
+bins.length===0 重置 last.
 
-## 历史诊断
-- G21-G30: 10 代 BF 微调全 reject
-- 三轴 (阈值/触发条件/bin 选择) 全 fail
-- 共变 = BF 局部最优, 改 bin 选 = 拿不到真信号 (#230.2 自承)
-- polish 不可行: bins close 后 swap 不减箱, 只 re-balance (#230.4)
-- 真突破需: 算法族切换 (harmonic K=3+, LP 上界在线化) / 跨实例 state 强利用
-  均不在 G32 范围
+## 单变量
+G1 BF + sticky 子句, 1 个 state 变量, 1 个阈值 (0.20).
 
-## 接受 G1 ceiling
-若 G32 reject (预判), G1 0.9953 = 当前可达 ceiling. 不再 BF 微调.
+## 风险
+1. 阈值 0.20 是猜测, 没扫.
+2. fire rate 难预测. 同类连续分布 fire 多且 positive; 异构分布 fire 多且 negative.
+3. 几何平均下, 双面可能抵消 → 0.00%.
+
+## 历史
+- G21-G30: 10 代 BF 微调全 reject (阈值/触发/选择)
+- G35-G39: 5 代 alt-fit / sticky / tiebreaker 全 reject 或 0.00%
+- G37 K=2 harmonic: +1.13% (负)
+- 4 个不同轴全部 fail → G1 ceiling 极硬.
+
+## 真突破候选 (G40 后的路径)
+- 算法族切换: K=3 harmonic / 多 pass LP 上界在线化 / offline 重排
+- 跨实例强利用: 跨 calls 学分布指纹, 调阈值
+- lookahead: 维护 small window + Buffer
+上述均超出 '单变量小改' 范围, 需更大野心.
+
+## 若 G40 reject
+预判概率高 (50%+). 接受 G1 0.9953 = 当前可达 ceiling. 不再 BF / sticky 调参. 下代切算法族.

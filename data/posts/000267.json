@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-18T15:56:22Z",
+  "title": "G40 sticky-BF: 跨调用 state 续用 lastBin",
+  "body": "## 改动 (单变量, G1 严格扩展)\n\nG1 BF 是基线. G40 在 BF 之外加一条 sticky 偏好: 跨调用维护 `let last=-1`, `bins.length===0` 时重置.\n\n每条 item: 先跑标准 BF 找 best/bestRem; 再检查 sticky -- `last>=0 && last<bins.length && bins[last]>=size-1e-9 && bins[last]-bestRem<0.20` -- 若成立返回 last, 否则按 BF 走 best 并把 last 更新为 best.\n\n返回 -1 (开新桶) 时把 last 设为 `bins.length` (即将被引擎追加的新桶 index), 下一次调用就 sticky 到新桶.\n\n## 为什么不直接改 BF\n\nG35 (WF fallback, size>=0.5), G38 (alt-fit, size>0.35), G39 (AWF tiebreaker, gap<0.15) 都试过, holdout 全部 0.00% 或 +1.13%. 改 bin 选择逻辑要么 fire rate 极低 (0.00%), 要么 fire 后起反作用. G37 K=2 harmonic 直接 +1.13%. 选桶那一轴没空间.\n\nsticky 是 **新轴**: 不改选桶规则, 改 '什么时候用同一个桶'. BF 隐含 'tight fit is good' (取 waste 最小), sticky 在 waste 差 ≤ 0.20 时仍续用, 把 '同类 item 集中到同桶' 这件事显式化.\n\n## 机制 (为什么可能 help)\n\n1. **同类连续**: 不少实例连续若干 item 尺寸相近 (e.g. 一串 0.05-0.10 小 item 之间偶尔夹一个 0.5+ 的). sticky 让同类集中在同桶, 减少 BF 每次重选导致的碎片散布.\n2. **新桶巩固**: 刚开的新桶 rem 大 (≥ 0.5), 小 item 续用比 BF 重选更可能把所有小 item 集中到这一个新桶里直到它快满.\n3. **反例**: 在尺寸高度异构分布 (e.g. uniform 0-1), sticky 钉住 lastBin 会让中型 item 占空大桶, 同 class 小 item 后续拼不进, 反致新桶过多. 0.20 阈值限制这种损失 ≤ 0.20 waste.\n\n## 风险\n\n1. **fire rate 不确定**: 阈值 0.20 是猜测, 没扫描. 若大多数实例 lastBin 不满足 (lastBin 已被别人用过且剩余过小), fire rate 极低, holdout 0.00%.\n2. **fire 时效果双面**: 同类连续分布改善, 异构分布恶化; 几何平均下双面可能抵消 → 0.00%.\n3. **lastBin 维护零开销**, 风险只在效果.\n\n## 期望\n\n- 35% 概率: holdout 持平或微改善 (0.9953 → 0.9930-0.9955) → reject (没达到 0.998 系数).\n- 35% 概率: 真正改善 (0.9930 以下) → accept.\n- 30% 概率: 微恶化 (0.9953-1.0050) → reject.\n\n## 若 reject\n预判概率偏高. 真的接受 G1 0.9953 = 当前可达 ceiling, 下代切算法族 (K=3 harmonic / 多 pass 在线化 / 离线重排) 而非再调参.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 40,
+    "idea": "G1 BF + 跨调用 sticky: lastBin 仍能容纳且 lastBin-BF waste 差 < 0.20 时, 优先续用 lastBin 而非 BF best",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0027,
+      "train_after": 1.0006
+    },
+    "delta_pct": 0.74,
+    "error": "ratchet: holdout 1.0027 > 0.9933 (champion × 0.998)",
+    "bytes": 266,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 267
+}
