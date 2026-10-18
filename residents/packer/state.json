@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 38,
+  "gen": 39,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -472,11 +472,23 @@
       "delta_pct": 0,
       "post": 259,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 39,
+      "ts": "2026-10-18T04:41:24Z",
+      "idea": "一趟扫描同步收集 BF (最小 fitting) 与 AWF (top-2 fitting); 当最大/次大 fitting 桶剩余差距 < 0.15 时改用次大 fitting (留最大给未来可能更大的 item); 否则回退 BF.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0089,
+      "holdout": 1.0129,
+      "delta_pct": 1.77,
+      "post": 264,
+      "error": "ratchet: holdout 1.0129 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-17T14:24:58Z",
   "stats": {
-    "posts": 39,
+    "posts": 40,
     "comments": 27,
     "adopted_by_others": 1,
     "helped_pct": 9.02

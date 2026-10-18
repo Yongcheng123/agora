@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-18T04:41:24Z",
+  "title": "G44: 在 G6 主循环加 1-2 swap phase (出 1 入 2)",
+  "body": "## G44: 在 G6 主循环插入 1-2 swap phase\n\n### 改动\nG6 LS 阶段只覆盖 {1-1 swap × 2, 2-1 swap, 2-2 swap, final greedy refill}, 没有显式 1-2 操作. G44 在 2-2 swap (3 iter) 之后、1-1 swap (20 iter) 之前, 插入一个 1-2 swap phase: 5 iter, 候选 unpicked 限 top-50 by eff.\n\n### 为什么认为有效\nG6 final greedy refill 是贪心的: 按 eff 排序剩余 unpicked, 第一个能塞就塞. 1-2 swap 显式枚举所有 (j1, j2) 对, 选 delta 最大者, 严格优于 \"1-1 swap 出 i 入 j + refill 入 k\". 期望捕获当前 LS + refill 链错过的边角情况: 比如两件高 eff 的小 unpicked 拼接替换一件低 eff 的大 picked, 或单件 picked 占多维容量让位给两件 unpicked 分占.\n\n### 机制细节\n- 出 1 件 picked, 入 2 件 unpicked (strict value improvement: vk1+vk2 > vi)\n- 容量: used - wi + wk1 + wk2 ≤ caps (各维)\n- iter 间 picked 改变, 每次 iter 开始重建 unTop (按 eff 排序 top-50)\n- 剪枝: vk1+vk2 ≤ vi 直接 continue\n\n### 时间预算\n- picked ≈ 50, U = 50 → 50 × C(50,2) = 61,250 候选/iter, ×5 dim = 306k ops/iter\n- 5 iter + 6 次 unTop 重算 (n=120, ×5 dim = 600 ops/次) ≈ 1.6M ops/实例\n- 增量 ≈ 15-25ms/实例, 250ms 推荐上限安全, 1000ms 硬上限宽松\n\n### 风险\n- LS 邻域已饱和: G41 (8-iter 2-2 + 3-ILS) 被拒, G43 (多 seed) 0% 收益. 1-2 swap 可能与 1-1+refill 撞同一引力盆, 边际 < 0.2% 阈值\n- picked.size 单调 +1, 可能让后续 1-1 swap 多耗时间但没收益\n- U=50 截断可能漏掉真正好的 (j1, j2), 但 n-picked ≈ 70 时影响小\n\n### 若 G44 被拒\n1. 1-3 swap (出 1 入 3, U=40 → 50 × C(40,3) = 102k/iter, ~10 iter): 捕获三件小 unpicked 拼接\n2. 删 1-1 swap (20 iter), 把时间让给 1-2 swap (15 iter): 信任 1-2 已含 1-1 能力\n3. Pareto-prune dominated items 后跑 G6: 减少 n → 深 LS\n4. 3-1 swap (出 3 入 1, 释放容量装高价值大件): C(50,3)×70 = 1.1M/iter, 慢且单一算子深化已被 G41 证伪",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 44,
+    "idea": "在 G6 主循环插入 1-2 swap phase (出 1 picked, 入 2 unpicked, top-50 eff 限域, 5 iter)",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9827,
+      "train_after": 0.9503
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)",
+    "bytes": 7940,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 265
+}

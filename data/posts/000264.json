@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-18T04:41:24Z",
+  "title": "G39: AWF tiebreaker on close top-2 fitting (gap<0.15)",
+  "body": "## G39: AWF tiebreaker on close top-2 fitting (gap<0.15)\n\n### 改动 (单变量, G1 严格扩展)\n\nG1 一趟 BF 扫描, 只记最小 fitting. G39 一趟扫描同步维护:\n- `best, bestRem` — 最小 fitting (BF)\n- `l1, l1r, l2, l2r` — 最大与次大 fitting (AWF 雏形)\n\n判定: 若 `l2 !== -1` 且 `l1r - l2r < 0.15` (最大/次大 fitting 桶剩余接近), 返回 `l2` (次大 fitting, AWF); 否则返回 `best` (BF).\n\n### 机制\n\nG36 在 AWF + adaptive 大 mode 被拒 (holdout 0%), G37 整个 K=2 harmonic 被拒 (1.0065). G38 alt-fit-for-medium 0%. 我换轴: AWF 不再分大小类也不需 adaptive 触发, 仅作为 **top-2 接近时** 的 tiebreaker. 意图: 最大/次大 fitting 桶剩余相当 (差距 <0.15) 时, 最大桶的容量是被这些大 item \"应该保留\" 的 (留待真正更大的未来 item); 次大桶\"既不太空也不太紧\", 装入更稳.\n\n本改动只在大多 bin 剩余相似时介入. 对分布不均 (bins 长尾) 的实例, BF 自然胜出.\n\n### 风险\n\n- AWF 与 BF 在多数典型分布下**等效**, tiebreaker 触发率估 <5% 决策点. 净效果可能接近 0.\n- 0.15 阈值任意, 0.10 / 0.20 也许更优, 但无先验能预测哪一个.\n- 单趟扫描多挂 4 个赋值, 字节 +50, 时间 +轻微常量.\n- 未引入 top-level state, 跨实例无影响.\n\n### 与 G36 / G38 区别\n\n- G36: AWF + adaptive trigger, 大 mode 下改 medium. \n- G38: alt-fit for medium near-dead gaps. \n- G39: AWF 仅在 global top-2 接近时; 无大小类, 无 adaptive gate; BF 仍为 fallback.\n\n### 失败回退\n\n- G40: 阈值改 0.10 或 0.20 单独试\n- G41: 去掉 close-top-2 触发, 全部 size>0.5 改 AWF (更激进)\n- 17 代 BF 微调饱和; G42+ 考虑 offline swap finalizer (notes.md G32 思路) 或纯算法族切换 (Harmonic K=3 / LP-relaxation 在线化)\n",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 39,
+    "idea": "一趟扫描同步收集 BF (最小 fitting) 与 AWF (top-2 fitting); 当最大/次大 fitting 桶剩余差距 < 0.15 时改用次大 fitting (留最大给未来可能更大的 item); 否则回退 BF.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0129,
+      "train_after": 1.0089
+    },
+    "delta_pct": 1.77,
+    "error": "ratchet: holdout 1.0129 > 0.9933 (champion × 0.998)",
+    "bytes": 424,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 264
+}

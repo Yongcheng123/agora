@@ -1,36 +1,36 @@
-## G43: 多 seed LS — sum + max 双 metric (待执行)
+## G44: 在 G6 主循环插入 1-2 swap phase (待执行)
 
-### 五代回顾 (G37–G42)
-- G37–G38: 加 swap phase (1-3, 3-1), 全红
-- G39: 纯随机 ILS 扰动, 红
+### 六代回顾 (G39–G43)
+- G39: 4 次 ILS 重启 (3-5 件随机丢, sum/max/v 三种 metric 重填, 1-1×15 + 2-1×2), 红 (holdout -0.05%)
 - G40: 编译错 (const 缺初始化)
-- G41: 8-iter 2-2 + 3-ILS, 红
-- G42: 多 seed trial (sum + max), 崩于 `undefined.w` 运行时错
+- G41: 8-iter 2-2 swap + 3-ILS, 红 (holdout +0.03%)
+- G42: 多 seed (sum + max), 崩于 undefined.w
+- G43: 多 seed (sum + max) 完整 trial, 红 (holdout 0.00%)
 
-### G43 思路 (与 G42 区分)
-LS 邻域已饱和, 改起点比改算子更值得试. 同 G42 思路但 trial 严格纯函数:
-- 所有索引闭环: eff / pickedArr / unpickedByV 均由 `for (let k=0; k<n; k++)` 构建, 不引用外层 state
-- 双 trial 完全独立, 无共享 mutation
-- LS 阶段与 metric 无关, 两 trial 共享邻域定义, 仅起点不同
+### G43 失败解读
+holdout 与 G6 完全一致 → sum/max 双 metric 在 holdout 实例上起点几乎相同, LS 后落同一解. 多样性不足, 100% 时间代价 0 收益. 说明: 单纯换起点无法突破 G6 LS 邻域天花板.
 
-### 期望机制
-- sum-eff: `v / Σ(w_j/cap_j)` — 总资源占用低优先
-- max-eff: `v / max(w_j/cap_j)` — 瓶颈维度低优先
-- 对"重单维 vs 多维分散"的 item 排序会分叉, 给 LS 不同起始 picked set, 进入不同引力盆
+### G44 思路
+G6 LS 邻域只覆盖 {1-1 swap, 2-1 swap, 2-2 swap, final greedy refill}. 缺 1-2 swap 显式算子. 1-2 = "出 1 picked, 入 2 unpicked, 严格价值改进". 这是 mirror of 2-1 swap (出 2 入 1).
+
+### 与 1-1+refill 的关系
+1-1 swap 出 i 入 j 后, final greedy refill 按 eff 贪心补一个 unpicked k. 1-2 swap 显式枚举 (j1, j2) 对, 选 delta 最大者. 严格优于 1-1+refill. 1-1 swap (80 iter + 20 iter) 已覆盖大多数单步改进, 1-2 可能捕获多步复合改进, 例如两件高 eff 小 unpicked 拼接替换一件低 eff 大 picked.
+
+### 实施细节
+- 位置: 2-2 swap (3 iter) 之后, 1-1 swap (20 iter) 之前
+- iter cap: 5
+- 候选 unpicked: top-50 by eff, 限制搜索空间
+- 剪枝: vk1+vk2 ≤ vi 直接 skip
+- 时间: ≈15-25ms/实例, 250ms 预算安全
+- iter 间 picked 改变, 每次 iter 开始重建 unTop
 
 ### 风险
-- 时间: 双 trial ~2×G6, 擦 250ms 推荐上限, 1000ms 硬上限宽裕
-- 多样性: 实例若权重分布均匀, sum/max 高度一致, 双 seed 等效浪费
-- 若分歧极小, 0 收益 + 100% 时间代价
+- LS 邻域饱和, 1-2 可能撞同一引力盆. G41 (8-iter 2-2) 被拒, 说明深化单一算子边际接近 0
+- picked.size 单调 +1, 可能让后续 1-1 swap 多耗时间但没收益
+- U=50 截断, n-picked ≈ 70 时大多数 case 覆盖, 但极端 case 可能漏
 
-### 若 G43 被拒
-1. 加第三 metric (几何罚 `v / Π(1 + w_j/cap_j)`) 拉大多样性 → 3 seed
-2. Pareto-prune dominated item → n 砍 10-30% → 节省 LS 时间给多 seed
-3. 1D DP on 最紧维度拿 anchor item, 其余维度贪心补
-
-### Cross-pipeline 观察 (新)
-- packer G32 (BF + swap finalizer) 跑在 G1 0.9953 ceiling, 触发门借 G36 big_ratio fingerprint
-- drifter G32 (restricted 3-opt) 跑在 drifter G17 baseline
-- 两条 G32 同名不同实, holdout 不可直接 cross-compare, 必须按各自 baseline delta 算
-- G45 是 cartographer LS 链产物, drifter G33 复刻到 G17 链上边际要重测
-- 我 G43 与 packer/drifter 链无关, 单纯 LS 起点多样性实验; 不会被他们进展绑架
+### 若 G44 被拒
+1. 1-3 swap (出 1 入 3, U=40, 10 iter): 捕获三件小 unpicked 拼接
+2. 删 1-1 swap (20 iter), 把时间让给 1-2 swap (15 iter): 信任 1-2 已含 1-1 能力
+3. Pareto-prune dominated items 后跑 G6: 减 n → 深 LS
+4. 1-2 swap + 不同起点 (sum/max) 双 seed: 起点多样性 × 算子多样性
