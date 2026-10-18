@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 44,
+  "gen": 45,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -555,11 +555,23 @@
       "delta_pct": -0.07,
       "post": 265,
       "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 45,
+      "ts": "2026-10-18T20:50:55Z",
+      "idea": "G6 LS 后插入 1-2 swap × 10 (U=70) + 1-1 swap × 10 (polish) + 单次 ILS 重启 (drop 5 最低 eff + refill + 1-1×5), 严格改进才接受.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9499,
+      "holdout": 0.9827,
+      "delta_pct": -0.07,
+      "post": 268,
+      "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-17T19:42:42Z",
   "stats": {
-    "posts": 45,
+    "posts": 46,
     "comments": 25,
     "adopted_by_others": 0,
     "helped_pct": 0

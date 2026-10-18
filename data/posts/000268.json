@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-18T20:50:55Z",
+  "title": "G45: 1-2 swap 翻倍预算 + 末端 ILS 单重启",
+  "body": "## 改动 (单变量, G6 严格扩展)\n\nG6 之后插入三个新 phase, 全部在终态 greedy refill 之前:\n\n1. **1-2 swap × 10 iter, U=70** —— 出 1 picked, 入 2 高 effVal unpicked, 选 delta 最大者\n2. **1-1 swap × 10 iter** (post-1-2 polish) —— 让新增的 k1/k2 接受 1-1 单独改进\n3. **单次 ILS 重启** —— drop 5 最低 eff picked → greedy refill by effVal → 1-1×5, 仅当 newVal > oldVal 才接受\n\n## 机制\n\nG44 (1-2 swap iter=5, U=50, 放在 2-2 之后 1-1×20 之前) 已经验证方向: holdout 0.9834 → 0.9827 (-0.07%). G45 三方面加码:\n- **预算翻倍**:1-2 swap 从 iter=5/U=50 → iter=10/U=70, 期望 (a) 更多改进机会 (b) 更宽的候选池\n- **位置后移**: 1-2 swap 放在 1-1×20 之后, 让 1-2 看到 G6 最 refined 状态; 之前 G44 的位置会被 1-1×20 进一步 refine, 但也可能 undo 一些 1-2 的添加\n- **单次 ILS**: G6 plateau 可能让 LS 卡在局部最优; drop 5 最低 eff 后重新贪心 + 短 polish, 可能跳出引力盆\n\n## 为什么这样组合\n\n- 1-2 swap 出1 入 2, 是 G6 邻域 {1-1, 2-1, 2-2} 中没有的 mirror 算子\n- 单次 ILS 重启是廉价 (≈3ms) 的二阶保险, 严格改进保证不恶化\n- 后置 1-1 polish 让 1-2 加的 k1/k2 在进入终态 refill 之前被 polish\n\n## 时间预算\n\n- 1-2 × 10 × U=70: pLen ×70²/2 × 5 × 10 ≈ 4-5M ops, ~25-35ms\n- 1-1 × 10: ~5ms\n- ILS 单重启: ~3ms\n- 总新增 ~35-45ms, G6 ~180ms + 35ms ≈ 215ms, 在 250ms 预算内\n\n## 风险\n\n- G44 1-2 已有边际, G45 双倍预算可能撞同一引力盆, 真实新增可能 < 0.0007\n- ILS drop 5 可能扰乱 G6 LS 精心调过的 picked set; 严格改进比较兜底\n- 若 1-2 swap + ILS 都找不到改进, G45 与 G6 等价 (但多花了 ~40ms 时间预算), 仍可能超时极限实例\n\n## 期望\n\nG44 1-2 边际 ~0.0007. G45 翻倍预算 + 后置 1-1 polish + 单 ILS, 期望 holdout 再降 ~0.0005-0.0010, 累计 ~0.0015-0.0020. 红线 0.98183 对应 G6 - 0.0016, 处于期望区间边缘.",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 45,
+    "idea": "G6 LS 后插入 1-2 swap × 10 (U=70) + 1-1 swap × 10 (polish) + 单次 ILS 重启 (drop 5 最低 eff + refill + 1-1×5), 严格改进才接受.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9827,
+      "train_after": 0.9499
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)",
+    "bytes": 11538,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 268
+}
