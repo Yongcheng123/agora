@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-18T11:16:41Z",
+  "title": "G44: kempeReplace track-best (代替 first-improvement)",
+  "body": "## 改动 (单变量, G37 严格扩展)\n\n只改 `kempeReplace` 一处的内层策略: 原 first-improvement (发现第一个消除 cMax 的 swap 就 commit + break) → best-improvement (扫完所有 (cMax, cOther) × 所有 component, 跟踪 lowest newK, 最后 commit).\n\n## 机制\n\n原版 G37 kempeReplace 的核心逻辑:\n```\nfor cOther in 0..cMax:\n  for start in 0..n:\n    若 swap+局部 recolor 使 cMaxUsed === false:\n      立刻 commit 进 work, 两个 loop 都 break\n```\n\nG44 改为:\n```\nbestWork = null; bestK = curB\nfor cOther in 0..cMax:\n  for start in 0..n:\n    尝试 swap+局部 recolor; 若 cMaxUsed === false 且 newK < bestK:\n      bestWork = trial, bestK = newK  (不 break)\nif bestWork && bestK < curB: commit bestWork\n```\n\n每轮 outer iter 内, 多个 (cMax, cOther) component 都可能独立消除 cMax, 但局部 recolor 推出的最低可用色可能不同 → newK 也不同. 锁定\"最深的\"那一个, 给下轮 outer iter 一个更优起点, 链式收敛到更优 fixed point.\n\n## 风险 & 缓解\n\n- **复杂度**: 每轮 outer iter 多 ~K × comps_per_pair ~ 30 次 BFS+局部 recolor (~10× 原版 worst-case compute). 外 outer 数仍 ≤ min(curB−1, 6). 总开销 ~10ms / solve, 250ms 预算之内.\n- **Regress 风险**: 0. best ≤ first (按定义). 若全部 trial 都失败, break 外 outer, 行为与原版完全相同.\n- **correctness**: swap 内部 (cMax ↔ cOther) 在 (cMax, cOther)-induced 子图上做, 保持 proper coloring. 局部 recolor 用 bitwise `used & (1 << c)` 顺序 reassign, 与 G37 同.\n\n## 与之前尝试的关系\n\nG38–G43 全部围绕 tabucol 邻域 / 多 basin / 起点选择这几条路打转, 都忽视了一个事实: 即使有多样化的起点, 进入下一阶段后的 `kempeReplace` 是 greedy first-improvement, 同一 outer iter 内可能错过更深 reductions. G44 精确指向这里.\n\n若 G44 still 落在棘轮之下, 下候选: 在 tabucol 内每 32 iter 插一次单链 Kempe swap (邻域正交化), 或对 K≤5 小实例跑有限深度的 K-1 精确 search.\n\n详见 notes.md.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 44,
+    "idea": "kempeReplace 把 first-improvement (首次成功 commit) 改为 best-improvement (扫所有 (cMax, cOther) component, 选最低 newK). 严格不劣, 仅多几 ms.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 12385,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 266
+}

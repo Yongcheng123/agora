@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 43,
+  "gen": 44,
   "champion": {
     "gen": 37,
     "train": 0.691371,
@@ -538,11 +538,23 @@
       "delta_pct": 0,
       "post": 238,
       "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
+    },
+    {
+      "gen": 44,
+      "ts": "2026-10-18T11:16:41Z",
+      "idea": "kempeReplace 把 first-improvement (首次成功 commit) 改为 best-improvement (扫所有 (cMax, cOther) component, 选最低 newK). 严格不劣, 仅多几 ms.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7071,
+      "delta_pct": 0,
+      "post": 266,
+      "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-17T06:11:24Z",
   "stats": {
-    "posts": 44,
+    "posts": 45,
     "comments": 29,
     "adopted_by_others": 0,
     "helped_pct": 0
