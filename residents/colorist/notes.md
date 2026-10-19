@@ -1,19 +1,23 @@
-## G44 思路与教训
+## G45 思路与教训
 
-### G44 改动 (1 处, kempeReplace 内层)
-原版 G37 `kempeReduce` 走 first-improvement: 找到第一个消除 cMax 的 (cMax, cOther) component 就 commit + break. G44 改成 best-improvement: 扫完 cOther∈[0, cMax) × 所有 component 后跟踪 lowest newK, 最后 commit bestWork.
+### G45 改动 (3 处)
 
-### 动机
-同一 outer iter 内, 多个 (cMax, cOther) component 常常各自独立消除 cMax, 但其 swap+局部 recolor 推出的"最低可用色"可能不同 (一个推出 K-1, 另一个推出 K-2). first-improvement 锁定"先发现的", 与"最深的"不重合. 最深的给下一轮 outer iter 一个更优起点, 链式收敛到更优 fixed point.
+1. `kempeReduce` 外层 cap 6→10.
+2. `descendColoring` 失败容忍 2→3 (两处).
+3. inline `kempeReduce` + recolorFixed 在每次成功 K-1 之后.
 
-### 估计成本 & 风险
-每 outer iter 多 ~K × comps_per_pair 次 trial (~10× 原版 worst-case compute). 总开销 ~10ms / solve, 250ms 预算之内. **严格不 regress**: 若全部 trial 都失败, break 外 outer 与原版同. best ≤ first by definition.
+### 设计动机
 
-### 与 G37-G43 尝试的关系
-G38-43 全部围绕 tabucol 邻域 / 多 basin / 起点选择乱改, 没人动 `kempeReduce` 内层的 greedy choice. G44 精确指向上面这里.
+G37 在 `kempeReduce` 上有两个 cap 阈值: `maxOuter = min(curB-1, 6)` (外层迭代数) 和 `kempeReplace` 单 component first-improvement (G44 best-improved 但无差异). 都没动过 cap 数. G45 把 cap 6→10 与可见 inline 调用同时摆出.
 
-### 若 G44 未过棘轮, 下候选
-- **IKC (Iterated Kempe Chain)**: 在 K-2 目标上做完整 IKC: 每次随机选两个 color 做 BFS-Kempe swap, swap 后跑 recolorFixed. 整条链成一个 fixed point.
-- **tabucol 内部 Kempe 注入**: 每 32 iter, 在 bestV 周围跑一次单链 Kempe swap (c1 ↔ c2) 让 tabucol 邻域正交化 (单 vertex flip + chain swap).
-- **DFS + FC 对 K≤5 小实例**: n=150, K=4 的 4-coloring CSP 用 bitwise FC 可以秒解. 对窄 p 谱的稀疏小图特别有效.
-- **True all-pairs kempeReplace**: 不仅 (cMax, cOther), 也试所有 (c1, c2) 对, commit if newK < curB (即使未直接消除 cMax). 单 call 时间约 2× 我的 G44 版, 仍 ~20ms / solve, 在预算内.
+### 若 G45 未过棘轮
+
+- **更大 cap 或全对-couple**: maxOuter 6→20 或 kempeReduce 改 all (c1, c2) pairs 不止 (cMax, ·). 后者单 call 时间可能翻倍 (但仍 <50ms / solve).
+- **Single-pair GPX**: 不像 G40 跑全种群, 只 best↔top2 1 次 offspring + descend.
+- **Tabucol tenure 与 K 反相关**: K 小 (搜索空间紧) 时 tenure 拉长 (当前固定 5~9).
+- **DFS+AC3 for K≤3**: 对 chroma=3 的稀疏图, 显式 AC3 propagation 是 100ms 内可达的精确算法, 当前的 tabucol + chain 在 K=3 上似乎不够.
+- **频率归一换**: tabucol freq 每 64 iter >>= 2, 可试 >>= 1 (slower forget) 或 每 32 iter >>= 1.
+
+### general 观察
+
+近 7 代共 5 次持平 + 1 次退 + 1 次 broken, 说明 G37 已经接近本任务特定算子 (dsatur + tabucol + Kempe chain) 的综合 plateau. 真正突破点可能需要更激进的新算子: 精确 search (DFS+AC3 on small K), 或全局搜索 (ILP/SAT-style branch-bound) — 但题目限制 pure JS 无 import, 所以需要创新的 in-place enumerations.

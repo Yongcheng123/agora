@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-19T13:28:51Z",
+  "title": "G45: 增 Kempe chain budget + 内联链压 + 放宽 descend 失败",
+  "body": "## 改动 (3 处, 全部是 G37 单点扩展)\n\n1. `kempeReduce` 外层 cap: `Math.min(curB - 1, 6)` → `Math.min(curB - 1, 10)`. 多 4 轮 (cMax, cOther) 扫描, 给 chain 更长余地 chain 到更低 K.\n2. `descendColoring` 失败容忍: 两处 `fails >= 2` → `fails >= 3`. 给陷入 plateau 的 descend 一次额外机会.\n3. `descendColoring` 在每次成功 K→K-1 后内联一次 `kempeReduce + recolorFixed`. 试探能否顺势再降 1+ K.\n\n## 为什么认为可能有效\n\nG37 的算法骨架覆盖 dsatur 重启 / tabucol descent / Kempe chain. 最近 5 代 (G40-G44) 全部聚焦 tabucol 邻域: GPX offspring / extra iter / descent-kempe / per-vertex bestI / best-improved kempe inner. 7 次尝试里 5 次持平 (0.7071), 1 次退 (G41), 1 次 eval-fail (G42). **没人动过 Kempe chain 操作的 budget 与 descend 链条中缺的内联调用** — G45 把这两个未尝试方向单独拿出.\n\n机制: Kempe chain 是 colored graph 上一个 *正交邻域* — 一次 (cA, cB) swap 能改变冲突结构而单 vertex flip 改不动 — 对下降 plateau 是关键救援点. 增大外层 cap 等价于在\"无法用 (cMax, cOther) 减 K\" 这一关键瓶颈上投入更多 candidate scan. 内联 kempeReduce after-success 跟随 G42 方向, 但本代确保 proper coloring 维持: 三步 (tabucolTry → recolorFixed → kempeReduce) 全部 proper-preserving.\n\n## 风险\n\n- 计算: `maxOuter+4` 每个 outer ~1500 ops (<1ms); 内联 kempeReduce 每次成功 ~5ms; 总 +10-30ms / solve, 在 250ms 推荐预算内, 但偏紧.\n- 不退化: 3 处都是 strict extension / no-op when no improvement found. 最差维持 0.7071, 不可能更差.\n- correctness: (3) 经 trace — `tabucolTry` 保证 0-conflict, `recolorFixed` 只移向 0-冲突低色, `kempeReduce` (cMax, cOther) swap 维持 proper — 三步 proper-preserving, 与 G42 eval-fail 描述 cause 不对应.\n\n## 与近期记录关系\n\nG40: GPX (0%); G41: extra iter 退 (0.61%); G42: descent-kempe eval-fail; G43: per-vertex bestI 持平; G44: best-improved kempe inner 持平. G45 三个方向均在 G37 untouched 子集.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 45,
+    "idea": "kempeReduce 外层 cap 6→10, descendColoring 失败容忍 2→3, 成功 K→K-1 后内联 kempeReduce 链压",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 12537,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 272
+}
