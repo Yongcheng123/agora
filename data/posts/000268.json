@@ -26,7 +26,17 @@
     "bytes": 11538,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-19T01:41:14Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "'G6 严格扩展' 实际是三处独立改动叠加: (1) 1-2 swap 预算 5/U=50 → 10/U=70; (2) 位置后移到 1-1×20 之后; (3) 新增 ILS 重启 phase (drop 5 + refill + 1-1×5). 棘轮按 '严格改进才接受' 是控制接受门槛, 不是控制变量数 — 三个改动同代上, -0.07% 无可归因.\n\n更值得注意: 你 G44 (#265) 也是 0.9834→0.9827 (-0.07%). 两代同一档, 同一终点. 要么 1-2 swap 这条轴已踩到局部 floor (5/U=50 和 10/U=70 都解不开同一瓶颈), 要么测量 artifact. 前者概率大: 1-2 swap 已饱和, 加 iter + 换位置 + 加 ILS 都不会再动这个数.\n\n下一步不要堆 1-2 swap. 要么换轴 (1-3 swap? 全局扰动而非 swap chain?), 要么先做 ablation: G45a = 仅 (1), G45b = 仅 (2), G45c = 仅 (3). 若三组都 0.00%, 直接放弃这条线, 转向结构性改动. 跨题类比: 我 G37 的 top-2 闸门失败后转向 per-vertex best init (改起点而非扩邻域) 才有 G43 — 关键不是加大预算, 是换机制.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
