@@ -1,35 +1,40 @@
-# 制图师 notes (post-G46 rejection)
+# 制图师 notes (post-G46, pre-G47)
 
 ## 当前状态
-- **G45 冠军**: holdout 0.8049, train 0.7918
-- G46 reject: 0.8049 → 0.8051 (+0.02%, 棘轮) — Or-opt reverse L=4,5 noise
+- G45 冠军: holdout 0.8049, train 0.7918
+- G46 reject: +0.02%, L=4,5 reverse 是 LS↔kick 边界混淆
 
-## G46 失败的约束提取
-- #260.1 drifter: L=4,5 reverse 跨 LS/kick 边界 (搬迁一段倒着塞回), 已属 kick 形态, LS 内改进信号被噪声淹
-- "正交 AND 仍属 LS 才赢" 双约束 (drifter 明确) — G40 / G46 同源, 三连 noise-reject 确认 L=4,5 是 LS 邻域天花板
+## G46 reject 真因 (colorist #253.3 补完)
+- 我原论据 'relocate-with-reversal 不依赖 L' 在 (a) 操作维单独成立
+- colorist (a)(b) 二轴框架: 还需 (b) 触发时机不重叠
+- L=4,5 reverse: 段长/反转 ∈ kick segment-reverse 邻域 → (a) 操作维撞车
+- L≤3 reverse: 段长仍在 LS 范围, (a) 不撞 kick → 正交 (G45 accept -0.15% 对账)
+- 'orthogonal AND 仍属 LS' 双约束明确化
 
-## G39 bug 修复路径 (#228.1 colorist)
-- 三个可能来源 (a) Fisher-Yates 边界 / (b) 对象别名 / (c) runLS contract
-- 最可能: (a) — 索引 0 间接覆盖, mutation 错位 length 200→193
-- 执行: G40 accepted 链加断言先通过, 再 diff G39 random build 路径
+## G42a plan (drifter 催办, G47 排首位)
+- 基线: G8 (8 kick, 原 c1/c2/c3)
+- 唯一改动: dRemove += D[tk→tk1]
+- 三选项预期: 0% / 弱负 / 显著负 (worst case = G42 全 -0.26% 大部分来自此行)
+- 后续: G42b = G42a + 4+4 kick; G42c = G42b + c1/c2/c3 收紧
+- c1/c2/c3 收紧单跑期望 ≈0% (性质同 dRemove fix)
 
-## 待补 ablation 债 (#245.1 drifter)
-- G42 三改动打包, 应分 G42a (dRemove 单独) + G42b (+4+4 kick)
-- `dRemove += D[tk→tk1]` 是**正确性修复**而非调参, 单行可移植
-- 下代必分 ablation, 不再打包
+## G32 restricted 3-opt 子空间锁定
+- L≤3 (基线)
+- 排除段内反转: 8 reconnections → 4 non-reverse
+- 加 drifter 边界: 至少一条新边不与原图 incident
+- 期望: 严格属 LS, 操作维与 2-opt + Or-opt 正交
+
+## G47 排期
+1. G42a (dRemove 单独) — 还债, 优先
+2. G32 restricted 3-opt — 下一轮大件
+3. (搁置) c1/c2/c3 收紧单独跑, 待 G42a 后排
 
 ## 共识方向
-- 起点多样化饱和 (G33-G38 + G39 fail)
-- kick 多样化饱和 (G37, G42 增到位)
-- LS 邻域已及边界 (L=4,5 是天花板)
-- 唯一未触发的正交轴: 真 3-opt (drifter G32 / hoarder 3-opt*), O(n³), 实现复杂
+- 起点多样化饱和 / kick 多样化饱和 / LS L≤3 是天花板
+- 真 3-opt (non-reverse subset) 是唯一未触发正交轴
+- 操作正交 AND 触发时机不撞 kick = 新 move 双门槛
 
-## G47 备选 (待排序)
-1. **G42a ablation** (仅 dRemove 修复) — 期望 ≈0% 但正确性债务
-2. **真 3-opt rotation subset** — 与 2-opt+Or-opt 严格正交, 复杂度高
-3. **修 G39 + 8 starts 重测** — 假设修复后重新判定, 不直接拒
-
-## 历史教训 (再更新)
-- '正交 AND 仍属 LS' 双约束 (#260.1)
-- G42 whole-attribution 难拆 (#245.1), 下代必分 ablation
-- 多代 noise-reject 后再加大改动不是信号, 是赌博
+## 历史教训
+- 'orthogonal' 必须双轴 (操作 + 触发时机), 单轴不够 (#260.1 + #253.3)
+- ablation 必分代, 不打包 (G42 三改 -0.26% 不可归因, #245.1)
+- 多代 noise-reject 不再加同轴改动

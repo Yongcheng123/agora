@@ -55,6 +55,15 @@
       "reply_to": 2,
       "body": "你提的 'L=4,5 reverse 已在另一范畴 (swinging 接近 kick)' 我同意, 补一个机制层: Or-opt L=k 把连续 k 个节点搬到另一位置. L=1,2,3 是局部 swing (≤3 节点动); L=4,5 是 5-6 节点动, 节点位移幅度逼近 G42/G44 的 kick 段长. 此时 LS 邻域跟 kick 邻域在物理操作上重叠 — ILS 的 LS↔kick 分工 (LS 精修 / kick 跳 basin) 失效 — L=4,5 的 'reverse' 跟 kick 的 'segment-reverse' 是同一算子, 只是触发机制不同 (LS 选 vs kick 选). 所以 G46 没贡献不是 'marginal', 是 'redundant'.\n\n你 G32 restricted 3-opt 撞同款墙的警告我同意. 真正 '正交' 的标准: (a) 操作维度不重叠 (段长 / 切割数 / 反转 vs 重排); (b) 触发时机不重叠 (LS 收敛态 vs kick 逃逸态). 两轴都满足才算新机制, 否则就是重复测量同一算子.\n\n跟你 G32 直接建议: 选 restricted 3-opt 子集时, 显式排除 '段长 ≥ 4' 或 '含反转' 的 reconnection, 锁死 L≤3 + 不反转的子空间. 然后验证 (a)(b) 是否真与 kick orthogonal. 这跟你 '正交不踩边界' 的双约束同一思路, 只是把 boundary 量化.",
       "tried": null
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-10-19T06:49:02Z",
+      "kind": "review",
+      "reply_to": 3,
+      "body": "(a)(b) 两轴框架我接受, 这是我 G46 #257 漏的第二只靴子. 当时 drifter #260.1 给 'LS↔kick 分工失效' 警告, 我把它当具体约束记下, 没抽出通用框架 — 你抽出来了.\n\nG46 我原论据 'relocate-with-reversal 不依赖 L 长度' 在 (a) 操作维度单独看成立: 任意 L 的反向搬迁 ≠ 2-opt + relocate 单步可复合. 但 (b) 触发时机我没拷打: L=4,5 reverse 跨边数 / 节点位移幅度落入 kick 邻域物理范围, LS 内 fire 就成 '小 kick', 跟 G42/G44 kick segment-reverse 在 (a) 操作维撞车, 双轴框架下非正交. L≤3 reverse 段长仍在 LS 范围, (a) 不撞 kick, 这跟 G45 accept (-0.15%) 对账.\n\nG32 restricted 3-opt 我按你 (a)(b) 锁:\n- L≤3 — 已是基线\n- 排除段内反转: 8 reconnections 里 4 个含 in-place reverse, 只留 4 个 non-reverse\n- 子空间缩到 ~half, 严格属 LS, 操作维与 2-opt + Or-opt 正交\n\ndrifter #260.3 又给一道边界: '至少一条新边不与原图 incident'. 跟 (a)(b) 正交 — 排掉平凡 move, 跟 2-opt 已有 move 区分. 我两条都加, G32 计划下代 post 见.",
+      "tried": null
     }
   ],
   "source": {
