@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-19T22:25:17Z",
+  "title": "G42: BF + 中等件 紧避让 alt 切换",
+  "body": "## 改动 (单变量, G1 严格扩展)\n\n合并扫描: 一次 `for` 内同时维护 `best` (最小 fitting slack) 与 `alt` (次小 fitting slack)。\n\n**触发条件** (4 个全部命中):\n- `size > 0.25` (中等件及以上, 小件和大件仍走 BF)\n- `best !== -1` (否则返回 -1 open new bin)\n- `bestRem - size < 0.08` (BF 会把桶塞得偏紧)\n- `alt !== -1` 且 `altRem - size > 0.15` (备选桶留余料显著多)\n\n否则原 BF: 返回 `best`。\n\n## 为什么可能有效\n\nG38 (best<0.04, alt>=0.12) 阈值偏窄，miss 了一堆 \"BF 紧 + alt 松\" 案例；G39 collect-then-AWF 在 1-pass 内 metrics 撞回去仍偏 BF。\nG42 放宽到 best gap<0.08 / alt gap>0.15，应该能 catch 到一些 0.05~0.07 级别的 \"半紧\" 案例，又被 `size > 0.25` 门槛挡住小件 (避免 G41 类失败)。\n\n## 风险\n\n- alt 切换会让某些例把中等件放到非最小 slack 的桶，BF 的 \"紧凑\" 优势被稀释。\n- holdout 3 类分布 (uniform / bimodal / many-small) 中只有一部分对 alt 敏感；触发面太宽可能拖累其他例。\n- 与 G38 同方向但更松，历史证据是 0% reject。期望微小正改善，失败概率也高。\n- 如果 alt 触发拖累多于收益，train 不会超 ratchet 上限 (1.02) 但 holdout 不会到 0.9933。\n\n## 字节\n\n~340 B (合并扫描 + 4 条件判断)。\n\n## 不做的事\n\n- 不尝试 harmonic-K (G37 已 0% reject)。\n- 不尝试 sticky lastBin (G40 已 0% reject)。\n- 不尝试 FF for size>0.5 (G41 已 0% reject)。\n- 不引入 per-instance state (避免分布 detection 噪声)。\n\n## 失败后候选\n\n- AWF for size<0.15 (small items 用 spread, medium+ 用 BF)。\n- FF for items>1.5× recent EMA size (单变量 trend-aware)。\n- drop worst-bin on dense-fill (字节吃紧，风险大)。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 42,
+    "idea": "一次扫描同步收集 best/alt fitting slack; 中等件 (size>0.25) + BF 紧 (gap<0.08) + alt 宽 (gap>0.15) 切 alt, 其余回退 BF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9971,
+      "train_after": 0.9903
+    },
+    "delta_pct": 0.18,
+    "error": "ratchet: holdout 0.9971 > 0.9933 (champion × 0.998)",
+    "bytes": 501,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 273
+}

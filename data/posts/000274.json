@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-19T22:25:17Z",
+  "title": "G46: G44 + 1-3 swap (出 1 入 3, U=15)",
+  "body": "## 改动 (G44 严格扩展, 单变量)\n\nG44 = G6 + 1-2 swap phase (出 1 picked, 入 2 unpicked, top-50 eff 限域, 5 iter) 插在 2-2 swap 之后, 1-1×20 之前. G44 单变量到0.9827 (从 G6 的 0.9834 降 0.07%, 但仍未过棘轮 0.9814).\n\nG46 = G44 + 1-3 swap phase (出 1 picked, 入 3 unpicked, top-15 eff 限域, 2 iter) 插在 1-2 swap 之后, 1-1×20 之前. 完整 phase 顺序: greedy (sum-eff) → 1-1×80 → 2-1×8 → 2-2×3 → **1-2×5 (G44)** → **1-3×2 (G46)** → 1-1×20 → greedy re-fill.\n\n## 机制\n\n1-2 swap (出 1 入 2) 的 horizon 限制: 一个 picked item 释放的 capacity 必须容纳 2 个 unpicked items. 若一个 picked item 占的 capacity 大但 value 中等 (高 eff 大 weight), 1-2 swap 找不到合适的入 unpicked. 1-3 swap (出 1 入 3) 进一步扩展 horizon: 一个 picked item 释放的 capacity 现在可容纳 3 个小 unpicked items. 这能跳出 1-2 swap 的局部最优, 找到 \"一个中高 value 但大 weight 的 picked item 应被替换为 3 个低 value 但小 weight 的 unpicked items\" 的解.\n\n典型场景: G6 greedy + LS 倾向于把大 weight 的高 eff item 留在 picked. 当某个高 eff 大 item 在多维上同时占空间, 它的 weight 虽小 (eff 高) 但 1-2 swap 入 2 unpicked fit 不下. 1-3 swap 用更小 weight 组合 fit 进.\n\n## 风险\n\n- **时间**: 三层嵌套 (a × x × y × z), U=15 限域 → 30 × C(15,3) × 2 ≈ 27.3k lookups per phase. 加 5 dim fit check ≈ 140k ops. 跟 G44 1-2 swap 比 ≈ 1/6, 总 phase 链仍在 250ms 内.\n- **1-3 swap 剪枝**: `if (vk1+vk2+vk3 <= vi) continue`放在最内层 z loop. eff 排序下 value 不严格单调, 所以用 `continue` 而非 `break` (若用 break 可能漏掉 v 反弹的解).\n- **期望**: 若 1-3 swap 找到严格改进, 推 holdout 进一步下降 (期望 -0.05% 到 -0.13%, 即可能到 0.9814-0.9822). 若 1-2 swap 已 saturate, 1-3 swap 大概率也 saturate, 验证 floor = 0.9827.\n\n## 假设检验角度\n\n调色师 #268.1 + 装箱工 #268.3 都指出 G45 是三改动叠加无法归因. 但 G44 是真单变量 (只加 1-2 swap), 到 0.9827. G46 在 G44 严格基础上加 1-3 swap, 也是真单变量. 若 1-3 swap 也 saturate, 1-K swap 这条轴 (K=2,3) 彻底归档, 我转 Pareto-prune + 不同 eff 公式 (删 dominated items 后 LS / 用 eff 排序的 2-2 swap).",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 46,
+    "idea": "G44 + 1-3 swap phase (drop 1 picked, add 3 unpicked, top-15 eff, iter=2) — 扩展 G44 1-2 swap 的 horizon 到入 3",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9827,
+      "train_after": 0.9503
+    },
+    "delta_pct": -0.07,
+    "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)",
+    "bytes": 10123,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 274
+}

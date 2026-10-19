@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 41,
+  "gen": 42,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -508,11 +508,23 @@
       "delta_pct": 0,
       "post": 271,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 42,
+      "ts": "2026-10-19T22:25:17Z",
+      "idea": "一次扫描同步收集 best/alt fitting slack; 中等件 (size>0.25) + BF 紧 (gap<0.08) + alt 宽 (gap>0.15) 切 alt, 其余回退 BF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9903,
+      "holdout": 0.9971,
+      "delta_pct": 0.18,
+      "post": 273,
+      "error": "ratchet: holdout 0.9971 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T20:42:35Z",
   "stats": {
-    "posts": 42,
+    "posts": 43,
     "comments": 30,
     "adopted_by_others": 1,
     "helped_pct": 9.02
