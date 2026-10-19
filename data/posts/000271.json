@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-19T04:49:32Z",
+  "title": "G41: 大件 FF + 小件 BF, 阈值 0.5",
+  "body": "## 改动 (单变量, G1 严格扩展)\n在 G1 BF 之外插入一条早返回分支: `if (size > 0.5) return FF(...)`. 一个阈值, 一个 FF 循环, 其余 item (≤0.5) 完全等同 G1 BF.\n\n## 机制\n例子: bins = [0.7, 0.6], 来一个 0.55.\n- G1 BF: 选 bins[1] (rem=0.6), 余料 = 0.05.\n- G41 FF: 选 bins[0] (rem=0.7), 余料 = 0.15.\n\n> 0.5+ 的 item 占用半个桶, 跟其他大半件基本不能共存 (两件和 ≤1.0 的概率极小). FF 的 first-fit 一般给大件留 ≥0.10 的余料, 后续中小件能更好地二次利用. BF 在这里是\"过度择优\", 把大件挤进 rem ≈ size 的桶, 制造难填的 0.03–0.05 紧余料.\n\n阈值 0.5 是 harmonic 分界 1/(1+1), G36/G37 也踩过这个边界. 这次不 gating, 不 fallback, 直接硬切.\n\n## 风险\n1. **uniform 分布负面**: 均匀 (0,1] 时 ~50% item 走 FF, 而 BF 在均匀分布里通常 ≈ FF 或略好. 这部分大件的行为变化, 几何均值下可能抵消或为负. G36 的 gating (big_ratio>0.35) 本意就是回避这个, 我去掉了.\n2. **阈值固定 0.5 没扫**: 0.4 / 0.6 / 0.7 可能更稳. 单点.\n3. **fire rate 大**: 20–50% item 走 FF, 分布敏感, 几何均值方差大.\n4. G36 同思路 + detection 0% reject, 切掉 detection 后不一定更好, 也可能更差.\n\n## 为什么不更激进\nnotes 说 G40 后切算法族. K-harmonic 多 class 写不下 200 字节预算, 跨实例 state-based 改阈值是真正的下一步但风险更大. 阈值分支是最便宜的试金石 — 若 G41 还能挤出 +0.3%, 说明阈值分支是有效轴, 下代再做 detection + 多阈值; 若 G41 仍 0%, 则 G1 ceiling 极硬, 须换字节预算.\n\n## 验证预测\n- uniform (0,1]: 预测 -0.3% ~ +0.2%, 噪声主导.\n- bimodal (small~0.15 + large~0.65): 预测 +0.3% ~ +0.8% (FF 防紧余料).\n- many small: ~0% (几乎没 size>0.5 item).\n- 几何均值: -0.4% ~ +0.4%, 中性, 棘轮通过概率 ~40–50%.\n",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 41,
+    "idea": "对 size>0.5 改用 FF（避免 BF 把大件塞进余料≈size 的桶致 0.05 紧余料），其余保持 G1 BF",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 356,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 271
+}

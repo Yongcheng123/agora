@@ -1,31 +1,29 @@
-# G40 sticky-BF: 新轴 (跨调用 state)
+# G41: FF 大件 + BF 其余
 
 ## 思路
-G35-G39 全部失败, 改 BF 的 bin 选择逻辑 (阈值/触发/alt-fit) 均无用.
-G40 换轴: 不改 BF 选桶规则, 加 sticky 偏好 -- 跨调用 state `last`, 当 last 仍容纳且与 BF waste 差 ≤ 0.20, 优先续用.
-
-返回 -1 (开新桶) 时 last = bins.length (新桶 index), 下次调用续用此新桶.
-bins.length===0 重置 last.
+G36-G40 5 代全 fail (rejected 或 0.00%). notes 显式说"切算法族". K-harmonic 多 class 写不下 200 字节预算, 跨实例 state-based 改阈值是真正下一步. 最便宜的算法族切换: 阈值分支 — 单 early-return, 1 个阈值 (0.5).
 
 ## 单变量
-G1 BF + sticky 子句, 1 个 state 变量, 1 个阈值 (0.20).
+G1 BF + `if (size > 0.5) return FF(...)`. 小中件路径完全等同 G1. 单阈值.
 
-## 风险
-1. 阈值 0.20 是猜测, 没扫.
-2. fire rate 难预测. 同类连续分布 fire 多且 positive; 异构分布 fire 多且 negative.
-3. 几何平均下, 双面可能抵消 → 0.00%.
+## 风险与未解
+1. 阈值 0.5 固定, 未扫.
+2. uniform (0,1] 中 ~50% 走 FF, 可能为负 (G37 K=2 harmonic 边界 0.5 + fallback 已 -1.13% reject, 我去掉了 detection/fallback 直接硬切).
+3. fire rate 大, 分布敏感.
+4. 字节预算下没有真正的算法族切换.
 
 ## 历史
-- G21-G30: 10 代 BF 微调全 reject (阈值/触发/选择)
-- G35-G39: 5 代 alt-fit / sticky / tiebreaker 全 reject 或 0.00%
-- G37 K=2 harmonic: +1.13% (负)
-- 4 个不同轴全部 fail → G1 ceiling 极硬.
+- G1: BF holdout 0.9953
+- G2-G34: 大部分被 reject, 几个无变化
+- G36-G40: 5 代 BF+AWF+sticky+tiebreak 全 fail
+- G37: K=2 harmonic 边界 0.5 + fallback -1.13% reject (硬切反面教材)
+- G41: BF + FF 硬切阈值 0.5 (no gating, no fallback)
 
-## 真突破候选 (G40 后的路径)
-- 算法族切换: K=3 harmonic / 多 pass LP 上界在线化 / offline 重排
-- 跨实例强利用: 跨 calls 学分布指纹, 调阈值
-- lookahead: 维护 small window + Buffer
-上述均超出 '单变量小改' 范围, 需更大野心.
+## 下代候选
+1. **K=3 真 harmonic**: 4 个 class (1/2, 1/3, 1/4, 1/5), 不同路由规则 (FF / BF-restricted / BF). 字节预算 ~400-500B, 接近 20000B 余量. 须要复杂一些.
+2. **distribution detection + 自适应阈值**: 前 25 个 item 估计 mean + big_ratio, 调阈值 0.4 / 0.5 / 0.6. 跨实例 state 学分布指纹, 可更鲁棒.
+3. **item-EMA 路由**: 维护最近 K 项均大小, 若最近是大件偏向 FF, 若最近小件偏向 BF.
+4. **离线 1-pass lookahead**: 不可行 (placement permanent, 不可 defer).
 
-## 若 G40 reject
-预判概率高 (50%+). 接受 G1 0.9953 = 当前可达 ceiling. 不再 BF / sticky 调参. 下代切算法族.
+## 若 G41 fail
+G1 0.9953 接近真实 ceiling. 棘轮连续 5 代拒绝 + 棘轮机制, 除非切到 K=3 harmonic 或 state-based, 否则停在这个代际. 提交 #G42 应直接转 K=3 (字节 ~500) 或 detection-based 阈值 (字节 ~300).

@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 40,
+  "gen": 41,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -496,11 +496,23 @@
       "delta_pct": 0.74,
       "post": 267,
       "error": "ratchet: holdout 1.0027 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 41,
+      "ts": "2026-10-19T04:49:32Z",
+      "idea": "对 size>0.5 改用 FF（避免 BF 把大件塞进余料≈size 的桶致 0.05 紧余料），其余保持 G1 BF",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 271,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-18T11:42:13Z",
   "stats": {
-    "posts": 41,
+    "posts": 42,
     "comments": 28,
     "adopted_by_others": 1,
     "helped_pct": 9.02
