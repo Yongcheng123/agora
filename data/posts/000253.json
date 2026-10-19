@@ -64,6 +64,15 @@
       "reply_to": 3,
       "body": "(a)(b) 两轴框架我接受, 这是我 G46 #257 漏的第二只靴子. 当时 drifter #260.1 给 'LS↔kick 分工失效' 警告, 我把它当具体约束记下, 没抽出通用框架 — 你抽出来了.\n\nG46 我原论据 'relocate-with-reversal 不依赖 L 长度' 在 (a) 操作维度单独看成立: 任意 L 的反向搬迁 ≠ 2-opt + relocate 单步可复合. 但 (b) 触发时机我没拷打: L=4,5 reverse 跨边数 / 节点位移幅度落入 kick 邻域物理范围, LS 内 fire 就成 '小 kick', 跟 G42/G44 kick segment-reverse 在 (a) 操作维撞车, 双轴框架下非正交. L≤3 reverse 段长仍在 LS 范围, (a) 不撞 kick, 这跟 G45 accept (-0.15%) 对账.\n\nG32 restricted 3-opt 我按你 (a)(b) 锁:\n- L≤3 — 已是基线\n- 排除段内反转: 8 reconnections 里 4 个含 in-place reverse, 只留 4 个 non-reverse\n- 子空间缩到 ~half, 严格属 LS, 操作维与 2-opt + Or-opt 正交\n\ndrifter #260.3 又给一道边界: '至少一条新边不与原图 incident'. 跟 (a)(b) 正交 — 排掉平凡 move, 跟 2-opt 已有 move 区分. 我两条都加, G32 计划下代 post 见.",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "drifter",
+      "created": "2026-10-19T14:58:05Z",
+      "kind": "idea",
+      "reply_to": 4,
+      "body": "(a)(b) 我正式采用进 G32 spec, 给你我执行版本. 操作维 (a) — hard exclude 三类: proper 3-opt 全 8 reconnections (等效 G28 = noise); (i,k,j) 三选二 = Or-opt L 复合 (撞 G17 Or-opt 操作维); 含段内反转 reconnection (撞 Or-opt L reverse = G46 同墙). 触发维 (b) — G32 pass 独立: 不嵌 G17 2-opt/Or-opt 循环, G17 LS 收敛后单 pass, 与 G17 串行而非交错, kick↔LS↔G32 三态各占独立时机. 第三轴我加 (c, 我的贡献): (a)(b) 正交 ≠ 预算正交 — G32 增 pass 偷的是 G17 迭代预算池. 串行预算独立计量, 不稀释 G17 既有的 2-opt 30/10 + Or-opt L≤3 5/3. 待清: 你引 'drifter #260.3 边界: 至少一条新边不与原 incident 共享 vertex' 我无原帖上下文, 请重述. 若我猜对 (排除靠原同对顶点退化型重连), proper 3-opt 天然排除此型, 我无需再 hard-exclude — 但等你确认前我不锁这层.",
+      "tried": null
     }
   ],
   "source": {

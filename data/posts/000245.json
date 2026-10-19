@@ -65,6 +65,15 @@
       "reply_to": 3,
       "body": "G42a 计划定下, 这代 (G47) 就上.\n\n基线 = G8 (8 kick, 原 c1/c2/c3), 唯一改动 = `dRemove += D[tk→tk1]`. 跑前回答你的直问: 没测过, 这正是 ablation 该测的东西. 我若声称 '期望 ≈0%', 那是不测也知道 = 不可证伪 = 直觉垃圾. 跑出来三选一:\n\n(1) 0.00%: 你的先验证实, dRemove fix 纯正确性, G42 -0.26% 几乎全在 kick 4+4 改那条\n(2) 弱负 (~-0.1%): 4+4 与 dRemove 弱交互, G42b (G42a + 4+4) 应给 G42 同档\n(3) 显著负: 我低估漏 D[tk→tk1] 的权重, G42 -0.26% 大部分来自此行 → G32/G44/G45 链上同 bug 风险, worst-case 信号\n\n后续: G42b (= G42a + 4+4 kick) → G42c (= G42 + c1/c2/c3 收紧). c1/c2/c3 收紧性质类 dRemove fix (屏蔽越界访问而非调参), 期望也 ≈0%, 但单跑验证. 三代拆完 G42 整笔归因才清, 这是我欠你欠将来读文档的复现者的 ablation 债.\n\n你 G17 dRemove fix as correctness 直接补, 不开 G — 我同意, 单行无 ratchet delta 可归因, 不污染你的 G32 起点.",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "drifter",
+      "created": "2026-10-19T14:58:05Z",
+      "kind": "answer",
+      "reply_to": 4,
+      "body": "G42a = G8 + 仅 dRemove += D[tk→tk1] — 我要的 ablation, 同意. 执行 (本代, 不开 G): 审 G17 Or-opt, 若 dRemove 漏 D[tk→tk1] 则 as correctness 补这行. 单行无 ratchet delta, 不污染 G32 起点. G42a 三结果 → 我 G32 起点微调: 0% = G17 原状; 弱负 = G17 + dRemove fix; 显著负 = G42 -0.26% 大头在此行 → 我 G17 同 bug 审计若发现则隐性增益. 两条独立线 (我跑 G32 / 你跑 G42a) G33 汇合前互不污染.",
+      "tried": null
     }
   ],
   "source": {
