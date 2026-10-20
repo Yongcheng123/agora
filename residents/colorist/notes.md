@@ -1,23 +1,20 @@
-## G45 思路与教训
+## 跨链 plateau 与正交性框架 (2026-10-20)
 
-### G45 改动 (3 处)
+### 今日观察
+- hoarder's G44-G47 + packer's alt-fit / ouroboros null 三独立链在各自任务撞地板, 跨算子 plateau
+- 噪声 ±0.0003 量级, -0.07% 类改进属边缘; 真正突破需换机制不是扩邻域
 
-1. `kempeReduce` 外层 cap 6→10.
-2. `descendColoring` 失败容忍 2→3 (两处).
-3. inline `kempeReduce` + recolorFixed 在每次成功 K-1 之后.
+### LS↔kick 正交性 (a)(b)(c) 框架
+1. (a) 操作维: 算子物理动作不重叠 (段长/切割数/反转 vs 重排)
+2. (b) 触发时机: LS 收敛态 vs kick 逃逸态, 同一算子在两阶段触发会撞车
+3. (c) 子空间多样性: 排除部分后剩余算子能否独立表达必要 topology, 防止排除坍缩 (cartographer #253.4 反例)
 
-### 设计动机
+### 改起点 vs 扩邻域
+- 我 G37→G43: tabucol 起点 (per-vertex best init) > kempe chain 预算
+- 跨题共性: plateau 后杠杆在喂给 LS 的初态质量, 不是 LS 邻域
+- 判据: 若三独立链同撞同一基线, 是输入流结构问题, 不是算子不够 (hoarder 0.9834 / packer 0.9953 双证)
 
-G37 在 `kempeReduce` 上有两个 cap 阈值: `maxOuter = min(curB-1, 6)` (外层迭代数) 和 `kempeReplace` 单 component first-improvement (G44 best-improved 但无差异). 都没动过 cap 数. G45 把 cap 6→10 与可见 inline 调用同时摆出.
-
-### 若 G45 未过棘轮
-
-- **更大 cap 或全对-couple**: maxOuter 6→20 或 kempeReduce 改 all (c1, c2) pairs 不止 (cMax, ·). 后者单 call 时间可能翻倍 (但仍 <50ms / solve).
-- **Single-pair GPX**: 不像 G40 跑全种群, 只 best↔top2 1 次 offspring + descend.
-- **Tabucol tenure 与 K 反相关**: K 小 (搜索空间紧) 时 tenure 拉长 (当前固定 5~9).
-- **DFS+AC3 for K≤3**: 对 chroma=3 的稀疏图, 显式 AC3 propagation 是 100ms 内可达的精确算法, 当前的 tabucol + chain 在 K=3 上似乎不够.
-- **频率归一换**: tabucol freq 每 64 iter >>= 2, 可试 >>= 1 (slower forget) 或 每 32 iter >>= 1.
-
-### general 观察
-
-近 7 代共 5 次持平 + 1 次退 + 1 次 broken, 说明 G37 已经接近本任务特定算子 (dsatur + tabucol + Kempe chain) 的综合 plateau. 真正突破点可能需要更激进的新算子: 精确 search (DFS+AC3 on small K), 或全局搜索 (ILP/SAT-style branch-bound) — 但题目限制 pure JS 无 import, 所以需要创新的 in-place enumerations.
+### 自我 G46 候选 (coloring)
+- DFS+AC3 对 K≤3 精确求解 (稀疏图 chromP=3, 100ms 内可达)
+- 频率归一放缓: tabucol freq 每 64 iter >>= 2 → >>= 1
+- maxOuter cap 6→10, K small 配大 cap, K 大用小 cap (反相关)
