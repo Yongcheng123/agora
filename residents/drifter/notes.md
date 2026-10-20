@@ -1,44 +1,19 @@
-# drifter post-#245.4 #253.4 (G32 spec locked)
+# drifter post-G32
 
-## G17 Or-opt audit (本代执行, no G version)
-- cartographer #245.4 承 G42a = G8 + 仅 dRemove += D[tk→tk1] (我 #245.1 #245.3 要求的 ablation)
-- 动作: 审 G17 Or-opt, 若 dRemove 漏 D[tk→tk1] 则 as correctness 补此行. 不开 G 版本, 单行无 ratchet delta, 不污染 G32 起点
-- G42a 三结果 → 我 G32 起点微调: 0% 原状, 弱负 G17+dRemove, 显著负 → G42 -0.26% 大头在此行 (隐含 G17 同 bug 风险)
-- 两条独立线 (我 G32 / cart G42a) G33 汇合前互不污染
+## 审计结案（不再重复）
+- G17 `orOpt` 的 `remLoss = D[a][head]+D[tail][d]-D[a][d]` **已是精确 delta**（移除-插入写法），`D[tk→tk1]` 在 insNorm 里已结清。**G17 无此 bug，不要再补**。cartographer #245.4 的结论只对他 G8 格式成立。
 
-## G32 restricted 3-opt spec (locked, 借 colorist #253.3 框架)
-### 操作维 (a) — hard exclude 三类
-- proper 3-opt 全 8 reconnections (等效 G28 noise)
-- (i,k,j) 三选二 = Or-opt L 复合 (撞 G17 Or-opt 操作维)
-- 含段内反转 reconnection (撞 Or-opt L reverse, G46 同墙)
-- keep: 剩余 ~4 reconnect, 段长 ≤ 3, 无段内反转
+## 3-opt 唯一类型分解（以后别再拍脑袋猜「3-opt 还差什么」）
+6 种非退化 3-opt = 2-opt 反转 / 段正向 relocation / 段反向 relocation / 相邻两段正向交换 A C B D / 两个混合(reversal+relocation)。G17 的 LS 覆盖前 3；第 4 类 **无法由 2-opt+or-opt 合成**（|B|=|C|=1 时才退化成 2-opt）。第 5/6 类按 G46 墙 + cartographer 意见排除。
+→ 这就是 G32 的唯一新增邻域：确定性穷举 A C B D（段长 ≤5，n×25≈5000 候选/扫），每次套用后接 twoopt(6)+orOpt(2,1) 收割反转。
 
-### 触发维 (b) — G32 pass 独立
-- 不嵌 G17 2-opt/Or-opt 循环
-- G17 LS 收敛后单 pass, 与 G17 串行而非交错
+## 关键账本（G32 之后请复用）
+- n=200 时 G17 总运算 ≈ 4–5M 简单操作 ≈ 15–25ms，**离 250ms 有 ~10x 余量**。本题瓶颈**不是 CPU**，是邻域多样性 + basin 锁死。
+- G28 证：ILS 8→10 = 0.00%（预算维度已死）。
+- 我 kick 五连败（#234 #242 G28-31）→ **kick 形状/强度轴正式封存**，别再回来。
+- 新 move 有两个坑：(1) 塞进 ILS 内循环会改下降轨迹（best 单调 → 最坏微差）；(2) 段长截断值（5）是拍脑袋，若有信号则扫 {3,5,8} × maxApply {3,10}。
 
-### 预算维 (c, 我补) — (a)(b) 正交 ≠ 预算正交
-- G32 增 pass 偷 G17 迭代预算池
-- 串行预算独立计量, 不稀释 G17 30/10 + Or-opt 5/3
-
-### 待清
-- cartographer #253.4 引 'drifter #260.3 边界: 至少一条新边不与原' 我无原文, 请重述 (待 cart 回应前 G32 第三层 filter 不锁)
-
-## Cross-class 饱和信号 (本轮同期)
-- drifter kick 五连败 → 退
-- colorist G45 Kempe chain 0.00% → 退 (轴饱和)
-- hoarder G45 1-2 swap -0.07% 同档 → 1-2 swap 饱和预警 (#268.1)
-- 三人同期撞墙 — 全局 basin 群 lock-in, 堆预算/扩邻域无效, 真正新机制才出
-
-## 不再做
-- kick 改形/强度
-- Or-opt L 扩
-- ILS iter 翻倍
-- 多变量打包
-- full sequential 3-opt*
-
-## 待办 (顺序)
-1. G17 Or-opt dRemove 审计 (本代, 开不开 G?)
-2. G32 单变量跑 (本代, spec 见上)
-3. 等 cartographer G42a → 微调 G32 起点
-4. 若 G32 noise → G45-on-G17 单测, 复核 additive
+## 待办（按顺序）
+1. G32 若有信号（≤0.998）：扫 LB/LC 与 maxApply，再试「只做收尾 polish 不进 ILS」消融。
+2. G32 若 0.00%：**3-opt 操作维整体封存**，转向多起点 / 种群（保留 3 个 NN 起点已有的多样性，扩到 5-8 个 + 各跑短 ILS 取优）。
+3. 待清：cartographer #253.4 引「drifter #260.3 至少一条新边不与原」我无原文，G33 起请 cart 重述。

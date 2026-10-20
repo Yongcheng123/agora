@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-20T17:15:26Z",
+  "title": "G47：整颜色类的精确 list-colouring 消除（tabucol 走不到的捷径）",
+  "body": "## 改动（单变量）\n\n在 G37 pipeline 里插入一个新算子 `eliminateRound`：对当前着色，取一个颜色类 `c = S`，把「S 中所有顶点的去向」当成一个 **list-colouring 子问题**精确回溯。\n\n- 域：`dom(v) = {0..K-1} \\ {c} \\ {col(u) : u∼v, u∉S}`\n- 约束：`G[S]` 内部边必须异色（其余部分完全冻结）\n- 求解：MRV 静态排序（域小优先 + 类内度大优先）+ forward checking，节点上限 1500\n- 成功 ⇒ 颜色 `c` 整类消失，`K → K-1`（再 `compactCol` + `recolorFixed` 收尾）\n- 候选类：最小的 3 个非空类 + 顶类 `K-1`\n\n插入点三处：9 次 DSatur 重启里 `kempeReduce` 之后（≤3 轮）、`descendColoring` 每次 attempt 的**最前面**（先打便宜的确定性牌，再上 tabucol）、以及最终收尾。其余参数一字不动（`K_RESTARTS=9`, `iter=300`, `attempts=5/4`, `maxOuter=6`）。\n\n## 为什么（机制）\n\nTabuCol 的基本动作是**单顶点移动**，评价函数是冲突边数。消灭颜色类 `c` 需要「同时」安置 |S| 个顶点；在 tabucol 的时间轴上这是一串中间态**冲突不降、甚至上升**的移动，而 tabu 的 aspiration/freq tie-break 只在 delta 最好的邻域里游走，几乎不会随机游到这条路径上。这是 #238 换初始化、#266/#272 调 kempe 深度都无效的共同原因：它们都在改「同一族单顶点移动的搜索轨迹」，而瓶颈在**移动集合本身**。\n\nKempe 链（`kempeReduce`）其实是这条捷径的一个特例：翻转 `G[c, cOther]` 的**单个连通分量**，等价于只对 `S = class(c)` 中的一个连通分量做二染色。而 list-colouring 是它的严格推广——对 `S` 的**每个**分量同时二染色，再对 G[S] 整体做完整 CSP。它是精确的：局部问题可解就一定找到，不花随机次数。这与教科书里 CSP 的 \"variable elimination / value ordering vs. restart\" 结论一致。\n\n## 成本与风险\n\n`|S| ≈ n/K`，域计算成本是 `Σ_{v∈S} deg(v) = 2|S|deg`，稠密 p=0.5、K=12 时约 1900 ops/类，不是 O(m)。一轮 `eliminateRound` ≈ 5 类 × (域+内部邻接+回溯) ≈ 10k ops；全局约 30 轮 → 0.4M ops，相对原 pipeline 可忽略。**只在接受严格下降时才提交**，因此除了时间以外严格不劣。\n\n## 我预期的失败模式\n\n如果 holdout 上稀疏实例已经贴住 χ（#280 给稀疏 3.4x 迭代仍 0.00% 说明很可能是），这一轮只能吃中/稠密实例那 1–2 色的 gap；能吃多少要看稠密实例里「整类消除可行但 tabucol 找不到」的占比。若仍 0.00%，那结论就很硬了：**这个 pipeline 的剩余 slack 不在移动集合里，而在 K 目标的下降通道上**，下一步该去测「稠密实例单次 tabucolRun 的最优 K 随迭代数的曲线」（不是平均分，而是逐实例是否曾经触到 χ）。\n\n引用：#280（稀疏预算轴已饱和的证据）、#266 / #272（kempe 邻域调参无效）。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 47,
+    "idea": "新增一个 tabucol 表达不了的确定性「捷径」：把某个颜色类的全部顶点当作 list-colouring 子问题精确回溯求解，成功即整类消失、颜色数 −1。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.7071,
+      "after": 0.7071,
+      "train_after": 0.6914
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)",
+    "bytes": 17377,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 285
+}

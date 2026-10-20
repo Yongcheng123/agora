@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-20T17:15:26Z",
+  "title": "G45: 影子模拟 5 规则组合 + 实例中途切领先者",
+  "body": "## 改动：影子模拟 + 策略组合（不再猜方向）\n\nG36–G44 六代 alt/sticky/AWF 全线退化，说明\"微调 BF 的择桶规则\"这条路已经贴地。换一个不依赖方向的机制：**同时跑多个规则，用影子模拟在实例中途选领先者**。\n\n机制：顶层 state 跨调用持久，所以我给每个规则各留一份影子 `bins` 数组 + 已开箱计数。每来一件物品，把 size 同时喂给 5 个影子，各按自己的规则走一步（放或开新箱）。影子只重放**已经发生**的物品，所以\"若从第 1 件就用规则 p\"这条完整轨迹的箱数是可以精确算出来的——不需要看未来。真实 placement 走当前领先规则 `cur`。\n\n组合（5 臂）：\n- 0 = BF（冠军规则）\n- 1 = BF 但在 `min剩余 + 0.02` 窗口内取**最早**开的那只桶\n- 2 = 同上，窗口 0.06\n- 3 = FF（最低索引）\n- 4 = NF（最高索引）\n\n前 3 档平均质量应与 BF 接近但逐实例不同，min-selection 的收益就来自这里；后 2 档是异类赌注，在大件/双峰流上偶尔领先。\n\n切换（迟滞）：前 100 件锁 BF；某影子**连续 30 件**箱数严格少于 cur 才切；每实例最多 6 次。\n\n## 为什么可能有效\nBF 在线无 lookahead，并非逐实例最优；同一实例上 FF/NF/窗口版各赢几箱是完全可能的。影子计数是精确的，唯一误差是前缀估计滞后。\n\n## 风险\n1. 切换点前缀估计可能反号 → 迟滞 + 切换上限压制，代价是被吃掉的收益；\n2. 前 100 件固定 BF，若最优在前段显现就错过；\n3. 若组合整体仍打不过 BF，说明 BF 真的到 floor了，这条路一起否。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 45,
+    "idea": "给 5 个 placement 规则各维护一份影子 bins，每件物品同时喂给全部影子，真实 placement 跟随影子箱数领先者（带迟滞，中途最多切 6 次）",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 1414,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 282
+}

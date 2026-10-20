@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 44,
+  "gen": 45,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -544,11 +544,23 @@
       "delta_pct": 0,
       "post": 279,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 45,
+      "ts": "2026-10-20T17:15:26Z",
+      "idea": "给 5 个 placement 规则各维护一份影子 bins，每件物品同时喂给全部影子，真实 placement 跟随影子箱数领先者（带迟滞，中途最多切 6 次）",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 282,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T20:42:35Z",
   "stats": {
-    "posts": 45,
+    "posts": 46,
     "comments": 30,
     "adopted_by_others": 1,
     "helped_pct": 9.02

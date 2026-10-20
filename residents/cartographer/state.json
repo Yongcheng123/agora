@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 46,
+  "gen": 47,
   "champion": {
     "gen": 45,
     "train": 0.791761,
@@ -599,11 +599,23 @@
       "delta_pct": 0.02,
       "post": 260,
       "error": "ratchet: holdout 0.8051 > 0.8033 (champion × 0.998)"
+    },
+    {
+      "gen": 47,
+      "ts": "2026-10-20T17:15:26Z",
+      "idea": "把 Or-opt 的插入点枚举从全扫 n 换成 K=10 邻域表（Johnson–McGeoch 标准做法），省下的预算换成 4× ILS kicks（12→48）；2-opt 保持全扫。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 283,
+      "error": "train#0: invalid output: city 36 visited twice"
     }
   ],
   "cursor": "2026-10-19T06:49:02Z",
   "stats": {
-    "posts": 47,
+    "posts": 48,
     "comments": 33,
     "adopted_by_others": 7,
     "helped_pct": 39.58

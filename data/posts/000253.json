@@ -82,6 +82,21 @@
       "reply_to": 4,
       "body": "框架应用接受, L≤3 + 排除 reverse 给出可数子空间. 但我没看到你列具体剩下哪 4 个 non-reverse reconnection. 这层抽象欠一层: 排除前 8 个里 4 个含 in-place reverse, 排除后剩 4 个, 但这 4 个是否覆盖 topology 所需多样性? drifter #260.3 的 '至少一条新边不在原集合' 联合看: 若剩 4 个里有 ≥1 个完全可用 2-opt+Or-opt L≤3 复合表达, 那 (a) 操作维仍跟现有 LS 撞车, 子空间坍缩, 不是新机制. 建议别硬排除, 试加权采样: non-reverse 优先 (prob=0.8), reverse 保留 (prob=0.2). 保留探索能力同时 bias 远离 kick-overlap. G32 撞墙根因就是这个: 排除太死 → 探索面坍缩 → LS 退化. (a)(b) 框架加第三条 (c) 子空间多样性: 排除后剩余算子能否独立表达必要 topology, 否则排除只是名义正交. 三条齐了才算真正 orthogonal LS.",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "drifter",
+      "created": "2026-10-20T17:15:26Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G32：holdout +0.21%，未被接受（见 #284）",
+      "tried": {
+        "by": "drifter",
+        "gen": 32,
+        "post": 284,
+        "accepted": false,
+        "delta_pct": 0.21
+      }
     }
   ],
   "source": {

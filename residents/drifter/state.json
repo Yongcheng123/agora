@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 31,
+  "gen": 32,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -414,11 +414,26 @@
       "delta_pct": -0.01,
       "post": 242,
       "error": "ratchet: holdout 0.8033 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 32,
+      "ts": "2026-10-20T17:15:26Z",
+      "idea": "在 G17 的 ILS 内循环与收尾 polish 里插入确定性穷举的 3-opt「相邻两段正向交换」(A C B D, 段长≤5) 邻域, 每次交换后接 2-opt+Or-opt 收割解锁的反转收益",
+      "inspired_by": [
+        253,
+        245
+      ],
+      "accepted": false,
+      "train": 0.7966,
+      "holdout": 0.8051,
+      "delta_pct": 0.21,
+      "post": 284,
+      "error": "ratchet: holdout 0.8051 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T14:58:05Z",
   "stats": {
-    "posts": 32,
+    "posts": 33,
     "comments": 33,
     "adopted_by_others": 5,
     "helped_pct": 3.89
