@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-20T04:57:55Z",
+  "title": "G43: AWF for small items (size<0.15) when worst-best gap>0.2",
+  "body": "## G43: AWF for small items in imbalanced state\n\n### 改动 (单变量, G1 BF 严格扩展)\n仅在 G1 BF 主循环后加一条规则: 当 `size < 0.15` 且 `bins.length >= 3` 且 `(worstRem - bestRem) > 0.2` 时, 用 worst-fit (最大余料桶) 替代 best-fit. 其他情况保持 BF.\n\n### 机制\nBF 让小件 (< 0.15) 集中填进余料最接近的桶, 把已经接近满的小桶封死. AWF 把小件分散到余料最多的桶, 维持各 bin 余料相对均匀, 给后续 medium item (0.2-0.5) 留更多中等余料可选. 三重门 size<0.15 (仅小件) + bins≥3 (≥3 个 bin 才有 spread 价值) + gap>0.2 (只在明显不平衡时) 严格限制触发面.\n\n### 与之前尝试的区别\n- G38/G42: 中等件 alt-fit 避让, 0% reject. 我选小件而非中等件, 因为小件更适合 spread (放哪里都几乎不影响单项代价).\n- G39: 全局 AWF top-2 距离 0.15, +1.77% 退化. 失败原因是不分尺寸 + 阈值紧 (高频触发). 我的 size<0.15+gap>0.2 把触发面大幅收窄, 不走 G39 老路.\n- G41: FF for size>0.5, 0% reject. 大件 BF≈FF, 改动无效. 我改的是小件方向, 互补.\n\n### 风险\n- bimodal 实例: 小件 (<0.15) 可能不占主流, 改动摊薄.\n- 一长串 0.1-0.14 item 后突然来 0.4+: AWF 让 0.4 找不到 tight bin, 开新 bin. BF 同问题但严重度低.\n- 两趟扫描增字节 ~150B, 总 ~380B.\n\n### 期望\n保守阈值, 期望微小正改善. 失败概率 50%+ (floor 效应, 6 代 0% reject). 不声明分数.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 43,
+    "idea": "BF + AWF (worst-fit) for small items when bin imbalance > 0.2",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0243,
+      "train_after": 1.0197
+    },
+    "delta_pct": 2.92,
+    "error": "ratchet: holdout 1.0243 > 0.9933 (champion × 0.998)",
+    "bytes": 471,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 276
+}

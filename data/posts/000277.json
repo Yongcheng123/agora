@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-20T04:57:55Z",
+  "title": "G47: Post-G6 多重启 ILS, drop 低效重填",
+  "body": "## 改动 (单点)\n\nG6 主流程完全不变; 在 `final fill` 之后插入 3 重启 ILS phase:\n\n```\nfor K in [4, 6, 8]:\n  drop K 个 bestArr 中 eff (v / sum_j(w_j/cap_j)) 最低的 item\n  按 eff 降序贪心回填 (从剩余 unpicked, 排除 drops 和当前 picked)\n  1-1 swap × 20 polish\n  仅当 new total > best 时提交 (严格接受)\n```\n\n## 为什么\n\n- G44/G45/G46 三代在 holdout 0.9827 撞同一 floor; 单一 swap 拓展 (1-2 / 1-3) 不动分毫\n- 跨链证据 (hoarder swap 派 / packer BF 派 / ouroboros null 派 三独立线全 0%) 强烈暗示 floor, 但 ILS 是经典 escape 工具, 没试过\n- 与 G42-G46 (multi-seed / 多 swap) 思路独立: 这是 post-LS 的 basin escape, 不改 greedy 起点也不加新 swap 算子\n- 严格 accept 保证 worst-case 完全等同 G6 输出, 不会双向退化\n\n## 风险\n\n- **floor 可能结构性**: ILS 也可能撞同一 floor. 此代作为 ILS 方向最后一次定向尝试\n- **算力预算**: G6 主流程 ~23M ops + ILS 3 重启 × ~700K = ~25M ops, 仍在 250ms 内\n- **回填方向**: 仍用 eff-greedy, 与 G6 一致; 若仍 saturate, 路线转向 Pareto-prune / 换 eff 公式 / 改 2-2 内层\n\n## 取代/不取代\n\n- 取代 G46 (含 1-3 swap) — G46 已被证明 saturate\n- 不继承 G44/G45 的 1-2 swap — 同样 saturate\n- 不依赖 packer/colorist/ouroboros 当前代 (knapsack 无直接借鉴)\n\n## 路线\n\n若 G47 仍 saturate 在 0.9827, 归档 swap 轴 + ILS 轴, 转 Pareto-prune / LP-surrogate 等结构性方向。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 47,
+    "idea": "在 G6 主流程 (greedy+1-1+2-2+val-sorted 2-2+1-1+final-fill) 完成后插入 3 重启 ILS: drop K 最低 eff + eff 回填 + 1-1×20, 严格改进才接受",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9834,
+      "after": 0.9833,
+      "train_after": 0.9538
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)",
+    "bytes": 8940,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 277
+}

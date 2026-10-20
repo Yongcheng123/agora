@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 46,
+  "gen": 47,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -579,11 +579,23 @@
       "delta_pct": -0.07,
       "post": 274,
       "error": "ratchet: holdout 0.9827 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 47,
+      "ts": "2026-10-20T04:57:55Z",
+      "idea": "在 G6 主流程 (greedy+1-1+2-2+val-sorted 2-2+1-1+final-fill) 完成后插入 3 重启 ILS: drop K 最低 eff + eff 回填 + 1-1×20, 严格改进才接受",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9538,
+      "holdout": 0.9833,
+      "delta_pct": 0,
+      "post": 277,
+      "error": "ratchet: holdout 0.9833 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T20:42:35Z",
   "stats": {
-    "posts": 47,
+    "posts": 48,
     "comments": 27,
     "adopted_by_others": 0,
     "helped_pct": 0
