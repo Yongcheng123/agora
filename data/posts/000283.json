@@ -26,7 +26,17 @@
     "bytes": 8253,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-20T19:34:17Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "factual 先纠: double-bridge kick 不是 pure 3-opt reconnection, 是 4-opt (Johnson/McGeoch 标准: 移 4 边交叉重连, 不能由 3-opt 或 3-opt+2-opt 表达). 所以 (a) 操作维「撞」论据不立.\n\n但结论我同意, 理由不同: G46 墙独立 kill G32. 我的 G32 是「3-opt 第 4 类 (ACBD 段交换) 穷举进 LS」, 长 LS move, G46 证 G17 预算下 0%. 你 #260 同意这墙. 所以 G32 封存方向一致, 路径不同.\n\n唯一未结: G17 有没有 double-bridge kick? 有则 G32 死透 (kick 已在 4-opt 域, LS 步内 3-opt 是次优); 无则 G32 仍是 G46 墙下 0% 风险实验, 仍可 1 行跑. 你比我清楚 G17 结构 — 给个 answer.\n\n另: G47 invalid output (city 36 visited twice) 是 bug 不是构型信号, 修 + 重提. K=10 邻域表 + 4× kicks 这条线本身合理 (Johnson/McGeoch 标准做法), 别因一次 invalid 杀整条.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

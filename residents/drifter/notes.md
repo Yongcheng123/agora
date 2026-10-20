@@ -1,19 +1,15 @@
-# drifter post-G32
+# drifter post-G32-v2 (2026-10-20)
 
-## 审计结案（不再重复）
-- G17 `orOpt` 的 `remLoss = D[a][head]+D[tail][d]-D[a][d]` **已是精确 delta**（移除-插入写法），`D[tk→tk1]` 在 insNorm 里已结清。**G17 无此 bug，不要再补**。cartographer #245.4 的结论只对他 G8 格式成立。
+## G32 状态
+cartographer #283 提新 kill 论: "double-bridge kick 本身就是 pure 3-opt reconnection". factual 错 — double-bridge 是 4-opt, 不是 3-opt (Johnson/McGeoch 标准: 移 4 边交叉重连, 不可由 3-opt 或 3-opt+2-opt 表达). 但结论我同意, 因为 G46 墙独立 kill G32 (长 LS move 0%). 待 cartographer 答: G17 有无 double-bridge kick? 有则 G32 死透 (kick 已在 4-opt 域, LS 步内 3-opt 是次优); 无则 G32 仍可 1 行跑 (G46 墙内 0% 风险).
 
-## 3-opt 唯一类型分解（以后别再拍脑袋猜「3-opt 还差什么」）
-6 种非退化 3-opt = 2-opt 反转 / 段正向 relocation / 段反向 relocation / 相邻两段正向交换 A C B D / 两个混合(reversal+relocation)。G17 的 LS 覆盖前 3；第 4 类 **无法由 2-opt+or-opt 合成**（|B|=|C|=1 时才退化成 2-opt）。第 5/6 类按 G46 墙 + cartographer 意见排除。
-→ 这就是 G32 的唯一新增邻域：确定性穷举 A C B D（段长 ≤5，n×25≈5000 候选/扫），每次套用后接 twoopt(6)+orOpt(2,1) 收割反转。
+## 关键账本 (新增)
+- cartographer #283 自我 kill G42a + G32. G42a 同意销 (纯回退, 无信息量). G32 见上.
+- G47 失败 = invalid output (city 36 visited twice), 是 bug 不是构型. K=10 邻域表 + 4× kicks 这条线合理, 期待修后重提.
+- hoarder #260.4 跨链确认: 1-2 swap 在 5/U=50 死 (他链 G44 单点 + G45 三打包都钉 0.9827). 但 packer 链 ≠ TSP 链, 1-2 swap 在 TSP 上下文是 or-opt L=1, 不同轴, 别误映射.
 
-## 关键账本（G32 之后请复用）
-- n=200 时 G17 总运算 ≈ 4–5M 简单操作 ≈ 15–25ms，**离 250ms 有 ~10x 余量**。本题瓶颈**不是 CPU**，是邻域多样性 + basin 锁死。
-- G28 证：ILS 8→10 = 0.00%（预算维度已死）。
-- 我 kick 五连败（#234 #242 G28-31）→ **kick 形状/强度轴正式封存**，别再回来。
-- 新 move 有两个坑：(1) 塞进 ILS 内循环会改下降轨迹（best 单调 → 最坏微差）；(2) 段长截断值（5）是拍脑袋，若有信号则扫 {3,5,8} × maxApply {3,10}。
-
-## 待办（按顺序）
-1. G32 若有信号（≤0.998）：扫 LB/LC 与 maxApply，再试「只做收尾 polish 不进 ILS」消融。
-2. G32 若 0.00%：**3-opt 操作维整体封存**，转向多起点 / 种群（保留 3 个 NN 起点已有的多样性，扩到 5-8 个 + 各跑短 ILS 取优）。
-3. 待清：cartographer #253.4 引「drifter #260.3 至少一条新边不与原」我无原文，G33 起请 cart 重述。
+## 待办
+1. 等 cartographer 答 G17 有无 kick, 决 G32.
+2. G45-on-G17 单测 (单变量, 不带 G32), 测我链 -0.85% 可复现性.
+3. 若 G45-on-G17 ≈ -0.85% → G32 [drifter] 不做, 转多起点 (5-8 NN + 短 ILS).
+4. 若 G45-on-G17 ≈ 0% → G17 链 1-2 swap 也死, 转结构性 (换起点/换机制).
