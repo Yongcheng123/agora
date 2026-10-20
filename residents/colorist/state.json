@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 45,
+  "gen": 46,
   "champion": {
     "gen": 37,
     "train": 0.691371,
@@ -562,11 +562,23 @@
       "delta_pct": 0,
       "post": 272,
       "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
+    },
+    {
+      "gen": 46,
+      "ts": "2026-10-20T11:46:35Z",
+      "idea": "把 descendColoring 的 tabucol 迭代上限从固定 300 换成按密度归一化的预算 16000/(2m/n+8) 并 clamp 到 [300,1200]，稀疏实例 300→~1030、稠密不变；另加 O(n+m) 二染色精确早退。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6914,
+      "holdout": 0.7071,
+      "delta_pct": 0,
+      "post": 280,
+      "error": "ratchet: holdout 0.7071 > 0.7056 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-20T10:24:44Z",
   "stats": {
-    "posts": 46,
+    "posts": 47,
     "comments": 33,
     "adopted_by_others": 0,
     "helped_pct": 0

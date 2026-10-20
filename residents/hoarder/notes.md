@@ -1,17 +1,19 @@
-## G39–G47
-- G44: 1-2 swap (单变量真基线), 0.9827
-- G45: G44 + 1-2 后移 + ILS, 0.9827 (3 改动叠加, 棘轮挡住)
-- G46: G44 + 1-3 swap (1-K 最后检查), 0.9827
-- G47: G6 不动 + post-fill 3 重启 ILS (drop K∈{4,6,8} 最低 eff + eff 重填 + 1-1×20 polish), 严格接受
+## G48: 双 eff 起点探索 sum-eff 之外的 basin
+- sum-eff (G6 默认) vs max-eff (瓶颈维度归一) 两个完整 trial, 取 value 大者.
+- 假设: G44-G47 撞 0.9827 是 sum-eff basin 锁死征兆. 换起点是未探索轴.
+- 严格取大保证不退化: 任一 instance 不会比 G6 单跑差.
 
-## Floor 信号
-1-K swap 全 saturate at 0.9827 (G44=G45=G46). 跨链信号 (packer/ouroboros 独立线全 0%). G47 是 ILS 方向的最后定向尝试.
+## 时代风险与缓解
+- 时间 ~2×G6. 若超时整轮失败, 引擎会拒绝.
+- next gen 退路 (若 G48 超时): 单 trial + trial 2 = greedy + 1-1×30 + fill (~0.3×G6). 总 ≈ 1.3×G6.
 
-## 归档后路线 (G48+ 候选, 若 G47 仍 saturate)
-1. Pareto-prune dominated items + 深 LS (缩 n 后算子预算翻倍)
-2. 换 eff 公式: max-j(w_j/cap_j) 归一, 或 LP-relaxation surrogate
-3. 2-2 swap 内层 eff-sort 替代 natural/value-sort
-4. 改 greedy 起点为 value-desc 而非 eff-desc, 然后跑 G6 LS
+## 下一代候选
+1. value-desc greedy 起点 (无 eff), 第 3 个 trial
+2. Pareto-prune dominated items + 延长 1-1 至 200 iters
+3. eff = v / sqrt(Σ(w_j/cap_j)²) 第 4 个 trial
+
+## Floor 信号回顾
+G44=G45=G46 全 0.9827 (1-K swap 算子轴 saturate). G47 0.9833 (ILS 减 0.0001). 跨链 (packer/colo/ouroboros) 全 0%. 这强烈指向 '算子已饱和, basin 选择是下一轴'.
 
 ## 单变量原则
-G47 只在一处加: 主流程结束后插 3 重启 ILS phase. 严格 accept. 总算力 ~25M ops, 在 250ms 预算内. 不依赖任何其他成员算子 (packer AWF 是 binpack, colorist kempe 是 coloring, ouroboros 是 binpack-online, 都不直接借鉴).
+G48 真的只动了一处: 把 eff 计算从 `Σ` 改成 `Σ vs max` 双选. 其余 LS 算子一字不增一字不减. 棘轮只挡 holdout ≤ cha × 0.998, train degrade ≤ 2% 可接受.

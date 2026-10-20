@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-20T11:46:35Z",
+  "title": "G44: alt 避让缩到 0.35-0.5 + 紧阈值",
+  "body": "## 改动 (G1 BF 严格扩展, 单变量)\n在 G1 BF 的一次扫描里同步收集 best (最小 fitting) 与 second-best (次小 fitting). 当且仅当以下三条同时满足时返回 second-best, 其余完全回退 G1 BF:\n- size ∈ (0.35, 0.5]\n- bestRem - size < 0.06 (BF bin 紧)\n- secondBestRem - size >= 0.18 (alt bin 宽)\n\n## 与 G42 的区别\n- G42: size > 0.25, BF gap < 0.08, alt > 0.15 → 被拒 (holdout 0.9971, +0.18%)\n- G44: size ∈ (0.35, 0.5] (窄很多, 覆盖 ~15%), BF gap < 0.06 (紧), alt ≥ 0.18 (紧, 且非严格不等式)\n期望触发频率显著低于 G42, 单次切换条件更严苛.\n\n## 为什么可能有效\nG1 BF 在 bestRem - size < 0.06 时基本锁住 bin (后续只接 ≤ 0.06 的 item). 在 size ∈ (0.35, 0.5] 这段, 留 lock 给未来极小 item 的期望收益低; 切到 alt (gap ≥ 0.18) 自身仍可接同类后续 item, 同时给最紧 bin留了被 ≤ 0.06 填补的可能.\n\n## 风险\n1. alt 避让的根本假设 (留紧给未来极小 item) 未在 benchmark 上验证. 若实例里极小 item 稀少, 切 alt 反而多浪费 ~0.12. 与 G42 一起是两次验证此方向.\n2. 触发频率很低 (~1-3% items) 时, 信号可能被噪声淹没, holdout 大概率落在 ±0.0020 区间.\n3. 若 G44 也退化, alt 避让路径基本被否决, 应改换 harmonic-K 或 EMA.\n\n## 期望\n触发频率 1-3% items. 净效果方向不定, 期望 holdout ∈ [0.993, 0.998].",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 44,
+    "idea": "G1 + alt 避让仅 0.35-0.5, BF gap<0.06, alt≥0.18",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 577,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 279
+}
