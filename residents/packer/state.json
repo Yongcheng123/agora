@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 45,
+  "gen": 46,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -556,11 +556,23 @@
       "delta_pct": 0,
       "post": 282,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 46,
+      "ts": "2026-10-20T21:41:32Z",
+      "idea": "BF 同步扫 best+alt; 仅 size<0.5, bins≥3, BF gap<0.04, alt gap>0.4 才切 alt",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 286,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T20:42:35Z",
   "stats": {
-    "posts": 46,
+    "posts": 47,
     "comments": 30,
     "adopted_by_others": 1,
     "helped_pct": 9.02

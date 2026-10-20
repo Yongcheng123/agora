@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-20T21:41:32Z",
+  "title": "G46: 极保守 alt 避让 (仅 fresh alt 才切)",
+  "body": "G42 用 alt rule 在 size>0.25 + BF gap<0.08 + alt gap>0.15 切 alt, holdout 反退 0.18% (#273)。我推测根因是 alt gap 0.15+ 不够宽: alt 桶还留半桶, 后续件未必匹配得了, 占着不关白白浪费一次 bin.\n\nG46 把 alt gap 门槛拉到 0.4 (比 G42 的 0.15 宽近 3 倍), 只在 alt 桶真的 \"fresh\" (剩余 ≫ item) 时切. 同时 BF gap 从 0.08 缩到 0.04, 让 BF 确实要 \"挤死\" 才有资格让位. bins.length ≥ 3 加进来排除早期单/双 bin 实例.\n\n期望: 比 G42 触发面窄得多, 不再普遍恶化. 触发时切到 fresh bin 一定会被未来件填 (因剩余 0.4+ 等价于整桶大半空), 把 \"半旧\" bin 留给 future 的 potential exact-match.\n\n风险:\n1. 触发太少 → tie G1 (跟 G41/G44/G45 一个下场).\n2. fresh alt 被填后, 后续 alt 的 altRem 同步收紧, 把 alt 链路全压紧, 与 G42 类似塌陷.\n3. bins≥3 + alt>0.4 双重门槛, 对很多 instance 触发面接近 0.\n\n不动: G1 BF 主循环一字不增. 无 state, 无 shadow, 无 lookahead. 真 placement 仍在传入 bins[] 上算, 非法输出风险为 0.",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 46,
+    "idea": "BF 同步扫 best+alt; 仅 size<0.5, bins≥3, BF gap<0.04, alt gap>0.4 才切 alt",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 468,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 286
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-20T21:41:32Z",
+  "title": "G48: 2-opt 等长平台接受 (<→<= 单字符)",
+  "body": "## 改动 (单变量)\n把 `runLS` 里 2-opt 的接受判据 `if (dNew < dOld)` 改成 `if (dNew <= dOld)`. 其他一切不动 (Or-opt L=1,2,3 reverse, 4+4+4 kick 族, NN 4 起点, iter 预算 30/10 与 5/3, 都保留 G45).\n\n字符级修改, 一行.\n\n## 机制假说\n欧氏 TSP 里 0-gain 2-opt move 大量存在 (4 点平行四边形就一例; 任意局部四点的两条对角线翻转常等长). 当前严格 `<` 一旦让某 pass 找不到 strict descent 就停, plateau 整片被当 \"dead end\" 丢掉. 接受等长后, pass 能在 plateau 内游走, 把\"此刻看不到的 strict descent\"踢到下一 pass 可见.\n\n类比 G45 的赢点是 \"正交且仍属 LS\" — G45 拿 reverse (动 K 形态) 赢在 -0.85%; G48 改 acceptance (不动 K 形态) 是同一 (a) 轴上的对偶方向, 试图证明这两类改动的信号来自不同物理量.\n\n## 跟 G46/G47 严格区分\n- **G46** (L=4,5 加 reverse): 加新 K 形态 → noise 拒.\n- **G47** (KNN 限域 Or-opt + 扩 kicks): 实施 bug, 失败.\n- **G48** (`<`→`<=`): 不动 K 集合, 不动算力, 只放宽容忍. 三代三轴, 不串味.\n\n## 风险\n1. 等长游走让 `improved=true` 在 plateau 上也置位, outer pass 会跑满 twoIters=30 而不是 1. 4 NN 起点 × 30 pass ≈ 比 strict 版本多 ~120 次完整 2-opt 扫, 总耗按 n=200 ~10–15 ms, 不破 250 ms 预算.\n2. holdout 信号可能 < ratchet 阈值 -0.20% (单字符改动声量本就该小). 我打 50/50.\n3. FP 误差: 平方欧氏距离是 Float64, `dNew===dOld` 在等长判定上是干净 exact 比较, 无 wobble 问题.\n\n## 失败对照 (若被拒, 按序跑的下一顺位)\n1. 同改 `<=` 挪到 Or-opt (`bestDAdd <= dRemoveBase + dEdgeBreak`). 与 G48 完全正交 (acceptance axis, 第二个算子).\n2. 升 twoIters 30→50 in NN-only, kicks 仍 10. 隔离 \"放宽容忍\" 与 \"算力\" 这两轴.\n3. 删 2 个 NN 起点 (仅留 0 + farIdx), 把省下的 CPU 换 kicks 12→20. 测 \"重启多样性 vs 起点对称\" 的 trade-off.\n4. 不走 KNN-限域 v2 (G47 出 bug, 重做不值).\n\n## 复用不动\n- G45 全部 (Or-opt reverse L=2,3, kick 族 triple-cut 4 + double-bridge 4 + segment-reverse 4, NN 4 起点 = {0, 远点, n>>1, n-1}, iter 预算 30/10 与 5/3) 一字不改.\n- 不引入 pos[], 不引入邻域表, 不引入新 move 形态.",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 48,
+    "idea": "2-opt 接受等长平台 move (`<`→`<=`), Or-opt 与 kick 族全部不动, 单字符改动",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.8049,
+      "after": 0.8049,
+      "train_after": 0.7918
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.8049 > 0.8033 (champion × 0.998)",
+    "bytes": 7052,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 287
+}

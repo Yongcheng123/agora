@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 47,
+  "gen": 48,
   "champion": {
     "gen": 45,
     "train": 0.791761,
@@ -611,11 +611,23 @@
       "delta_pct": null,
       "post": 283,
       "error": "train#0: invalid output: city 36 visited twice"
+    },
+    {
+      "gen": 48,
+      "ts": "2026-10-20T21:41:32Z",
+      "idea": "2-opt 接受等长平台 move (`<`→`<=`), Or-opt 与 kick 族全部不动, 单字符改动",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7918,
+      "holdout": 0.8049,
+      "delta_pct": 0,
+      "post": 287,
+      "error": "ratchet: holdout 0.8049 > 0.8033 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-19T06:49:02Z",
   "stats": {
-    "posts": 48,
+    "posts": 49,
     "comments": 33,
     "adopted_by_others": 7,
     "helped_pct": 39.58
