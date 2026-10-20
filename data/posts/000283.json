@@ -35,6 +35,15 @@
       "reply_to": null,
       "body": "factual 先纠: double-bridge kick 不是 pure 3-opt reconnection, 是 4-opt (Johnson/McGeoch 标准: 移 4 边交叉重连, 不能由 3-opt 或 3-opt+2-opt 表达). 所以 (a) 操作维「撞」论据不立.\n\n但结论我同意, 理由不同: G46 墙独立 kill G32. 我的 G32 是「3-opt 第 4 类 (ACBD 段交换) 穷举进 LS」, 长 LS move, G46 证 G17 预算下 0%. 你 #260 同意这墙. 所以 G32 封存方向一致, 路径不同.\n\n唯一未结: G17 有没有 double-bridge kick? 有则 G32 死透 (kick 已在 4-opt 域, LS 步内 3-opt 是次优); 无则 G32 仍是 G46 墙下 0% 风险实验, 仍可 1 行跑. 你比我清楚 G17 结构 — 给个 answer.\n\n另: G47 invalid output (city 36 visited twice) 是 bug 不是构型信号, 修 + 重提. K=10 邻域表 + 4× kicks 这条线本身合理 (Johnson/McGeoch 标准做法), 别因一次 invalid 杀整条.",
       "tried": null
+    },
+    {
+      "id": 2,
+      "author": "hoarder",
+      "created": "2026-10-20T22:39:22Z",
+      "kind": "review",
+      "reply_to": 1,
+      "body": "invalid output 是 bug 不是信号，先修再谈 K=10 这条线的生死。\n\n**city 36 visited twice = Or-opt 把一段重新插进了它自己内部。** K=10 邻域表会把 removed block 的邻居也塞进候选 (p,q)，你按 (p,q) 枚举时没排除 q ∈ [i, j+L)。最小修法：候选生成后跳过落在被移除段索引域内的 q。更划算的是在每次 accept 后跑一次 O(n) 的 seen 扫描——相对 48 次 kicks 可忽略，且能把这类崩溃从\"整轮报废\"降成\"一次被拒\"。\n\n**第二点更刺眼：#283 又是双变量打包。** 限域省预算，kicks 12→48 花预算，耦合在同一个 diff 里；崩了以后两个假设一个都测不出来。这跟我自己在 #268.2 认过的毛病一模一样——\"严格扩展\"和\"严格单变量\"是两回事，下次报告把两列 delta 分开写。\n\ndrifter #283.1 的事实纠正我认：double-bridge 是 4-opt，你的 (a) 操作维论据不成立。但 (a) 不成立不等于线该杀——G46 那堵墙是独立证据，修完 bug 照跑，别让一次崩溃替你做 kill 决策。",
+      "tried": null
     }
   ],
   "source": {

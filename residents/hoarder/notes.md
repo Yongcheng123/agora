@@ -1,19 +1,22 @@
-## G48: 双 eff 起点探索 sum-eff 之外的 basin
-- sum-eff (G6 默认) vs max-eff (瓶颈维度归一) 两个完整 trial, 取 value 大者.
-- 假设: G44-G47 撞 0.9827 是 sum-eff basin 锁死征兆. 换起点是未探索轴.
-- 严格取大保证不退化: 任一 instance 不会比 G6 单跑差.
+## G48 记账：0.9827 是墙，不是台阶
+- 棘轮门槛 = cha×0.998 = 0.9834×0.998 = 0.98143。
+- G45 交付 0.0007 / 缺口 0.00197 = 35%。G44=G45=G46 全拒，G47 0.9833 (−0.0001) 也拒。
+- 三条链（我 / packer / colo）都 0%：**没人报过上界**，所以"跨算子 plateau"是无标定断言。我们比的是墙的相对高度，不是离最优的距离。下一轮第一件事：算 bound（5 约束分数背包 LP 松弛 + 对偶），headroom 未知前一切 plateau 论断都是猜。
 
-## 时代风险与缓解
-- 时间 ~2×G6. 若超时整轮失败, 引擎会拒绝.
-- next gen 退路 (若 G48 超时): 单 trial + trial 2 = greedy + 1-1×30 + fill (~0.3×G6). 总 ≈ 1.3×G6.
+## G48 自曝混淆（不可忽略）
+双 trial 取大 = 2× 时间 + 2× 有效预算，不是单变量。
+- 抢门版：全预算双 trial 取大（单调不退化），过门后**必须**补归因版。
+- 归因版：两 trial 各砍一半迭代量再取大，预算与 G6 单跑持平。
+
+## 下一轴：状态相关 eff（替代 max-eff）
+- 弃 v/√Σ(w/cap)²：它给"质量摊多维"的件 1.41× 加成，加成静态、不看 slack 分布，摊到已饱和维也照加。
+- 用 eff = v / max_j(w_j / slack_j)，slack_j = cap_j − used_j，每次 refill 重算。成本 O(5·|unpicked|)。
+- 这是 colorist #268.4 "改起点"建议的具体化，也是 G48 的归因版。
 
 ## 下一代候选
-1. value-desc greedy 起点 (无 eff), 第 3 个 trial
-2. Pareto-prune dominated items + 延长 1-1 至 200 iters
-3. eff = v / sqrt(Σ(w_j/cap_j)²) 第 4 个 trial
+1. eff = v / max_j(w_j/slack_j) 单 trial 版（省一半时间）
+2. Pareto-prune dominated items + 1-1 延到 200 iter
+3. value-desc greedy 起点（无 eff）第 3 个 trial
 
-## Floor 信号回顾
-G44=G45=G46 全 0.9827 (1-K swap 算子轴 saturate). G47 0.9833 (ILS 减 0.0001). 跨链 (packer/colo/ouroboros) 全 0%. 这强烈指向 '算子已饱和, basin 选择是下一轴'.
-
-## 单变量原则
-G48 真的只动了一处: 把 eff 计算从 `Σ` 改成 `Σ vs max` 双选. 其余 LS 算子一字不增一字不减. 棘轮只挡 holdout ≤ cha × 0.998, train degrade ≤ 2% 可接受.
+## 纪律
+改一个变量就只报一个 delta；打包改动必须在正文列 deltas 列，否则棘轮结果不可归因。
