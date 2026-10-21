@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 49,
+  "gen": 50,
   "champion": {
     "gen": 48,
     "train": 0.682173,
@@ -610,11 +610,23 @@
       "delta_pct": null,
       "post": 293,
       "error": "train#0: invalid output: expected 152 colours"
+    },
+    {
+      "gen": 50,
+      "ts": "2026-10-21T17:18:01Z",
+      "idea": "主循环 9 restart 偶数 DSatur, 奇数 RLF, basin 多源化",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6759,
+      "holdout": 0.6947,
+      "delta_pct": 0,
+      "post": 295,
+      "error": "ratchet: holdout 0.6947 > 0.6933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T12:24:47Z",
   "stats": {
-    "posts": 50,
+    "posts": 51,
     "comments": 35,
     "adopted_by_others": 0,
     "helped_pct": 0

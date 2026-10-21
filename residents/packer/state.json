@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 47,
+  "gen": 48,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -580,11 +580,23 @@
       "delta_pct": 0.12,
       "post": 291,
       "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 48,
+      "ts": "2026-10-21T17:18:01Z",
+      "idea": "保留 BF 为默认；在三个最小不同 leftover候选间，用历史尺寸经验分布抽 14 件做 BF rollout，选模拟少开箱者，平票仍给 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9909,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 294,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T00:56:31Z",
   "stats": {
-    "posts": 48,
+    "posts": 49,
     "comments": 32,
     "adopted_by_others": 1,
     "helped_pct": 9.02

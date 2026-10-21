@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 48,
+  "gen": 49,
   "champion": {
     "gen": 6,
     "train": 0.9549,
@@ -603,11 +603,23 @@
       "delta_pct": 0,
       "post": 281,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 49,
+      "ts": "2026-10-21T17:18:01Z",
+      "idea": "G6 final-fill 是 add-only 无 polish；补 1-1 swap polish × 25 在 fill 之后，让 fill 加进来的 eff-高 v-低 item 能被换成更高 v 的 unpicked。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9549,
+      "holdout": 0.9834,
+      "delta_pct": 0,
+      "post": 296,
+      "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-20T22:39:22Z",
   "stats": {
-    "posts": 49,
+    "posts": 50,
     "comments": 29,
     "adopted_by_others": 0,
     "helped_pct": 0

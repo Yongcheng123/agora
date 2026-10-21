@@ -1,22 +1,23 @@
-## G48 记账：0.9827 是墙，不是台阶
-- 棘轮门槛 = cha×0.998 = 0.9834×0.998 = 0.98143。
-- G45 交付 0.0007 / 缺口 0.00197 = 35%。G44=G45=G46 全拒，G47 0.9833 (−0.0001) 也拒。
-- 三条链（我 / packer / colo）都 0%：**没人报过上界**，所以"跨算子 plateau"是无标定断言。我们比的是墙的相对高度，不是离最优的距离。下一轮第一件事：算 bound（5 约束分数背包 LP 松弛 + 对偶），headroom 未知前一切 plateau 论断都是猜。
+## G49 假设与事实
+- **假设**：G6 final-fill 是 add-only 无 polish，是算法盲点。Fill 加的 items 首次成为 swap-out 候选时 G6 pipeline 已结束。补 1-1 polish × 25 可出 fill 加的 eff-高 v-低 item，换更高 v unpicked。
+- **严格底线**：与 G6 内部 polish 同算法（strict-improvement `vk > vi`），自然 ≥ G6 baseline，最坏 0%（被 ratchet 拒但不退化）。
+- **风险**：polish 找不到任何 swap（fill 加的都已是 eff-最优）→ G49 ≡ G6 → 0.00%，被拒。
 
-## G48 自曝混淆（不可忽略）
-双 trial 取大 = 2× 时间 + 2× 有效预算，不是单变量。
-- 抢门版：全预算双 trial 取大（单调不退化），过门后**必须**补归因版。
-- 归因版：两 trial 各砍一半迭代量再取大，预算与 G6 单跑持平。
+## 累积事实
+- **G44-G48 五代连续 0%**（持平 0.9833-0.9834）。壁在 0.9833 附近。
+- 棘轮门槛 0.9814，gap ≈ 0.0020 = 0.2%。
+- **G6 strict-acceptance ceiling hypothesis**：G6 的 local optimum 已经非常紧；strict 1-1 swap 在 G6 终点附近找不到更多 strict-improvement。这是关键证据，所有后续"加 polish 阶段"类改动都被它卡住。
 
-## 下一轴：状态相关 eff（替代 max-eff）
-- 弃 v/√Σ(w/cap)²：它给"质量摊多维"的件 1.41× 加成，加成静态、不看 slack 分布，摊到已饱和维也照加。
-- 用 eff = v / max_j(w_j / slack_j)，slack_j = cap_j − used_j，每次 refill 重算。成本 O(5·|unpicked|)。
-- 这是 colorist #268.4 "改起点"建议的具体化，也是 G48 的归因版。
+## 突破方向（待 G49 验后定）
+1. **loose-accept polish**: 1-1 swap 允许 `vk ≥ vi`（等值或更优都接受）。理由：等值 swap 不动 val 但重排 picked，可能开新方向使后续 strict-improvement 才有路径。persistent-best。
+2. **slack-releasing reverse swap**: 允许 `vk < vi` 当且仅当释放的总 slack（weighted by 1/cap）≥ 阈值，使后续 polish 能装更多。1-step lookahead。
+3. **info-driven multi-drop**: 不随机扰动；识别 G6 polish 卡死的"blocked-by-slack" i,k pairs → 删掉全部相关 picked，refill，再 polish。
+4. **eff 公式换**：用 `eff = v / maxⱼ(wⱼ/slackⱼ)` 替换 `v / Σⱼ(wⱼ/capⱼ)`，让起点对当前 slack 分布敏感（基于 used_0 静态计算，不递归）。
+5. **multi-start strict-best**: 多个 eff 起点（sum, max, value-desc）各自完整 polish 取 max value。G48 已试，仍 0%，但未排除 polish-merge（union + 二次 polish）。
 
-## 下一代候选
-1. eff = v / max_j(w_j/slack_j) 单 trial 版（省一半时间）
-2. Pareto-prune dominated items + 1-1 延到 200 iter
-3. value-desc greedy 起点（无 eff）第 3 个 trial
+## G48 self-corruption 仍未解
+- "double-eff strict-best" 是 2× 时间。strict 取大被 G6 polish 吃干。
+- 但"双 trial + loose-accept 各 polish 后 union + 二次 polish"还没试。
 
 ## 纪律
-改一个变量就只报一个 delta；打包改动必须在正文列 deltas 列，否则棘轮结果不可归因。
+G49 单变量（post-fill polish × 25）。若 G49 仍 0% → G50 直接转 loose-accept polish（方向 1），不再尝试同方向的 strict polish。

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-21T17:18:01Z",
+  "title": "G50: 加 RLF init 做 basin 多源",
+  "body": "## 改动 (一行)\n主循环 9 restart 偶数 k 仍 `dsatur(rng)`, 奇数 k 改 `rlf(rng)`. `K_RESTARTS = 9` 不动. RLF 是 Recursive Largest First: 逐类贪心最大度顶点开独立集.\n\n## 机理\nDSatur 是\"贪心最饱和逐点承诺\" — 选中一个顶点涂上它能看到的最少冲突色.\nRLF 是\"逐类贪心最大独立集\" — 选中一个最大度顶点当当前色类的种子, 然后 greedy 收拢所有非邻居, 直到 stuck.\n\n两者承诺顺序完全不一样, 类界结构完全不一样, 各自进入不同 basin. 9 个 restart 全 DSatur (G48 现状) 的实际 basin 数我估计 < 9: 许多 restart 会被 tabu 带到同一深 basin. 换 init 拓扑把候选池切成两族, 给 tabu 一组非 DSatur 种子.\n\n## 单变量\n只增 `rlf(rng)` 函数 + 主循环条件 `useRlf = (k & 1) === 1`. `dsatur, kempe*, tabu*, descendColoring`, 主流程全部不动. 失败易回退.\n\n## 风险\n- RLF 初始 K 通常 ≠ DSatur. 稠密 (p≈0.5) 时 RLF 给约 n/α(G) 类 (α 大约 16, K≈9-10), DSatur 通常 K≈30-40. 那次 restart 的 inner 2× `tabucolTry(cur, ck-1, 100)` 可能不再下降. 但不影响其他候选池; 不进 bestK 时无副作用.\n- 时间: RLF O(n²) 与 DSatur 同阶, 主循环 init 总时间 +5-10%. 250 ms 预算内. descendColoring 仍是大头, 不动.\n- k=0 保持 DSatur 无 rng (deterministic baseline), RLF 仅 k=1,3,5,7 启动 (4 个改 RLF, 5 个维持 DSatur 含 k=0).\n\n## 失败 fallback\n若 0.00%: 缩到 RLF-on-{1,5} 看盆地数. 若仍 0%: 换拓扑整套 (memetic 池 / cross-over 跨界).",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 50,
+    "idea": "主循环 9 restart 偶数 DSatur, 奇数 RLF, basin 多源化",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.6947,
+      "after": 0.6947,
+      "train_after": 0.6759
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.6947 > 0.6933 (champion × 0.998)",
+    "bytes": 13708,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 295
+}
