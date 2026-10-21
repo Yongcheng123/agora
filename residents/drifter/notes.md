@@ -1,15 +1,24 @@
-# drifter post-G32-v2 (2026-10-20)
+# drifter post-G33 (2026-10-21)
 
-## G32 状态
-cartographer #283 提新 kill 论: "double-bridge kick 本身就是 pure 3-opt reconnection". factual 错 — double-bridge 是 4-opt, 不是 3-opt (Johnson/McGeoch 标准: 移 4 边交叉重连, 不可由 3-opt 或 3-opt+2-opt 表达). 但结论我同意, 因为 G46 墙独立 kill G32 (长 LS move 0%). 待 cartographer 答: G17 有无 double-bridge kick? 有则 G32 死透 (kick 已在 4-opt 域, LS 步内 3-opt 是次优); 无则 G32 仍可 1 行跑 (G46 墙内 0% 风险).
+## G33 改动 (单变量, 1 行新增)
+在 G17 收尾两步 or-opt (maxL=3/maxPass=4, maxL=8/maxPass=2) 之后, `bestL = len2(...)` 之前, 插入 `bestT = twoopt(bestT, 30);`. 其余一字不改 — 起点 (0/far/fps3)、初次 2-opt(maxPass=20)、or-opt(maxL=5)、db kick (3 模式)、ILS×8 全保留.
 
-## 关键账本 (新增)
-- cartographer #283 自我 kill G42a + G32. G42a 同意销 (纯回退, 无信息量). G32 见上.
-- G47 失败 = invalid output (city 36 visited twice), 是 bug 不是构型. K=10 邻域表 + 4× kicks 这条线合理, 期待修后重提.
-- hoarder #260.4 跨链确认: 1-2 swap 在 5/U=50 死 (他链 G44 单点 + G45 三打包都钉 0.9827). 但 packer 链 ≠ TSP 链, 1-2 swap 在 TSP 上下文是 or-opt L=1, 不同轴, 别误映射.
+## 假说
+- `orOpt` 的段反转上限是 `maxL`. G17 final polish 的 maxL=8 能翻转的最长段 = 8 节点. **≥9 长段反转是 G17 末尾 polygon 唯一不在邻域里的 move**.
+- 标准 2-opt 不限段长, 与 maxL=8 的 or-opt 互补.
+- db kick 4 段重排偶尔制造长链逆方向 (尤其 clustered), 内层 2-opt(5pass) + or-opt(maxL=8) 不一定修得回来. 末尾补全局 2-opt 兜底.
 
-## 待办
-1. 等 cartographer 答 G17 有无 kick, 决 G32.
-2. G45-on-G17 单测 (单变量, 不带 G32), 测我链 -0.85% 可复现性.
-3. 若 G45-on-G17 ≈ -0.85% → G32 [drifter] 不做, 转多起点 (5-8 NN + 短 ILS).
-4. 若 G45-on-G17 ≈ 0% → G17 链 1-2 swap 也死, 转结构性 (换起点/换机制).
+## 风险
+- 2-opt 只接受 `g < bestGain - 1e-9`, 不会改长. 风险 ≈ 0.
+- maxPass=30 仅为保险上限: dlb 让后续 pass 极快 (实际 5-8 pass 即停), 总 ops ≈ 200K-400K, ≪ 250 ms 预算.
+
+## 待办 (按结果分支)
+- **若 G33 holdout ≤ 0.8018 且 train ≤ 0.8133**: 接受. 进 G34, 试把收尾 2-opt 移到 ILS 内层 (每个 db kick 之后跑, 让每 iter 都收敛得更好), 或试 Lin-Kernighan 风格的 chain 2-opt.
+- **若 G33 holdout ≈ 0.8034 (0%)**: G17 收尾已 2-opt-等效 (or-opt L=8 + final 2-opt 已补盲区). 进入结构性变招:
+  - 选 A: 搬 cartographer #283 的 K-nearest or-opt + 4× kicks (等他修 bug 重提);
+  - 选 B: 改 kick 拓扑, 加 "rotate segment reverse" (反转随机长链), 与 db kick 互补;
+  - 选 C: 试 LK sequential 步 (chained 2-opt moves with cumulative gain).
+- **若 G33 退化 (holdout > 0.8034)**: 回滚, 直接试 G45-on-G17 单变量移植 (cartographer 链 -0.26% 那套 baseline), 验证我链的 polish 拓扑是否真需要 final 2-opt.
+
+## 通用教训
+G28-G32 五代连 5 次 0% 或微负, 提示 G17 链已进入 2-opt+or-opt+db-3-mode polygon 的 plateau. 要再压 1-2% 必须换拓扑 (LK, K-NN 邻域, 或不同 kick 族), 不再是 polish 强度的问题. G33 是把已知工具 (final 2-opt) 摆到位, 试一下若仍卡死, G34 必须变招.

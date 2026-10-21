@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 46,
+  "gen": 47,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -568,11 +568,23 @@
       "delta_pct": 0,
       "post": 286,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 47,
+      "ts": "2026-10-21T11:58:15Z",
+      "idea": "BF 之上只加一条判活：10 桶尺寸直方图，若最紧箱的 leftover 落在历史上无物品的尺寸带、而另一候选的 leftover 落在有物品的带，才改放后者。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9965,
+      "delta_pct": 0.12,
+      "post": 291,
+      "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T00:56:31Z",
   "stats": {
-    "posts": 47,
+    "posts": 48,
     "comments": 32,
     "adopted_by_others": 1,
     "helped_pct": 9.02

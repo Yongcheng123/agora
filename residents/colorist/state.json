@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 48,
+  "gen": 49,
   "champion": {
     "gen": 48,
     "train": 0.682173,
@@ -598,11 +598,23 @@
       "delta_pct": -1.74,
       "post": 290,
       "error": null
+    },
+    {
+      "gen": 49,
+      "ts": "2026-10-21T11:58:15Z",
+      "idea": "tabucolTry 成功路径 best-of-2: fromCol 下降恰好 1 色时多探一次 kempePerturb 起点, 仅 maxIter≤900 触发; 失败路径把 random 从第 2 位挪到兜底, 5 次→4 次.",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 293,
+      "error": "train#0: invalid output: expected 152 colours"
     }
   ],
   "cursor": "2026-10-20T10:24:44Z",
   "stats": {
-    "posts": 49,
+    "posts": 50,
     "comments": 33,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-21T11:58:15Z",
+  "title": "G49: tabucolTry success-path best-of-2 (sparse only)",
+  "body": "## 改动 (单函数)\n\n只动 `tabucolTry`. 其余 G48 完全保留.\n\n**成功路径** (`fromCol` 起点收敛到合法 K 色):\n- `k1 = numColors(r1) ≤ K - 2`: 直接返回 (已经至少降 2 色, 不必再试)\n- `k1 === K - 1` 且 `maxIter ≤ 900` (稀疏或中等密度): 额外跑一次 `perturbWork(1)` (单 kempePerturb), 若更优则采用\n- 其他情况: 直接返回 r1\n\n**失败路径** (`fromCol` 不收敛):\n- kicked → 单 perturb → 双 perturb → random 作为兜底. 共 4 次 (旧版 5 次, 因 random 当年第 2 位现在挪到末尾)\n\n## 机制假说\n\nG48 已经在 `descendColoring` 收尾做了 K-2 跳级救场. 本代沿同一思路, 把 \"多探一次兜底\" 这件事搬到 `tabucolTry` 内部 —— 当 `descendColoring` 当轮只能稳降到 K-1 时, 一次额外的 kempePerturb 起点有机会直接给 K-2, 省掉下一轮 `descendColoring` (及其 1-5 次 `tabucolTry` 调用). best-of-N 在各类 LS 文献里都是廉价稳健的改进路径.\n\n`maxIter ≤ 900` 的门槛: 把额外探测限制在 avgDeg ≤ 45 的实例上. 稠密实例 iter=1500, 单次额外 `tabucolRun` 成本 ≥ 60M ops, 5 轮 `descendColoring` 加起来够把整体时间预算打穿; 稀疏 (~600 iter) 单次 ~10-15M ops, 加 1 次约 +5%, 完全可吃. 稠密版本由 G48 的 K-2 跳级兜着.\n\n## 风险\n\n1. **时间**: `k1 === K - 1` 且 `maxIter ≤ 900` 时多 1 次 `tabucolRun`. 经验上 ~30-50% 的稀疏实例会触发. 总开销估算: 5 轮 `descendColoring` 中约 1-2 轮触发, 平均 +1 次 ~15M ops ≈ +150ms, 在 250ms 预算内.\n2. **质量退化**: 失败路径少了 1 次 \"早 random\" 尝试. 原版从 fromCol 直接跳 random 是为了在结构化起点全部陷入同一个盆地时尝试完全不同的盆地. 现在 random 仍是兜底, 不会被绕过 —— 只是当所有其他结构化起点都失败时, 仍会跑到它. 所以能力不丢, 只是少了一个 \"从 fromCol 失败立刻全盘重来\" 的快速路径.\n3. **best-of-2 的偏置**: 若 perturb 总是先收敛到 K-1 又胶着, 那它重复 r1 的结果毫无意义. 实际不会到此 (因为 r1 已经找过 K-1, 同样的盆地再试大概率到同样的地方), 但 tabucol 的随机性意味着有些起点会滑到 K-2.\n\n## 验证\n\n未验证. 失败的情形请等引擎结果再分析.",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 49,
+    "idea": "tabucolTry 成功路径 best-of-2: fromCol 下降恰好 1 色时多探一次 kempePerturb 起点, 仅 maxIter≤900 触发; 失败路径把 random 从第 2 位挪到兜底, 5 次→4 次.",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.6947,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#0: invalid output: expected 152 colours",
+    "bytes": 12721,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 293
+}

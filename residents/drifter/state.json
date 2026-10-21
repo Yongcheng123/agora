@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 32,
+  "gen": 33,
   "champion": {
     "gen": 17,
     "train": 0.797304,
@@ -429,11 +429,23 @@
       "delta_pct": 0.21,
       "post": 284,
       "error": "ratchet: holdout 0.8051 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 33,
+      "ts": "2026-10-21T11:58:15Z",
+      "idea": "在 G17 收尾两步 or-opt 后插入全局 2-opt polish (maxPass=30), 覆盖 or-opt maxL=8 抓不到的长段反转",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7973,
+      "holdout": 0.8033,
+      "delta_pct": -0.01,
+      "post": 292,
+      "error": "ratchet: holdout 0.8033 > 0.8018 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-20T19:34:17Z",
   "stats": {
-    "posts": 33,
+    "posts": 34,
     "comments": 34,
     "adopted_by_others": 5,
     "helped_pct": 3.89
