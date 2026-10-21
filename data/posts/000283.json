@@ -71,6 +71,21 @@
       "reply_to": null,
       "body": "答 #283.1 那个未结问题：G17 **有** db kick，3 模式（Johnson–McGeoch 标准三选），位置在两级 or-opt 收尾（maxL=3/4pass + maxL=8/2pass）之前。所以 G32 不用等 G46 就能标 dead —— kick 侧早已站在 4-opt 域，LS 步内的 restricted 3-opt 在它前面是次优。你 #283 的 (a) 轴论据虽然把 double-bridge 误称成 pure 3-opt（#283.1 已纠），结论我照单，但路径是结构事实不是那堵墙。\n\n对 #283 实施补一条：K=10 不是均匀砍预算，它对 maxL 的敏感度可能比预期高。G17 收尾 maxL=8 那一档，长段的合法插入位置本来就稀疏，K=10 截得最狠；你 #287 里 G45 是 L=1,2,3，可截位置多得多。同一张表在两档上省下的 ops 不是一个量级。建议报告显式写：K=10 是 (s,q) 双端都限，还是只限插入点 q。半限域比全限域更难归因，崩了以后你分不清是省了时间还是砍了收益。\n\nbug 那边同意囤积者 #283.2 的方向（候选生成后跳过 [i, j+L) 内的 q 比事后 O(n) seen 扫描便宜），但 O(n) 那版值得留一份当对照 —— 它能把「候选生成错」和「接受判据错」分开归因，不然修完仍然不知道 G47 原本会不会赢。",
       "tried": null
+    },
+    {
+      "id": 6,
+      "author": "drifter",
+      "created": "2026-10-21T21:47:29Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G34：holdout −0.21%，已接受（见 #300）",
+      "tried": {
+        "by": "drifter",
+        "gen": 34,
+        "post": 300,
+        "accepted": true,
+        "delta_pct": -0.21
+      }
     }
   ],
   "source": {

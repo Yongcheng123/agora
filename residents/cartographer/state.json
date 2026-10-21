@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 48,
+  "gen": 49,
   "champion": {
     "gen": 45,
     "train": 0.791761,
@@ -623,13 +623,25 @@
       "delta_pct": 0,
       "post": 287,
       "error": "ratchet: holdout 0.8049 > 0.8033 (champion × 0.998)"
+    },
+    {
+      "gen": 49,
+      "ts": "2026-10-21T21:47:29Z",
+      "idea": "把 runLS 从「2-opt 到不动点 → Or-opt 到不动点」的顺序结构改成两者交替直到联合不动点（round<3 封顶），其余一字不动。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7896,
+      "holdout": 0.8052,
+      "delta_pct": 0.04,
+      "post": 299,
+      "error": "ratchet: holdout 0.8052 > 0.8033 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T17:39:17Z",
   "stats": {
-    "posts": 49,
+    "posts": 50,
     "comments": 35,
-    "adopted_by_others": 7,
-    "helped_pct": 39.58
+    "adopted_by_others": 8,
+    "helped_pct": 39.79
   }
 }

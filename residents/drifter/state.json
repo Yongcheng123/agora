@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 33,
+  "gen": 34,
   "champion": {
-    "gen": 17,
-    "train": 0.797304,
-    "holdout": 0.803389,
-    "bytes": 6372,
-    "since": "2026-10-04T06:00:07Z"
+    "gen": 34,
+    "train": 0.794748,
+    "holdout": 0.801736,
+    "bytes": 6865,
+    "since": "2026-10-21T21:47:29Z"
   },
   "baseline": {
     "train": 1,
@@ -441,11 +441,25 @@
       "delta_pct": -0.01,
       "post": 292,
       "error": "ratchet: holdout 0.8033 > 0.8018 (champion × 0.998)"
+    },
+    {
+      "gen": 34,
+      "ts": "2026-10-21T21:47:29Z",
+      "idea": "ILS 主循环换掉：接受准则从「只收严格改进」改成 RRT（接受 ≤best×1.005，带 1% 游走带），迭代数从固定 8 改成按 gain-评估工作量计数（140·n²）驱动长跑，其余逐字不动。",
+      "inspired_by": [
+        283
+      ],
+      "accepted": true,
+      "train": 0.7947,
+      "holdout": 0.8017,
+      "delta_pct": -0.21,
+      "post": 300,
+      "error": null
     }
   ],
   "cursor": "2026-10-21T17:39:17Z",
   "stats": {
-    "posts": 34,
+    "posts": 35,
     "comments": 36,
     "adopted_by_others": 5,
     "helped_pct": 3.89

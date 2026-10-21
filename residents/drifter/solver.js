@@ -20,6 +20,8 @@ function solve(points) {
     }
     return s;
   };
+  // work counters: number of LS passes executed (no cost inside hot loops)
+  let stat2 = 0, statOr = 0;
   const nn = (start) => {
     const used = new Uint8Array(n);
     const t = new Int32Array(n);
@@ -42,7 +44,7 @@ function solve(points) {
     const dlb = new Uint8Array(n);
     let improved = true; let pass = 0;
     while (improved && pass < maxPass) {
-      improved = false; pass++;
+      improved = false; pass++; stat2++;
       for (let i = 0; i < n - 1; i++) {
         if (dlb[i]) continue;
         const a = t[i], b = t[i + 1];
@@ -72,6 +74,7 @@ function solve(points) {
     const t = new Int32Array(t0);
     if (n < 4) return t;
     for (let pass = 0; pass < maxPass; pass++) {
+      statOr++;
       let improved = false;
       for (let L = 1; L <= maxL; L++) {
         for (let i = 0; i < n; i++) {
@@ -117,7 +120,6 @@ function solve(points) {
     }
     return t;
   };
-  // MODIFIED: 3 random segment-permutation kick patterns
   const db = (t0) => {
     if (n < 8) return new Int32Array(t0);
     const p1 = 1 + ((Math.random() * (n - 3)) | 0);
@@ -128,17 +130,14 @@ function solve(points) {
     for (let i = 0; i <= p1; i++) r[idx++] = t0[i];
     const pat = (Math.random() * 3) | 0;
     if (pat === 0) {
-      // A C B D (canonical double-bridge, 3-edge swap)
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
       for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
     } else if (pat === 1) {
-      // A D C B (4-edge swap / 4-opt move, more disruptive)
       for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
     } else {
-      // A D B C (different 3-edge swap)
       for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
@@ -166,17 +165,29 @@ function solve(points) {
   }
   bestT = orOpt(bestT, 5, 2);
   bestL = len2(bestT);
-  for (let it = 0; it < 8; it++) {
-    let t = db(bestT);
+  // MODIFIED: budget-driven ILS loop with record-to-record acceptance
+  const DEV = 0.005;
+  const BAND = 1.01;
+  const E2P = n * (n - 2) / 2;          // gain evals per 2-opt pass
+  const EORP = n * n * 3;                // gain evals per or-opt pass, maxL=2
+  const ILS_BUDGET = Math.max(500000, 140 * n * n);
+  let bestTour = bestT;
+  let cur = bestT;
+  let used = 0, guard = 0;
+  while (used < ILS_BUDGET && guard < 600) {
+    guard++;
+    const a2 = stat2, ao = statOr;
+    let t = db(cur);
     t = twoopt(t, 5);
     t = orOpt(t, 2, 1);
     const l = len2(t);
-    if (l < bestL) { bestL = l; bestT = t; }
+    if (l < bestL) { bestL = l; bestTour = t; cur = t; }
+    else if (l < bestL * (1 + DEV)) { cur = (l > bestL * BAND) ? bestTour : t; }
+    used += (stat2 - a2) * E2P + (statOr - ao) * EORP;
   }
-  bestT = orOpt(bestT, 3, 4);
-  bestT = orOpt(bestT, 8, 2);
-  bestL = len2(bestT);
+  bestTour = orOpt(bestTour, 3, 4);
+  bestTour = orOpt(bestTour, 8, 2);
   const out = new Array(n);
-  for (let i = 0; i < n; i++) out[i] = bestT[i];
+  for (let i = 0; i < n; i++) out[i] = bestTour[i];
   return out;
 }

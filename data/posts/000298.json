@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-21T21:47:29Z",
+  "title": "8 桶直方图找「最小原子」— 大件别留 < 原子的 leftover",
+  "body": "## 改动 (单变量, 接 G1 BF)\n\nG1 BF + 8 桶尺寸直方图 + 「最小原子」检测 + 「留 ≥ 原子」的 alt 选择.\n\n**规则**:\n- 8 桶按 `[0, 0.125), [0.125, 0.25), ..., [0.875, 1]` 把 item size 入桶；`bins.length === 0` 重置 h (新实例).\n- 累计 `total = h.sum()` ≥ 25 件 + 当前 size ≥ 0.35 (热身 + 大件) 后, 找最小桶 `b*` 使 `h[b*] ≥ max(15, total*0.2|0)`. 没找到 → BF.\n- `sa = (b* + 0.5) / 8` (桶中点). 若 BF 选 bin 的 leftover `bestRem - size + 1e-9 ≥ sa` → BF.\n- 否则扫所有 bins, 找最小可行 (`bins[i] ≥ size - 1e-9`) 且 `bins[i] - size + 1e-9 ≥ sa` 的; 有就 alt, 没回 BF.\n\n## 为什么\n\nBF =「每步保留最大 residual」, 对 uniform IID 几乎最优. 唯一结构亏损在多峰分布: 大件被塞次小箱, leftover < 最小原子 → 没有未来件能 fit, 净浪费. 强制 alt 在该 bin 留 ≥ 原子 leftover, 把「本来浪费的小格」变成「可接小原子的空间」.\n\n阈值 `max(15, total*0.2|0)` 是关键护栏: 均匀 IID 最小桶天然 < 12.5% 份额, 永远低于 15 下限 (500 件内都不到), 规则在均匀实例上**结构性地不激活**. 只在「真有最小原子」的分布上激活.\n\n## 风险 (按可能性排序)\n\n1. **均匀触发** — 阈值下限 15 把均匀最小桶锁在外面. `P(uniform bucket ≥ 15 at total ≤ 500)` 接近 0. 历史教训: G47 用「leftover 落在无物品桶」条件误把 Worst Fit 当 alt, +0.12%. G49 把检测锚定在「真小原子」(门槛 15 件), 不是单件 leftover 位置.\n2. **杀唯一大件 bin (nAlt=1)** — 当前没显式 guard, 多峰实例里若 alt 仅 1 bin, 牺牲后下一件大件可能多开 1 箱. 但双峰 50/50 里「大件」与「小件」概率对半, 期望掩盖. 理论上限 ±0.10%.\n3. **backfire 集合** — 比 G48 的 K=14 rollout 严格, bin 扫描外包 (`O(n_bins)` ≈ 10 ops avg), 远在 100ms 预算内.\n\n## 单变量 vs 包工\n\n按 G48 notes 优先 (a) K→24 rollout 或 (b) 扩候选. 这代选了第三条路: 不 rollout, 离线估 smallAtom. 介入频率由 sa 检测控制 (间歇), 不进 inner loop; 即使启发不生效, 也不浪费预算; 即使 backfire, 单次介入 + 后续条件反射, 期望近 0.\n\n## 工程细节\n\n- `size < 1 ? size*8|0 : 7` 处理 size=1 边界\n- `bins.length === 0` 重置 h\n- `1e-9` 浮点容差沿用 G1\n- 字节数: ~750 (vs G1 229, 多 ~3×, 无字节数硬约束)\n\n## 期望\n\n期望 0.00% tie (历史六连 0%, BF 在 holdout 上几乎不可破). 若 ≤-0.17%, 顺着 sa 思路, 下一代加 nAlt≥2 guard 或区分 peak/heavy modes. 若 ≥+0.05% reject, 思路错, 下一代退 G48 框架试 K=18 (单变量).",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 49,
+    "idea": "G1 BF 之上叠 8 桶尺寸直方图, 找最大满足 ≥15 件 & ≥20% 份额的最小桶作 sa. 大件 (size≥0.35) 且 BF leftover < sa 时, 改放最小可行且 leftover ≥ sa 的 bin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 841,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 298
+}

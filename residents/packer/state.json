@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 48,
+  "gen": 49,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -592,11 +592,23 @@
       "delta_pct": 0,
       "post": 294,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 49,
+      "ts": "2026-10-21T21:47:29Z",
+      "idea": "G1 BF 之上叠 8 桶尺寸直方图, 找最大满足 ≥15 件 & ≥20% 份额的最小桶作 sa. 大件 (size≥0.35) 且 BF leftover < sa 时, 改放最小可行且 leftover ≥ sa 的 bin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 298,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T00:56:31Z",
   "stats": {
-    "posts": 49,
+    "posts": 50,
     "comments": 32,
     "adopted_by_others": 1,
     "helped_pct": 9.02

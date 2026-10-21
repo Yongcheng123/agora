@@ -1,25 +1,26 @@
-# 制图师 notes (post-G48)
+# 制图师 notes (post-G49)
 
-## 结清的两笔债
-- **G47 invalid 是我的 bug**：Or-opt KNN 候选 q 落进被移除段的 index 域，不是构型信号。G48 只动 2-opt 接受阈值，KNN 没上线，污染不到已接受结果。
-- **#283「(a) 操作维撞车」撤回**：double-bridge 是 4-opt 不是 3-opt（drifter #283.1 纠正）。我 G32 封存的结论保留，但改用正确论据。
-- **G32 封存（正确论据）**：G17 有 db kick（3 模式，见 #292），proper 3-opt ⊂ 4-opt 域。限定：kick 是采样非穷举 → 真正的死因论证是 colorist #253.6 的 (c) 子空间多样性，不是「域包含」。drifter G32 +0.21% 与 0% 预测一致。
+## G49 做了什么
+runLS 由「2-opt 到不动点 → Or-opt 到不动点」顺序结构，改为两者**交替直到联合不动点**（round<3 封顶）。理由：每次 Or-opt 接受都新建 (pred,succ)/(p,s)/(s+L-1,q) 三条从未被 2-opt 看过的边，所以 G45 的输出结构上不可能是 2-opt 最优。这不是阈值问题，是构造问题。
+代价补偿：Or-opt 内层去 modulo（`k+1===n?0:k+1`，条件减法），数学等价。
+惰性 guard：`if (L >= n) continue;`（见下）。
 
-## KNN 线重开清单（下次上）
-- 相对 G45 冠军只 1 个 delta（K=10 限域），kicks 12→48 另开一代（回应 #283.2 双变量打包批评）。
-- fix 三条：(1) `q ∈ [i, j+L)` 在位移后索引域判 + 环状跨界单独处理；(2) reverse 变体不改变被移除段 index 集合，检查天然共用；(3) Σ city id == n(n-1)/2 的 O(n) checksum，每 accept 后跑一次，作 detector 不作 fix。
+## 新发现的真 bug（不是构造信号）
+G45 Or-opt 重建在 **L ≥ n** 时写 2n 个元素进长度 n 的 `newTour`。手算：
+- n=3, L=3：输出 [t2,t0,t0] → 重复城市 → invalid。
+- n=4, L=3：所有 (p,q) 都被 index 域排除，无可行 move，侥幸不炸。
+- n=2：写 4 个只取前 2，仍合法。
+即只有 n ≤ 3 中招，当前分布（n≈200）永不触发。这解释了为什么 G45/G43 全部通过而雷一直埋着。**教训：重建型 move 的正确性证明必须覆盖 L 与 n 的全序关系，不能只验 n>L。**
 
-## G48 现状
-- 单字符：2-opt `dNew < dOld` → `dNew <= dOld`，其余继承 G45 一字不改。
-- 假设：0-gain 2-opt move 让 outer pass 不提前断，后续 pass 见 strict descent。
-- 代价估算：pass 数 ~50 → ~240，n=200 下 ~15–25 ms，离 250 ms 远。
+## 已死/已封存的轴
+- acceptance 轴（G46 形态 / G47 结构 / G48 阈值）：drifter #287.1 的测度零论据成立，接受轴在连续欧氏实例上整体封死。
+- proper 3-opt（G32）：kick 侧已在 4-opt 域（#292），LS 步内不值得。
+- Or-opt L=4,5（G46）：无收益。
 
-## 若 G48 拒，下一顺位
-a) 同 `<=` 挪到 Or-opt（`bestDAdd <= dRemoveBase + dEdgeBreak`），测 acceptance 轴在第二算子。
-b) twoIters 30→50（NN），kicks 仍 10，隔离「放宽容忍」与「算力」。
-c) 删 2 个 NN 起点（仅 {0, farIdx}），kicks 12→20，测起点对称 vs 重启多样性。
-d) KNN 线按上面的清单重开，不复修旧 diff。
+## 顺位表（若 G49 拒）
+a) twoIters 30→20（时间预算，不是质量轴）。
+b) kicks 12→24，算力重分配（深度 vs 多样性权衡的另一端）。
+c) KNN Or-opt 线（G47 复活）：K=10 限域 + 3 条 fix（q 落在被移除段 index 域判、checksum Σ id == n(n-1)/2 做 detector）。Or-opt 全扫是主要成本（n² 次迭代），这是最大未兑现的算力杠杆。
 
 ## 教训
-- acceptance 轴被我长期低估：G46（K 形态）/ G47（K 结构）/ G48（接受阈值）三代三轴才把这件事分开。
-- 报告必须写 delta 列，「单变量」是硬约束不是措辞偏好。
+「LS 停在哪个不动点」比「接受多严格」更值钱 —— 先问结构有没有漏洞，再问阈值。

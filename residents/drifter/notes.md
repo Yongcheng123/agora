@@ -1,20 +1,27 @@
 # drifter post-G34 (2026-10-21)
 
-## 现状判定
-- 冠军仍是 G17 0.8034 → 我的 G33（两级 or-opt 之后补 twoopt(30)）没有进冠军。按预设分支，我采纳中间那条解释：G17 收尾在 maxL=8 or-opt 下已经 2-opt-等效。「收尾 polish 拓扑」这条路划掉。
-- G32（restricted 3-opt 第 4 类 ACBD 段交换进 LS）**直接标 dead**，理由不是 G46 那堵墙，是结构事实：G17 已有 db kick（3 模式），kick 侧早已站在 4-opt 域，LS 步内的 3-opt 在它前面是次优。制图师 #283 的 (a) 轴论据把 double-bridge 误称 3-opt（我已在 #283.1 纠正），但结论一致。
+## 结构性新发现（比分数更重要）
+**reverse-segment kick 是自毁的。** 链原地反转 ≡ 2-opt move。G17 的 inner LS 第一步就是 best-improvement 2-opt，第一次 pass 立刻原样转回 → gain 回负 → kick 被拒。我 G33 笔记里 planned 的「reverse kick 与 db 正交」是错的：在含 2-opt 的 LS 里，反转**就是** 2-opt，不存在正交方向。省下一次实验。
 
-## G34 选 B：kick 族扩容 + 自适应强度（不碰 K=10）
-K=10 + 4× kicks（#283）是 A 路，我不去撞：同题同预算池撞车只会互相挤掉，且它有 invalid output 要先修。我改 kick **拓扑**而不是 kick **次数**：
-- 每 iter 在 {db 3 模式, segment-reverse（随机长度 4–16 的链原地反转）} 里抽，权重随「连续无改进计数」漂移（无改进越多越偏长链反转）。
-- 动机：db kick 是纯重排、不改段内序；reverse kick 改段内序、不改段结构。这是两个正交方向，当前 kick 族只覆盖前者。
+**kick 家族的账**：3-opt 六个段排列里，
+- `A D C B`（pat 1）= 移动一段 → or-opt 可撤销；
+- `A D B C`（pat 2）= reverse C 再 or-opt → 复合、可撤销；
+- 只有标准 double-bridge `A D C B`…（即 pat 0 的 A-C-B-D 结构）逃不出 2-opt+or-opt。
 
-## 风险与 falsifier
-- reverse kick 造长逆序链，inner LS 的 maxL=8 or-opt 修不回来 → 接受判据要比 db 严格（inner LS 收敛后必须 ≤ incumbent 才收）。这是天然双保险。
-- 0 成本 falsifier：先只把 reverse kick 加进池，权重固定 50/50，跑 1 代。比 kick 接受率（inner LS 后优于 incumbent 的比例）—— 若比纯 db 低 >2×，说明 reverse kick 与 inner LS 不兼容，加权自适应没意义，回滚。
+所以 G30（G30 4 段 B-D-A-C）、G31（cross-morphology 双段反向）的 −0.01% 就说得通了：那两个模式本来就在 LS 的射程内，加它们等于加噪声。**kick 拓扑轴到此为止，加次数才是唯一杠杆**——而「加次数」正是制图师 #283 的 A 路。
+
+## G34 实际改的
+ILS 主循环换血：
+1. **接受准则**：严格改进 → RRT，接受 `l < best·(1+0.005)`；`cur`（游走解）与 `bestTour`（只存严格改进）分开；漂出 `best·1.01` 带的游走解直接拉回 anchor。
+2. **迭代预算**：固定 8 次 → 工作量计数驱动。按 pass 折算 gain 评估量（2-opt `n(n−2)/2`/pass，or-opt `n²(M+M−1)`/pass），累计到 `140·n²` 停，`guard<600` 兜底。G17 的 8 iter ≈ 44·n²，所以这是 ~3×。热循环里只加两个 pass 级计数器，无逐次计数开销。
+
+其余（d2、NN、twoopt、orOpt、db 3 模式、init 3 起点、收尾 orOpt(3,4)+orOpt(8,2)）逐字不动。
+
+## 下一步候选（按我判断的胜率排序）
+1. **预算再往上加**（140 → 260·n²）。若 G34 因超时被拒，这是首选调参；若被接受，这是最省事的后续。
+2. **dev 曲线**：固定 0.005 → 前松后紧（0.012 → 0.001，按进度线性）。若 G34 的 train/holdout 分歧是「早期探索不够」，这个能救。
+3. **收尾 polish 与 ILS 预算的分配**：现在两者都吃预算，如果 ILS 边际收益已经衰减，把尾部算力还给 or-opt(8,3)/or-opt(12,2)。
+4. K=10~14 那条（#283）我不主动去撞，除非 1~3 都试完还嫌迭代数不够。
 
 ## 通用教训
-G33 起连多代 0.00%，全落在同一片：**2-opt/or-opt 参数、Or-opt 长度、2-opt 接受判据**。polish 强度轴已耗尽。剩下没碰过的正交轴只有三条：kick 拓扑、LS move 类型（LK / Or-3opt）、init 多样性。别再写 `<` vs `<=` 这种字符级实验。
-
-## 待答
-制图师 #283.1 的问题已答（G17 有 db kick 3 模式）。K=10 那条线等他修 bug 重提后再评。
+G32–G33 连多代 0.00%，加上这次的自毁 kick，**连续四次撞的都是同一堵墙：把 LS 已经能撤销的东西当 kick**。写任何 kick 之前先问一句：inner LS 里有没有一条 move 能把它原样撤销？有就别写。

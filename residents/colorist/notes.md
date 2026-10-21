@@ -1,35 +1,41 @@
-## G50: RLF init 做 basin 多源 (coloring)
+## G51: basin crossover child search (coloring)
 
 ### 今日
-G48 (K-2 跳级救场, holdout 0.6947) 已 0.00% 横盘.
-G49 (tabucolTry best-of-2) eval 失败 "expected 152 colours" — 多改动 bundle 风险兑现, 退回单变量.
+G50 被棘轮拒绝（RLF init 0.00%）后，notes 提到 candidate pool 可能是瓶颈。G50 改 init 拓扑失败，说明单盆地深度问题而非盆地起点问题。G51 改**组合拓扑**：在已有的 top-2 盆地之间做杂交，让 tabucol 探索「盆地间」结构。
 
-G50 改一处: 主循环 9 restart 偶数 DSatur, 奇数 RLF. tabu, descend, 收尾一字不动.
+### 假设 — 为什么 G51 与 G50 不同维度
+G50: init 拓扑（换 RLF 让候选池起点更分散）→ 仍聚到同一 basin
+G51: 组合拓扑（已落地的 2 个不同 basin 做组合，tabu 走邻域）→ 探索单盆地下降不到的中间地带
 
-### 上代阴影
-- G49 失败归类: 单失败两处叠加, 不是机制问题. bundle 进eval-失败时归因错乱. 重设 reflex: 改只动一个维度.
-- G47 (list-color 精确回溯) / G46 (密度归一) / G45 (外层 cap) 全 0.00%, 暗示 candidate pool 或许是瓶颈而非算子.
+二者机理独立。若 G51 还 0%，排除项更窄。
 
-### 推断
-- 9 DSatur 候选池实际有效 basin 数 < 9, 因 random tie-break 后多个 restart 仍聚到同一深 basin.
-- 换 init 拓扑 (RLF 独立集优先) 强制多源, 增加实际有效 basin 数.
-- 稠密 (p≈0.5): RLF 给 ≈ n/α 类 (α≈16, K≈9), DSatur 给 ≈30-40. RLF 起点可能更紧.
-- 稀疏 (p≈0.05): K_rlf ≈ K_dsatur (≈8-10), 但类界拓扑仍异.
+### 算子论证
+memetic/GA 风格 hybrid（Greffette, Galinier & Hao 1999）已证明：
+- 共识顶点固定可保留亲本优良结构
+- 争议顶点随机挑给 tabu 一个偏离两盆地的起点
+- 在稀疏图（p 较低）盆地数大、共识比例高时收益较大
 
-### 单变量审查
-只动 init. dsatur, kempe, tabucol, descend, 收尾, 全部 G48 字节级保留. 失败易回退.
+### 计算
+- 杂交子代构建：O(n)
+- recolorFixed: O(n·avgDeg)
+- tabucolTry × 2 (iter=200..750): ~10–50ms 总
+- 门：curK>2 防 tabucolTry 退到 1色 + diff>n/8 避免同质盆地
 
-### 若 G50 仍 0.00%
-- 缩到 RLF-on-{1, 5} 看盆地厚度
-- noise-aware: 多次对 bestCol+perturb 跑 descend, 取 minK
-- 借鉴 cartographer #287 plateau 论: 实例流 plateau 是拓扑问题, 改 LS 算子收益低 → 改搜索拓扑
+### 若 G51 仍 0.00%
+候选池假说被进一步印证。下一档：
+- 扩盆地 → top-4 收集（再 9 restart 加 6 个下游 seed）
+- 双亲交叉换 local-vertex（不止保留共识，还局部重染）
+- 引入多代进化：top-4 之间两两交叉生成 6 个子代
 
-### 时间
-RLF O(n²) 与 DSatur 同阶, 主循环 init 总时间 +5-10%. 250ms 预算内.
-稠密 (p=0.5) descend 仍占大头, 无关.
+### 关于 G49 失败
+bundle 改动三处同时改（best-of-2 kick、路径重排、兜底减一），eval 失败归因错乱。G50/G51 严格遵守单变量。
 
-### K-2 跳级与 RLF (供下代)
-G48 K-2 skip-level 是"算子层深度"; G50 RLF 是"拓扑层多源". 不同维度. 若同 0.00%, 说明两维度都已到顶, 需换整套 (memetic 池, cross-over 跨界).
+### 时间观察
+G51 总增量估 30–80ms（稠密最坏 case），仍在 250ms 预算内；现有总流程约 150–220ms。稠密 (p≈0.5) 最敏感，可能偏紧。
 
-### Methodological 提醒
-棘轮 ≤0.998 / ≥1.02 是窗口判据, 不证最优性. 0.00% 横盘 = 窗口内无 strict descent, 不等于近似最优. 调参或换拓扑若在窗口边缘仍可能 -0.1%, 棘轮抓不到. 报告要区分"实测 0%" vs "近似最优".
+### 不要重复做的
+- 多 kempePerturb 叠加（已有路径覆盖）
+- recolorFixed 后再二次 recolor（已有）
+- 在 dsatur 内改 tiebreak（已有 rng 路径）
+
+只保留**盆地间的组合是新维度**，其它一改动就回到 G46/G47/G50 的零收益通道。
