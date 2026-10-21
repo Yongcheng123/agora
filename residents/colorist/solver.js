@@ -1,11 +1,16 @@
 function solve(n, edges) {
   const adj = [];
   for (let i = 0; i < n; i++) adj.push([]);
-  for (const [u, v] of edges) {
-    adj[u].push(v); adj[v].push(u);
-  }
+  for (const [u, v] of edges) { adj[u].push(v); adj[v].push(u); }
   const deg = new Int32Array(n);
   for (let v = 0; v < n; v++) deg[v] = adj[v].length;
+
+  // === G48: density-adaptive iter budget (invert G46's direction) ===
+  const avgDeg = 2 * edges.length / n;
+  function densityIter() {
+    return Math.max(300, Math.min(1500, Math.round(30 + 20 * avgDeg)));
+  }
+  const iterDensity = densityIter();
 
   function dsatur(rng) {
     const col = new Int32Array(n).fill(-1);
@@ -36,10 +41,7 @@ function solve(n, edges) {
       inRem[b] = 0;
       const cm = 1 << c;
       for (const u of adj[b]) {
-        if (inRem[u] && !(mask[u] & cm)) {
-          mask[u] |= cm;
-          sat[u]++;
-        }
+        if (inRem[u] && !(mask[u] & cm)) { mask[u] |= cm; sat[u]++; }
       }
     }
     return col;
@@ -92,8 +94,7 @@ function solve(n, edges) {
             comp.push(v);
             for (const u of adj[v]) {
               if (!visited[u] && (work[u] === cMax || work[u] === cOther)) {
-                visited[u] = 1;
-                queue[qe++] = u;
+                visited[u] = 1; queue[qe++] = u;
               }
             }
           }
@@ -130,9 +131,7 @@ function solve(n, edges) {
     const clsSize = new Int32Array(K);
     for (let v = 0; v < n; v++) clsSize[work[v]]++;
     let cA = 0;
-    for (let c = 1; c < K; c++) {
-      if (clsSize[c] > clsSize[cA]) cA = c;
-    }
+    for (let c = 1; c < K; c++) if (clsSize[c] > clsSize[cA]) cA = c;
     if (clsSize[cA] < 2) return;
     let cB = -1;
     let safety = 0;
@@ -161,8 +160,7 @@ function solve(n, edges) {
       for (let i = 0; i < al.length; i++) {
         const u = al[i];
         if (!inComp[u] && (work[u] === cA || work[u] === cB)) {
-          inComp[u] = 1;
-          queue[qe++] = u;
+          inComp[u] = 1; queue[qe++] = u;
         }
       }
     }
@@ -220,13 +218,8 @@ function solve(n, edges) {
             ties++;
             const curF = freq[v * K + c];
             const bestF = freq[bestV * K + bestC];
-            if (curF < bestF) {
-              bestV = v;
-              bestC = c;
-            } else if (curF === bestF && Math.random() * ties < 1) {
-              bestV = v;
-              bestC = c;
-            }
+            if (curF < bestF) { bestV = v; bestC = c; }
+            else if (curF === bestF && Math.random() * ties < 1) { bestV = v; bestC = c; }
           }
         }
       }
@@ -266,19 +259,13 @@ function solve(n, edges) {
     const ec = new Int32Array(K);
     for (let v = 0; v < n; v++) {
       if (col[v] >= K) {
-        for (const u of adj[v]) {
-          if (col[u] < K) ec[col[u]]++;
-        }
+        for (const u of adj[v]) if (col[u] < K) ec[col[u]]++;
       }
     }
     let bestI = 0;
-    for (let i = 1; i < K; i++) {
-      if (ec[i] < ec[bestI]) bestI = i;
-    }
+    for (let i = 1; i < K; i++) if (ec[i] < ec[bestI]) bestI = i;
     let work = new Int32Array(n);
-    for (let v = 0; v < n; v++) {
-      work[v] = col[v] >= K ? bestI : col[v];
-    }
+    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
     let r = tabucolRun(work, K, maxIter);
     if (r) return r;
     work = new Int32Array(n);
@@ -286,9 +273,7 @@ function solve(n, edges) {
     r = tabucolRun(work, K, maxIter);
     if (r) return r;
     work = new Int32Array(n);
-    for (let v = 0; v < n; v++) {
-      work[v] = col[v] >= K ? bestI : col[v];
-    }
+    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
     const cf = new Int32Array(n);
     for (let v = 0; v < n; v++) {
       for (const u of adj[v]) if (work[u] === work[v]) cf[v]++;
@@ -297,73 +282,22 @@ function solve(n, edges) {
     const ids = new Int32Array(n);
     for (let v = 0; v < n; v++) ids[v] = v;
     ids.sort((a, b) => cf[b] - cf[a]);
-    for (let i = 0; i < N_KICK; i++) {
-      work[ids[i]] = (Math.random() * K) | 0;
-    }
+    for (let i = 0; i < N_KICK; i++) work[ids[i]] = (Math.random() * K) | 0;
     r = tabucolRun(work, K, maxIter);
     if (r) return r;
     work = new Int32Array(n);
-    for (let v = 0; v < n; v++) {
-      work[v] = col[v] >= K ? bestI : col[v];
-    }
+    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
     kempePerturb(work, K);
     r = tabucolRun(work, K, maxIter);
     if (r) return r;
     work = new Int32Array(n);
-    for (let v = 0; v < n; v++) {
-      work[v] = col[v] >= K ? bestI : col[v];
-    }
+    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
     kempePerturb(work, K);
     kempePerturb(work, K);
     return tabucolRun(work, K, maxIter);
   }
 
-  // === G37: track top-2 distinct basins from restarts ===
-  const K_RESTARTS = 9;
-  let bestCol = null;
-  let bestK = Infinity;
-  let top2Col = null;
-  let top2K = Infinity;
-  for (let k = 0; k < K_RESTARTS; k++) {
-    const rng = k === 0 ? null : Math.random;
-    const col = dsatur(rng);
-    recolorFixed(col);
-    let cur = kempeReduce(col);
-    recolorFixed(cur);
-    let ck = numColors(cur);
-    for (let attempt = 0; attempt < 2 && ck > 2; attempt++) {
-      const reduced = tabucolTry(cur, ck - 1, 100);
-      if (!reduced) break;
-      recolorFixed(reduced);
-      const ck2 = numColors(reduced);
-      if (ck2 >= ck) break;
-      cur = reduced;
-      ck = ck2;
-    }
-    if (ck < bestK) {
-      top2Col = bestCol;
-      top2K = bestK;
-      bestCol = new Int32Array(cur);
-      bestK = ck;
-    } else if (ck < top2K) {
-      top2Col = new Int32Array(cur);
-      top2K = ck;
-    }
-  }
-
-  // Diversity gate: top2 must be in a different basin than best
-  let useTop2 = false;
-  if (top2Col && top2K <= bestK + 1) {
-    if (top2K > bestK) {
-      useTop2 = true;
-    } else {
-      let diff = 0;
-      for (let v = 0; v < n; v++) if (top2Col[v] !== bestCol[v]) diff++;
-      if (diff > (n >> 2)) useTop2 = true;
-    }
-  }
-
-  // === G37: multi-baseline descent with basin hopping ===
+  // === G48: descendColoring with skip-level Hail Mary when regular descent stalls ===
   function descendColoring(startCol, startK, attempts, iter) {
     let cur = new Int32Array(startCol);
     let curK = startK;
@@ -386,39 +320,93 @@ function solve(n, edges) {
         if (fails >= 2) break;
       }
     }
+    // G48 ADD: skip-level — if regular descent gave up while curK high, try K-2
+    if (fails >= 2 && curK >= 5) {
+      const target = curK - 2;
+      const reduced = tabucolTry(cur, target, iter);
+      if (reduced) {
+        recolorFixed(reduced);
+        const newK = numColors(reduced);
+        if (newK < curK) {
+          cur = reduced;
+          curK = newK;
+        }
+      }
+    }
     return {col: cur, k: curK};
   }
 
-  const r1 = descendColoring(bestCol, bestK, 5, 300);
-  let cur = r1.col;
-  let curK = r1.k;
-
-  if (useTop2) {
-    const r2 = descendColoring(top2Col, top2K, 4, 300);
-    if (r2.k < curK) {
-      cur = r2.col;
-      curK = r2.k;
+  // === G37 main search: track top-2 distinct basins from restarts ===
+  const K_RESTARTS = 9;
+  let bestCol = null, bestK = Infinity, top2Col = null, top2K = Infinity;
+  for (let k = 0; k < K_RESTARTS; k++) {
+    const rng = k === 0 ? null : Math.random;
+    const col = dsatur(rng);
+    recolorFixed(col);
+    let cur = kempeReduce(col);
+    recolorFixed(cur);
+    let ck = numColors(cur);
+    for (let attempt = 0; attempt < 2 && ck > 2; attempt++) {
+      const reduced = tabucolTry(cur, ck - 1, 100);
+      if (!reduced) break;
+      recolorFixed(reduced);
+      const ck2 = numColors(reduced);
+      if (ck2 >= ck) break;
+      cur = reduced;
+      ck = ck2;
+    }
+    if (ck < bestK) {
+      top2Col = bestCol; top2K = bestK;
+      bestCol = new Int32Array(cur); bestK = ck;
+    } else if (ck < top2K) {
+      top2Col = new Int32Array(cur); top2K = ck;
     }
   }
 
-  // Final kempe reduce + extra deep tabucol for small K (preserved from G27)
+  let useTop2 = false;
+  if (top2Col && top2K <= bestK + 1) {
+    if (top2K > bestK) {
+      useTop2 = true;
+    } else {
+      let diff = 0;
+      for (let v = 0; v < n; v++) if (top2Col[v] !== bestCol[v]) diff++;
+      if (diff > (n >> 2)) useTop2 = true;
+    }
+  }
+
+  // === G48: density-adaptive iter replaces fixed 300 ===
+  const r1 = descendColoring(bestCol, bestK, 5, iterDensity);
+  let cur = r1.col, curK = r1.k;
+
+  if (useTop2) {
+    const r2 = descendColoring(top2Col, top2K, 4, iterDensity);
+    if (r2.k < curK) { cur = r2.col; curK = r2.k; }
+  }
+
+  // === Final kempe reduce + extra deep tabucol for small K ===
   const kemped = kempeReduce(cur);
   recolorFixed(kemped);
   const finalK = numColors(kemped);
-  if (finalK < curK) {
-    cur = kemped;
-    curK = finalK;
-  }
-  if (curK > 2 && curK <= 8) {
-    const reduced = tabucolTry(cur, curK - 1, 400);
-    if (reduced) {
+  if (finalK < curK) { cur = kemped; curK = finalK; }
+  if (curK <= 5 && curK >= 3) {
+    const iterDeep = Math.max(iterDensity, 800);
+    for (let round = 0; round < 3; round++) {
+      const reduced = tabucolTry(cur, curK - 1, iterDeep);
+      if (!reduced) break;
       recolorFixed(reduced);
       const newK = numColors(reduced);
-      if (newK < curK) {
-        cur = reduced;
-        curK = newK;
-      }
+      if (newK >= curK) break;
+      cur = reduced; curK = newK;
     }
   }
-  return Array.from(cur);
+
+  // Compact colors to contiguous integers before return
+  const colors = new Array(n);
+  const cmap = new Map();
+  let nextC = 0;
+  for (let v = 0; v < n; v++) {
+    if (!cmap.has(cur[v])) cmap.set(cur[v], nextC++);
+    colors[v] = cmap.get(cur[v]);
+  }
+  return colors;
 }
