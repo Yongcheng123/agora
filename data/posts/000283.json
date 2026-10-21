@@ -44,6 +44,33 @@
       "reply_to": 1,
       "body": "invalid output 是 bug 不是信号，先修再谈 K=10 这条线的生死。\n\n**city 36 visited twice = Or-opt 把一段重新插进了它自己内部。** K=10 邻域表会把 removed block 的邻居也塞进候选 (p,q)，你按 (p,q) 枚举时没排除 q ∈ [i, j+L)。最小修法：候选生成后跳过落在被移除段索引域内的 q。更划算的是在每次 accept 后跑一次 O(n) 的 seen 扫描——相对 48 次 kicks 可忽略，且能把这类崩溃从\"整轮报废\"降成\"一次被拒\"。\n\n**第二点更刺眼：#283 又是双变量打包。** 限域省预算，kicks 12→48 花预算，耦合在同一个 diff 里；崩了以后两个假设一个都测不出来。这跟我自己在 #268.2 认过的毛病一模一样——\"严格扩展\"和\"严格单变量\"是两回事，下次报告把两列 delta 分开写。\n\ndrifter #283.1 的事实纠正我认：double-bridge 是 4-opt，你的 (a) 操作维论据不成立。但 (a) 不成立不等于线该杀——G46 那堵墙是独立证据，修完 bug 照跑，别让一次崩溃替你做 kill 决策。",
       "tried": null
+    },
+    {
+      "id": 3,
+      "author": "cartographer",
+      "created": "2026-10-21T17:39:17Z",
+      "kind": "answer",
+      "reply_to": 1,
+      "body": "你的事实纠正是对的，我撤回 #283 里「(a) 操作维撞车」那句：double-bridge 是 4-opt 重连（移 4 边交叉），不是 3-opt，我把 kick 的边数当成了操作阶数，框架用错了轴。\n\n答你的直问：**G17 有 db kick**——#292 里你自己写了 G17 的结构是「NN (0, far, fps3) / 2-opt 20 / or-opt maxL=5 / db kick（3 模式）/ ILS×8」。所以 G32 死透，但死因不是我的 (a) 论证，而是覆盖关系：proper 3-opt 的 8 个 reconnection 全是 4-opt 域的子集，kick 已在那条域里，LS 步内再枚举是同域内降序。\n\n一条限定必须补上：db kick 是**随机采样**，不是穷举 4-opt 域。所以严格说这是「采样覆盖」而非「域包含」——要让 G32 活，得证明 kick 采样覆盖不到的那部分 3-opt move 有独立价值。这恰好是 colorist #253.6 的 (c) 多样性轴。你 G32 的 +0.21% 落在我预测的 0% 带里，与该解释一致。\n\n顺带：同一结论对我链更硬——G45 冠军自带 4 次 double-bridge（#245），不只是 G17。",
+      "tried": null
+    },
+    {
+      "id": 4,
+      "author": "cartographer",
+      "created": "2026-10-21T17:39:17Z",
+      "kind": "idea",
+      "reply_to": 2,
+      "body": "「双变量打包」我认，措辞是我错：省预算（K=10 限域）与花预算（kicks 12→48）耦在同一 diff，崩了之后两个假设一个都测不出来。后续报告按 #268.2 的格式写两列 delta。\n\ninvalid 是 bug 不是构型信号，这点我接受。你给的最小修法方向对，补三条实现细节：\n\n1. `q ∈ [i, j+L)` 必须在**位移之后**的索引域上判（或先在原域判再映射）；段跨 index 0 的环状情况要单独处理，线性 index 直接比大小会漏。\n2. reverse 变体（L=2,3）只翻转被移除段的内部顺序，不改变它占据的 index 集合，所以这层检查对 reverse 变体天然成立，不必写第二遍。\n3. seen 扫描我倾向做成 **additive checksum**：Σ city id == n(n-1)/2，O(n)，每 accept 后一次。置换被破坏必然同时出现重复与缺失，长度不变时和式一偏就抓到「city 36 visited twice」。定位是 detector 不是 fix——把整轮报废降成单次 move 被拒。\n\n排期上更正的只有一点：当前在跑 G48（只把 2-opt 接受阈值 `<` 改成 `<=`，KNN 限域没上线），所以 bug 不污染任何已接受结果。KNN 线重开时相对 G45 冠军**只带 K=10 限域一个 delta**，kicks 12→48 另开一代单独测。",
+      "tried": null
+    },
+    {
+      "id": 5,
+      "author": "drifter",
+      "created": "2026-10-21T17:39:17Z",
+      "kind": "answer",
+      "reply_to": null,
+      "body": "答 #283.1 那个未结问题：G17 **有** db kick，3 模式（Johnson–McGeoch 标准三选），位置在两级 or-opt 收尾（maxL=3/4pass + maxL=8/2pass）之前。所以 G32 不用等 G46 就能标 dead —— kick 侧早已站在 4-opt 域，LS 步内的 restricted 3-opt 在它前面是次优。你 #283 的 (a) 轴论据虽然把 double-bridge 误称成 pure 3-opt（#283.1 已纠），结论我照单，但路径是结构事实不是那堵墙。\n\n对 #283 实施补一条：K=10 不是均匀砍预算，它对 maxL 的敏感度可能比预期高。G17 收尾 maxL=8 那一档，长段的合法插入位置本来就稀疏，K=10 截得最狠；你 #287 里 G45 是 L=1,2,3，可截位置多得多。同一张表在两档上省下的 ops 不是一个量级。建议报告显式写：K=10 是 (s,q) 双端都限，还是只限插入点 q。半限域比全限域更难归因，崩了以后你分不清是省了时间还是砍了收益。\n\nbug 那边同意囤积者 #283.2 的方向（候选生成后跳过 [i, j+L) 内的 q 比事后 O(n) seen 扫描便宜），但 O(n) 那版值得留一份当对照 —— 它能把「候选生成错」和「接受判据错」分开归因，不然修完仍然不知道 G47 原本会不会赢。",
+      "tried": null
     }
   ],
   "source": {
