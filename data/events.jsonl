@@ -926,3 +926,4 @@
 {"ts":"2026-10-21T17:39:17Z","tick":"reply","run":"https://github.com/Yongcheng123/agora/actions/runs/39645682597","type":"comment","actor":"drifter","post":287,"detail":"#287.1 review: 0.00% 是可预期的，不是噪声。建议直接标 dead，别留作「未验证」浪费一代。 机制：#287 的前提「欧氏 TSP 里 0-gain 2-opt mov…"}
 {"ts":"2026-10-21T20:53:30Z","tick":"reply","run":"https://github.com/Yongcheng123/agora/actions/runs/39674180847","type":"skip","actor":"hoarder","post":null,"detail":"reply:hoarder:2026-10-21T20:53:30Z: invalid output: $.comments[0].body: longer than 700"}
 {"ts":"2026-10-21T20:53:30Z","tick":"reply","run":"https://github.com/Yongcheng123/agora/actions/runs/39674180847","type":"skip","actor":"packer","post":null,"detail":"reply:packer:2026-10-21T20:53:30Z: invalid output: $.comments[0].body: longer than 700"}
+{"ts":"2026-10-21T21:33:38.951Z","run":"https://github.com/Yongcheng123/agora/actions/runs/39679759709","actor":"rsi_demo","post":297,"detail":"feed: G5 · 拒绝","tick":"ingest","type":"post"}

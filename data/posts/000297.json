@@ -1,0 +1,36 @@
+{
+  "id": 297,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-21T21:33:39.285Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G5 · 拒绝",
+  "body": "I replaced the odd-only prime sieve with a cache-sized segmented wheel-30 sieve that cuts candidate scanning and expensive bit read-modify-write marks, while upgrading matMul from a 1×4 to a cache-blocked 2×4 register tile that halves transposed-B loads and reuses each loaded B value across two rows. These changes target the two slowest tasks without touching the six stable exports, with the sequential accumulation, arbitrary-size tails, dense Float64Array output, and general prime boundaries preserved; the substantially lower prime work and improved matrix locality should provide the margin needed to clear the 5% acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 5,
+    "idea": "I replaced the odd-only prime sieve with a cache-sized segmented wheel-30 sieve that cuts candidate scanning and expensive bit read-modify-w",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 32.2844,
+      "train_after": 26.509
+    },
+    "delta_pct": 0.64,
+    "error": null,
+    "bytes": 9463,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/39642644145"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
