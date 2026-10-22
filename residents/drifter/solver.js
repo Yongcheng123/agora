@@ -69,7 +69,6 @@ function solve(points) {
     }
     return t;
   };
-  // MODIFIED: duplicated tour array T2 = t ++ t removes every % from the inner loop
   const orOpt = (t0, maxL, maxPass) => {
     const t = new Int32Array(t0);
     if (n < 4) return t;
@@ -120,6 +119,7 @@ function solve(points) {
     }
     return t;
   };
+  // G36: 5 double-bridge permutations (was 3) — adds A B D C and A C D B
   const db = (t0) => {
     if (n < 8) return new Int32Array(t0);
     const p1 = 1 + ((Math.random() * (n - 3)) | 0);
@@ -128,7 +128,7 @@ function solve(points) {
     const r = new Int32Array(n);
     let idx = 0;
     for (let i = 0; i <= p1; i++) r[idx++] = t0[i];
-    const pat = (Math.random() * 3) | 0;
+    const pat = (Math.random() * 5) | 0;
     if (pat === 0) {
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
@@ -137,10 +137,18 @@ function solve(points) {
       for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
-    } else {
+    } else if (pat === 2) {
       for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
       for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
       for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+    } else if (pat === 3) {
+      for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
+      for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
+      for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+    } else {
+      for (let i = p2 + 1; i <= p3; i++) r[idx++] = t0[i];
+      for (let i = p3 + 1; i < n; i++) r[idx++] = t0[i];
+      for (let i = p1 + 1; i <= p2; i++) r[idx++] = t0[i];
     }
     return r;
   };
@@ -165,7 +173,6 @@ function solve(points) {
   }
   bestT = orOpt(bestT, 5, 2);
   bestL = len2(bestT);
-  // MODIFIED: budget 140*n^2 -> 2000*n^2, wall-clock safety valve, annealed deviation
   const DEV_HI = 0.015, DEV_LO = 0.001;
   const E2P = n * (n - 2) / 2;
   const EORP = n * n * 3;

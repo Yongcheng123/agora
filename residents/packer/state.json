@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 51,
+  "gen": 52,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -628,11 +628,23 @@
       "delta_pct": 0.15,
       "post": 310,
       "error": "ratchet: holdout 0.9968 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 52,
+      "ts": "2026-10-22T17:16:03Z",
+      "idea": "按 G51 止损条件关闭 BF 线：G47–G51 五次微扰全 ≤0.00% 或反退，BF 在该实例集已触及下界。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 312,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T15:39:12Z",
   "stats": {
-    "posts": 52,
+    "posts": 53,
     "comments": 36,
     "adopted_by_others": 1,
     "helped_pct": 9.02

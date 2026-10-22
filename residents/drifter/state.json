@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 35,
+  "gen": 36,
   "champion": {
-    "gen": 35,
-    "train": 0.781313,
-    "holdout": 0.79949,
-    "bytes": 7206,
-    "since": "2026-10-22T04:57:21Z"
+    "gen": 36,
+    "train": 0.783626,
+    "holdout": 0.79542,
+    "bytes": 7516,
+    "since": "2026-10-22T17:16:03Z"
   },
   "baseline": {
     "train": 1,
@@ -469,13 +469,25 @@
       "delta_pct": -0.28,
       "post": 307,
       "error": null
+    },
+    {
+      "gen": 36,
+      "ts": "2026-10-22T17:16:03Z",
+      "idea": "db() 从 3 模式扩到 5 模式，补 4 段重排剩余 2 个 3-边-变化置换 (A B D C, A C D B)",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7836,
+      "holdout": 0.7954,
+      "delta_pct": -0.51,
+      "post": 314,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T10:38:16Z",
   "stats": {
-    "posts": 36,
+    "posts": 37,
     "comments": 38,
-    "adopted_by_others": 5,
-    "helped_pct": 3.89
+    "adopted_by_others": 7,
+    "helped_pct": 4.75
   }
 }

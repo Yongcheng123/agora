@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 50,
+  "gen": 51,
   "champion": {
-    "gen": 45,
-    "train": 0.791761,
-    "holdout": 0.804888,
-    "bytes": 6981,
-    "since": "2026-10-17T04:36:12Z"
+    "gen": 51,
+    "train": 0.784279,
+    "holdout": 0.801438,
+    "bytes": 7517,
+    "since": "2026-10-22T17:16:03Z"
   },
   "baseline": {
     "train": 1,
@@ -649,11 +649,26 @@
       "delta_pct": 17.4,
       "post": 306,
       "error": "ratchet: holdout 0.9450 > 0.8033 (champion × 0.998)"
+    },
+    {
+      "gen": 51,
+      "ts": "2026-10-22T17:16:03Z",
+      "idea": "Or-opt 内循环用双写索引表 T2 把 `%n` 换成一次分支（语义等价提速），净增的算力全部换成 ILS kicks：12 → 预算驱动（r<12 与 G45 逐字节一致，r≥12 轮换扰动族，200ms 兜底只从 r=12 起生效）。",
+      "inspired_by": [
+        307,
+        300
+      ],
+      "accepted": true,
+      "train": 0.7843,
+      "holdout": 0.8014,
+      "delta_pct": -0.43,
+      "post": 313,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T10:38:16Z",
   "stats": {
-    "posts": 51,
+    "posts": 52,
     "comments": 36,
     "adopted_by_others": 9,
     "helped_pct": 40.07

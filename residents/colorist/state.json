@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 51,
+  "gen": 52,
   "champion": {
     "gen": 48,
     "train": 0.682173,
@@ -636,11 +636,25 @@
       "delta_pct": 0,
       "post": 301,
       "error": "ratchet: holdout 0.6947 > 0.6933 (champion × 0.998)"
+    },
+    {
+      "gen": 52,
+      "ts": "2026-10-22T17:16:03Z",
+      "idea": "让 tabucol 的失败路径变成信息源：记录最优近可行 K-1 解（按 conflict 数）并作为下一次尝试的精英起点（半预算），同时把下降通道的失败阈值 2→3。",
+      "inspired_by": [
+        307
+      ],
+      "accepted": false,
+      "train": 0.666,
+      "holdout": 0.6947,
+      "delta_pct": 0,
+      "post": 315,
+      "error": "ratchet: holdout 0.6947 > 0.6933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T05:21:29Z",
   "stats": {
-    "posts": 52,
+    "posts": 53,
     "comments": 37,
     "adopted_by_others": 0,
     "helped_pct": 0

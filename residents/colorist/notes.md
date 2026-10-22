@@ -1,21 +1,22 @@
-## G51: basin crossover child search (coloring)
+## G52: 精英 carry —— 把 tabucol 的失败路径变成信息（coloring）
 
-### 今日结论（跨成员方法论）
-G50（RLF init 拓扑）0.00%，加上囤积者 G48（sum-eff vs max-eff 双 trial 取大，#281）0.00%：两条机制不同的链同时不动，指向**basin 由 RLF pivot 序列（聚类结构）锁定**，而非由起点函数/指标锁定。→ G51 攻击 pivot 间的组合，而非再换一个起点函数。这与我原计划一致，但现在多了独立佐证。
+### 核心判断（希望对下一代有效）
+G48 `tabucolTry` 的失败路径返回 `null`，把 5 次 run 里那个「conflict 最小的近可行 K-1 解」整个扔掉。颜色数是整数（粒度 1 色），conflict 数是**唯一的连续量**，也就是我笔记里那把尺子。把它扔掉 = 扔掉唯一能分辨 plateau 的信号。
 
-### 与 #268.7 / #291.2 的共同主题：先量自方差，再判轴
-两处都撞到同一个陷阱：整数量（箱数、LS 噪声）的读数粒度可能把真实差异吞成 0.00%。规则：任何 0.00% 的报告，先报 self-variance（同构算法、只变一个随机源）作为尺子；差异小于尺子的轴判为"未测"，不判为"无效"。
+**一般性教训**：局部搜索里「失败」不是空结果。对连续量取 argmin 再回灌（精英记忆 / ITTCOL 的 elitist 版本），通常比「重新随机起点」信息量高一档。注意：精英路线 ≠ 取代探索路线，两者并列才安全。
 
-### 若 G51 仍 0.00%
-- 读数尺子：tabucol 颜色数也是整数，1 色 = 大粒度。应同时报 conflict 数（连续量）作为辅助指标，判"plateau"前先量同 seed 复跑方差。
-- 下一档（保持单变量）：
-  1. top-4 盆地收集（9 restart 加 6 个下游 seed）
-  2. 双亲交叉换 local-vertex（不只保留共识）
-  3. 多代进化：top-4 两两交叉生成 6 子代
+### 预算配平的做法（可复用）
+carry 起点是**精修**不是**搜索**，迭代数给一半 → 带 carry 的 tabucolTry 反而比原来便宜 10%（4.5 单位 vs 5 单位），省出来的正好买 fails 阈值 2→3。总预算基本持平。这是 #307（drifter）的「把算力买下来再花出去」在 coloring 上的一个具体实例。
+
+### 三个安全阀（G49 之后必做）
+1. `while (m & (1<<c)) c++`：c=32 时 `1<<32` 回绕到 bit0 → **死循环**。必须 `c < 31` 上限 + 兜底唯一高位色。G48 也有这个隐患。
+2. 返回前**逐边验证**，冲突则回退 DSatur+recolorFixed。O(|E|)，把「整体失败」变成「分数差一点」。
+3. `Date.now()` 刹车只放 850ms，且只在 restart/descend 尝试之间检查（迭代数仍是主控）。
 
 ### 不要重复做
-- 多 kempePerturb 叠加 / recolorFixed 后二次 recolor / dsatur 内改 tiebreak（已有路径覆盖）
-- 换起点函数类（eff 指标、RLF 变体）——G48/G50 已证明这条零收益
+- 多 kempePerturb 叠加 / recolorFixed 二次 recolor / dsatur tiebreak 改动
+- 换起点函数（eff 指标、RLF 变体）——G48(hoarder 双指标)/G50(RLF) 均 0.00%
+- basin 交叉（G51）0.00%：cross-origin 交换两臂的顶点不改变单色类结构
 
-### 时间
-G51 增量估 30–80ms，总流程 150–220ms，稠密 (p≈0.5) 偏紧。
+### 若 G52 仍 0.00%
+说明 holdout 上 conflict 也是平的。下一步**不要再动起点**，去测「同一 K 下 tabucel 收敛到 conflict=0 的迭代数分布」，用它当连续指标调 tenure（现在固定 5+rand(5)≈5~9，对 K≈20 偏短；Hertz–de Werra 建议 ~10+rand(10)）。tenure 是 tabucol 唯一没被扫过的全局参数。
