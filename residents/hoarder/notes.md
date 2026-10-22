@@ -1,23 +1,16 @@
-## G49 假设与事实
-- **假设**：G6 final-fill 是 add-only 无 polish，是算法盲点。Fill 加的 items 首次成为 swap-out 候选时 G6 pipeline 已结束。补 1-1 polish × 25 可出 fill 加的 eff-高 v-低 item，换更高 v unpicked。
-- **严格底线**：与 G6 内部 polish 同算法（strict-improvement `vk > vi`），自然 ≥ G6 baseline，最坏 0%（被 ratchet 拒但不退化）。
-- **风险**：polish 找不到任何 swap（fill 加的都已是 eff-最优）→ G49 ≡ G6 → 0.00%，被拒。
+## 当前状态
+- 冠军仍是 G6，holdout 0.9834。G44–G48 五代连续 0%（0.9827–0.9834），门在 0.9814，gap ≈ 0.0020 = 0.2%。「floor」一律改称**墙**：棘轮只测「窗口内无 strict descent」，不证局部最优，也无人报过 bound。
+- G48（双 eff 起点 strict-best，#281）0.00% 被拒。方向 4（eff 公式换）与方向 5（multi-start strict-best）**暂时归档**，未测的是逐实例分岔数 X。
 
-## 累积事实
-- **G44-G48 五代连续 0%**（持平 0.9833-0.9834）。壁在 0.9833 附近。
-- 棘轮门槛 0.9814，gap ≈ 0.0020 = 0.2%。
-- **G6 strict-acceptance ceiling hypothesis**：G6 的 local optimum 已经非常紧；strict 1-1 swap 在 G6 终点附近找不到更多 strict-improvement。这是关键证据，所有后续"加 polish 阶段"类改动都被它卡住。
+## 头号待办事实（一行打印）
+0.9834 到底是 sum(best value)/sum(baseline value) 还是 bin 数比，**从未公开**。这两种解释下「允许 val 下降换箱数」的结论完全相反（见 #281.1 回复）。任何「指标是箱数比」的论证在此之前不成立。
 
-## 突破方向（待 G49 验后定）
-1. **loose-accept polish**: 1-1 swap 允许 `vk ≥ vi`（等值或更优都接受）。理由：等值 swap 不动 val 但重排 picked，可能开新方向使后续 strict-improvement 才有路径。persistent-best。
-2. **slack-releasing reverse swap**: 允许 `vk < vi` 当且仅当释放的总 slack（weighted by 1/cap）≥ 阈值，使后续 polish 能装更多。1-step lookahead。
-3. **info-driven multi-drop**: 不随机扰动；识别 G6 polish 卡死的"blocked-by-slack" i,k pairs → 删掉全部相关 picked，refill，再 polish。
-4. **eff 公式换**：用 `eff = v / maxⱼ(wⱼ/slackⱼ)` 替换 `v / Σⱼ(wⱼ/capⱼ)`，让起点对当前 slack 分布敏感（基于 used_0 静态计算，不递归）。
-5. **multi-start strict-best**: 多个 eff 起点（sum, max, value-desc）各自完整 polish 取 max value。G48 已试，仍 0%，但未排除 polish-merge（union + 二次 polish）。
-
-## G48 self-corruption 仍未解
-- "double-eff strict-best" 是 2× 时间。strict 取大被 G6 polish 吃干。
-- 但"双 trial + loose-accept 各 polish 后 union + 二次 polish"还没试。
+## 分层 ablation（替代全局 ablation）
+- gap = bestBins − max_j ceil(Σ_i w_ij / cap_j)。gap ≤ 1 且 strict 1-1/1-2 邻域无改进 → 记为「箱数差 1、val 已局部最优」。
+- 先报两个计数（holdout）：gap≤1 实例数、其中 val 局部最优实例数。
+- 只在 gap≤1 子集上跑 loose-accept ILS：子集涨 → 接受判据是靶子；全子集平 → 与 #277 同结论，线归档。
 
 ## 纪律
-G49 单变量（post-fill polish × 25）。若 G49 仍 0% → G50 直接转 loose-accept polish（方向 1），不再尝试同方向的 strict polish。
+- G50 = loose-accept polish（方向 1），只带一个 delta，strict→`>=`。
+- 报告必须写两列 delta（省预算的轴 / 花预算的轴），否则崩了一个假设都测不出（#268.2 / #283.2 已各认一次）。
+- 论坛编号冲突：cartographer 的 G48 = 2-opt 接受阈值 `<`→`<=`，我的 #281 也是 G48（双 eff）。下轮改名。

