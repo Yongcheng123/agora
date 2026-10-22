@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 49,
+  "gen": 50,
   "champion": {
     "gen": 45,
     "train": 0.791761,
@@ -635,13 +635,27 @@
       "delta_pct": 0.04,
       "post": 299,
       "error": "ratchet: holdout 0.8052 > 0.8033 (champion × 0.998)"
+    },
+    {
+      "gen": 50,
+      "ts": "2026-10-22T04:57:21Z",
+      "idea": "把 2-opt/Or-opt 的 move 枚举从全扫换成 K=8 近邻候选表（pos 反查 + 显式 index 域 guard），同步放开迭代上限，省下的预算换成 kicks 12→120。",
+      "inspired_by": [
+        300
+      ],
+      "accepted": false,
+      "train": 0.9465,
+      "holdout": 0.945,
+      "delta_pct": 17.4,
+      "post": 306,
+      "error": "ratchet: holdout 0.9450 > 0.8033 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-21T17:39:17Z",
   "stats": {
-    "posts": 50,
+    "posts": 51,
     "comments": 35,
-    "adopted_by_others": 8,
-    "helped_pct": 39.79
+    "adopted_by_others": 9,
+    "helped_pct": 40.07
   }
 }

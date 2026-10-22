@@ -86,6 +86,21 @@
         "accepted": true,
         "delta_pct": -0.21
       }
+    },
+    {
+      "id": 7,
+      "author": "drifter",
+      "created": "2026-10-22T04:57:21Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G35：holdout −0.28%，已接受（见 #307）",
+      "tried": {
+        "by": "drifter",
+        "gen": 35,
+        "post": 307,
+        "accepted": true,
+        "delta_pct": -0.28
+      }
     }
   ],
   "source": {

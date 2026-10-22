@@ -1,212 +1,211 @@
 function solve(items, caps) {
-  const m = caps.length;
-  const n = items.length;
-
-  const eff = new Array(n);
+  const m = caps.length, n = items.length;
+  const C = new Float64Array(m);
+  for (let j = 0; j < m; j++) C[j] = caps[j];
+  const V = new Float64Array(n);
+  const W = new Float64Array(n * m);
+  const WS = new Float64Array(n);
+  const sc = new Float64Array(n);
   for (let i = 0; i < n; i++) {
-    let s = 0;
-    for (let j = 0; j < m; j++) s += items[i].w[j] / caps[j];
-    eff[i] = [items[i].v / (s || 1e-9), i];
-  }
-  eff.sort((a, b) => b[0] - a[0] || a[1] - b[1]);
-
-  const used = new Array(m).fill(0);
-  const picked = new Set();
-  let pickedArr = [];
-
-  for (let idx = 0; idx < n; idx++) {
-    const i = eff[idx][1];
     const w = items[i].w;
-    let fits = true;
-    for (let j = 0; j < m; j++) {
-      if (used[j] + w[j] > caps[j]) { fits = false; break; }
+    V[i] = items[i].v;
+    let t = 0;
+    for (let j = 0; j < m; j++) { const x = w[j]; W[i * m + j] = x; t += x / C[j]; }
+    WS[i] = t;
+    sc[i] = items[i].v / (t || 1e-9);
+  }
+  const ord = new Array(n);
+  for (let i = 0; i < n; i++) ord[i] = i;
+  ord.sort(function (a, b) { return sc[b] - sc[a] || a - b; });
+
+  const sel = new Uint8Array(n);
+  const used = new Float64Array(m);
+  const slack = new Float64Array(m);
+  const un = new Array(n);
+  let picked = [];
+  let val = 0;
+
+  function clearAll() { for (let i = 0; i < n; i++) sel[i] = 0; picked = []; val = 0; for (let j = 0; j < m; j++) { used[j] = 0; slack[j] = C[j]; } }
+  function updSlack() { for (let j = 0; j < m; j++) slack[j] = C[j] - used[j]; }
+  function addItem(k) { sel[k] = 1; picked.push(k); val += V[k]; const b = k * m; for (let j = 0; j < m; j++) used[j] += W[b + j]; }
+  function remItem(k) {
+    sel[k] = 0; val -= V[k]; const b = k * m;
+    for (let j = 0; j < m; j++) used[j] -= W[b + j];
+    const p = picked.indexOf(k);
+    if (p >= 0) { picked[p] = picked[picked.length - 1]; picked.pop(); }
+  }
+  function fill(pSkip) {
+    for (let t = 0; t < n; t++) {
+      const i = ord[t];
+      if (sel[i]) continue;
+      const b = i * m;
+      let ok = true;
+      for (let j = 0; j < m; j++) if (W[b + j] > slack[j]) { ok = false; break; }
+      if (!ok) continue;
+      if (pSkip > 0 && Math.random() < pSkip) continue;
+      addItem(i);
+      for (let j = 0; j < m; j++) slack[j] -= W[b + j];
     }
-    if (!fits) continue;
-    for (let j = 0; j < m; j++) used[j] += w[j];
-    picked.add(i);
-    pickedArr.push(i);
+  }
+  function buildUn() {
+    un.length = 0;
+    for (let k = 0; k < n; k++) if (!sel[k]) un.push(k);
+    un.sort(function (a, b) { return V[b] - V[a] || a - b; });
   }
 
-  for (let iter = 0; iter < 80; iter++) {
-    let bd = 0, bi = -1, bk = -1;
-    const pLen = pickedArr.length;
-    for (let pi = 0; pi < pLen; pi++) {
-      const i = pickedArr[pi];
-      const wi = items[i].w;
-      const vi = items[i].v;
+  function s11(maxIter) {
+    for (let it = 0; it < maxIter; it++) {
+      let bd = 0, bi = -1, bk = -1;
+      const p = picked.length;
+      for (let a = 0; a < p; a++) {
+        const i1 = picked[a], wb = i1 * m, v1 = V[i1];
+        for (let k = 0; k < n; k++) {
+          if (sel[k]) continue;
+          const vk = V[k];
+          if (vk <= v1) continue;
+          const kb = k * m;
+          let ok = true;
+          for (let j = 0; j < m; j++) if (W[kb + j] - W[wb + j] > slack[j]) { ok = false; break; }
+          if (ok) { const d = vk - v1; if (d > bd) { bd = d; bi = i1; bk = k; } }
+        }
+      }
+      if (bi < 0) return;
+      remItem(bi); addItem(bk); updSlack();
+    }
+  }
+
+  function s12(maxIter) {
+    for (let it = 0; it < maxIter; it++) {
+      buildUn();
+      const ul = un.length;
+      if (ul < 2 || picked.length < 1) return;
+      const vmax = V[un[0]];
+      let bd = 0, bi = -1, b1 = -1, b2 = -1;
+      const p = picked.length;
+      for (let a = 0; a < p; a++) {
+        const i1 = picked[a], wb = i1 * m, v1 = V[i1];
+        if (vmax + V[un[1]] - v1 <= bd) continue;
+        for (let x = 0; x < ul - 1; x++) {
+          const k1 = un[x], vk1 = V[k1];
+          if (vk1 + vk1 - v1 <= bd) break;
+          const b1o = k1 * m;
+          for (let y = x + 1; y < ul; y++) {
+            const k2 = un[y];
+            const d = vk1 + V[k2] - v1;
+            if (d <= bd) continue;
+            const b2o = k2 * m;
+            let ok = true;
+            for (let j = 0; j < m; j++) if (W[b1o + j] + W[b2o + j] - W[wb + j] > slack[j]) { ok = false; break; }
+            if (ok) { bd = d; bi = i1; b1 = k1; b2 = k2; }
+          }
+        }
+      }
+      if (bi < 0) return;
+      remItem(bi); addItem(b1); addItem(b2); updSlack();
+    }
+  }
+
+  function s21(maxIter) {
+    for (let it = 0; it < maxIter; it++) {
+      let bd = 0, ba = -1, bb = -1, bk = -1;
+      const p = picked.length;
       for (let k = 0; k < n; k++) {
-        if (picked.has(k)) continue;
-        const vk = items[k].v;
-        if (vk <= vi) continue;
-        const wk = items[k].w;
-        let fits = true;
-        for (let j = 0; j < m; j++) {
-          if (used[j] - wi[j] + wk[j] > caps[j]) { fits = false; break; }
-        }
-        if (fits) {
-          const d = vk - vi;
-          if (d > bd) { bd = d; bi = i; bk = k; }
+        if (sel[k]) continue;
+        const vk = V[k];
+        if (vk <= bd) continue;
+        const kb = k * m;
+        for (let a = 0; a < p; a++) {
+          const i1 = picked[a], w1 = i1 * m;
+          for (let b = a + 1; b < p; b++) {
+            const i2 = picked[b], w2 = i2 * m;
+            let ok = true;
+            for (let j = 0; j < m; j++) if (W[kb + j] - W[w1 + j] - W[w2 + j] > slack[j]) { ok = false; break; }
+            if (ok) { const loss = V[i1] + V[i2]; const d = vk - loss; if (d > bd) { bd = d; ba = i1; bb = i2; bk = k; } }
+          }
         }
       }
+      if (bk < 0) return;
+      remItem(ba); remItem(bb); addItem(bk); updSlack();
     }
-    if (bi < 0) break;
-    const wi = items[bi].w, wk = items[bk].w;
-    picked.delete(bi);
-    picked.add(bk);
-    for (let j = 0; j < m; j++) used[j] = used[j] - wi[j] + wk[j];
-    pickedArr[pickedArr.indexOf(bi)] = bk;
   }
 
-  for (let iter = 0; iter < 8; iter++) {
-    let bd = 0, bi1 = -1, bi2 = -1, bk = -1;
-    const pLen = pickedArr.length;
-    for (let k = 0; k < n; k++) {
-      if (picked.has(k)) continue;
-      const vk = items[k].v;
-      if (vk <= bd) continue;
-      const wk = items[k].w;
-      for (let a = 0; a < pLen; a++) {
-        for (let b = a + 1; b < pLen; b++) {
-          const i1 = pickedArr[a], i2 = pickedArr[b];
-          const wi1 = items[i1].w, wi2 = items[i2].w;
-          let fits = true;
-          for (let j = 0; j < m; j++) {
-            if (used[j] - wi1[j] - wi2[j] + wk[j] > caps[j]) { fits = false; break; }
-          }
-          if (fits) {
-            const loss = items[i1].v + items[i2].v;
-            if (loss < vk) {
-              const d = vk - loss;
-              if (d > bd) { bd = d; bi1 = i1; bi2 = i2; bk = k; }
+  function s22(maxIter) {
+    for (let it = 0; it < maxIter; it++) {
+      buildUn();
+      const ul = un.length, p = picked.length;
+      if (ul < 2 || p < 2) return;
+      const vmax1 = V[un[0]], vmax2 = V[un[1]];
+      let bd = 0, ba = -1, bb = -1, bx = -1, by = -1;
+      for (let a = 0; a < p - 1; a++) {
+        const i1 = picked[a], w1 = i1 * m;
+        for (let b = a + 1; b < p; b++) {
+          const i2 = picked[b], w2 = i2 * m, vl = V[i1] + V[i2];
+          if (vmax1 + vmax2 <= vl) continue;
+          for (let x = 0; x < ul - 1; x++) {
+            const k1 = un[x], vk1 = V[k1], x1 = k1 * m;
+            if (vk1 + vk1 <= vl) break;
+            for (let y = x + 1; y < ul; y++) {
+              const k2 = un[y];
+              if (vk1 + V[k2] <= vl) break;
+              const x2 = k2 * m;
+              let ok = true;
+              for (let j = 0; j < m; j++) if (W[x1 + j] + W[x2 + j] - W[w1 + j] - W[w2 + j] > slack[j]) { ok = false; break; }
+              if (ok) { const d = vk1 + V[k2] - vl; if (d > bd) { bd = d; ba = i1; bb = i2; bx = k1; by = k2; } }
             }
           }
         }
       }
-    }
-    if (bi1 < 0) break;
-    const wi1 = items[bi1].w, wi2 = items[bi2].w, wk = items[bk].w;
-    picked.delete(bi1);
-    picked.delete(bi2);
-    picked.add(bk);
-    for (let j = 0; j < m; j++) used[j] = used[j] - wi1[j] - wi2[j] + wk[j];
-    pickedArr = pickedArr.filter(x => x !== bi1 && x !== bi2);
-    pickedArr.push(bk);
-  }
-
-  for (let iter = 0; iter < 3; iter++) {
-    const unpickedByV = [];
-    for (let k = 0; k < n; k++) {
-      if (!picked.has(k)) unpickedByV.push([items[k].v, k]);
-    }
-    unpickedByV.sort((a, b) => b[0] - a[0]);
-
-    let bd = 0, bi1 = -1, bi2 = -1, bk1 = -1, bk2 = -1;
-    const pLen = pickedArr.length;
-    const uLen = unpickedByV.length;
-    const maxUn = uLen >= 1 ? unpickedByV[0][0] : 0;
-    const secUn = uLen >= 2 ? unpickedByV[1][0] : 0;
-
-    for (let a = 0; a < pLen - 1; a++) {
-      for (let b = a + 1; b < pLen; b++) {
-        const i1 = pickedArr[a], i2 = pickedArr[b];
-        const wi1 = items[i1].w, wi2 = items[i2].w;
-        const vLoss = items[i1].v + items[i2].v;
-
-        if (maxUn + secUn <= vLoss) continue;
-
-        for (let x = 0; x < uLen - 1; x++) {
-          const v1 = unpickedByV[x][0];
-          if (v1 + v1 <= vLoss) break;
-          const k1 = unpickedByV[x][1];
-          const wk1 = items[k1].w;
-          for (let y = x + 1; y < uLen; y++) {
-            const v2 = unpickedByV[y][0];
-            if (v1 + v2 <= vLoss) break;
-            const k2 = unpickedByV[y][1];
-            const wk2 = items[k2].w;
-
-            let fits = true;
-            for (let j = 0; j < m; j++) {
-              if (used[j] - wi1[j] - wi2[j] + wk1[j] + wk2[j] > caps[j]) {
-                fits = false;
-                break;
-              }
-            }
-            if (fits) {
-              const d = v1 + v2 - vLoss;
-              if (d > bd) { bd = d; bi1 = i1; bi2 = i2; bk1 = k1; bk2 = k2; }
-            }
-          }
-        }
-      }
-    }
-
-    if (bi1 < 0) break;
-
-    const wi1 = items[bi1].w, wi2 = items[bi2].w;
-    const wk1 = items[bk1].w, wk2 = items[bk2].w;
-    picked.delete(bi1);
-    picked.delete(bi2);
-    picked.add(bk1);
-    picked.add(bk2);
-    for (let j = 0; j < m; j++) {
-      used[j] = used[j] - wi1[j] - wi2[j] + wk1[j] + wk2[j];
-    }
-    pickedArr = pickedArr.filter(x => x !== bi1 && x !== bi2);
-    pickedArr.push(bk1);
-    pickedArr.push(bk2);
-  }
-
-  for (let iter = 0; iter < 20; iter++) {
-    let bd = 0, bi = -1, bk = -1;
-    const pLen = pickedArr.length;
-    for (let pi = 0; pi < pLen; pi++) {
-      const i = pickedArr[pi];
-      const wi = items[i].w;
-      const vi = items[i].v;
-      for (let k = 0; k < n; k++) {
-        if (picked.has(k)) continue;
-        const vk = items[k].v;
-        if (vk <= vi) continue;
-        const wk = items[k].w;
-        let fits = true;
-        for (let j = 0; j < m; j++) {
-          if (used[j] - wi[j] + wk[j] > caps[j]) { fits = false; break; }
-        }
-        if (fits) {
-          const d = vk - vi;
-          if (d > bd) { bd = d; bi = i; bk = k; }
-        }
-      }
-    }
-    if (bi < 0) break;
-    const wi = items[bi].w, wk = items[bk].w;
-    picked.delete(bi);
-    picked.add(bk);
-    for (let j = 0; j < m; j++) used[j] = used[j] - wi[j] + wk[j];
-    pickedArr[pickedArr.indexOf(bi)] = bk;
-  }
-
-  const rem = [];
-  for (let k = 0; k < n; k++) {
-    if (picked.has(k)) continue;
-    let s = 0;
-    for (let j = 0; j < m; j++) s += items[k].w[j] / caps[j];
-    rem.push([items[k].v / (s || 1e-9), k]);
-  }
-  rem.sort((a, b) => b[0] - a[0]);
-  for (const [, k] of rem) {
-    const wk = items[k].w;
-    let fits = true;
-    for (let j = 0; j < m; j++) {
-      if (used[j] + wk[j] > caps[j]) { fits = false; break; }
-    }
-    if (fits) {
-      picked.add(k);
-      pickedArr.push(k);
-      for (let j = 0; j < m; j++) used[j] += wk[j];
+      if (ba < 0) return;
+      remItem(ba); remItem(bb); addItem(bx); addItem(by); updSlack();
     }
   }
 
-  return pickedArr.slice().sort((a, b) => a - b);
+  function restore(smask, plist, v) {
+    for (let i = 0; i < n; i++) sel[i] = smask[i];
+    picked = plist.slice();
+    val = v;
+    for (let j = 0; j < m; j++) used[j] = 0;
+    for (let t = 0; t < picked.length; t++) { const b = picked[t] * m; for (let j = 0; j < m; j++) used[j] += W[b + j]; }
+    updSlack();
+  }
+  function save() { return [sel.slice(), picked.slice(), val]; }
+
+  // ---- start 0: deterministic G6-equivalent pipeline (+ the new 1->2 phase)
+  clearAll(); fill(0);
+  s11(40); s12(3); s21(4); s22(2); s11(20); fill(0);
+  let best = save();
+
+  // ---- diversified ILS: ruin the resource hogs, recreate with random-skip greedy, LS, keep best
+  const RMAX = 6;
+  for (let R = 0; R < RMAX; R++) {
+    restore(best[0], best[1], best[2]);
+    const p = picked.length;
+    if (p >= 2) {
+      let d = 2 + Math.floor(Math.random() * (0.25 * p));
+      if (d > p - 1) d = p - 1;
+      picked.sort(function (a, b) { return WS[b] - WS[a]; });
+      for (let t = 0; t < d; t++) remItem(picked[t]);
+      updSlack();
+      fill(0.08 + 0.22 * Math.random());
+    }
+    s11(20); s12(2); s21(2); s22(1); s11(10);
+    if (val > best[2]) best = save();
+  }
+
+  // ---- final polish on the incumbent
+  restore(best[0], best[1], best[2]);
+  s11(30); s12(2); s21(2); fill(0);
+  if (val > best[2]) best = save();
+
+  let out = best[1];
+  if (out.length === 0) {
+    let bi = -1, bv = -1;
+    for (let i = 0; i < n; i++) {
+      const b = i * m; let ok = true;
+      for (let j = 0; j < m; j++) if (W[b + j] > C[j]) { ok = false; break; }
+      if (ok && V[i] > bv) { bv = V[i]; bi = i; }
+    }
+    if (bi >= 0) out = [bi];
+  }
+  return out.slice().sort(function (a, b) { return a - b; });
 }

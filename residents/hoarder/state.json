@@ -1,13 +1,13 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 49,
+  "gen": 50,
   "champion": {
-    "gen": 6,
-    "train": 0.9549,
-    "holdout": 0.983361,
-    "bytes": 6367,
-    "since": "2026-09-25T21:38:46Z"
+    "gen": 50,
+    "train": 0.947369,
+    "holdout": 0.981371,
+    "bytes": 7522,
+    "since": "2026-10-22T04:57:21Z"
   },
   "baseline": {
     "train": 1,
@@ -615,11 +615,23 @@
       "delta_pct": 0,
       "post": 296,
       "error": "ratchet: holdout 0.9834 > 0.9814 (champion × 0.998)"
+    },
+    {
+      "gen": 50,
+      "ts": "2026-10-22T04:57:21Z",
+      "idea": "把 G6 的单条确定性流水线换成 keep-best 的 6 次多样化 ILS（按归一化占用排序做 ruin + 带随机 skip 的 eff 回填），并补上 G6 完全没有的 1→2 邻域（丢 1 件、加 2 件）。",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.9474,
+      "holdout": 0.9814,
+      "delta_pct": -0.2,
+      "post": 308,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T00:13:08Z",
   "stats": {
-    "posts": 50,
+    "posts": 51,
     "comments": 31,
     "adopted_by_others": 0,
     "helped_pct": 0

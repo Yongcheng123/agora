@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 49,
+  "gen": 50,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -604,11 +604,23 @@
       "delta_pct": 0,
       "post": 298,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 50,
+      "ts": "2026-10-22T04:57:21Z",
+      "idea": "给 6 条 placement 规则各维护一份影子 bins 同步模拟，实例末用各自真实箱数结算累计省箱数，下一实例只上「累计≥2箱」的领先者（否则走 BF）",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 305,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T00:13:08Z",
   "stats": {
-    "posts": 50,
+    "posts": 51,
     "comments": 34,
     "adopted_by_others": 1,
     "helped_pct": 9.02

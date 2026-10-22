@@ -8,19 +8,18 @@ function solve(points) {
     const xi = X[i], yi = Y[i];
     for (let j = i + 1; j < n; j++) {
       const dx = xi - X[j], dy = yi - Y[j];
-      const d = dx*dx + dy*dy;
-      d2[i*n+j] = d; d2[j*n+i] = d;
+      const d = dx * dx + dy * dy;
+      d2[i * n + j] = d; d2[j * n + i] = d;
     }
   }
   const len2 = (t) => {
     let s = 0;
     for (let i = 0; i < n; i++) {
       const ni = i + 1 < n ? i + 1 : 0;
-      s += d2[t[i]*n + t[ni]];
+      s += d2[t[i] * n + t[ni]];
     }
     return s;
   };
-  // work counters: number of LS passes executed (no cost inside hot loops)
   let stat2 = 0, statOr = 0;
   const nn = (start) => {
     const used = new Uint8Array(n);
@@ -32,7 +31,7 @@ function solve(points) {
       const row = cur * n;
       for (let j = 0; j < n; j++) {
         if (used[j]) continue;
-        const d = d2[row+j];
+        const d = d2[row + j];
         if (d < bd) { bd = d; best = j; }
       }
       t[k] = best; used[best] = 1; cur = best;
@@ -48,12 +47,12 @@ function solve(points) {
       for (let i = 0; i < n - 1; i++) {
         if (dlb[i]) continue;
         const a = t[i], b = t[i + 1];
-        const dab = d2[a*n + b];
+        const dab = d2[a * n + b];
         let bestK = -1, bestGain = 0;
         for (let k = i + 2; k < n; k++) {
           const c = t[k];
           const d = (k + 1 < n) ? t[k + 1] : t[0];
-          const g = d2[a*n + c] + d2[b*n + d] - dab - d2[c*n + d];
+          const g = d2[a * n + c] + d2[b * n + d] - dab - d2[c * n + d];
           if (g < bestGain - 1e-9) { bestGain = g; bestK = k; }
         }
         if (bestK !== -1) {
@@ -70,48 +69,49 @@ function solve(points) {
     }
     return t;
   };
+  // MODIFIED: duplicated tour array T2 = t ++ t removes every % from the inner loop
   const orOpt = (t0, maxL, maxPass) => {
     const t = new Int32Array(t0);
     if (n < 4) return t;
+    if (maxL > n - 2) maxL = n - 2;
+    const T2 = new Int32Array(2 * n);
+    const sync = () => { for (let k = 0; k < n; k++) { const v = t[k]; T2[k] = v; T2[k + n] = v; } };
     for (let pass = 0; pass < maxPass; pass++) {
       statOr++;
       let improved = false;
+      sync();
       for (let L = 1; L <= maxL; L++) {
         for (let i = 0; i < n; i++) {
           const a = t[i];
-          const head = t[(i + 1) % n];
-          const tail = t[(i + L) % n];
-          const d = t[(i + L + 1) % n];
-          const remLoss = d2[a*n + head] + d2[tail*n + d] - d2[a*n + d];
+          const head = T2[i + 1];
+          const tail = T2[i + L];
+          const d = T2[i + L + 1];
+          const remLoss = d2[a * n + head] + d2[tail * n + d] - d2[a * n + d];
           let bestGain = 1e-9, bestJ = -1, bestRev = 0;
           for (let j = 0; j < n; j++) {
-            const off = ((j - i) % n + n) % n;
+            let off = j - i; if (off < 0) off += n;
             if (off <= L) continue;
             const p = t[j];
-            const q = t[(j + 1) % n];
-            const insNorm = d2[p*n + head] + d2[tail*n + q] - d2[p*n + q];
-            const gain = remLoss - insNorm;
-            if (gain > bestGain) { bestGain = gain; bestJ = j; bestRev = 0; }
+            const q = T2[j + 1];
+            const base = d2[p * n + q];
+            const insNorm = d2[p * n + head] + d2[tail * n + q] - base;
+            const g = remLoss - insNorm;
+            if (g > bestGain) { bestGain = g; bestJ = j; bestRev = 0; }
             if (L >= 2) {
-              const insRev = d2[p*n + tail] + d2[head*n + q] - d2[p*n + q];
+              const insRev = d2[p * n + tail] + d2[head * n + q] - base;
               const gr = remLoss - insRev;
               if (gr > bestGain) { bestGain = gr; bestJ = j; bestRev = 1; }
             }
           }
           if (bestJ !== -1) {
-            const walkStart = (i + L + 1) % n;
-            let insPos = 0;
-            for (let k = 0; k < n - L; k++) {
-              if (((walkStart + k) % n) === bestJ) { insPos = k; break; }
-            }
+            const ws = i + L + 1;
+            let m = bestJ - ws; if (m < 0) m += n;
             const newT = new Int32Array(n);
-            for (let k = 0; k <= insPos; k++) newT[k] = t[(walkStart + k) % n];
-            for (let k = 0; k < L; k++) {
-              const srcIdx = bestRev ? (L - 1 - k) : k;
-              newT[insPos + 1 + k] = t[(i + 1 + srcIdx) % n];
-            }
-            for (let k = insPos + 1; k < n - L; k++) newT[L + k] = t[(walkStart + k) % n];
+            for (let k = 0; k <= m; k++) newT[k] = T2[ws + k];
+            for (let k = 0; k < L; k++) newT[m + 1 + k] = bestRev ? T2[i + L - k] : T2[i + 1 + k];
+            for (let k = 0; k < n - m - L - 1; k++) newT[m + 1 + L + k] = T2[ws + m + 1 + k];
             for (let k = 0; k < n; k++) t[k] = newT[k];
+            sync();
             improved = true;
           }
         }
@@ -152,7 +152,7 @@ function solve(points) {
   let fps3 = -1, fps3Score = -1;
   for (let i = 0; i < n; i++) {
     if (i === 0 || i === far) continue;
-    const minD = d2[i] < d2[far*n+i] ? d2[i] : d2[far*n+i];
+    const minD = d2[i] < d2[far * n + i] ? d2[i] : d2[far * n + i];
     if (minD > fps3Score) { fps3Score = minD; fps3 = i; }
   }
   let bestT, bestL = Infinity;
@@ -165,24 +165,30 @@ function solve(points) {
   }
   bestT = orOpt(bestT, 5, 2);
   bestL = len2(bestT);
-  // MODIFIED: budget-driven ILS loop with record-to-record acceptance
-  const DEV = 0.005;
-  const BAND = 1.01;
-  const E2P = n * (n - 2) / 2;          // gain evals per 2-opt pass
-  const EORP = n * n * 3;                // gain evals per or-opt pass, maxL=2
-  const ILS_BUDGET = Math.max(500000, 140 * n * n);
+  // MODIFIED: budget 140*n^2 -> 2000*n^2, wall-clock safety valve, annealed deviation
+  const DEV_HI = 0.015, DEV_LO = 0.001;
+  const E2P = n * (n - 2) / 2;
+  const EORP = n * n * 3;
+  const ILS_BUDGET = 2000 * n * n;
+  const SCHED = 160;
+  const clock = (typeof Date !== 'undefined' && typeof Date.now === 'function') ? Date.now : null;
+  const tStart = clock ? clock() : 0;
+  const logr = Math.log(DEV_LO / DEV_HI);
   let bestTour = bestT;
   let cur = bestT;
   let used = 0, guard = 0;
-  while (used < ILS_BUDGET && guard < 600) {
+  while (used < ILS_BUDGET && guard < 4000) {
+    if (clock && (guard & 7) === 7 && clock() - tStart > 240) break;
     guard++;
     const a2 = stat2, ao = statOr;
     let t = db(cur);
     t = twoopt(t, 5);
     t = orOpt(t, 2, 1);
     const l = len2(t);
+    let prog = guard / SCHED; if (prog > 1) prog = 1;
+    const dev = DEV_HI * Math.exp(logr * prog);
     if (l < bestL) { bestL = l; bestTour = t; cur = t; }
-    else if (l < bestL * (1 + DEV)) { cur = (l > bestL * BAND) ? bestTour : t; }
+    else if (l < bestL * (1 + dev)) { cur = (l > bestL * (1 + 4 * dev)) ? bestTour : t; }
     used += (stat2 - a2) * E2P + (statOr - ao) * EORP;
   }
   bestTour = orOpt(bestTour, 3, 4);
