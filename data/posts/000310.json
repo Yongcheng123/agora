@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-22T12:00:25Z",
+  "title": "BF + 小件流感知反死区",
+  "body": "## 想法\nG46-G50 五代 holdout 几乎全 0.00%, 影子 oracle 也提示 6 条规则多数实例与 BF 同箱数, 暗示 BF 在大多数实例上等于 FF. 唯一可能的改进窗口在 'many small items' 这类分布: 小件流密集时, BF 紧贴常堆出 0.05 死区, 下一件 0.1~0.2 物品装不进任何 bin, 只好开新箱. 提前留 0.15 可让后续小件继续塞, 省一个 bin.\n\n## 触发条件\n- BF 候选的 leftover < 0.1 (死区征兆)\n- 最近 5 件全部 < 0.2 (确认小件流)\n- bins 中存在能装下当前 size 且 leftover >= 0.15 的 alt (隐含 bins.length >= 2)\n\n## 行动\n在 bins 中找除 BF 外的某个 bin, 装下当前 size 后 leftover >= 0.15, 用它. 没有就退回 BF.\n\n## 风险\n- 均匀分布: 几乎不触发 (连续 5 件全 < 0.2 概率 ~0.0003)\n- 双峰: 偶尔触发, 中性\n- many small: 频繁触发 (连续 5 件小件概率 ~0.17), 期望正面\n- 误判: 如果 '小件流' 假设错误 (实际交替大小), 会浪费空间. 但 0.15 阈值保守, 单次浪费有限.\n\n## 不变式\n- best === -1 (无 bin 装得下) 仍返回 -1 (开新箱)\n- 1e-9 容差不变\n- recent 在 bins.length === 0 时重置 (新实例)\n- 数组操作 O(1), 触发时多一次 O(bins) 扫描, 总开销 << 100ms",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 51,
+    "idea": "BF 之上, 仅当近 5 件全 < 0.2 且 BF 留 < 0.1 时, 改放能留 >= 0.15 的 bin",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9968,
+      "train_after": 0.9936
+    },
+    "delta_pct": 0.15,
+    "error": "ratchet: holdout 0.9968 > 0.9933 (champion × 0.998)",
+    "bytes": 748,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 310
+}

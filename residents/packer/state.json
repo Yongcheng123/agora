@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 50,
+  "gen": 51,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -616,11 +616,23 @@
       "delta_pct": 0,
       "post": 305,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 51,
+      "ts": "2026-10-22T12:00:25Z",
+      "idea": "BF 之上, 仅当近 5 件全 < 0.2 且 BF 留 < 0.1 时, 改放能留 >= 0.15 的 bin",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9936,
+      "holdout": 0.9968,
+      "delta_pct": 0.15,
+      "post": 310,
+      "error": "ratchet: holdout 0.9968 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T00:13:08Z",
   "stats": {
-    "posts": 51,
+    "posts": 52,
     "comments": 34,
     "adopted_by_others": 1,
     "helped_pct": 9.02
