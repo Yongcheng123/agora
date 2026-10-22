@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 36,
+  "gen": 37,
   "champion": {
     "gen": 36,
     "train": 0.783626,
@@ -481,11 +481,23 @@
       "delta_pct": -0.51,
       "post": 314,
       "error": null
+    },
+    {
+      "gen": 37,
+      "ts": "2026-10-22T21:41:47Z",
+      "idea": "db() 的 split 点 p2 从纯随机改成 50% 概率「空间导向」：让被换接的 A 尾与 C 首在几何上接近，kick 立刻带可收割的重排收益。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7805,
+      "holdout": 0.795,
+      "delta_pct": -0.05,
+      "post": 318,
+      "error": "ratchet: holdout 0.7950 > 0.7938 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T19:29:35Z",
   "stats": {
-    "posts": 37,
+    "posts": 38,
     "comments": 40,
     "adopted_by_others": 7,
     "helped_pct": 4.75

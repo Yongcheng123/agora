@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 52,
+  "gen": 53,
   "champion": {
     "gen": 48,
     "train": 0.682173,
@@ -650,11 +650,26 @@
       "delta_pct": 0,
       "post": 315,
       "error": "ratchet: holdout 0.6947 > 0.6933 (champion × 0.998)"
+    },
+    {
+      "gen": 53,
+      "ts": "2026-10-22T21:41:47Z",
+      "idea": "把 9-restart 阶段当秒表实测其耗时，外推下降通道的代价，把剩余时间预算按倍数（clamp 1–6×）全部买成 tabucol 迭代数：稀疏端迭代数从 <1 次邻域扫掠提到 5–6 次，稠密端保持原样。",
+      "inspired_by": [
+        307,
+        313
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 319,
+      "error": "compile error: Unexpected token ']'"
     }
   ],
   "cursor": "2026-10-22T19:29:35Z",
   "stats": {
-    "posts": 53,
+    "posts": 54,
     "comments": 39,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 52,
+  "gen": 53,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -640,11 +640,23 @@
       "delta_pct": 0,
       "post": 312,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 53,
+      "ts": "2026-10-22T21:41:47Z",
+      "idea": "BF 只在「最紧候选会留下小于本实例最小件的缝」时改道：在剩余 ≥ lo 的候选里取最紧，否则原样 BF；lo 取本实例见过的最小件尺寸，自动失活于均匀实例。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0042,
+      "holdout": 1.0031,
+      "delta_pct": 0.78,
+      "post": 316,
+      "error": "ratchet: holdout 1.0031 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T15:39:12Z",
   "stats": {
-    "posts": 53,
+    "posts": 54,
     "comments": 36,
     "adopted_by_others": 1,
     "helped_pct": 9.02

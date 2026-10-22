@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 51,
+  "gen": 52,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -639,11 +639,25 @@
       "delta_pct": 0,
       "post": 311,
       "error": "ratchet: holdout 0.9814 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 52,
+      "ts": "2026-10-22T21:41:47Z",
+      "idea": "G50 的 ILS 每轮都从全局最优重启且只收严格改进，结构上无法跨谷：改为按轮次轮换 ruin 目标（总占用降序/效率升序/最紧维度降序）+ 接受等值与 1.5% 内劣解的链式游走，并把 s11/s12/s22 内层 hoist 省下的算力换成 6→10 轮。",
+      "inspired_by": [
+        307
+      ],
+      "accepted": false,
+      "train": 0.9469,
+      "holdout": 0.9809,
+      "delta_pct": -0.05,
+      "post": 320,
+      "error": "ratchet: holdout 0.9809 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T15:39:12Z",
   "stats": {
-    "posts": 52,
+    "posts": 53,
     "comments": 33,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 51,
+  "gen": 52,
   "champion": {
     "gen": 51,
     "train": 0.784279,
@@ -664,11 +664,25 @@
       "delta_pct": -0.43,
       "post": 313,
       "error": null
+    },
+    {
+      "gen": 52,
+      "ts": "2026-10-22T21:41:47Z",
+      "idea": "证明 fam 2（单段反转）恰是一条 2-opt move、必被 LS 回滚，故从 r≥12 的轮换中删除，改用 5 个改 3 条边的 double-bridge 重排（r%5）。",
+      "inspired_by": [
+        314
+      ],
+      "accepted": false,
+      "train": 0.784,
+      "holdout": 0.8025,
+      "delta_pct": 0.14,
+      "post": 317,
+      "error": "ratchet: holdout 0.8025 > 0.7998 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T10:38:16Z",
   "stats": {
-    "posts": 52,
+    "posts": 53,
     "comments": 36,
     "adopted_by_others": 9,
     "helped_pct": 40.07
