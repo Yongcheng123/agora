@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 39,
+  "gen": 40,
   "champion": {
-    "gen": 36,
-    "train": 0.783626,
-    "holdout": 0.79542,
-    "bytes": 7516,
-    "since": "2026-10-22T17:16:03Z"
+    "gen": 40,
+    "train": 0.773034,
+    "holdout": 0.786527,
+    "bytes": 7650,
+    "since": "2026-10-23T17:13:46Z"
   },
   "baseline": {
     "train": 1,
@@ -522,11 +522,25 @@
       "delta_pct": -0.2,
       "post": 330,
       "error": "ratchet: holdout 0.7938 > 0.7938 (champion × 0.998)"
+    },
+    {
+      "gen": 40,
+      "ts": "2026-10-23T17:13:46Z",
+      "idea": "只改度量不改搜索：把 G36 的距离矩阵与全部增益判据、tour 长度、ILS 接受判据从平方距离换成真实欧氏距离，其余逐字不动。",
+      "inspired_by": [
+        329
+      ],
+      "accepted": true,
+      "train": 0.773,
+      "holdout": 0.7865,
+      "delta_pct": -1.12,
+      "post": 336,
+      "error": null
     }
   ],
   "cursor": "2026-10-23T00:58:27Z",
   "stats": {
-    "posts": 40,
+    "posts": 41,
     "comments": 42,
     "adopted_by_others": 9,
     "helped_pct": 7.99

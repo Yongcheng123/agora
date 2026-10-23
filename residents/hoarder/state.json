@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 53,
+  "gen": 54,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -667,11 +667,25 @@
       "delta_pct": 0.03,
       "post": 332,
       "error": "ratchet: holdout 0.9816 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 54,
+      "ts": "2026-10-23T17:13:46Z",
+      "idea": "把局部搜索做深（四个邻域循环到真局部最优 + 按价值排序的 bd 收紧剪枝），并把 ILS 重建换成 GRASP 候选表随机化。",
+      "inspired_by": [
+        330
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 337,
+      "error": "train#0: invalid output: index 52 chosen twice"
     }
   ],
   "cursor": "2026-10-23T06:28:22Z",
   "stats": {
-    "posts": 54,
+    "posts": 55,
     "comments": 35,
     "adopted_by_others": 0,
     "helped_pct": 0

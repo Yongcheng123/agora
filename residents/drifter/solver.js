@@ -3,20 +3,22 @@ function solve(points) {
   if (n < 4) { const o = new Array(n); for (let i = 0; i < n; i++) o[i] = i; return o; }
   const X = new Float64Array(n), Y = new Float64Array(n);
   for (let i = 0; i < n; i++) { X[i] = points[i][0]; Y[i] = points[i][1]; }
-  const d2 = new Float64Array(n * n);
+  // G40: distance matrix holds TRUE Euclidean lengths (not squared).
+  // All gain / length / acceptance criteria below now live in real length space.
+  const D = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
     const xi = X[i], yi = Y[i];
     for (let j = i + 1; j < n; j++) {
       const dx = xi - X[j], dy = yi - Y[j];
-      const d = dx * dx + dy * dy;
-      d2[i * n + j] = d; d2[j * n + i] = d;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      D[i * n + j] = d; D[j * n + i] = d;
     }
   }
-  const len2 = (t) => {
+  const tourLen = (t) => {
     let s = 0;
     for (let i = 0; i < n; i++) {
       const ni = i + 1 < n ? i + 1 : 0;
-      s += d2[t[i] * n + t[ni]];
+      s += D[t[i] * n + t[ni]];
     }
     return s;
   };
@@ -31,7 +33,7 @@ function solve(points) {
       const row = cur * n;
       for (let j = 0; j < n; j++) {
         if (used[j]) continue;
-        const d = d2[row + j];
+        const d = D[row + j];
         if (d < bd) { bd = d; best = j; }
       }
       t[k] = best; used[best] = 1; cur = best;
@@ -47,12 +49,12 @@ function solve(points) {
       for (let i = 0; i < n - 1; i++) {
         if (dlb[i]) continue;
         const a = t[i], b = t[i + 1];
-        const dab = d2[a * n + b];
+        const dab = D[a * n + b];
         let bestK = -1, bestGain = 0;
         for (let k = i + 2; k < n; k++) {
           const c = t[k];
           const d = (k + 1 < n) ? t[k + 1] : t[0];
-          const g = d2[a * n + c] + d2[b * n + d] - dab - d2[c * n + d];
+          const g = D[a * n + c] + D[b * n + d] - dab - D[c * n + d];
           if (g < bestGain - 1e-9) { bestGain = g; bestK = k; }
         }
         if (bestK !== -1) {
@@ -85,19 +87,19 @@ function solve(points) {
           const head = T2[i + 1];
           const tail = T2[i + L];
           const d = T2[i + L + 1];
-          const remLoss = d2[a * n + head] + d2[tail * n + d] - d2[a * n + d];
+          const remLoss = D[a * n + head] + D[tail * n + d] - D[a * n + d];
           let bestGain = 1e-9, bestJ = -1, bestRev = 0;
           for (let j = 0; j < n; j++) {
             let off = j - i; if (off < 0) off += n;
             if (off <= L) continue;
             const p = t[j];
             const q = T2[j + 1];
-            const base = d2[p * n + q];
-            const insNorm = d2[p * n + head] + d2[tail * n + q] - base;
+            const base = D[p * n + q];
+            const insNorm = D[p * n + head] + D[tail * n + q] - base;
             const g = remLoss - insNorm;
             if (g > bestGain) { bestGain = g; bestJ = j; bestRev = 0; }
             if (L >= 2) {
-              const insRev = d2[p * n + tail] + d2[head * n + q] - base;
+              const insRev = D[p * n + tail] + D[head * n + q] - base;
               const gr = remLoss - insRev;
               if (gr > bestGain) { bestGain = gr; bestJ = j; bestRev = 1; }
             }
@@ -119,7 +121,7 @@ function solve(points) {
     }
     return t;
   };
-  // G36: 5 double-bridge permutations (was 3) — adds A B D C and A C D B
+  // G36 kick: 5 double-bridge permutations (unchanged)
   const db = (t0) => {
     if (n < 8) return new Int32Array(t0);
     const p1 = 1 + ((Math.random() * (n - 3)) | 0);
@@ -154,13 +156,13 @@ function solve(points) {
   };
   let far = 0, farD = 0;
   for (let j = 1; j < n; j++) {
-    const d = d2[j];
+    const d = D[j];
     if (d > farD) { farD = d; far = j; }
   }
   let fps3 = -1, fps3Score = -1;
   for (let i = 0; i < n; i++) {
     if (i === 0 || i === far) continue;
-    const minD = d2[i] < d2[far * n + i] ? d2[i] : d2[far * n + i];
+    const minD = D[i] < D[far * n + i] ? D[i] : D[far * n + i];
     if (minD > fps3Score) { fps3Score = minD; fps3 = i; }
   }
   let bestT, bestL = Infinity;
@@ -168,11 +170,11 @@ function solve(points) {
     let t = nn(s);
     t = twoopt(t, 20);
     t = orOpt(t, 3, 3);
-    const l = len2(t);
+    const l = tourLen(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
   bestT = orOpt(bestT, 5, 2);
-  bestL = len2(bestT);
+  bestL = tourLen(bestT);
   const DEV_HI = 0.015, DEV_LO = 0.001;
   const E2P = n * (n - 2) / 2;
   const EORP = n * n * 3;
@@ -191,7 +193,7 @@ function solve(points) {
     let t = db(cur);
     t = twoopt(t, 5);
     t = orOpt(t, 2, 1);
-    const l = len2(t);
+    const l = tourLen(t);
     let prog = guard / SCHED; if (prog > 1) prog = 1;
     const dev = DEV_HI * Math.exp(logr * prog);
     if (l < bestL) { bestL = l; bestTour = t; cur = t; }
