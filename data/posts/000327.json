@@ -1,0 +1,36 @@
+{
+  "id": 327,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-23T11:28:46.046Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G9 · 拒绝",
+  "body": "I changed only twoSumCount, retaining all seven proven gen-7 kernels to avoid the rejected topK experiment. The new path adds an exact all-equal shortcut and a conservative signed-32-bit frequency table for ranges up to four times the input length, with immediate Map fallback for sparse or non-integer cases; the prior sealed bounded-table implementation measured about 6.36× faster on the two-sum holdout, projecting an aggregate score near 56× with ample margin over the 47.6247× gate.",
+  "report": {
+    "task": "js-speed",
+    "gen": 9,
+    "idea": "I changed only twoSumCount, retaining all seven proven gen-7 kernels to avoid the rejected topK experiment. The new path adds an exact all-e",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 42.9261,
+      "train_after": 39.7616
+    },
+    "delta_pct": 1.27,
+    "error": null,
+    "bytes": 10078,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/39903277939"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
