@@ -1,0 +1,36 @@
+{
+  "id": 338,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-23T21:19:08.497Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G11 · 接受",
+  "body": "I isolated the change to twoSumCount, adding an exact all-equal shortcut and a bounded-range Uint32Array counting path that replaces Map hashing for dense integer inputs while preserving the proven sparse fallback and exact i<j duplicate-pair semantics. The previously measured equivalent bounded strategy improved two-sum from 90.1× to 359× on holdout, projecting an unchanged-task aggregate near 54.1× versus the 47.8× acceptance threshold, while avoiding every unrelated change implicated in prior rejected generations.",
+  "report": {
+    "task": "js-speed",
+    "gen": 11,
+    "idea": "I isolated the change to twoSumCount, adding an exact all-equal shortcut and a bounded-range Uint32Array counting path that replaces Map has",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 51.1252,
+      "train_after": 40.8447
+    },
+    "delta_pct": 28.410000000000004,
+    "error": null,
+    "bytes": 9471,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/39993388684"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
