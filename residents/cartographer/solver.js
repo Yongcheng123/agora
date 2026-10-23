@@ -79,6 +79,10 @@ function solve(points) {
     for (let i = 0; i < n; i++) { const v = tour[i]; T2[i] = v; T2[i + n] = v; }
 
     for (let L = 1; L <= 3; L++) {
+      // dlo is indexed by CITY (not position): an Or-opt move shifts the
+      // positions of a whole block, so position-indexed bits would be
+      // meaningless. Only the cities incident to the changed edges need
+      // to be re-activated.
       const dlo = new Uint8Array(n);
       let oImproved = true;
       let oIter = 0;
@@ -86,11 +90,11 @@ function solve(points) {
         oImproved = false;
         oIter++;
         for (let s = 0; s < n; s++) {
-          if (dlo[s]) continue;
+          const tS = T2[s];
+          if (dlo[tS]) continue;
           let pred = s - 1; if (pred < 0) pred = n - 1;
           let succ = s + L; if (succ >= n) succ -= n;
           const tPred = T2[pred];
-          const tS = T2[s];
           const tSL1 = T2[s + L - 1];
           const tSucc = T2[succ];
           const rS = tS * n;
@@ -101,12 +105,11 @@ function solve(points) {
           let foundMove = false;
           for (let k = 0; k < n; k++) {
             let kp = k + 1;
-            let kpw = kp;
-            if (kp === n) { kp = 0; kpw = 0; }
+            if (kp === n) kp = 0;
             if (s <= succ) {
-              if (kpw >= s && kpw <= succ) continue;
+              if (kp >= s && kp <= succ) continue;
             } else {
-              if (kpw >= s || kpw <= succ) continue;
+              if (kp >= s || kp <= succ) continue;
             }
             const tk = T2[k];
             const tk1 = T2[kp];
@@ -122,10 +125,15 @@ function solve(points) {
               }
             }
             if (bestDAdd < dRemoveBase + dEdgeBreak) {
+              // local re-activation: the three old edges are
+              // (tPred,tS), (tSL1,tSucc), (tk,tk1); the three new ones are
+              // (tPred,tSucc), (tk,tS)/(tk,tSL1), (tSL1/tS,tk1).
+              dlo[tPred] = 0; dlo[tS] = 0; dlo[tSL1] = 0;
+              dlo[tSucc] = 0; dlo[tk] = 0; dlo[tk1] = 0;
               let idx = 0;
               newTour[idx++] = tPred;
               let p = succ;
-              while (p !== kpw) {
+              while (p !== kp) {
                 newTour[idx++] = T2[p];
                 p++; if (p === n) p = 0;
               }
@@ -134,7 +142,7 @@ function solve(points) {
               } else {
                 for (let q = 0; q < L; q++) newTour[idx++] = T2[s + q];
               }
-              p = kpw;
+              p = kp;
               while (p !== pred) {
                 newTour[idx++] = T2[p];
                 p++; if (p === n) p = 0;
@@ -142,11 +150,10 @@ function solve(points) {
               for (let i2 = 0; i2 < n; i2++) { const v = newTour[i2]; tour[i2] = v; T2[i2] = v; T2[i2 + n] = v; }
               oImproved = true;
               foundMove = true;
-              for (let m = 0; m < n; m++) dlo[m] = 0;
               break;
             }
           }
-          if (!foundMove) dlo[s] = 1;
+          if (!foundMove) dlo[tS] = 1;
         }
       }
     }
@@ -189,7 +196,7 @@ function solve(points) {
 
   const ILS_MS = 200;
   const tStart = Date.now();
-  const KMAX = 400;
+  const KMAX = 3000;
 
   for (let r = 0; r < KMAX; r++) {
     let fam;
@@ -197,7 +204,7 @@ function solve(points) {
     else if (r < 4) fam = 0;
     else if (r < 8) fam = 1;
     else if (r < 12) fam = 2;
-    else fam = r % 3;
+    else fam = r % 2;
 
     if (r >= 12 && Date.now() - tStart > ILS_MS) break;
 

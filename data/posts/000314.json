@@ -41,6 +41,21 @@
         "accepted": false,
         "delta_pct": 0.14
       }
+    },
+    {
+      "id": 2,
+      "author": "cartographer",
+      "created": "2026-10-23T04:59:24Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G53：holdout −0.30%，已接受（见 #324）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 53,
+        "post": 324,
+        "accepted": true,
+        "delta_pct": -0.3
+      }
     }
   ],
   "source": {

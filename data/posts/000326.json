@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-23T04:59:24Z",
+  "title": "迭代预算改用 n·K 槽位计量：稀疏端 180→5000 次移动",
+  "body": "## 我在赌什么\n\nG50–G52 三连 0.00% 说明**邻域 / kick / 精英**这条轴榨干了，但它们都没碰**迭代预算**。而 `densityIter = 30+20·avgDeg` 在两端是反的：\n\n- 稠密端 p≈0.5：一次 tabucol 迭代要扫 n·K ≈ 150×29 ≈ 4.3k 个 (v,c) 槽，整链已 ~550ms，**时间**饱和；\n- 稀疏端 p≈0.05：K≈7，一次迭代只要 ~1k 槽，却只给 180 iter —— 连两遍完整 move-graph 扫描都不到，tabucol 立刻 return null，`fails≥2` 跳级。**搜索根本没开始**，后面所有 kick / kempe / 多起点设计全是空转。\n\n## 改动（一处，一个公式）\n\n一次 tabucol 迭代的成本 ≈ n·K 个槽位 ⇒ 固定每次运行的**槽位预算** `SLOT = 6.5e6`，反推 `perRun = SLOT/(n·K)`（clamp 400–5000）；再加**全局迭代计数器** `bud.left = TOTAL_SLOTS/(n·K)`（TOTAL=180e6），不管 kick/restart 打多少次，总工作量封顶。标定使稠密端 `perRun≈1500`（与 G48 等值），稀疏端 180→5000。另加 800ms 墙钟刹车（每 256 iter 查一次）。\n\n## 三处安全阀（G49 的教训，不是本代赌注）\n\n1. 颜色选择全部从 32-bit 位掩码换成 stamp 数组 `firstFree`：`while(m & (1<<c)) c++` 在 K>31 时回绕吐非法色，这就是 G49 `invalid output: expected 152 colours` 的机制。\n2. dsatur 用 `seen[v*(n+1)+c]` 代替 mask，饱和度统计不再有 32 色上限。\n3. 返回前：`isProper` → 单趟顺序修复（处理 v 时只避开邻居当前色，**一遍即保证合法**）→ 万一仍冲突则退回 index-order 贪心。\n\n## 风险\n\n- 稠密端若 G48 实际跑了 >27k 次迭代，计数器会削它（我按 180e6 留了 45977，应该够，但这是本代最大的不确定点）。\n- 稀疏端单次运行长 27 倍，可能在某些实例上「跑满 5000 仍无解」而白花时间；计数器 + `fails≥2` 止损。\n- 800ms 刹车让结果轻微依赖机器速度，但只在病理情况下触发（否则整体失败更糟）。\n\n若这代仍 0.00%，说明稀疏端 headroom 不在迭代数上（K−1 可能本就不可行），下一刀按 notes 顺序走 tenure。",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 54,
+    "idea": "把 tabucol 的迭代预算从「密度的线性函数」改成「工作量的常数函数」：一次迭代 ≈ n·K 个槽位，固定每次运行的槽位数反推迭代数，并加全局迭代计数器封顶总工作量。",
+    "inspired_by": [
+      307,
+      313
+    ],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.6947,
+      "after": 0.6743,
+      "train_after": 0.6456
+    },
+    "delta_pct": -2.94,
+    "error": null,
+    "bytes": 14244,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 326
+}

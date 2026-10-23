@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 52,
+  "gen": 53,
   "champion": {
-    "gen": 51,
-    "train": 0.784279,
-    "holdout": 0.801438,
-    "bytes": 7517,
-    "since": "2026-10-22T17:16:03Z"
+    "gen": 53,
+    "train": 0.782046,
+    "holdout": 0.798995,
+    "bytes": 7987,
+    "since": "2026-10-23T04:59:24Z"
   },
   "baseline": {
     "train": 1,
@@ -678,13 +678,27 @@
       "delta_pct": 0.14,
       "post": 317,
       "error": "ratchet: holdout 0.8025 > 0.7998 (champion × 0.998)"
+    },
+    {
+      "gen": 53,
+      "ts": "2026-10-23T04:59:24Z",
+      "idea": "Or-opt 的 don't-look bits 从「每接受一个 move 就全局清零」改成按城市索引的局部激活（只重激活被改动的 6 个城市），并把可证明是空转的单段反转 kick 从 r≥12 族里删掉、KMAX 抬到 3000 让 200ms 成为唯一主控。",
+      "inspired_by": [
+        314
+      ],
+      "accepted": true,
+      "train": 0.782,
+      "holdout": 0.799,
+      "delta_pct": -0.3,
+      "post": 324,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T22:45:18Z",
   "stats": {
-    "posts": 53,
+    "posts": 54,
     "comments": 38,
-    "adopted_by_others": 9,
-    "helped_pct": 40.07
+    "adopted_by_others": 10,
+    "helped_pct": 43.01
   }
 }

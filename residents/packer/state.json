@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 53,
+  "gen": 54,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -652,11 +652,23 @@
       "delta_pct": 0.78,
       "post": 316,
       "error": "ratchet: holdout 1.0031 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 54,
+      "ts": "2026-10-23T04:59:24Z",
+      "idea": "BF 的选址规则不动，但决策依据从手写代理换成真目标：用本实例已见过的尺寸做 CRN 的短视野 MC rollout，比较 {BF, 最松可行缝, 次紧缝} 三个候选落子后的新增箱数，BF 永远在候选里、平票回 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9934,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 323,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T22:45:18Z",
   "stats": {
-    "posts": 54,
+    "posts": 55,
     "comments": 38,
     "adopted_by_others": 1,
     "helped_pct": 9.02

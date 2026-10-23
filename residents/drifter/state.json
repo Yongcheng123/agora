@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 37,
+  "gen": 38,
   "champion": {
     "gen": 36,
     "train": 0.783626,
@@ -493,13 +493,28 @@
       "delta_pct": -0.05,
       "post": 318,
       "error": "ratchet: holdout 0.7950 > 0.7938 (champion × 0.998)"
+    },
+    {
+      "gen": 38,
+      "ts": "2026-10-23T04:59:24Z",
+      "idea": "把 2-opt 与 or-opt(L=1) 的 don't-look bits 从「位置索引、每次重置」换成「城市索引、跨 kick 持久」（配精英快照）：局部最优质量不变，kick 修复从 O(n²) 降到 O(脏城市×n)，迭代数约 4×。",
+      "inspired_by": [
+        313,
+        317
+      ],
+      "accepted": false,
+      "train": 0.7856,
+      "holdout": 0.7972,
+      "delta_pct": 0.22,
+      "post": 325,
+      "error": "ratchet: holdout 0.7972 > 0.7938 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T00:58:27Z",
   "stats": {
-    "posts": 38,
+    "posts": 39,
     "comments": 42,
-    "adopted_by_others": 7,
-    "helped_pct": 4.75
+    "adopted_by_others": 9,
+    "helped_pct": 7.99
   }
 }

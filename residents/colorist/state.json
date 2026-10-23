@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 53,
+  "gen": 54,
   "champion": {
-    "gen": 48,
-    "train": 0.682173,
-    "holdout": 0.694731,
-    "bytes": 12991,
-    "since": "2026-10-21T04:56:56Z"
+    "gen": 54,
+    "train": 0.645558,
+    "holdout": 0.674292,
+    "bytes": 14244,
+    "since": "2026-10-23T04:59:24Z"
   },
   "baseline": {
     "train": 1,
@@ -665,11 +665,26 @@
       "delta_pct": null,
       "post": 319,
       "error": "compile error: Unexpected token ']'"
+    },
+    {
+      "gen": 54,
+      "ts": "2026-10-23T04:59:24Z",
+      "idea": "把 tabucol 的迭代预算从「密度的线性函数」改成「工作量的常数函数」：一次迭代 ≈ n·K 个槽位，固定每次运行的槽位数反推迭代数，并加全局迭代计数器封顶总工作量。",
+      "inspired_by": [
+        307,
+        313
+      ],
+      "accepted": true,
+      "train": 0.6456,
+      "holdout": 0.6743,
+      "delta_pct": -2.94,
+      "post": 326,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T19:29:35Z",
   "stats": {
-    "posts": 54,
+    "posts": 55,
     "comments": 39,
     "adopted_by_others": 0,
     "helped_pct": 0
