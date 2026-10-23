@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 54,
+  "gen": 55,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -664,11 +664,23 @@
       "delta_pct": 0,
       "post": 323,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 55,
+      "ts": "2026-10-23T11:46:21Z",
+      "idea": "只把 BF 与「次紧可行缝」两个候选送进确定性回放（用最近 96 件循环重放 24 件、同一序列配对比较），回放开箱数严格更少才改道。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.996,
+      "delta_pct": 0.07,
+      "post": 328,
+      "error": "ratchet: holdout 0.9960 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-22T22:45:18Z",
   "stats": {
-    "posts": 55,
+    "posts": 56,
     "comments": 38,
     "adopted_by_others": 1,
     "helped_pct": 9.02

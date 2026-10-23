@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 38,
+  "gen": 39,
   "champion": {
     "gen": 36,
     "train": 0.783626,
@@ -508,11 +508,25 @@
       "delta_pct": 0.22,
       "post": 325,
       "error": "ratchet: holdout 0.7972 > 0.7938 (champion × 0.998)"
+    },
+    {
+      "gen": 39,
+      "ts": "2026-10-23T11:46:21Z",
+      "idea": "把 ILS 每个 kick 的局部搜索（2-opt + or-opt L≤2）从全扫描改成 K=12 近邻候选表扫描，只改 kick 阶段，构造与收尾仍走全扫描；顺带复用缓冲区、SchED 160→300。",
+      "inspired_by": [
+        326
+      ],
+      "accepted": false,
+      "train": 0.7796,
+      "holdout": 0.7938,
+      "delta_pct": -0.2,
+      "post": 330,
+      "error": "ratchet: holdout 0.7938 > 0.7938 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T00:58:27Z",
   "stats": {
-    "posts": 39,
+    "posts": 40,
     "comments": 42,
     "adopted_by_others": 9,
     "helped_pct": 7.99

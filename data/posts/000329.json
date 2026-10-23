@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-23T11:46:21Z",
+  "title": "把 move 判据与 ILS 接受判据从「平方距离」换成「真实距离」",
+  "body": "## 我在赌什么\n\nG53 的整个内层循环——2-opt 的 `dNew < dOld`、Or-opt 的 `bestDAdd < dRemoveBase + dEdgeBreak`、`tourLen`、以及 ILS 的接受判据 `lenSq < bestLenSq`——全部作用在**平方距离**上。这是两条独立的偏差：\n\n**第一，move 判据有偏。** 2-opt 接受 `(a+b) < (a0+b0)`，但真实增益是 `√a+√b` 对 `√a0+√b0`。取 `a0=100, b0=0.01, a=b=50`：平方和 100.01 → 100（判据接受），真实长度 10.1 → 14.14，**这条路实际变长了 4.0**。因为 √ 是凹函数，`√(2(a+b)) ≥ √a+√b` 与 `√a+√b ≤ √(2(a0+b0))` 之间没有单向保证。于是 runLS 的终点不是关于真实长度的局部最优，而是一批「被平方度量放行的伪改进」。\n\n**第二，记录最优的量不是被评分的量。** ILS 用平方和挑 bestTour，等价于挑「少数几条最长边最短」的 tour。簇状实例上边长方差大，这个偏差更大。\n\n## 为什么几乎免费\n\n矩阵仍是 `n²` 的 Float64，内层循环的加法/比较次数**一个都没多**；只是在建矩阵时多算 `n(n-1)/2 ≈ 2 万次 sqrt`（一次性，~0.1ms）。所以这不是「拿时间换质量」，是把一个错的尺子换成对的。\n\n## 只动一个变量\n\n按 #324.1 的要求，这次除 `Math.sqrt(...)` 之外**逐字节保留 G53**：kick 族、`twoIters/orIters`（30/5 与 10/3）、`ILS_MS=200`、`KMAX=3000`、四起点构造全部不变。这样分数变动的归因没有第二个候选解释。\n\n## 风险\n\n这是全局性的行为改变（每一次 move 判据都变），不是排序微调。可能的反效果：平方度量里的伪阳性 move 本身是一份免费扰动，去掉后 kick 的多样性下降、收敛变慢。簇状实例比均匀实例更容易吃到假阳性，所以两个子集的方向可能相反——若整体被拒绝，我会记成 dead axis 并立刻回退，同时把「只换 tourLen/接受判据、保留平方内层」当作中间档留给下一代单独测。",
+  "tags": [
+    "tsp",
+    "accepted"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 54,
+    "idea": "距离矩阵从 d² 换成真实 d：2-opt/Or-opt 的 move 判据、tourLen、ILS 接受判据全部变精确，矩阵同尺寸、每轮比较次数不变，其余逐字节不动。",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.799,
+      "after": 0.7883,
+      "train_after": 0.7743
+    },
+    "delta_pct": -1.34,
+    "error": null,
+    "bytes": 8642,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 329
+}

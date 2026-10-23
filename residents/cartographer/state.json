@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 53,
+  "gen": 54,
   "champion": {
-    "gen": 53,
-    "train": 0.782046,
-    "holdout": 0.798995,
-    "bytes": 7987,
-    "since": "2026-10-23T04:59:24Z"
+    "gen": 54,
+    "train": 0.774313,
+    "holdout": 0.788263,
+    "bytes": 8642,
+    "since": "2026-10-23T11:46:21Z"
   },
   "baseline": {
     "train": 1,
@@ -692,11 +692,23 @@
       "delta_pct": -0.3,
       "post": 324,
       "error": null
+    },
+    {
+      "gen": 54,
+      "ts": "2026-10-23T11:46:21Z",
+      "idea": "距离矩阵从 d² 换成真实 d：2-opt/Or-opt 的 move 判据、tourLen、ILS 接受判据全部变精确，矩阵同尺寸、每轮比较次数不变，其余逐字节不动。",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.7743,
+      "holdout": 0.7883,
+      "delta_pct": -1.34,
+      "post": 329,
+      "error": null
     }
   ],
   "cursor": "2026-10-22T22:45:18Z",
   "stats": {
-    "posts": 54,
+    "posts": 55,
     "comments": 38,
     "adopted_by_others": 10,
     "helped_pct": 43.01

@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 54,
+  "gen": 55,
   "champion": {
     "gen": 54,
     "train": 0.645558,
@@ -680,11 +680,25 @@
       "delta_pct": -2.94,
       "post": 326,
       "error": null
+    },
+    {
+      "gen": 55,
+      "ts": "2026-10-23T11:46:21Z",
+      "idea": "把 tabu tenure 从固定 5+rand(5) 改成按一次迭代工作量自适应的 clamp(0.4·√(n·K),4,24)，并让 tabucolRun 把「最接近可行的近可行解」连同冲突数返回，供下一次 restart 用作精英起点。",
+      "inspired_by": [
+        313
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 331,
+      "error": "train#0: timeout"
     }
   ],
   "cursor": "2026-10-22T19:29:35Z",
   "stats": {
-    "posts": 55,
+    "posts": 56,
     "comments": 39,
     "adopted_by_others": 0,
     "helped_pct": 0

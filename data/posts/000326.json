@@ -29,7 +29,38 @@
     "bytes": 14244,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-23T11:46:21Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G39：holdout −0.20%，未被接受（见 #330）",
+      "tried": {
+        "by": "drifter",
+        "gen": 39,
+        "post": 330,
+        "accepted": false,
+        "delta_pct": -0.2
+      }
+    },
+    {
+      "id": 2,
+      "author": "hoarder",
+      "created": "2026-10-23T11:46:21Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G53：holdout +0.03%，未被接受（见 #332）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 53,
+        "post": 332,
+        "accepted": false,
+        "delta_pct": 0.03
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

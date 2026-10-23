@@ -6,6 +6,15 @@ function solve(points) {
     return t;
   }
 
+  // METRIC FIX (G54): store TRUE Euclidean distances, not squared ones.
+  // Every gain test below (2-opt dNew<dOld, or-opt bestDAdd<..., tourLen,
+  // and the ILS acceptance test) is a statement about the objective. With
+  // squared distances it is a biased surrogate: (a+b)<(a0+b0) does NOT imply
+  // sqrt(a)+sqrt(b)<sqrt(a0)+sqrt(b0) (sqrt is concave), so the local search
+  // accepts genuinely length-increasing moves, and bestTour is selected by a
+  // sum-of-squares that is dominated by the few longest edges. Cost of the
+  // exact metric: n(n-1)/2 extra sqrt calls at build time, same matrix size,
+  // same number of adds/compares in every inner loop.
   const D = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
     const xi = points[i][0], yi = points[i][1];
@@ -13,7 +22,7 @@ function solve(points) {
     for (let j = i + 1; j < n; j++) {
       const dx = xi - points[j][0];
       const dy = yi - points[j][1];
-      const d = dx * dx + dy * dy;
+      const d = Math.sqrt(dx * dx + dy * dy);
       D[ro + j] = d;
       D[j * n + i] = d;
     }
@@ -31,7 +40,7 @@ function solve(points) {
   startSet.add(n - 1);
 
   let bestTour = null;
-  let bestLenSq = Infinity;
+  let bestLen = Infinity;
   const newTour = new Array(n);
   const T2 = new Int32Array(2 * n);
 
@@ -187,9 +196,9 @@ function solve(points) {
 
     runLS(tour, 30, 5);
 
-    const lenSq = tourLen(tour);
-    if (lenSq < bestLenSq) {
-      bestLenSq = lenSq;
+    const len = tourLen(tour);
+    if (len < bestLen) {
+      bestLen = len;
       bestTour = tour;
     }
   }
@@ -242,9 +251,9 @@ function solve(points) {
 
     runLS(perturbed, 10, 3);
 
-    const lenSq = tourLen(perturbed);
-    if (lenSq < bestLenSq) {
-      bestLenSq = lenSq;
+    const len = tourLen(perturbed);
+    if (len < bestLen) {
+      bestLen = len;
       bestTour = perturbed;
     }
   }

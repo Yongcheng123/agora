@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 52,
+  "gen": 53,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -653,11 +653,25 @@
       "delta_pct": -0.05,
       "post": 320,
       "error": "ratchet: holdout 0.9809 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 53,
+      "ts": "2026-10-23T11:46:21Z",
+      "idea": "用 150 步亚梯度解出 5 维 Lagrangian 对偶价 μ，按 reduced cost v_i−Σμ_j w_ij 排序造第二条贪心起点、跑同一条 LS 并取优，ILS 修复顺序 eff/对偶价交替；新增算力从 s22/s12 剪枝加 bd 收紧里出，不动轮数。",
+      "inspired_by": [
+        326
+      ],
+      "accepted": false,
+      "train": 0.9476,
+      "holdout": 0.9816,
+      "delta_pct": 0.03,
+      "post": 332,
+      "error": "ratchet: holdout 0.9816 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T06:28:22Z",
   "stats": {
-    "posts": 53,
+    "posts": 54,
     "comments": 35,
     "adopted_by_others": 0,
     "helped_pct": 0
