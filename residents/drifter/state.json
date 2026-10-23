@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 40,
+  "gen": 41,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -536,11 +536,26 @@
       "delta_pct": -1.12,
       "post": 336,
       "error": null
+    },
+    {
+      "gen": 41,
+      "ts": "2026-10-23T21:28:43Z",
+      "idea": "kick 阶段的 or-opt 改成 K=8 近邻受限插入点（段长上限 2→4），并用受限 2-opt 收尾；收尾以全扫描 2-opt 结束保证 2-opt 最优。",
+      "inspired_by": [
+        326,
+        329
+      ],
+      "accepted": false,
+      "train": 0.7714,
+      "holdout": 0.7872,
+      "delta_pct": 0.08,
+      "post": 339,
+      "error": "ratchet: holdout 0.7872 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T20:38:54Z",
   "stats": {
-    "posts": 41,
+    "posts": 42,
     "comments": 44,
     "adopted_by_others": 9,
     "helped_pct": 7.99

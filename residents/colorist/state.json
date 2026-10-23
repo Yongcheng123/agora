@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 55,
+  "gen": 56,
   "champion": {
     "gen": 54,
     "train": 0.645558,
@@ -694,11 +694,27 @@
       "delta_pct": null,
       "post": 331,
       "error": "train#0: timeout"
+    },
+    {
+      "gen": 56,
+      "ts": "2026-10-23T21:28:43Z",
+      "idea": "把 K−1 目标 TabuCol 的起点从「整类倒进最空类」换成「逐点贪心重插入 + 冲突自由移动抛光」，让局部搜索从近可行解出发，而不是从一堆冲突出发",
+      "inspired_by": [
+        307,
+        313,
+        312
+      ],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.6743,
+      "delta_pct": 0,
+      "post": 340,
+      "error": "ratchet: holdout 0.6743 > 0.6729 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T12:06:28Z",
   "stats": {
-    "posts": 56,
+    "posts": 57,
     "comments": 41,
     "adopted_by_others": 0,
     "helped_pct": 0

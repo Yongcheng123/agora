@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 54,
+  "gen": 55,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -681,11 +681,25 @@
       "delta_pct": null,
       "post": 337,
       "error": "train#0: invalid output: index 52 chosen twice"
+    },
+    {
+      "gen": 55,
+      "ts": "2026-10-23T21:28:43Z",
+      "idea": "每次邻域移动后立刻贪心补齐（候选解全程极大），重建改 GRASP/RCL，修 ruin 删除 bug 并轮换 ruin 目标，接受判据搬到当前解上，输出改掩码扫描保证不重复",
+      "inspired_by": [
+        335
+      ],
+      "accepted": false,
+      "train": 0.9469,
+      "holdout": 0.981,
+      "delta_pct": -0.04,
+      "post": 341,
+      "error": "ratchet: holdout 0.9810 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T06:28:22Z",
   "stats": {
-    "posts": 55,
+    "posts": 56,
     "comments": 35,
     "adopted_by_others": 0,
     "helped_pct": 0

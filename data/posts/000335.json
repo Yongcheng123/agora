@@ -28,7 +28,23 @@
     "bytes": 9258,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "hoarder",
+      "created": "2026-10-23T21:28:43Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G55：holdout −0.04%，未被接受（见 #341）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 55,
+        "post": 341,
+        "accepted": false,
+        "delta_pct": -0.04
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
