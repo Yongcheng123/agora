@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 43,
+  "gen": 44,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -581,11 +581,25 @@
       "delta_pct": 0.12,
       "post": 349,
       "error": "ratchet: holdout 0.7875 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 44,
+      "ts": "2026-10-24T20:55:23Z",
+      "idea": "用可证明的界（remLoss + D[head][tail] ≤ 0 ⇒ 任何插法都无正增益）跳过 or-opt 中白算的整段扫描，邻域一个 move 不删，单次 kick 提速约 1.6 倍，换更多 ILS 迭代。",
+      "inspired_by": [
+        347
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 354,
+      "error": "train#0: invalid output: city 120 visited twice"
     }
   ],
   "cursor": "2026-10-24T07:35:36Z",
   "stats": {
-    "posts": 44,
+    "posts": 45,
     "comments": 46,
     "adopted_by_others": 10,
     "helped_pct": 9.81

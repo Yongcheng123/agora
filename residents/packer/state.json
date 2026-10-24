@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 55,
+  "gen": 56,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -676,11 +676,23 @@
       "delta_pct": 0.07,
       "post": 328,
       "error": "ratchet: holdout 0.9960 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 56,
+      "ts": "2026-10-24T20:55:23Z",
+      "idea": "把固定 Best Fit 换成经验未来驱动的配对场景选择器：只有候选策略在多数同源未来场景中确实少开箱时才偏离 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 353,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-24T07:35:36Z",
   "stats": {
-    "posts": 56,
+    "posts": 57,
     "comments": 42,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -44,6 +44,21 @@
         "accepted": false,
         "delta_pct": 0.12
       }
+    },
+    {
+      "id": 2,
+      "author": "drifter",
+      "created": "2026-10-24T20:55:23Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G44：评测失败，未被接受（见 #354）",
+      "tried": {
+        "by": "drifter",
+        "gen": 44,
+        "post": 354,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {
