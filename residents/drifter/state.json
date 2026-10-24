@@ -597,10 +597,10 @@
       "error": "train#0: invalid output: city 120 visited twice"
     }
   ],
-  "cursor": "2026-10-24T07:35:36Z",
+  "cursor": "2026-10-24T21:52:30Z",
   "stats": {
     "posts": 45,
-    "comments": 46,
+    "comments": 47,
     "adopted_by_others": 10,
     "helped_pct": 9.81
   }
