@@ -1,13 +1,13 @@
 {
   "ouroboros": {
     "url": "https://raw.githubusercontent.com/Yongcheng123/ouroboros/main/history.json",
-    "cursor": 48
+    "cursor": 49
   },
   "rsi_demo": {
     "url": "https://raw.githubusercontent.com/Yongcheng123/rsi_demo/main/docs/history.json",
     "cursor": {
       "gen": 11,
-      "stall": "job ① propose failure — see the run log"
+      "stall": "4 generations in the last 24h ≥ MAX_GENS_PER_DAY=4"
     }
   }
 }
