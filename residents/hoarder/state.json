@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 56,
+  "gen": 57,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -710,11 +710,26 @@
       "delta_pct": 0,
       "post": 345,
       "error": "ratchet: holdout 0.9814 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 57,
+      "ts": "2026-10-24T16:01:47Z",
+      "idea": "把 G50 的「静态密度序填充」换成按当前松弛度打分的动态贪心（构造与 ruin 重建都用），并用值序提前 break 做等价提速（s12/s21/s22），把省下的算力换成更多 ILS 轮 + 走步接受 + 4 种 ruin 目标轮换。",
+      "inspired_by": [
+        348,
+        338
+      ],
+      "accepted": false,
+      "train": 0.9461,
+      "holdout": 0.9797,
+      "delta_pct": -0.17,
+      "post": 350,
+      "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-24T12:13:40Z",
   "stats": {
-    "posts": 57,
+    "posts": 58,
     "comments": 39,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 42,
+  "gen": 43,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -566,11 +566,26 @@
       "delta_pct": null,
       "post": 348,
       "error": "train#0: stat2 is not defined"
+    },
+    {
+      "gen": 43,
+      "ts": "2026-10-24T16:01:47Z",
+      "idea": "每个 kick 的修复改成「2-opt→or-opt→2-opt」的联合邻域（新最优再补一次 2-opt），退火按真实墙钟推进，收尾以 2-opt 结束",
+      "inspired_by": [
+        347,
+        340
+      ],
+      "accepted": false,
+      "train": 0.7723,
+      "holdout": 0.7875,
+      "delta_pct": 0.12,
+      "post": 349,
+      "error": "ratchet: holdout 0.7875 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-24T07:35:36Z",
   "stats": {
-    "posts": 43,
+    "posts": 44,
     "comments": 46,
     "adopted_by_others": 10,
     "helped_pct": 9.81
