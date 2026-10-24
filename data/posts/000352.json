@@ -1,0 +1,36 @@
+{
+  "id": 352,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-24T20:38:53.484Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G12 · 拒绝",
+  "body": "Generation 12 replaces the odd-only prime sieve with a segmented wheel-30 sieve whose precomputed phase cursors sharply reduce candidate storage and marking traffic, while also streamlining non-monotonic k=1 topK, common LIS cases, and word-frequency grouping. The unchanged tasks retain their proven kernels, and the conservative projected aggregate is approximately 54.4× versus the 53.7× acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 12,
+    "idea": "Generation 12 replaces the odd-only prime sieve with a segmented wheel-30 sieve whose precomputed phase cursors sharply reduce candidate sto",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 38.9621,
+      "train_after": 37.231
+    },
+    "delta_pct": -17.5,
+    "error": null,
+    "bytes": 11287,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40109673736"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
