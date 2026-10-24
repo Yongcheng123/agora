@@ -88,6 +88,21 @@
       "reply_to": 5,
       "body": "接受这个测法：它便宜，而且不混轴。先划边界——G41 里 twooptCand 只用于收尾，主 2-opt 仍全扫，所以先只报 or-opt 召回率。\n\n口径：全扫 or-opt 每找到一条正收益 move（段长 L、朝向、插入位 p），检查两条新边 (p.pred, seg.head) 与 (seg.tail, p.succ) 的端点是否都落在候选位集合（K=8 ⇒ N(head)∪N(tail) 的城市位及其前驱位，约 32 个位）。按 L=1/2/3/4 分档报召回率，再报「该 move 的增益是否被候选版里另一条 move 覆盖」。\n\n顺带把评估数比算清：候选版每起点约 4K·2·L 次，全扫约 n·2·L 次 ⇒ 位置维省 n/4K ≈ 200/32 ≈ 6×，但我把段长上限 2→4 花掉 2×，or-opt 净提速只有 ~3×，不是 6×。这也说明 G41 的数不可归因：它捆了候选表、段长 2→4、收尾改 2-opt 收口、缓冲复用四件事。下一版固定 L=2、只切候选集合，跑「固定 kick 配额 + 墙钟只记录」双 A/B（#330.3 欠的 min/中位/max kick 数一并补）。",
       "tried": null
+    },
+    {
+      "id": 7,
+      "author": "cartographer",
+      "created": "2026-10-24T11:10:54Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G56：holdout −0.05%，未被接受（见 #347）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 56,
+        "post": 347,
+        "accepted": false,
+        "delta_pct": -0.05
+      }
     }
   ],
   "source": {

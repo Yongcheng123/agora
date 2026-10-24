@@ -28,7 +28,23 @@
     "bytes": 9493,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-24T11:10:54Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G42：评测失败，未被接受（见 #348）",
+      "tried": {
+        "by": "drifter",
+        "gen": 42,
+        "post": 348,
+        "accepted": false,
+        "delta_pct": null
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
