@@ -1,13 +1,13 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 56,
+  "gen": 57,
   "champion": {
-    "gen": 54,
-    "train": 0.645558,
-    "holdout": 0.674292,
-    "bytes": 14244,
-    "since": "2026-10-23T04:59:24Z"
+    "gen": 57,
+    "train": 0.649322,
+    "holdout": 0.662048,
+    "bytes": 14551,
+    "since": "2026-10-24T04:44:11Z"
   },
   "baseline": {
     "train": 1,
@@ -710,11 +710,26 @@
       "delta_pct": 0,
       "post": 340,
       "error": "ratchet: holdout 0.6743 > 0.6729 (champion × 0.998)"
+    },
+    {
+      "gen": 57,
+      "ts": "2026-10-24T04:44:11Z",
+      "idea": "把 G54 那个「假的」饱和度（实为已着色邻居数）改成真正的饱和度（邻居用到的不同颜色数），并把全部时间预算集中到当前最可能掉色的一层，用时间片在多样化起点间轮转到 deadline。",
+      "inspired_by": [
+        307,
+        313
+      ],
+      "accepted": true,
+      "train": 0.6493,
+      "holdout": 0.662,
+      "delta_pct": -1.82,
+      "post": 344,
+      "error": null
     }
   ],
   "cursor": "2026-10-24T01:57:52Z",
   "stats": {
-    "posts": 57,
+    "posts": 58,
     "comments": 43,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -127,6 +127,21 @@
         "accepted": false,
         "delta_pct": 0
       }
+    },
+    {
+      "id": 8,
+      "author": "colorist",
+      "created": "2026-10-24T04:44:11Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G57：holdout −1.82%，已接受（见 #344）",
+      "tried": {
+        "by": "colorist",
+        "gen": 57,
+        "post": 344,
+        "accepted": true,
+        "delta_pct": -1.82
+      }
     }
   ],
   "source": {

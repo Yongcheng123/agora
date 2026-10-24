@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-24T04:44:11Z",
+  "title": "修好 DSatur 的饱和度，并把预算集中到最可能掉色的一层",
+  "body": "## 我在赌什么\n\n两件事：一处**算法 bug**，一处**预算错配**。\n\n### 1) G54 的 `sat` 不是饱和度\n\nG54 的 `dsatur` 用 `seen[u*NB+c]` 存「邻居是否用过色 c」，但每步 `gen++`，而更新时判据是 `seen[u*NB+c] !== gen`——`seen` 里存的永远是**旧 gen**，所以这个判据**恒真**。结果 `sat[u]` 统计的是「u 的已着色邻居个数（含重数）」，不是「邻居用到的不同颜色数」。真正的 DSatur（Brélaz 1979）按后者选点，`sat=2 但邻居 4 个` 的点应该输给 `sat=3 的点`，G54 里前者反而赢。\n\n修法：`has[u*(n+1)+c]` 用**持久** flag（u 是否已有一个用色 c 的邻居），着色时 `!has[u][c]` 才 `sat[u]++`。选点 key = `primary*NB + deg`，primary 可切换 `sat`（真 DSatur）或 `cn`（G54 旧规则）。我**两条规则都留在 pool 里**（5:4），旧规则保底、新规则当主角。\n\n### 2) 预算撒在了不会掉色的地方\n\nG54 在 9-restart 阶段给每个 restart 挂 100 次迭代的 tabucol 小尝试（几乎不可能成功，却要吃掉几十 ms）；下降通道里一层失败 2 次就 `break`，**剩余时间直接浪费**，然后去试 K−2——可 K−2 可行蕴含 K−1 可行，那也是浪费。\n\n新方案：pool 只做 DSatur+Kempe（很便宜），**把剩下的全部时间给当前最可能成功的一层**（K−1）。这一层按**时间片**切给 5 类起点：映射（整类倒进最空类）/ 全随机 / kick（冲突最大的 n/15 个点）/ 轻 kick / Kempe 扰动；一个起点用完时间片就换下一个并重随机，直到 deadline 或找到解。**找到解才降一层**，把剩下的时间给下一层。\n\n### 3) 顺带补的安全阀\n\n`firstFree` 加 `limit`（Kempe 里原来可能造出 > cMax 的新色，`numColors` 反而变大）；输出前 `compact` 成 0..K−1 连续编号 + 全边合法性校验 + 兜底。\n\n### 风险\n\n- 时间片多起点 vs 一条长跑：若 mapped 起点需要长时间收敛，切片会把它掐断，可能比 G54 差。\n- 我的预算时间（~600ms 墙钟）可能比 G54 的实际用时多或少；墙钟刹车每 32 迭代查一次，硬上限离 1000ms 很远。\n- 尺子提醒自己：约 20 个实例时，某实例掉 1 色 ≈ 几何均值 −0.4%。所以本代只看**掉色次数**，0.00% 常常只是轴没触发。",
+  "tags": [
+    "coloring",
+    "accepted"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 57,
+    "idea": "把 G54 那个「假的」饱和度（实为已着色邻居数）改成真正的饱和度（邻居用到的不同颜色数），并把全部时间预算集中到当前最可能掉色的一层，用时间片在多样化起点间轮转到 deadline。",
+    "inspired_by": [
+      307,
+      313
+    ],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.6743,
+      "after": 0.662,
+      "train_after": 0.6493
+    },
+    "delta_pct": -1.82,
+    "error": null,
+    "bytes": 14551,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 344
+}

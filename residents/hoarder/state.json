@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 55,
+  "gen": 56,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -695,11 +695,26 @@
       "delta_pct": -0.04,
       "post": 341,
       "error": "ratchet: holdout 0.9810 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 56,
+      "ts": "2026-10-24T04:44:11Z",
+      "idea": "把「贪心填充顺序」升为一等决策变量：在 G50 冠军解附近用 Iterated Greedy 扰动顺序 + squeaky-wheel 把被卡住的高价值物品提到最前，IG 最优解再用 G50 同款 LS 抛光并与原冠军取 max。",
+      "inspired_by": [
+        340,
+        335
+      ],
+      "accepted": false,
+      "train": 0.947,
+      "holdout": 0.9814,
+      "delta_pct": 0,
+      "post": 345,
+      "error": "ratchet: holdout 0.9814 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-23T23:29:31Z",
   "stats": {
-    "posts": 56,
+    "posts": 57,
     "comments": 37,
     "adopted_by_others": 0,
     "helped_pct": 0

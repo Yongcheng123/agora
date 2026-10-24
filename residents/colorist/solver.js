@@ -1,18 +1,32 @@
 function solve(n, edges) {
-  const adj = [];
-  for (let i = 0; i < n; i++) adj.push([]);
-  for (const e of edges) { const u = e[0]; const v = e[1]; adj[u].push(v); adj[v].push(u); }
+  const T0 = Date.now();
+  const DEADLINE = T0 + 600;
+  const NB = n + 1;
+
+  const adj = new Array(n);
+  for (let i = 0; i < n; i++) adj[i] = [];
+  for (let i = 0; i < edges.length; i++) {
+    const u = edges[i][0], v = edges[i][1];
+    adj[u].push(v);
+    adj[v].push(u);
+  }
   const deg = new Int32Array(n);
   for (let v = 0; v < n; v++) deg[v] = adj[v].length;
 
-  const NB = n + 1;
-  const T0 = Date.now();
-  const bud = { left: Infinity };
+  // fast deterministic PRNG (xorshift32) - Math.random in the inner loop is hot
+  let rs = (0x9E3779B9 ^ Math.imul(n + 1, 0x85EBCA6B)) | 0;
+  if (rs === 0) rs = 0x1BADB002;
+  function rnd() {
+    rs ^= rs << 13; rs |= 0;
+    rs ^= rs >>> 17;
+    rs ^= rs << 5; rs |= 0;
+    return (rs >>> 0) * 2.3283064365386963e-10;
+  }
+
   const usedArr = new Int32Array(n + 2);
   let ustm = 0;
-
-  // G54 safety: colour choice without 32-bit masks (K can exceed 31 at p=0.5)
-  function firstFree(v, col) {
+  // smallest colour <= limit not used by any neighbour; never create a colour above limit
+  function firstFree(v, col, limit) {
     ustm++;
     const al = adj[v];
     for (let i = 0; i < al.length; i++) {
@@ -20,50 +34,14 @@ function solve(n, edges) {
       if (cu >= 0) usedArr[cu] = ustm;
     }
     let c = 0;
-    while (usedArr[c] === ustm) c++;
-    return c;
+    while (c <= limit && usedArr[c] === ustm) c++;
+    return c <= limit ? c : col[v];
   }
 
-  function dsatur(rng) {
-    const col = new Int32Array(n).fill(-1);
-    const sat = new Int32Array(n);
-    const seen = new Int32Array(n * NB);
-    const inRem = new Uint8Array(n).fill(1);
-    let gen = 0;
-    for (let step = 0; step < n; step++) {
-      gen++;
-      let b = -1, bs = -1, bd = -1;
-      for (let v = 0; v < n; v++) {
-        if (!inRem[v]) continue;
-        const s = sat[v], d = deg[v];
-        if (s > bs || (s === bs && d > bd)) { b = v; bs = s; bd = d; }
-      }
-      if (rng) {
-        let tc = 0, pickV = -1;
-        for (let v = 0; v < n; v++) {
-          if (inRem[v] && sat[v] === bs && deg[v] === bd) {
-            tc++;
-            if (rng() < 1 / tc) pickV = v;
-          }
-        }
-        if (pickV >= 0) b = pickV;
-      }
-      const al = adj[b];
-      const base = b * NB;
-      for (let i = 0; i < al.length; i++) {
-        const cu = col[al[i]];
-        if (cu >= 0) seen[base + cu] = gen;
-      }
-      let c = 0;
-      while (seen[base + c] === gen) c++;
-      col[b] = c;
-      inRem[b] = 0;
-      for (let i = 0; i < al.length; i++) {
-        const u = al[i];
-        if (inRem[u] && seen[u * NB + c] !== gen) { seen[u * NB + c] = gen; sat[u]++; }
-      }
-    }
-    return col;
+  function numColors(col) {
+    let mx = 0;
+    for (let v = 0; v < n; v++) if (col[v] > mx) mx = col[v];
+    return mx + 1;
   }
 
   function recolorFixed(col) {
@@ -83,10 +61,63 @@ function solve(n, edges) {
     return col;
   }
 
-  function numColors(col) {
-    let mx = 0;
-    for (let v = 0; v < n; v++) if (col[v] > mx) mx = col[v];
-    return mx + 1;
+  // renumber to 0..k-1 in order of first appearance; returns number of distinct colours
+  function compact(col) {
+    const map = new Int32Array(NB).fill(-1);
+    let k = 0;
+    for (let v = 0; v < n; v++) {
+      const c = col[v];
+      if (map[c] < 0) map[c] = k++;
+      col[v] = map[c];
+    }
+    return k;
+  }
+
+  // rule 0: TRUE saturation degree (distinct colours among coloured neighbours) - Brélaz DSatur
+  // rule 1: number of coloured neighbours (the G54 rule) - kept as a pool diversity variant
+  function dsatur(rule, randomTies) {
+    const col = new Int32Array(n).fill(-1);
+    const sat = new Int32Array(n);
+    const cn = new Int32Array(n);
+    const has = new Uint8Array(n * NB);      // has[u*NB+c] = u has a coloured neighbour of colour c
+    const inRem = new Uint8Array(n).fill(1);
+    for (let step = 0; step < n; step++) {
+      let b = -1, bk = -1;
+      for (let v = 0; v < n; v++) {
+        if (!inRem[v]) continue;
+        const p = rule === 0 ? sat[v] : cn[v];
+        const key = p * NB + deg[v];
+        if (key > bk) { bk = key; b = v; }
+      }
+      if (randomTies) {
+        let cnt = 0, pick = -1;
+        for (let v = 0; v < n; v++) {
+          if (!inRem[v]) continue;
+          const p = rule === 0 ? sat[v] : cn[v];
+          const key = p * NB + deg[v];
+          if (key === bk) { cnt++; if (rnd() * cnt < 1) pick = v; }
+        }
+        if (pick >= 0) b = pick;
+      }
+      const al = adj[b];
+      const base = b * NB;
+      for (let i = 0; i < al.length; i++) {
+        const cu = col[al[i]];
+        if (cu >= 0) has[base + cu] = 1;
+      }
+      let c = 0;
+      while (has[base + c]) c++;
+      col[b] = c;
+      inRem[b] = 0;
+      for (let i = 0; i < al.length; i++) {
+        const u = al[i];
+        if (inRem[u]) {
+          cn[u]++;
+          if (!has[u * NB + c]) { has[u * NB + c] = 1; sat[u]++; }
+        }
+      }
+    }
+    return col;
   }
 
   function kempeReduce(work) {
@@ -121,12 +152,16 @@ function solve(n, edges) {
             }
           }
           trial.set(work);
-          for (const v of comp) trial[v] = work[v] === cMax ? cOther : cMax;
-          for (const v of comp) trial[v] = firstFree(v, trial);
-          let cMaxUsed = false;
-          for (let v = 0; v < n; v++) {
-            if (trial[v] === cMax) { cMaxUsed = true; break; }
+          for (let i = 0; i < comp.length; i++) {
+            const v = comp[i];
+            trial[v] = work[v] === cMax ? cOther : cMax;
           }
+          for (let i = 0; i < comp.length; i++) {
+            const v = comp[i];
+            trial[v] = firstFree(v, trial, cMax);
+          }
+          let cMaxUsed = false;
+          for (let v = 0; v < n; v++) if (trial[v] === cMax) { cMaxUsed = true; break; }
           if (!cMaxUsed) {
             work.set(trial);
             let mx = 0;
@@ -151,7 +186,7 @@ function solve(n, edges) {
     let cB = -1;
     let safety = 0;
     while (safety++ < 50) {
-      const c = (Math.random() * K) | 0;
+      const c = (rnd() * K) | 0;
       if (c !== cA && clsSize[c] > 0) { cB = c; break; }
     }
     if (cB < 0) return;
@@ -160,7 +195,7 @@ function solve(n, edges) {
       if (work[v] === cA) {
         const d = deg[v];
         if (d > startDeg) { startDeg = d; ties = 1; start = v; }
-        else if (d === startDeg) { ties++; if (Math.random() * ties < 1) start = v; }
+        else if (d === startDeg) { ties++; if (rnd() * ties < 1) start = v; }
       }
     }
     if (start < 0) return;
@@ -187,16 +222,15 @@ function solve(n, edges) {
     }
   }
 
-  // G54: global iteration counter caps total work; 800ms wall brake is a pure safety net
-  function tabucolRun(work, K, maxIter) {
-    let cap = maxIter;
-    if (bud.left < cap) cap = bud.left;
-    if (cap <= 0) return null;
-    bud.left -= cap;
-    const adjCC = new Int32Array(n * K);
+  // TabuCol (Hertz/de Werra style): K colours, minimise conflicts.
+  // Runs until a conflict-free colouring is found, maxIter is hit, or the wall clock passes deadline.
+  function tabucolRun(work, K, maxIter, deadline) {
+    if (K < 2) return null;
+    const nK = n * K;
+    const adjCC = new Int32Array(nK);
     const conflicts = new Int32Array(n);
-    const tabu = new Int32Array(n * K);
-    const freq = new Int32Array(n * K);
+    const tabu = new Int32Array(nK);
+    const freq = new Int32Array(nK);
     let totalConflicts = 0;
     for (let v = 0; v < n; v++) {
       const wv = work[v];
@@ -215,7 +249,7 @@ function solve(n, edges) {
     let bestWork = new Int32Array(work);
     let bestConflicts = totalConflicts;
     const tenureBase = 5;
-    for (let iter = 0; iter < cap; iter++) {
+    for (let iter = 0; iter < maxIter; iter++) {
       let bestV = -1, bestC = -1;
       let bestDelta = Infinity;
       let ties = 0;
@@ -238,7 +272,7 @@ function solve(n, edges) {
             const curF = freq[v * K + c];
             const bestF = freq[bestV * K + bestC];
             if (curF < bestF) { bestV = v; bestC = c; }
-            else if (curF === bestF && Math.random() * ties < 1) { bestV = v; bestC = c; }
+            else if (curF === bestF && rnd() * ties < 1) { bestV = v; bestC = c; }
           }
         }
       }
@@ -247,7 +281,7 @@ function solve(n, edges) {
       const cOld = work[v];
       const cNew = bestC;
       work[v] = cNew;
-      const tenure = tenureBase + ((Math.random() * tenureBase) | 0);
+      const tenure = tenureBase + ((rnd() * tenureBase) | 0);
       tabu[v * K + cOld] = iter + tenure;
       const al = adj[v];
       for (let i = 0; i < al.length; i++) {
@@ -267,8 +301,8 @@ function solve(n, edges) {
         bestWork = new Int32Array(work);
         if (bestConflicts === 0) break;
       }
-      if ((iter & 255) === 255) {
-        if (Date.now() - T0 > 800) break;
+      if ((iter & 31) === 31) {
+        if (Date.now() > deadline) break;
       }
       if ((iter & 63) === 63) {
         for (let i = 0; i < freq.length; i++) freq[i] >>= 2;
@@ -277,9 +311,9 @@ function solve(n, edges) {
     return bestConflicts === 0 ? bestWork : null;
   }
 
-  function tabucolTry(col, targetK, maxIter) {
-    const K = targetK;
-    if (K < 2) return null;
+  // map a colouring with more than K colours into K classes, overflow into the class
+  // with the fewest incident edges
+  function mapTo(col, K) {
     const ec = new Int32Array(K);
     for (let v = 0; v < n; v++) {
       if (col[v] >= K) {
@@ -289,162 +323,134 @@ function solve(n, edges) {
     }
     let bestI = 0;
     for (let i = 1; i < K; i++) if (ec[i] < ec[bestI]) bestI = i;
-    let work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
-    let r = tabucolRun(work, K, maxIter);
-    if (r) return r;
-    work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = (Math.random() * K) | 0;
-    r = tabucolRun(work, K, maxIter);
-    if (r) return r;
-    work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
-    const cf = new Int32Array(n);
-    for (let v = 0; v < n; v++) {
-      const al = adj[v];
-      for (let i = 0; i < al.length; i++) if (work[al[i]] === work[v]) cf[v]++;
-    }
-    const N_KICK = Math.max(5, Math.floor(n / 15));
-    const ids = new Int32Array(n);
-    for (let v = 0; v < n; v++) ids[v] = v;
-    ids.sort((a, b) => cf[b] - cf[a]);
-    for (let i = 0; i < N_KICK && i < n; i++) work[ids[i]] = (Math.random() * K) | 0;
-    r = tabucolRun(work, K, maxIter);
-    if (r) return r;
-    work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
-    kempePerturb(work, K);
-    r = tabucolRun(work, K, maxIter);
-    if (r) return r;
-    work = new Int32Array(n);
-    for (let v = 0; v < n; v++) work[v] = col[v] >= K ? bestI : col[v];
-    kempePerturb(work, K);
-    kempePerturb(work, K);
-    return tabucolRun(work, K, maxIter);
+    const out = new Int32Array(n);
+    for (let v = 0; v < n; v++) out[v] = col[v] >= K ? bestI : col[v];
+    return out;
   }
 
-  function descendColoring(startCol, startK, attempts, iter) {
-    let cur = new Int32Array(startCol);
-    let curK = startK;
-    let fails = 0;
-    for (let attempt = 0; attempt < attempts && curK > 2; attempt++) {
-      const reduced = tabucolTry(cur, curK - 1, iter);
-      if (!reduced) {
-        fails++;
-        if (fails >= 2) break;
-        continue;
+  // diverse starting points for the K-colour search
+  function buildStart(base, K, kind, round) {
+    const work = new Int32Array(base);
+    if (kind === 1) {
+      for (let v = 0; v < n; v++) work[v] = (rnd() * K) | 0;
+      return work;
+    }
+    if (kind === 2) {
+      const cf = new Int32Array(n);
+      for (let v = 0; v < n; v++) {
+        const al = adj[v];
+        let c = 0;
+        for (let i = 0; i < al.length; i++) if (work[al[i]] === work[v]) c++;
+        cf[v] = c;
       }
-      recolorFixed(reduced);
-      const newK = numColors(reduced);
-      cur = reduced;
-      if (newK < curK) {
-        curK = newK;
-        fails = 0;
-      } else {
-        fails++;
-        if (fails >= 2) break;
+      const ids = new Int32Array(n);
+      for (let v = 0; v < n; v++) ids[v] = v;
+      ids.sort((a, b) => cf[b] - cf[a]);
+      const NK = Math.max(5, Math.floor(n / 15));
+      for (let i = 0; i < NK && i < n; i++) work[ids[i]] = (rnd() * K) | 0;
+      return work;
+    }
+    if (kind === 3) {
+      const NK = Math.max(3, Math.floor(n / 30));
+      for (let i = 0; i < NK && i < n; i++) {
+        const v = (rnd() * n) | 0;
+        work[v] = (rnd() * K) | 0;
+      }
+      return work;
+    }
+    if (kind === 4) {
+      kempePerturb(work, K);
+      if (round > 0) kempePerturb(work, K);
+      return work;
+    }
+    // kind 0: the mapped colouring itself; on later rounds add a light kick so it is not a verbatim repeat
+    if (round > 0) {
+      const NK = Math.max(2, Math.floor(n / 50));
+      for (let i = 0; i < NK && i < n; i++) {
+        const v = (rnd() * n) | 0;
+        work[v] = (rnd() * K) | 0;
       }
     }
-    if (fails >= 2 && curK >= 5) {
-      const target = curK - 2;
-      const reduced = tabucolTry(cur, target, iter);
-      if (reduced) {
-        recolorFixed(reduced);
-        const newK = numColors(reduced);
-        if (newK < curK) { cur = reduced; curK = newK; }
-      }
-    }
-    return { col: cur, k: curK };
+    return work;
   }
 
-  const K_RESTARTS = 9;
-  let bestCol = null, bestK = Infinity, top2Col = null, top2K = Infinity;
-  for (let k = 0; k < K_RESTARTS; k++) {
-    const rng = k === 0 ? null : Math.random;
-    const col = dsatur(rng);
+  // ---------------- restart pool: DSatur (two rules) + Kempe reduction ----------------
+  const pool = [];
+  const R = 9;
+  for (let k = 0; k < R; k++) {
+    const rule = k < 5 ? 0 : 1;
+    const rand = k !== 0;
+    const col = dsatur(rule, rand);
     recolorFixed(col);
-    let cur = kempeReduce(col);
-    recolorFixed(cur);
-    let ck = numColors(cur);
-    for (let attempt = 0; attempt < 2 && ck > 2; attempt++) {
-      const reduced = tabucolTry(cur, ck - 1, 100);
-      if (!reduced) break;
-      recolorFixed(reduced);
-      const ck2 = numColors(reduced);
-      if (ck2 >= ck) break;
-      cur = reduced;
-      ck = ck2;
+    kempeReduce(col);
+    recolorFixed(col);
+    const kk = compact(col);
+    pool.push({ col: col, k: kk });
+  }
+  pool.sort((a, b) => a.k - b.k);
+
+  // ---------------- descent: give the whole remaining budget to the most promising level ----
+  let cur = pool[0].col;
+  let curK = pool[0].k;
+  const W = [0.34, 0.18, 0.14, 0.12, 0.10, 0.06, 0.03, 0.03];
+  const MAX_ITER = 1 << 28;
+
+  while (curK > 2) {
+    const T = curK - 1;
+    const levelStart = Date.now();
+    const cands = [];
+    for (let i = 0; i < pool.length; i++) if (pool[i].k > T) cands.push(pool[i]);
+    if (cands.length === 0) break;
+    cands.sort((a, b) => a.k - b.k);
+    const bases = [];
+    for (let i = 0; i < cands.length; i++) bases.push(mapTo(cands[i].col, T));
+    let found = null;
+    let trialIdx = 0;
+    let round = 0;
+    while (!found) {
+      if (DEADLINE - Date.now() <= 0) break;
+      for (let ci = 0; ci < cands.length && !found; ci++) {
+        for (let s = 0; s < 5 && !found; s++) {
+          const tnow = Date.now();
+          const trem = DEADLINE - tnow;
+          if (trem <= 0) break;
+          const w = W[trialIdx % W.length];
+          trialIdx++;
+          const slice = Math.min(trem, Math.max(1, Math.floor((DEADLINE - levelStart) * w)));
+          const work = buildStart(bases[ci], T, s, round);
+          const r = tabucolRun(work, T, MAX_ITER, tnow + slice);
+          if (r) { found = r; break; }
+        }
+      }
+      round++;
     }
-    if (ck < bestK) {
-      top2Col = bestCol; top2K = bestK;
-      bestCol = new Int32Array(cur); bestK = ck;
-    } else if (ck < top2K) {
-      top2Col = new Int32Array(cur); top2K = ck;
-    }
+    if (!found) break;
+    recolorFixed(found);
+    const nk = compact(found);
+    if (nk >= curK) break;
+    cur = found;
+    curK = nk;
+    pool.unshift({ col: new Int32Array(found), k: nk });
   }
 
-  let useTop2 = false;
-  if (top2Col && top2K <= bestK + 1) {
-    if (top2K > bestK) {
-      useTop2 = true;
-    } else {
-      let diff = 0;
-      for (let v = 0; v < n; v++) if (top2Col[v] !== bestCol[v]) diff++;
-      if (diff > (n >> 2)) useTop2 = true;
-    }
+  // ---------------- final validation + fallbacks ----------------
+  let finalCol = cur;
+  let ok = true;
+  for (let i = 0; i < edges.length; i++) {
+    const u = edges[i][0], v = edges[i][1];
+    if (finalCol[u] === finalCol[v]) { ok = false; break; }
   }
-
-  // === G54: work-based iteration budget ===
-  // one tabucol iteration ~= n*K (vertex,colour) slots; fix the slot budget per run
-  // and the total slot budget for the whole descent chain, converted with n*K.
-  const Kscan = bestK > 4 ? bestK - 1 : 4;
-  const costPerIter = Math.max(1, n * Kscan);
-  const SLOT_PER_RUN = 6500000;
-  let perRun = Math.round(SLOT_PER_RUN / costPerIter);
-  if (perRun < 400) perRun = 400;
-  if (perRun > 5000) perRun = 5000;
-  const TOTAL_SLOTS = 180000000;
-  bud.left = Math.round(TOTAL_SLOTS / costPerIter);
-  if (bud.left < 2000) bud.left = 2000;
-  if (bud.left > 200000) bud.left = 200000;
-  const iterDensity = perRun;
-
-  const r1 = descendColoring(bestCol, bestK, 5, iterDensity);
-  let cur = r1.col, curK = r1.k;
-  if (useTop2) {
-    const r2 = descendColoring(top2Col, top2K, 4, iterDensity);
-    if (r2.k < curK) { cur = r2.col; curK = r2.k; }
-  }
-  const r3 = descendColoring(cur, curK, 4, iterDensity);
-  if (r3.k < curK) { cur = r3.col; curK = r3.k; }
-
-  // === G54: guaranteed-proper output net ===
-  function isProper(col) {
-    for (let v = 0; v < n; v++) {
-      const cv = col[v];
-      const al = adj[v];
-      for (let i = 0; i < al.length; i++) if (col[al[i]] === cv) return false;
+  if (!ok) {
+    finalCol = dsatur(0, false);
+    ok = true;
+    for (let i = 0; i < edges.length; i++) {
+      const u = edges[i][0], v = edges[i][1];
+      if (finalCol[u] === finalCol[v]) { ok = false; break; }
     }
-    return true;
+    if (!ok) for (let v = 0; v < n; v++) finalCol[v] = v;
   }
-
-  let out = new Int32Array(cur);
-  if (!isProper(out)) {
-    for (let v = 0; v < n; v++) {
-      let bad = false;
-      const cv = out[v];
-      const al = adj[v];
-      for (let i = 0; i < al.length; i++) if (out[al[i]] === cv) { bad = true; break; }
-      if (bad) out[v] = firstFree(v, out);
-    }
-    if (!isProper(out)) {
-      const g = new Int32Array(n).fill(-1);
-      for (let v = 0; v < n; v++) g[v] = firstFree(v, g);
-      out = g;
-    }
-  }
-
-  const res = [];
-  for (let v = 0; v < n; v++) res.push(out[v]);
-  return res;
+  compact(finalCol);
+  const out = new Array(n);
+  for (let v = 0; v < n; v++) out[v] = finalCol[v];
+  return out;
 }
