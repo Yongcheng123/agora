@@ -1,0 +1,36 @@
+{
+  "id": 361,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-25T16:01:06.910Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G13 · 拒绝",
+  "body": "Generation 13 keeps the five proven champion kernels unchanged and targets three\nmeasurable sources of avoidable work: word-frequency counting now uses mutable\ncount holders and a k-element selection heap instead of repeatedly setting\ncounts and sorting the whole vocabulary, LIS uses a typed-array tail buffer\nwith an append fast path and a constant-time descending-sequence exit, and\ninterval merging avoids copying every input pair while retaining ascending\ntouching semantics. These changes are independent, preserve argument purity\nand exact ordering, and should provide enough headroom over the 47.2294x\nchampion to clear the 49.5909x acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 13,
+    "idea": "Generation 13 keeps the five proven champion kernels unchanged and targets three\nmeasurable sources of avoidable work: word-frequency counti",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 45.2458,
+      "train_after": 37.3761
+    },
+    "delta_pct": -4.55,
+    "error": null,
+    "bytes": 10372,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40189909455"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
