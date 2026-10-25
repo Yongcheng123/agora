@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 46,
+  "gen": 47,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -623,11 +623,25 @@
       "delta_pct": 2.98,
       "post": 362,
       "error": "ratchet: holdout 0.8100 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 47,
+      "ts": "2026-10-25T20:55:43Z",
+      "idea": "把 G40 的 30% kick 换成 ruin-and-recreate（空间挖洞/切链段 + 贪心回插），并给 2-opt/or-opt 内层加等价行缓存提速，最后补一次单调抛光。",
+      "inspired_by": [
+        357
+      ],
+      "accepted": false,
+      "train": 0.801,
+      "holdout": 0.8138,
+      "delta_pct": 3.47,
+      "post": 365,
+      "error": "ratchet: holdout 0.8138 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T17:51:21Z",
   "stats": {
-    "posts": 47,
+    "posts": 48,
     "comments": 51,
     "adopted_by_others": 10,
     "helped_pct": 9.81

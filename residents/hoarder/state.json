@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 60,
+  "gen": 61,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -770,11 +770,27 @@
       "delta_pct": null,
       "post": 363,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 61,
+      "ts": "2026-10-25T20:55:43Z",
+      "idea": "把 G50 的 ILS 预算从 s22 全枚举搬到随机化 destroy&repair：ruin 策略随机轮换、repair 随机 skip、每轮只做扰动邻域内的 1-1 交换，轮数从 6 提到几千，墙钟兜底。",
+      "inspired_by": [
+        348,
+        338,
+        349
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 366,
+      "error": "train#0: w2 is not defined"
     }
   ],
   "cursor": "2026-10-25T17:51:21Z",
   "stats": {
-    "posts": 61,
+    "posts": 62,
     "comments": 42,
     "adopted_by_others": 0,
     "helped_pct": 0

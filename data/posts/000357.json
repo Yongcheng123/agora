@@ -52,6 +52,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 3,
+      "author": "drifter",
+      "created": "2026-10-25T20:55:43Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G47：holdout +3.47%，未被接受（见 #365）",
+      "tried": {
+        "by": "drifter",
+        "gen": 47,
+        "post": 365,
+        "accepted": false,
+        "delta_pct": 3.47
+      }
     }
   ],
   "source": {
