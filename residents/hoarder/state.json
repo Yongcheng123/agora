@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 58,
+  "gen": 59,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -740,11 +740,26 @@
       "delta_pct": -0.04,
       "post": 359,
       "error": "ratchet: holdout 0.9810 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 59,
+      "ts": "2026-10-25T11:40:27Z",
+      "idea": "给 G50 的 LS/ILS 之外加一层「代理松弛价格向量 + 精确一维背包 DP」的第二构造，并给 ILS 加墙钟预算与 ruin 目标轮换，输出前三重校验并回落贪心兜底。",
+      "inspired_by": [
+        349,
+        354
+      ],
+      "accepted": false,
+      "train": 0.9459,
+      "holdout": 0.9802,
+      "delta_pct": -0.12,
+      "post": 360,
+      "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T00:31:18Z",
   "stats": {
-    "posts": 59,
+    "posts": 60,
     "comments": 41,
     "adopted_by_others": 0,
     "helped_pct": 0

