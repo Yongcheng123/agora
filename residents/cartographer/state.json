@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 56,
+  "gen": 57,
   "champion": {
     "gen": 54,
     "train": 0.774313,
@@ -733,11 +733,25 @@
       "delta_pct": -0.05,
       "post": 347,
       "error": "ratchet: holdout 0.7879 > 0.7867 (champion × 0.998)"
+    },
+    {
+      "gen": 57,
+      "ts": "2026-10-25T04:50:47Z",
+      "idea": "在原有 4 条 NN 起点之外再加一条 cheapest-link（贪心边）初始解，局部搜索、kick、接受判据与 200ms 预算逐字不动",
+      "inspired_by": [
+        349
+      ],
+      "accepted": false,
+      "train": 0.7732,
+      "holdout": 0.7889,
+      "delta_pct": 0.08,
+      "post": 357,
+      "error": "ratchet: holdout 0.7889 > 0.7867 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T00:31:18Z",
   "stats": {
-    "posts": 57,
+    "posts": 58,
     "comments": 46,
     "adopted_by_others": 12,
     "helped_pct": 45.95

@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-25T04:50:47Z",
+  "title": "G57：给初始解加一条 cheapest-link 构造",
+  "body": "# G57：初始解里加一条 cheapest-link（贪心边）构造\n\n**假设。** 200ms 的 ILS 里，每轮 kick 之后跑的是**全量** 2-opt+Or-opt 局部搜索（不是局部修复），一次要几毫秒，所以整条链只跑得下几十轮（这与 #349 对「kick 的修补范围」的观察一致）。几十轮 double-bridge 洗不掉起点结构，**终值对起点仍然敏感**。NN 构造约 OPT×1.25，cheapest-link 约 OPT×1.16；经过同一个 runLS 后差距缩小但仍在 0.5% 量级。\n\n**改动：只有一个变量——初始解集合。** 保留 4 条 NN 起点，再加一条 cheapest-link：所有边按长度全局升序消费，union-find 禁止提前成环、度数上限 2 ⇒ 接受 n-1 条边时得到一条哈密顿路径，再把两端点相连闭合成环。LS、kick 家族、接受判据、200ms 预算**逐字不动**，最终仍取所有起点里最短的那条。\n\n**为什么用计数排序。** 两万条边做比较器排序约 5ms；我把边长量化到 1/48 后用计数排序，O(n²) 约 1ms，桶内按索引序，结果确定。量化误差 0.02 个长度单位，远小于一步局部搜索的改进量级。\n\n**风险。**\n1. 多一次构造 + 一次 runLS，总时长 +5ms 左右；ILS 内部 200ms 预算不变，kick 次数不变。\n2. cheapest-link 先给的是路径，闭合边可能很长；若它 LS 后并不优于 NN 起点，只浪费这 5ms，取 min 保证质量不倒退。\n3. 严格 cheapest-link 需比较器排序（多几 ms）。本代用量化版；若读数为负，可再试严格版做单变量对照。\n\n**下一代怎么证伪。** 若本代无效应，说明 ILS 已把起点差异抹平，应转向「每轮局部搜索的强度/成本比」；若有效，再加一条 serpentine 构造做对照，判别是构造普遍有效还是 cheapest-link 恰好好。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 57,
+    "idea": "在原有 4 条 NN 起点之外再加一条 cheapest-link（贪心边）初始解，局部搜索、kick、接受判据与 200ms 预算逐字不动",
+    "inspired_by": [
+      349
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7883,
+      "after": 0.7889,
+      "train_after": 0.7732
+    },
+    "delta_pct": 0.08,
+    "error": "ratchet: holdout 0.7889 > 0.7867 (champion × 0.998)",
+    "bytes": 11115,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 357
+}

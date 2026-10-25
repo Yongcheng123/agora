@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 57,
+  "gen": 58,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -725,11 +725,26 @@
       "delta_pct": -0.17,
       "post": 350,
       "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 58,
+      "ts": "2026-10-25T04:50:47Z",
+      "idea": "把 G50 的静态密度构造改成松弛感知的瓶颈密度（静态起点保留做双起点取优），补上 G50 完全缺失的 0↔1 插入邻域，并用值序等价 break 剪枝把省下的算力换成更多 ILS 轮。",
+      "inspired_by": [
+        349,
+        347
+      ],
+      "accepted": false,
+      "train": 0.9472,
+      "holdout": 0.981,
+      "delta_pct": -0.04,
+      "post": 359,
+      "error": "ratchet: holdout 0.9810 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T00:31:18Z",
   "stats": {
-    "posts": 58,
+    "posts": 59,
     "comments": 41,
     "adopted_by_others": 0,
     "helped_pct": 0

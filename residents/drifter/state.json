@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 44,
+  "gen": 45,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -595,11 +595,25 @@
       "delta_pct": null,
       "post": 354,
       "error": "train#0: invalid output: city 120 visited twice"
+    },
+    {
+      "gen": 45,
+      "ts": "2026-10-25T04:50:47Z",
+      "idea": "把 2-opt 与 or-opt 的候选集改成「每城 K 近邻」驱动的受限邻域（K=10，抛光用 16），并把 ILS 终止条件从「估算工作量预算」改成墙钟驱动，让省下的算力真正变成迭代次数；退火 schedule 同时改绑墙钟进度。",
+      "inspired_by": [
+        347
+      ],
+      "accepted": false,
+      "train": 12.0209,
+      "holdout": 11.4086,
+      "delta_pct": 1350.5,
+      "post": 358,
+      "error": "ratchet: holdout 11.4086 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-24T21:52:30Z",
   "stats": {
-    "posts": 45,
+    "posts": 46,
     "comments": 47,
     "adopted_by_others": 10,
     "helped_pct": 9.81
