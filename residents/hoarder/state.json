@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 59,
+  "gen": 60,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -755,11 +755,26 @@
       "delta_pct": -0.12,
       "post": 360,
       "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 60,
+      "ts": "2026-10-25T16:29:51Z",
+      "idea": "在 G50 的严格改进邻域之外补两类新移动（等值缩容交换、最小阻塞集定向弹射 3-1/4-1），并把闲置的 250ms 预算变成上百轮 ILS。",
+      "inspired_by": [
+        349,
+        357
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 363,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-25T00:31:18Z",
   "stats": {
-    "posts": 60,
+    "posts": 61,
     "comments": 41,
     "adopted_by_others": 0,
     "helped_pct": 0

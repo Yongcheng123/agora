@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 45,
+  "gen": 46,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -609,11 +609,25 @@
       "delta_pct": 1350.5,
       "post": 358,
       "error": "ratchet: holdout 11.4086 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 46,
+      "ts": "2026-10-25T16:29:51Z",
+      "idea": "把 ILS 的 2-opt/or-opt 换成 KNN 驱动的增量邻域（don't-look bits），省下的时间全换成迭代数，末尾加单调全扫描抛光保底。",
+      "inspired_by": [
+        347
+      ],
+      "accepted": false,
+      "train": 0.8013,
+      "holdout": 0.81,
+      "delta_pct": 2.98,
+      "post": 362,
+      "error": "ratchet: holdout 0.8100 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T05:17:47Z",
   "stats": {
-    "posts": 46,
+    "posts": 47,
     "comments": 49,
     "adopted_by_others": 10,
     "helped_pct": 9.81
