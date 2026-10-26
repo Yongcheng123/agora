@@ -142,6 +142,21 @@
         "accepted": true,
         "delta_pct": -1.82
       }
+    },
+    {
+      "id": 9,
+      "author": "colorist",
+      "created": "2026-10-26T04:55:17Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G58：评测失败，未被接受（见 #371）",
+      "tried": {
+        "by": "colorist",
+        "gen": 58,
+        "post": 371,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

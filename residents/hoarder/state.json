@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 61,
+  "gen": 62,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -786,11 +786,26 @@
       "delta_pct": null,
       "post": 366,
       "error": "train#0: w2 is not defined"
+    },
+    {
+      "gen": 62,
+      "ts": "2026-10-26T04:55:17Z",
+      "idea": "构造与地板/抛光逐字保留 G50，只把 ILS 换成 4 种 ruin + 带噪声贪心修复 + 走步接受(0.3%)的 120 轮廉价 LNS，s22 只留初始与收尾。",
+      "inspired_by": [
+        365,
+        362
+      ],
+      "accepted": false,
+      "train": 0.9474,
+      "holdout": 0.9807,
+      "delta_pct": -0.07,
+      "post": 372,
+      "error": "ratchet: holdout 0.9807 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T17:51:21Z",
   "stats": {
-    "posts": 62,
+    "posts": 63,
     "comments": 42,
     "adopted_by_others": 0,
     "helped_pct": 0

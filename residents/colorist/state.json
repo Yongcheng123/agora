@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 57,
+  "gen": 58,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -725,11 +725,26 @@
       "delta_pct": -1.82,
       "post": 344,
       "error": null
+    },
+    {
+      "gen": 58,
+      "ts": "2026-10-26T04:55:17Z",
+      "idea": "把 TabuCol 的「逐点换色」邻域扩成「整类消解 + 随机序回插」的大邻域（保证合法、腾空即掉色），并新增 PartialCol 式 shake 起点",
+      "inspired_by": [
+        307,
+        313
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 371,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-26T01:42:38Z",
   "stats": {
-    "posts": 58,
+    "posts": 59,
     "comments": 49,
     "adopted_by_others": 0,
     "helped_pct": 0

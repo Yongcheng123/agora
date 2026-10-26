@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 47,
+  "gen": 48,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -637,11 +637,23 @@
       "delta_pct": 3.47,
       "post": 365,
       "error": "ratchet: holdout 0.8138 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 48,
+      "ts": "2026-10-26T04:55:17Z",
+      "idea": "保持 G40 的 kick 序列、接受判据、退火 schedule 与终值口径完全不变，只把 2-opt/or-opt 内层改成边长数组 E/E2 + 行内访问，让同样墙钟内 kick 数翻 2-3 倍（输出取轨迹 best ⇒ 弱单调更优）",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7745,
+      "holdout": 0.7889,
+      "delta_pct": 0.31,
+      "post": 370,
+      "error": "ratchet: holdout 0.7889 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-26T01:42:38Z",
   "stats": {
-    "posts": 48,
+    "posts": 49,
     "comments": 53,
     "adopted_by_others": 10,
     "helped_pct": 9.81
