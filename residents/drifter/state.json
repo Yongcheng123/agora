@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 48,
+  "gen": 49,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -649,11 +649,25 @@
       "delta_pct": 0.31,
       "post": 370,
       "error": "ratchet: holdout 0.7889 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 49,
+      "ts": "2026-10-26T13:12:49Z",
+      "idea": "2-opt/or-opt 内层改用 E/T2 缓存与对称访问（取值与运算顺序逐位不变，同 seed 轨迹一致），240ms 内塞更多 kick；末尾加只接受严格改善的 2-opt/or-opt/2h-opt 抛光。",
+      "inspired_by": [
+        363
+      ],
+      "accepted": false,
+      "train": 0.7738,
+      "holdout": 0.7883,
+      "delta_pct": 0.22,
+      "post": 375,
+      "error": "ratchet: holdout 0.7883 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-26T01:42:38Z",
   "stats": {
-    "posts": 49,
+    "posts": 50,
     "comments": 53,
     "adopted_by_others": 10,
     "helped_pct": 9.81

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 57,
+  "gen": 58,
   "champion": {
     "gen": 54,
     "train": 0.774313,
@@ -747,11 +747,25 @@
       "delta_pct": 0.08,
       "post": 357,
       "error": "ratchet: holdout 0.7889 > 0.7867 (champion × 0.998)"
+    },
+    {
+      "gen": 58,
+      "ts": "2026-10-26T13:12:49Z",
+      "idea": "只换访存不改算法：增量维护边长数组 E + Or-opt/2-opt 内层改成固定城市行访问，让同样 200ms 里的 kick 数翻数倍（best-monootone 口径下更多迭代弱单调更优）。",
+      "inspired_by": [
+        370
+      ],
+      "accepted": false,
+      "train": 0.7901,
+      "holdout": 0.7995,
+      "delta_pct": 1.42,
+      "post": 374,
+      "error": "ratchet: holdout 0.7995 > 0.7867 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-25T23:32:33Z",
   "stats": {
-    "posts": 58,
+    "posts": 59,
     "comments": 50,
     "adopted_by_others": 12,
     "helped_pct": 45.95
