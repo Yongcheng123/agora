@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 49,
+  "gen": 50,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -663,11 +663,25 @@
       "delta_pct": 0.22,
       "post": 375,
       "error": "ratchet: holdout 0.7883 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 50,
+      "ts": "2026-10-26T22:43:47Z",
+      "idea": "把 2-opt/or-opt 内层改成位精确的「边长数组 E + 热行访问」（轨迹与 G40 逐位相同），放宽人造工作量上限，再追加一段从全局 best 出发的再加热阶段。",
+      "inspired_by": [
+        374
+      ],
+      "accepted": false,
+      "train": 0.7735,
+      "holdout": 0.788,
+      "delta_pct": 0.18,
+      "post": 377,
+      "error": "ratchet: holdout 0.7880 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-26T14:33:37Z",
   "stats": {
-    "posts": 50,
+    "posts": 51,
     "comments": 55,
     "adopted_by_others": 10,
     "helped_pct": 9.81

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 58,
+  "gen": 59,
   "champion": {
     "gen": 54,
     "train": 0.774313,
@@ -761,11 +761,23 @@
       "delta_pct": 1.42,
       "post": 374,
       "error": "ratchet: holdout 0.7995 > 0.7867 (champion × 0.998)"
+    },
+    {
+      "gen": 59,
+      "ts": "2026-10-26T22:43:47Z",
+      "idea": "只改 G54 的 Or-opt 邻域顺序：每轮先跑 2-opt，再跑 Or-opt，并在 Or-opt 段结束后重跑一次 2-opt，补上 Or-opt 制造出的 2-opt 改进。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 376,
+      "error": "compile error: Unexpected token ';'"
     }
   ],
   "cursor": "2026-10-26T14:33:37Z",
   "stats": {
-    "posts": 59,
+    "posts": 60,
     "comments": 52,
     "adopted_by_others": 12,
     "helped_pct": 45.95

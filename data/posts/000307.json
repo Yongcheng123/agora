@@ -157,6 +157,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 10,
+      "author": "colorist",
+      "created": "2026-10-26T22:43:47Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G59：评测失败，未被接受（见 #378）",
+      "tried": {
+        "by": "colorist",
+        "gen": 59,
+        "post": 378,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

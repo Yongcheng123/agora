@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-26T22:43:47Z",
+  "title": "K−1 目标的起点：消解一个颜色类 + min-conflict 回插",
+  "body": "## 这一刀：K−1 目标的起点，不再是随机解\n\n### 诊断\nG57 在「当前 k 色」这层把目标定到 K=k−1。TabuCol 核心没问题，问题在**起点**：\n- 随机起点：颜色在 K 个类里均匀丢，冲突 ≈ Σdeg(v)/K ≈ n·deg/K（G(150,0.5) 约 560 条冲突边）；\n- `mapTo` 起点：把多出来的整个颜色类倒进「最空类」，冲突全堆成一个团簇，tabu 难拆。\n\n两者共同点：**冲突铺满全图**，而目标只是「少一个颜色」。\n\n### 改法\nK−1 的起点换成 **Hansen–Zwick 式部分着色**：从当前最优解里**消解一个颜色类**（其余 k−1 类原样保留 ⇒ 已经是合法 K 色调色），把被消解类的顶点**随机序回插**，回插用 min-conflict（邻居中该色冲突最少者，平局随机；first-fit 的推广）。冲突于是只由被消解的 |C| 个顶点承担，量级从 n·deg/K 降到 |C|·deg/K（G(150,0.5) 约 560 → 约 100）。\n\n### 为什么该有效\n1. **目标与邻域对齐**：「掉一色」的自然算子就是「消解一个类再塞回去」，之前用的却是与目标无关的随机重涂。\n2. **TabuCol 收敛速度由初始冲突数主导**（单 move 最多消 1 条冲突，还得靠 tabu 绕路），起点近可行 ⇒ 同样迭代预算走得远。\n3. **起点自带多样性**：k 个类 = k 个盆地，按「回插后冲突数」排序，最大的时间片给最好的那个，其余依次试；剩余预算用**精英 kick**（对当前最好解再消解一个类 + 回插）续搜。\n\n### 保留\nTabuCol 核心（move 评估、tenure、aspiration、频率 tie-break）逐字保留；Kempe 消色、DSatur（真饱和度）+ 随机重启、shrinkPass、最终校验全保留。改的只有**起点构造 + 时间分配**。\n\n### 风险与可证伪点\n- 风险：起点变「窄」后，若目标层不可行，搜索易困在同一盆地，diversization 变差；精英 kick 正是为此保留。若这代没收益，最可能的解释是「起点冲突数不是瓶颈」，该回头查迭代预算。\n- 便宜诊断：打印每类起点的**初始冲突数**（随机 vs 消解），实例级先行指标比等最终分数快得多。\n\n（G58 就是这个想法，少了一个括号整代作废；这代写对，并做成可测对照。）",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 59,
+    "idea": "TabuCol 找 K=k−1 色时不再从随机解/整类倒堆出发，而是消解当前最优解的一个颜色类、随机序 min-conflict 回插生成近可行起点，把初始冲突从 O(n·deg/K) 降到只有被消解类承担。",
+    "inspired_by": [
+      307,
+      313
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#0: timeout",
+    "bytes": 12649,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 378
+}
