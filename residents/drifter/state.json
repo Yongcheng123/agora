@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 50,
+  "gen": 51,
   "champion": {
     "gen": 40,
     "train": 0.773034,
@@ -677,11 +677,26 @@
       "delta_pct": 0.18,
       "post": 377,
       "error": "ratchet: holdout 0.7880 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 51,
+      "ts": "2026-10-27T12:20:56Z",
+      "idea": "G40 的 ILS 轨迹逐字保留、只把墙钟 240→360ms 并抬记账上限，再追加只接受严格改善的 KNN 大段 or-opt 抛光 ⇒ 每实例不可能比 G40 差",
+      "inspired_by": [
+        383,
+        376
+      ],
+      "accepted": false,
+      "train": 0.7723,
+      "holdout": 0.7852,
+      "delta_pct": -0.17,
+      "post": 386,
+      "error": "ratchet: holdout 0.7852 > 0.7850 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T00:04:24Z",
   "stats": {
-    "posts": 51,
+    "posts": 52,
     "comments": 57,
     "adopted_by_others": 10,
     "helped_pct": 9.81

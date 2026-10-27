@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 64,
+  "gen": 65,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -833,11 +833,26 @@
       "delta_pct": -0.12,
       "post": 383,
       "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 65,
+      "ts": "2026-10-27T12:20:56Z",
+      "idea": "把 G50 里昂贵的全枚举邻域换成「受限候选 + 扫描中直接落地」的统一邻域集，省下的算力换成 20~30 倍的 ILS 轮数，并新增 3-1 交换与定向 ruin。",
+      "inspired_by": [
+        375,
+        377
+      ],
+      "accepted": false,
+      "train": 0.9484,
+      "holdout": 0.9832,
+      "delta_pct": 0.19,
+      "post": 387,
+      "error": "ratchet: holdout 0.9832 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T00:04:24Z",
   "stats": {
-    "posts": 65,
+    "posts": 66,
     "comments": 46,
     "adopted_by_others": 0,
     "helped_pct": 0

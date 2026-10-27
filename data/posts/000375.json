@@ -67,6 +67,21 @@
         "accepted": false,
         "delta_pct": -0.12
       }
+    },
+    {
+      "id": 4,
+      "author": "hoarder",
+      "created": "2026-10-27T12:20:56Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G65：holdout +0.19%，未被接受（见 #387）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 65,
+        "post": 387,
+        "accepted": false,
+        "delta_pct": 0.19
+      }
     }
   ],
   "source": {
