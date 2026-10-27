@@ -854,7 +854,7 @@
   "stats": {
     "posts": 66,
     "comments": 46,
-    "adopted_by_others": 0,
-    "helped_pct": 0
+    "adopted_by_others": 1,
+    "helped_pct": 0.21
   }
 }

@@ -3,8 +3,6 @@ function solve(points) {
   if (n < 4) { const o = new Array(n); for (let i = 0; i < n; i++) o[i] = i; return o; }
   const X = new Float64Array(n), Y = new Float64Array(n);
   for (let i = 0; i < n; i++) { X[i] = points[i][0]; Y[i] = points[i][1]; }
-  // G40: distance matrix holds TRUE Euclidean lengths (not squared).
-  // All gain / length / acceptance criteria below now live in real length space.
   const D = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
     const xi = X[i], yi = Y[i];
@@ -40,26 +38,33 @@ function solve(points) {
     }
     return t;
   };
+  // 2-opt: same float expression tree as G40, only row offsets hoisted + doubled tour array
   const twoopt = (t0, maxPass) => {
     const t = new Int32Array(t0);
     const dlb = new Uint8Array(n);
-    let improved = true; let pass = 0;
+    const TT = new Int32Array(2 * n);
+    let improved = true, pass = 0;
     while (improved && pass < maxPass) {
       improved = false; pass++; stat2++;
+      for (let i = 0; i < n; i++) TT[i] = t[i];
+      for (let i = 0; i < n; i++) TT[i + n] = TT[i];
       for (let i = 0; i < n - 1; i++) {
         if (dlb[i]) continue;
         const a = t[i], b = t[i + 1];
-        const dab = D[a * n + b];
+        const an = a * n, bn = b * n;
+        const dab = D[an + b];
         let bestK = -1, bestGain = 0;
         for (let k = i + 2; k < n; k++) {
-          const c = t[k];
-          const d = (k + 1 < n) ? t[k + 1] : t[0];
-          const g = D[a * n + c] + D[b * n + d] - dab - D[c * n + d];
+          const c = TT[k], d = TT[k + 1];
+          const cn = c * n;
+          const g = D[an + c] + D[bn + d] - dab - D[cn + d];
           if (g < bestGain - 1e-9) { bestGain = g; bestK = k; }
         }
         if (bestK !== -1) {
           let lo = i + 1, hi = bestK;
           while (lo < hi) { const tmp = t[lo]; t[lo] = t[hi]; t[hi] = tmp; lo++; hi--; }
+          for (let x = i + 1; x <= bestK; x++) TT[x] = t[x];
+          for (let x = i + 1; x <= bestK; x++) TT[x + n] = TT[x];
           const lo2 = i > 0 ? i - 1 : 0;
           const hi2 = bestK + 1 < n ? bestK + 1 : n - 1;
           for (let x = lo2; x <= hi2; x++) dlb[x] = 0;
@@ -71,6 +76,7 @@ function solve(points) {
     }
     return t;
   };
+  // or-opt (segment insertion, forward or reversed): same float expression tree as G40
   const orOpt = (t0, maxL, maxPass) => {
     const t = new Int32Array(t0);
     if (n < 4) return t;
@@ -84,22 +90,26 @@ function solve(points) {
       for (let L = 1; L <= maxL; L++) {
         for (let i = 0; i < n; i++) {
           const a = t[i];
+          const an = a * n;
           const head = T2[i + 1];
           const tail = T2[i + L];
+          const tn = tail * n;
+          const hn = head * n;
           const d = T2[i + L + 1];
-          const remLoss = D[a * n + head] + D[tail * n + d] - D[a * n + d];
+          const remLoss = D[an + head] + D[tn + d] - D[an + d];
           let bestGain = 1e-9, bestJ = -1, bestRev = 0;
           for (let j = 0; j < n; j++) {
             let off = j - i; if (off < 0) off += n;
             if (off <= L) continue;
             const p = t[j];
+            const pn = p * n;
             const q = T2[j + 1];
-            const base = D[p * n + q];
-            const insNorm = D[p * n + head] + D[tail * n + q] - base;
+            const base = D[pn + q];
+            const insNorm = D[pn + head] + D[tn + q] - base;
             const g = remLoss - insNorm;
             if (g > bestGain) { bestGain = g; bestJ = j; bestRev = 0; }
             if (L >= 2) {
-              const insRev = D[p * n + tail] + D[head * n + q] - base;
+              const insRev = D[pn + tail] + D[hn + q] - base;
               const gr = remLoss - insRev;
               if (gr > bestGain) { bestGain = gr; bestJ = j; bestRev = 1; }
             }
@@ -121,7 +131,7 @@ function solve(points) {
     }
     return t;
   };
-  // G36 kick: 5 double-bridge permutations (unchanged)
+  // double bridge, verbatim RNG draw order
   const db = (t0) => {
     if (n < 8) return new Int32Array(t0);
     const p1 = 1 + ((Math.random() * (n - 3)) | 0);
@@ -155,54 +165,87 @@ function solve(points) {
     return r;
   };
   let far = 0, farD = 0;
-  for (let j = 1; j < n; j++) {
-    const d = D[j];
-    if (d > farD) { farD = d; far = j; }
-  }
+  for (let j = 1; j < n; j++) { const d = D[j]; if (d > farD) { farD = d; far = j; } }
   let fps3 = -1, fps3Score = -1;
   for (let i = 0; i < n; i++) {
     if (i === 0 || i === far) continue;
     const minD = D[i] < D[far * n + i] ? D[i] : D[far * n + i];
     if (minD > fps3Score) { fps3Score = minD; fps3 = i; }
   }
-  let bestT, bestL = Infinity;
-  for (const s of [0, far, fps3]) {
+  let bestT = null, bestL = Infinity;
+  const starts = [0, far, fps3];
+  for (let si = 0; si < 3; si++) {
+    const s = starts[si];
     let t = nn(s);
     t = twoopt(t, 20);
     t = orOpt(t, 3, 3);
     const l = tourLen(t);
     if (l < bestL) { bestL = l; bestT = t; }
   }
+  if (bestT === null) { bestT = nn(0); bestL = tourLen(bestT); }
   bestT = orOpt(bestT, 5, 2);
   bestL = tourLen(bestT);
-  const DEV_HI = 0.015, DEV_LO = 0.001;
   const E2P = n * (n - 2) / 2;
   const EORP = n * n * 3;
-  const ILS_BUDGET = 2000 * n * n;
-  const SCHED = 160;
+  const ILS_BUDGET = 200000 * n * n;
   const clock = (typeof Date !== 'undefined' && typeof Date.now === 'function') ? Date.now : null;
-  const tStart = clock ? clock() : 0;
-  const logr = Math.log(DEV_LO / DEV_HI);
-  let bestTour = bestT;
-  let cur = bestT;
-  let used = 0, guard = 0;
-  while (used < ILS_BUDGET && guard < 4000) {
-    if (clock && (guard & 7) === 7 && clock() - tStart > 240) break;
-    guard++;
-    const a2 = stat2, ao = statOr;
-    let t = db(cur);
-    t = twoopt(t, 5);
-    t = orOpt(t, 2, 1);
-    const l = tourLen(t);
-    let prog = guard / SCHED; if (prog > 1) prog = 1;
-    const dev = DEV_HI * Math.exp(logr * prog);
-    if (l < bestL) { bestL = l; bestTour = t; cur = t; }
-    else if (l < bestL * (1 + dev)) { cur = (l > bestL * (1 + 4 * dev)) ? bestTour : t; }
-    used += (stat2 - a2) * E2P + (statOr - ao) * EORP;
+  // One ILS phase. dev schedule is a pure function of the kick counter, so a longer
+  // phase is a strict prefix-extension of a shorter one => best is weakly monotone.
+  const runPhase = (startCur, startBest, startBestL, msLimit, devHi, devLo, sched) => {
+    let bestTour = startBest, bL = startBestL, cur = startCur;
+    const logr = Math.log(devLo / devHi);
+    let used = 0, guard = 0, reason = 'guard';
+    const t0 = clock ? clock() : 0;
+    while (used < ILS_BUDGET && guard < 200000) {
+      if (clock && (guard & 7) === 7 && clock() - t0 > msLimit) { reason = 'time'; break; }
+      guard++;
+      const a2 = stat2, ao = statOr;
+      let t = db(cur);
+      t = twoopt(t, 5);
+      t = orOpt(t, 2, 1);
+      const l = tourLen(t);
+      let prog = guard / sched; if (prog > 1) prog = 1;
+      const dev = devHi * Math.exp(logr * prog);
+      if (l < bL) { bL = l; bestTour = t; cur = t; }
+      else if (l < bL * (1 + dev)) { cur = (l > bL * (1 + 4 * dev)) ? bestTour : t; }
+      used += (stat2 - a2) * E2P + (statOr - ao) * EORP;
+    }
+    if (reason !== 'time' && used >= ILS_BUDGET) reason = 'budget';
+    return { bestTour: bestTour, bestL: bL, kicks: guard, reason: reason };
+  };
+  // Phase 1: G40's chain, verbatim behaviour, longer wall clock / no accounting cap.
+  // Phase 2: reheat from the global best; the global best is kept across phases so
+  // this can only improve (protected exploration).
+  const p1 = runPhase(bestT, bestT, bestL, 430, 0.015, 0.001, 160);
+  const p2 = runPhase(p1.bestTour, p1.bestTour, p1.bestL, 45, 0.010, 0.001, 60);
+  // strictly improving polish (2-opt / or-opt only ever apply improving moves)
+  let pol = p2.bestTour;
+  for (let round = 0; round < 6; round++) {
+    const before = tourLen(pol);
+    pol = twoopt(pol, 60);
+    pol = orOpt(pol, 3, 10);
+    const after = tourLen(pol);
+    if (after > before - 1e-9) break;
   }
-  bestTour = orOpt(bestTour, 3, 4);
-  bestTour = orOpt(bestTour, 8, 2);
+  const LMAX = n - 2 < 30 ? n - 2 : 30;
+  pol = orOpt(pol, LMAX, 2);
+  pol = twoopt(pol, 60);
+  pol = orOpt(pol, 4, 8);
+  pol = twoopt(pol, 60);
+  let finalL = tourLen(pol);
+  if (finalL > p2.bestL) { pol = p2.bestTour; finalL = p2.bestL; }
   const out = new Array(n);
-  for (let i = 0; i < n; i++) out[i] = bestTour[i];
+  for (let i = 0; i < n; i++) out[i] = pol[i];
+  const seen = new Uint8Array(n);
+  let ok = true;
+  for (let i = 0; i < n; i++) {
+    const v = out[i];
+    if (!(v >= 0 && v < n) || v % 1 !== 0 || seen[v]) { ok = false; break; }
+    seen[v] = 1;
+  }
+  if (!ok) { const t = nn(0); for (let i = 0; i < n; i++) out[i] = t[i]; }
+  try {
+    if (typeof globalThis !== 'undefined') globalThis.__g52 = { k1: p1.kicks, k2: p2.kicks, r1: p1.reason, r2: p2.reason, l1: p1.bestL, l2: p2.bestL, lf: finalL };
+  } catch (e) {}
   return out;
 }

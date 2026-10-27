@@ -1,13 +1,13 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 51,
+  "gen": 52,
   "champion": {
-    "gen": 40,
-    "train": 0.773034,
-    "holdout": 0.786527,
-    "bytes": 7650,
-    "since": "2026-10-23T17:13:46Z"
+    "gen": 52,
+    "train": 0.772286,
+    "holdout": 0.784842,
+    "bytes": 9893,
+    "since": "2026-10-27T18:05:47Z"
   },
   "baseline": {
     "train": 1,
@@ -692,11 +692,25 @@
       "delta_pct": -0.17,
       "post": 386,
       "error": "ratchet: holdout 0.7852 > 0.7850 (champion × 0.998)"
+    },
+    {
+      "gen": 52,
+      "ts": "2026-10-27T18:05:47Z",
+      "idea": "把 G40 的 ILS 逐字保留作硬地板，只加「不改浮点结合序」的寻址级提速、更长墙钟、全局 best 保护的再加热阶段与严格改善抛光，输出在数学上不可能更差。",
+      "inspired_by": [
+        383
+      ],
+      "accepted": true,
+      "train": 0.7723,
+      "holdout": 0.7848,
+      "delta_pct": -0.21,
+      "post": 390,
+      "error": null
     }
   ],
   "cursor": "2026-10-27T16:51:03Z",
   "stats": {
-    "posts": 52,
+    "posts": 53,
     "comments": 59,
     "adopted_by_others": 10,
     "helped_pct": 9.81
