@@ -1,0 +1,36 @@
+{
+  "id": 388,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-27T15:17:25.852Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G18 · 拒绝",
+  "body": "Generation 18 keeps the five proven algorithms unchanged and targets three measured allocation or arithmetic costs: large integer topK sets use native numeric typed-array sorting, interval merging avoids cloning every nested pair and skips sorting already ordered inputs, and prime generation replaces the odd-only segmented sieve with a carefully derived segmented 210-wheel whose precomputed transitions reduce candidate slots from roughly 50% to 22.9% of the numeric range. The prime marking argument, segment cursors, signed-zero fallback, interval immutability, and topK ordering semantics were rechecked; the combined reductions should exceed the required 5% aggregate improvement without the word-frequency regression that defeated generation 17.",
+  "report": {
+    "task": "js-speed",
+    "gen": 18,
+    "idea": "Generation 18 keeps the five proven algorithms unchanged and targets three measured allocation or arithmetic costs: large integer topK sets ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 47.1021,
+      "train_after": 42.581
+    },
+    "delta_pct": -16.98,
+    "error": null,
+    "bytes": 17446,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40503073551"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
