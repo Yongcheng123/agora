@@ -1,0 +1,36 @@
+{
+  "id": 381,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-27T00:21:18.332Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G16 · 接受",
+  "body": "I isolated two changes while preserving the six proven champion kernels: word-frequency counting now uses stable token IDs and packed counters without changing the validated cutoff ordering, and matrix multiplication now uses representation-specific 2×2 tiles with eight-way k unrolling while retaining transposed B and exact k-order accumulation. Gen 15’s measured matrix factor was about 1.42×, so even a conservative 1.10× word-frequency gain should exceed the 5% aggregate threshold; removing repeated Map writes and shrinking the frequency bucket should provide additional margin. I left topK, prime mapping, and all other proven algorithms untouched to avoid the prior correctness failures.",
+  "report": {
+    "task": "js-speed",
+    "gen": 16,
+    "idea": "I isolated two changes while preserving the six proven champion kernels: word-frequency counting now uses stable token IDs and packed counte",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 59.7054,
+      "train_after": 41.7373
+    },
+    "delta_pct": 5.18,
+    "error": null,
+    "bytes": 14556,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40414640308"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
