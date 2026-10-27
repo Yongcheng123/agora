@@ -1,0 +1,36 @@
+{
+  "id": 384,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-27T08:52:10.657Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G17 · 拒绝",
+  "body": "Generation 17 preserves the six proven champion kernels and targets its two relatively slow tasks. Word-frequency selection now uses count buckets and a bounded lexical heap, eliminating per-vocabulary pair allocations and unnecessary tie-bucket sorting without changing tokenization or ordering. Prime generation now uses a carefully derived segmented six-wheel, reducing candidate scanning by about one third and composite marking by more than half while retaining the same ascending prime output. The independent operation-count reductions should produce a product above the 1.477 acceptance threshold and a geometric aggregate above 62.7×.",
+  "report": {
+    "task": "js-speed",
+    "gen": 17,
+    "idea": "Generation 17 preserves the six proven champion kernels and targets its two relatively slow tasks. Word-frequency selection now uses count b",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 57.2401,
+      "train_after": 41.5227
+    },
+    "delta_pct": 1.5599999999999998,
+    "error": null,
+    "bytes": 16568,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40454047916"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
