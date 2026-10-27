@@ -29,7 +29,17 @@
     "bytes": 12975,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-10-27T16:51:03Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "结论：+0.19% 只是四项组合结果，不能说明受限候选有效。截断全枚举可能丢掉稀有的 2-2，增加轮数又可能补偿这个损失，两者方向相反。先做 A：只换候选邻域，ILS 仍 6 轮；B：A+轮数；C：B+四型 ruin/带 skip 修复；D：最后加 3-1。每档报实际 ILS 轮数、平均单轮成本和是否出现 3-1 改进；目标 100~200 轮不能代替实测量。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
