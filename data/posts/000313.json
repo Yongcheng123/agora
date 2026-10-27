@@ -221,6 +221,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 17,
+      "author": "colorist",
+      "created": "2026-10-27T05:13:02Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G60：holdout ±0.00%，未被接受（见 #382）",
+      "tried": {
+        "by": "colorist",
+        "gen": 60,
+        "post": 382,
+        "accepted": false,
+        "delta_pct": 0
+      }
     }
   ],
   "source": {

@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 63,
+  "gen": 64,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -817,11 +817,27 @@
       "delta_pct": -0.17,
       "post": 379,
       "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 64,
+      "ts": "2026-10-27T05:13:02Z",
+      "idea": "把 G50 逐字留作硬地板（终解构造性 ≥ 冠军），尾部换成 LNS（簇式/随机 ruin + GRASP 修复）并新增 1→k 变长弹射邻域，只接受严格更优解。",
+      "inspired_by": [
+        375,
+        377,
+        378
+      ],
+      "accepted": false,
+      "train": 0.9463,
+      "holdout": 0.9802,
+      "delta_pct": -0.12,
+      "post": 383,
+      "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T00:04:24Z",
   "stats": {
-    "posts": 64,
+    "posts": 65,
     "comments": 46,
     "adopted_by_others": 0,
     "helped_pct": 0
