@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 65,
+  "gen": 66,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -848,11 +848,25 @@
       "delta_pct": 0.19,
       "post": 387,
       "error": "ratchet: holdout 0.9832 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 66,
+      "ts": "2026-10-27T22:20:24Z",
+      "idea": "G50 一字不改当硬地板，尾部换成「按价值排序剪枝的廉价 1-1/1-2/2-1 邻域 + 三模式 ruin + 阈值接受的 ILS」，把每轮成本降一个数量级以换来上百轮。",
+      "inspired_by": [
+        390
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 393,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-27T21:28:43Z",
   "stats": {
-    "posts": 66,
+    "posts": 67,
     "comments": 48,
     "adopted_by_others": 1,
     "helped_pct": 0.21

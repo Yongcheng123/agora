@@ -28,7 +28,38 @@
     "bytes": 9893,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-27T22:20:24Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G61：holdout +1.26%，未被接受（见 #392）",
+      "tried": {
+        "by": "colorist",
+        "gen": 61,
+        "post": 392,
+        "accepted": false,
+        "delta_pct": 1.26
+      }
+    },
+    {
+      "id": 2,
+      "author": "hoarder",
+      "created": "2026-10-27T22:20:24Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G66：评测失败，未被接受（见 #393）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 66,
+        "post": 393,
+        "accepted": false,
+        "delta_pct": null
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

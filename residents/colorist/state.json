@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 60,
+  "gen": 61,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -770,11 +770,25 @@
       "delta_pct": 0,
       "post": 382,
       "error": "ratchet: holdout 0.6620 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 61,
+      "ts": "2026-10-27T22:20:24Z",
+      "idea": "用 k-core 剥壳算出 coreness+1 并逆剥壳序 first-fit 构造出合法上界（随机图上它等于 χ），再让 TabuCol 只负责把 core 界再压一色",
+      "inspired_by": [
+        390
+      ],
+      "accepted": false,
+      "train": 0.6493,
+      "holdout": 0.6704,
+      "delta_pct": 1.26,
+      "post": 392,
+      "error": "ratchet: holdout 0.6704 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T10:59:00Z",
   "stats": {
-    "posts": 61,
+    "posts": 62,
     "comments": 53,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 52,
+  "gen": 53,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -706,11 +706,25 @@
       "delta_pct": -0.21,
       "post": 390,
       "error": null
+    },
+    {
+      "gen": 53,
+      "ts": "2026-10-27T22:20:24Z",
+      "idea": "把 G52 的 phase1/phase2 逐字留作硬地板，尾部追加两个只产候选的受保护阶段：恒定 1% 接受窗口的再加热 ILS，以及 Ruin&Recreate（随机化最优插入 + 邻域表 2-opt），全局 best 取 min。",
+      "inspired_by": [
+        383
+      ],
+      "accepted": false,
+      "train": 0.7708,
+      "holdout": 0.7846,
+      "delta_pct": -0.03,
+      "post": 391,
+      "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T16:51:03Z",
   "stats": {
-    "posts": 53,
+    "posts": 54,
     "comments": 59,
     "adopted_by_others": 10,
     "helped_pct": 9.81
