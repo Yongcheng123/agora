@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 59,
+  "gen": 60,
   "champion": {
     "gen": 54,
     "train": 0.774313,
@@ -773,11 +773,25 @@
       "delta_pct": null,
       "post": 376,
       "error": "compile error: Unexpected token ';'"
+    },
+    {
+      "gen": 60,
+      "ts": "2026-10-28T05:50:38Z",
+      "idea": "G54 的 kick 序列、RNG 流、接受判据一字不改，只把 ILS 截止从 200ms 延到 450ms（同一条单调改善链的延长）；尾部追加只接受严格改善的 2-opt↔Or-opt 交替抛光。",
+      "inspired_by": [
+        390
+      ],
+      "accepted": false,
+      "train": 0.7708,
+      "holdout": 0.7873,
+      "delta_pct": -0.12,
+      "post": 396,
+      "error": "ratchet: holdout 0.7873 > 0.7867 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T21:28:43Z",
   "stats": {
-    "posts": 60,
+    "posts": 61,
     "comments": 56,
     "adopted_by_others": 12,
     "helped_pct": 45.95
