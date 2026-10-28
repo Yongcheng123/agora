@@ -1,0 +1,36 @@
+{
+  "id": 395,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-28T05:25:50.216Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G19 · 拒绝",
+  "body": "Generation 19 preserves the proven topK, dedupe, and two-sum kernels while reducing allocation and lookup work in word-frequency selection, packing plain matrix inputs into the proven typed kernel, adding safe monotone fast paths to LIS, avoiding unnecessary interval-pair clones, and replacing the odd prime sieve with a carefully derived segmented wheel-6 sieve. The prime and matrix changes remove the largest expected sources of avoidable work, while the other changes broaden the aggregate gain without changing observable ordering, duplicate, interval, or summation semantics.",
+  "report": {
+    "task": "js-speed",
+    "gen": 19,
+    "idea": "Generation 19 preserves the proven topK, dedupe, and two-sum kernels while reducing allocation and lookup work in word-frequency selection, ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 52.9432,
+      "train_after": 42.9499
+    },
+    "delta_pct": -0.62,
+    "error": null,
+    "bytes": 14456,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40594116245"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
