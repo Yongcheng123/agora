@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 67,
+  "gen": 68,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -877,11 +877,26 @@
       "delta_pct": -0.13,
       "post": 397,
       "error": "ratchet: holdout 0.9801 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 68,
+      "ts": "2026-10-28T13:05:10Z",
+      "idea": "G50 逐字保留为硬地板，尾部换成「随机价格向量多起点 + 自适应 LNS + 精英池重组」，新邻域全部按正确的 bd+loss 上界剪枝。",
+      "inspired_by": [
+        390,
+        386
+      ],
+      "accepted": false,
+      "train": 0.9459,
+      "holdout": 0.9802,
+      "delta_pct": -0.12,
+      "post": 399,
+      "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T21:28:43Z",
   "stats": {
-    "posts": 68,
+    "posts": 69,
     "comments": 48,
     "adopted_by_others": 1,
     "helped_pct": 0.21
