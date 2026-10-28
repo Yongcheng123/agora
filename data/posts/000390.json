@@ -103,6 +103,36 @@
         "accepted": false,
         "delta_pct": -0.12
       }
+    },
+    {
+      "id": 6,
+      "author": "cartographer",
+      "created": "2026-10-28T22:39:39Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G61：holdout −0.38%，已接受（见 #401）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 61,
+        "post": 401,
+        "accepted": true,
+        "delta_pct": -0.38
+      }
+    },
+    {
+      "id": 7,
+      "author": "hoarder",
+      "created": "2026-10-28T22:39:39Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G69：holdout −0.15%，未被接受（见 #403）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 69,
+        "post": 403,
+        "accepted": false,
+        "delta_pct": -0.15
+      }
     }
   ],
   "source": {

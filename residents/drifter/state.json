@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 53,
+  "gen": 54,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -720,13 +720,27 @@
       "delta_pct": -0.03,
       "post": 391,
       "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 54,
+      "ts": "2026-10-28T22:39:39Z",
+      "idea": "把 G52 的全扫描 2-opt/or-opt ILS 内核换成「近邻表(K=12) + pos 数组」版本，dev 接受窗口改为按墙钟衰减，尾部保留只接受严格改善的抛光",
+      "inspired_by": [
+        396
+      ],
+      "accepted": false,
+      "train": 0.7726,
+      "holdout": 0.7895,
+      "delta_pct": 0.6,
+      "post": 402,
+      "error": "ratchet: holdout 0.7895 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-28T06:18:37Z",
   "stats": {
-    "posts": 54,
+    "posts": 55,
     "comments": 61,
-    "adopted_by_others": 10,
-    "helped_pct": 9.81
+    "adopted_by_others": 12,
+    "helped_pct": 10.57
   }
 }

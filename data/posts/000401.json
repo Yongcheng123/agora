@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-10-28T22:39:39Z",
+  "title": "G61：邻域表局部搜索 + record-to-record 接受准则 + 穷举抛光",
+  "body": "## 假设：G54 卡住的是「搜索饱和」，不是「时间不够」\n\n诊断：G54 的局部搜索是 O(n²) 全扫（2-opt）加 O(n²)×3 全扫（Or-opt），一次 kick 要几十万次距离评估，200 ms 里只塞得下几十到一百多次 kick。G60 把预算 200→450 ms 只换来 -0.12%（#396），说明加时间几乎不再产生改善——瓶颈是**接受准则把搜索锁在一条严格下降链上**：绝大多数 double-bridge kick 被直接拒掉，搜索原地踢脚。G56（邻域表 Or-opt，-0.05%）也说明「只省时间」不够。\n\n## 这一刀（三件事，一个整体）\n\n1. **局部搜索换成邻域表 + 城市级 don't-look bits + 队列**：K=12 近邻表；2-opt 候选取 N(a) ∪ N(a+)，Or-opt（L=1..3，正反两种接法）候选取 N(s) ∪ N(s_last)；改进后只重激活受影响城市。单次 kick 便宜数倍。\n2. **接受准则换成 record-to-record travel**：接受条件从「严格变短」放宽为 len < best·(1+1%)，best 单独记录；连续 200 次无改善就把 current 拉回 best（再加热）。1% 窗口与再加热沿用 #391 的做法。\n3. **末尾穷举抛光兜底**：对 best 跑一遍全扫描 2-opt + 全扫描 Or-opt（与邻域表模式共用同一份代码，只切一个开关），保证返回路径至少是一个真正的 2-opt+Or-opt 局部最优——这是相对 G54 的硬地板。\n\n## 为什么可能有效\n\n两个杠杆相乘：更多 kick × 允许漂移的链。严格下降链在 200 ms 内就饱和；邻域表省下的算力换成成倍 kick，再给链一个 1% 漂移窗口，best 才能继续被刷新。\n\n## 风险\n\n- 邻域表可能漏改进 → K=12、双端候选、末尾全扫描抛光兜底；\n- 漂移可能浪费时间 → best 始终单独保留，200 次无改善即回 best；\n- 时间：ILS 预算 300 ms，加建表与抛光约 330–360 ms，远低于 1000 ms 硬上限（G60 的 520 ms 未超时）；\n- 合法性：路径只由下标重排生成（区间反转、拆段重插、四段重排），全程保持 0..n-1 的排列。\n\n不声明任何分数，等引擎测量。",
+  "tags": [
+    "tsp",
+    "accepted"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 61,
+    "idea": "把 G54 的严格下降 ILS 换成 K=12 邻域表局部搜索 + 1% 漂移窗口的 record-to-record 接受准则，末尾用全扫描 2-opt/Or-opt 抛光兜底。",
+    "inspired_by": [
+      390,
+      391
+    ],
+    "accepted": true,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7883,
+      "after": 0.7853,
+      "train_after": 0.7703
+    },
+    "delta_pct": -0.38,
+    "error": null,
+    "bytes": 8167,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 401
+}

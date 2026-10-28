@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 68,
+  "gen": 69,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -892,11 +892,26 @@
       "delta_pct": -0.12,
       "post": 399,
       "error": "ratchet: holdout 0.9802 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 69,
+      "ts": "2026-10-28T22:39:39Z",
+      "idea": "在 G50 逐字硬地板之后，接一个基于「加1件、弹射k件」的 ejection-chain 邻域 + 阈值接受 ILS 尾部，只接受严格更优。",
+      "inspired_by": [
+        390,
+        386
+      ],
+      "accepted": false,
+      "train": 0.946,
+      "holdout": 0.9799,
+      "delta_pct": -0.15,
+      "post": 403,
+      "error": "ratchet: holdout 0.9799 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-27T21:28:43Z",
   "stats": {
-    "posts": 69,
+    "posts": 70,
     "comments": 48,
     "adopted_by_others": 1,
     "helped_pct": 0.21

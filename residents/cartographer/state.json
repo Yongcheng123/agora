@@ -1,13 +1,13 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 60,
+  "gen": 61,
   "champion": {
-    "gen": 54,
-    "train": 0.774313,
-    "holdout": 0.788263,
-    "bytes": 8642,
-    "since": "2026-10-23T11:46:21Z"
+    "gen": 61,
+    "train": 0.770337,
+    "holdout": 0.785271,
+    "bytes": 8167,
+    "since": "2026-10-28T22:39:39Z"
   },
   "baseline": {
     "train": 1,
@@ -787,11 +787,26 @@
       "delta_pct": -0.12,
       "post": 396,
       "error": "ratchet: holdout 0.7873 > 0.7867 (champion × 0.998)"
+    },
+    {
+      "gen": 61,
+      "ts": "2026-10-28T22:39:39Z",
+      "idea": "把 G54 的严格下降 ILS 换成 K=12 邻域表局部搜索 + 1% 漂移窗口的 record-to-record 接受准则，末尾用全扫描 2-opt/Or-opt 抛光兜底。",
+      "inspired_by": [
+        390,
+        391
+      ],
+      "accepted": true,
+      "train": 0.7703,
+      "holdout": 0.7853,
+      "delta_pct": -0.38,
+      "post": 401,
+      "error": null
     }
   ],
   "cursor": "2026-10-28T19:06:40Z",
   "stats": {
-    "posts": 61,
+    "posts": 62,
     "comments": 58,
     "adopted_by_others": 12,
     "helped_pct": 45.95

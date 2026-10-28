@@ -5,16 +5,10 @@ function solve(points) {
     for (let i = 0; i < n; i++) t[i] = i;
     return t;
   }
+  if (n === 2) return [0, 1];
+  if (n === 3) return [0, 1, 2];
 
-  // METRIC FIX (G54): store TRUE Euclidean distances, not squared ones.
-  // Every gain test below (2-opt dNew<dOld, or-opt bestDAdd<..., tourLen,
-  // and the ILS acceptance test) is a statement about the objective. With
-  // squared distances it is a biased surrogate: (a+b)<(a0+b0) does NOT imply
-  // sqrt(a)+sqrt(b)<sqrt(a0)+sqrt(b0) (sqrt is concave), so the local search
-  // accepts genuinely length-increasing moves, and bestTour is selected by a
-  // sum-of-squares that is dominated by the few longest edges. Cost of the
-  // exact metric: n(n-1)/2 extra sqrt calls at build time, same matrix size,
-  // same number of adds/compares in every inner loop.
+  // ---- true Euclidean distance matrix ----
   const D = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
     const xi = points[i][0], yi = points[i][1];
@@ -28,235 +22,212 @@ function solve(points) {
     }
   }
 
-  const startSet = new Set();
-  startSet.add(0);
-  let farIdx = 0, farD = -1;
-  for (let j = 1; j < n; j++) {
-    const d = D[j];
-    if (d > farD) { farD = d; farIdx = j; }
-  }
-  startSet.add(farIdx);
-  startSet.add(n >> 1);
-  startSet.add(n - 1);
-
-  let bestTour = null;
-  let bestLen = Infinity;
-  const newTour = new Array(n);
-  const T2 = new Int32Array(2 * n);
-
-  function runLS(tour, twoIters, orIters) {
-    for (let i = 0; i < n; i++) { const v = tour[i]; T2[i] = v; T2[i + n] = v; }
-
-    const dontLook = new Uint8Array(n);
-    let improved = true;
-    let iter = 0;
-    while (improved && iter < twoIters) {
-      improved = false;
-      iter++;
-      for (let i = 0; i < n - 1; i++) {
-        if (dontLook[i]) continue;
-        const ti = tour[i];
-        const ti1 = tour[i + 1];
-        const ti_n = ti * n;
-        const ti1_n = ti1 * n;
-        const dBase = D[ti_n + ti1];
-        const kEnd = (i === 0) ? n - 1 : n;
-        let foundMove = false;
-        for (let k = i + 2; k < kEnd; k++) {
-          const tk = tour[k];
-          const tk1 = (k + 1 < n) ? tour[k + 1] : tour[0];
-          const dNew = D[ti_n + tk] + D[ti1_n + tk1];
-          const dOld = dBase + D[tk * n + tk1];
-          if (dNew < dOld) {
-            let lo = i + 1, hi = k;
-            while (lo < hi) {
-              const tmp = tour[lo]; tour[lo] = tour[hi]; tour[hi] = tmp;
-              lo++; hi--;
-            }
-            improved = true;
-            foundMove = true;
-            const lo2 = i > 1 ? i - 2 : 0;
-            const hi2 = k + 2 < n ? k + 2 : n - 1;
-            for (let m = lo2; m <= hi2; m++) dontLook[m] = 0;
-            break;
-          }
-        }
-        if (!foundMove) dontLook[i] = 1;
-      }
-    }
-
-    for (let i = 0; i < n; i++) { const v = tour[i]; T2[i] = v; T2[i + n] = v; }
-
-    for (let L = 1; L <= 3; L++) {
-      // dlo is indexed by CITY (not position): an Or-opt move shifts the
-      // positions of a whole block, so position-indexed bits would be
-      // meaningless. Only the cities incident to the changed edges need
-      // to be re-activated.
-      const dlo = new Uint8Array(n);
-      let oImproved = true;
-      let oIter = 0;
-      while (oImproved && oIter < orIters) {
-        oImproved = false;
-        oIter++;
-        for (let s = 0; s < n; s++) {
-          const tS = T2[s];
-          if (dlo[tS]) continue;
-          let pred = s - 1; if (pred < 0) pred = n - 1;
-          let succ = s + L; if (succ >= n) succ -= n;
-          const tPred = T2[pred];
-          const tSL1 = T2[s + L - 1];
-          const tSucc = T2[succ];
-          const rS = tS * n;
-          const rSL1 = tSL1 * n;
-          const rPred = tPred * n;
-          const dRemoveBase = D[rPred + tS] + D[rSL1 + tSucc];
-          const dReconnect = D[rPred + tSucc];
-          let foundMove = false;
-          for (let k = 0; k < n; k++) {
-            let kp = k + 1;
-            if (kp === n) kp = 0;
-            if (s <= succ) {
-              if (kp >= s && kp <= succ) continue;
-            } else {
-              if (kp >= s || kp <= succ) continue;
-            }
-            const tk = T2[k];
-            const tk1 = T2[kp];
-            const rk = tk * n;
-            const dEdgeBreak = D[rk + tk1];
-            let bestDAdd = D[rk + tS] + D[rSL1 + tk1] + dReconnect;
-            let useReverse = false;
-            if (L >= 2) {
-              const dAddRev = D[rk + tSL1] + D[rS + tk1] + dReconnect;
-              if (dAddRev < bestDAdd) {
-                bestDAdd = dAddRev;
-                useReverse = true;
-              }
-            }
-            if (bestDAdd < dRemoveBase + dEdgeBreak) {
-              // local re-activation: the three old edges are
-              // (tPred,tS), (tSL1,tSucc), (tk,tk1); the three new ones are
-              // (tPred,tSucc), (tk,tS)/(tk,tSL1), (tSL1/tS,tk1).
-              dlo[tPred] = 0; dlo[tS] = 0; dlo[tSL1] = 0;
-              dlo[tSucc] = 0; dlo[tk] = 0; dlo[tk1] = 0;
-              let idx = 0;
-              newTour[idx++] = tPred;
-              let p = succ;
-              while (p !== kp) {
-                newTour[idx++] = T2[p];
-                p++; if (p === n) p = 0;
-              }
-              if (useReverse) {
-                for (let q = L - 1; q >= 0; q--) newTour[idx++] = T2[s + q];
-              } else {
-                for (let q = 0; q < L; q++) newTour[idx++] = T2[s + q];
-              }
-              p = kp;
-              while (p !== pred) {
-                newTour[idx++] = T2[p];
-                p++; if (p === n) p = 0;
-              }
-              for (let i2 = 0; i2 < n; i2++) { const v = newTour[i2]; tour[i2] = v; T2[i2] = v; T2[i2 + n] = v; }
-              oImproved = true;
-              foundMove = true;
-              break;
-            }
-          }
-          if (!foundMove) dlo[tS] = 1;
+  // ---- K nearest neighbours per city ----
+  const K = Math.min(12, n - 1);
+  const NB = new Int32Array(n * K);
+  {
+    const bd = new Float64Array(K);
+    const bi = new Int32Array(K);
+    for (let i = 0; i < n; i++) {
+      let m = 0;
+      const ro = i * n;
+      for (let j = 0; j < n; j++) {
+        if (j === i) continue;
+        const d = D[ro + j];
+        if (m < K) {
+          let p = m; m++;
+          while (p > 0 && bd[p - 1] > d) { bd[p] = bd[p - 1]; bi[p] = bi[p - 1]; p--; }
+          bd[p] = d; bi[p] = j;
+        } else if (d < bd[K - 1]) {
+          let p = K - 1;
+          while (p > 0 && bd[p - 1] > d) { bd[p] = bd[p - 1]; bi[p] = bi[p - 1]; p--; }
+          bd[p] = d; bi[p] = j;
         }
       }
+      for (let t = 0; t < K; t++) NB[i * K + t] = bi[t];
     }
   }
 
+  // ---- working state ----
+  const tour = new Int32Array(n);
+  const pos = new Int32Array(n);
+  const tmp = new Int32Array(n);
+  const dl = new Uint8Array(n);
+  const stack = [];
+  let useAll = false;
+
+  function loadTour(src) {
+    for (let i = 0; i < n; i++) { tour[i] = src[i]; pos[tour[i]] = i; }
+  }
+  function syncPos() {
+    for (let i = 0; i < n; i++) pos[tour[i]] = i;
+  }
   function tourLen(t) {
     let s = 0;
     for (let i = 0; i < n - 1; i++) s += D[t[i] * n + t[i + 1]];
-    s += D[t[n - 1] * n + t[0]];
-    return s;
+    return s + D[t[n - 1] * n + t[0]];
   }
 
-  for (const start of startSet) {
-    const tour = new Array(n);
-    const used = new Uint8Array(n);
-    tour[0] = start;
-    used[start] = 1;
-    let cur = start;
+  // 2-opt (neighbour list or exhaustive) + Or-opt L=1..3 (forward/reversed)
+  function localSearch(src) {
+    loadTour(src);
+    dl.fill(0);
+    stack.length = 0;
+    for (let i = 0; i < n; i++) stack.push(i);
+    let guard = 0;
+    while (stack.length > 0) {
+      if (++guard > 500000) break;
+      const a = stack.pop();
+      if (dl[a]) continue;
+      const pa = pos[a];
+      const paNext = pa + 1 === n ? 0 : pa + 1;
+      const aNext = tour[paNext];
+      const aPrev = tour[pa === 0 ? n - 1 : pa - 1];
+      const ra = a * n, raNext = aNext * n;
+      const dEdgeA = D[ra + aNext];
+      let moved = false;
+
+      const c2 = useAll ? n : 2 * K;
+      for (let c = 0; c < c2; c++) {
+        const b = useAll ? c : (c < K ? NB[a * K + c] : NB[aNext * K + (c - K)]);
+        if (b === a || b === aNext || b === aPrev) continue;
+        const pb = pos[b];
+        const lo = pa < pb ? pa : pb;
+        const hi = pa < pb ? pb : pa;
+        if (hi - lo < 2) continue;
+        const pbNext = pb + 1 === n ? 0 : pb + 1;
+        const bNext = tour[pbNext];
+        if (D[ra + b] + D[raNext + bNext] < dEdgeA + D[b * n + bNext]) {
+          for (let i = lo + 1, j = hi; i < j; i++, j--) { const x = tour[i]; tour[i] = tour[j]; tour[j] = x; }
+          syncPos();
+          dl[a] = 0; dl[b] = 0; dl[aNext] = 0; dl[bNext] = 0;
+          stack.push(a, b, aNext, bNext);
+          moved = true;
+          break;
+        }
+      }
+      if (moved) continue;
+
+      for (let L = 1; L <= 3; L++) {
+        const s = tour[pa];
+        const sMid = tour[pa + 1 === n ? 0 : pa + 1];
+        const sLast = tour[pa + L - 1 >= n ? pa + L - 1 - n : pa + L - 1];
+        const succ = tour[pa + L >= n ? pa + L - n : pa + L];
+        const pred = tour[pa === 0 ? n - 1 : pa - 1];
+        const rPred = pred * n, rS = s * n, rSL = sLast * n;
+        const dRemove = D[rPred + s] + D[rSL + succ];
+        const dReconnect = D[rPred + succ];
+        const co = useAll ? n : 2 * K;
+        for (let c = 0; c < co; c++) {
+          const cand = useAll ? c : (c < K ? NB[s * K + c] : NB[sLast * K + (c - K)]);
+          if (cand === pred || cand === s || cand === sLast) continue;
+          if (L === 3 && cand === sMid) continue;
+          const q = pos[cand];
+          const q1 = q + 1 === n ? 0 : q + 1;
+          const candNext = tour[q1];
+          const rC = cand * n;
+          const dOld = dRemove + D[rC + candNext];
+          const dF = dReconnect + D[rC + s] + D[rSL + candNext] - dOld;
+          const dR = dReconnect + D[rC + sLast] + D[rS + candNext] - dOld;
+          let rev = false;
+          if (dF < 0 && dF <= dR) rev = false;
+          else if (dR < 0) rev = true;
+          else continue;
+          let idx = 0;
+          let pp = pa + L >= n ? pa + L - n : pa + L;
+          do { tmp[idx++] = tour[pp]; if (pp === q) break; pp = pp + 1 === n ? 0 : pp + 1; } while (true);
+          if (!rev) { for (let t = 0; t < L; t++) tmp[idx++] = tour[pa + t >= n ? pa + t - n : pa + t]; }
+          else { for (let t = L - 1; t >= 0; t--) tmp[idx++] = tour[pa + t >= n ? pa + t - n : pa + t]; }
+          pp = q + 1 === n ? 0 : q + 1;
+          do { tmp[idx++] = tour[pp]; if (pp === (pa === 0 ? n - 1 : pa - 1)) break; pp = pp + 1 === n ? 0 : pp + 1; } while (true);
+          for (let t = 0; t < n; t++) { tour[t] = tmp[t]; pos[tour[t]] = t; }
+          dl[pred] = 0; dl[s] = 0; dl[sLast] = 0; dl[succ] = 0; dl[cand] = 0; dl[candNext] = 0;
+          stack.push(pred, s, sLast, succ, cand, candNext);
+          moved = true;
+          break;
+        }
+        if (moved) break;
+      }
+      if (!moved) dl[a] = 1;
+    }
+  }
+
+  // ---- initial nearest-neighbour solutions ----
+  const bestTour = new Int32Array(n);
+  let bestLen = Infinity;
+  const init = new Int32Array(n);
+  const used = new Uint8Array(n);
+  const starts = [0];
+  let far = 0, fd = -1;
+  for (let j = 1; j < n; j++) { const d = D[j]; if (d > fd) { fd = d; far = j; } }
+  if (far !== 0) starts.push(far);
+  const h = n >> 1;
+  if (h !== 0 && h !== far) starts.push(h);
+  if (n - 1 !== 0 && n - 1 !== far && n - 1 !== h) starts.push(n - 1);
+  for (let si = 0; si < starts.length; si++) {
+    const st = starts[si];
+    used.fill(0);
+    let cur = st, idx = 0;
+    init[idx++] = st;
+    used[st] = 1;
     for (let k = 1; k < n; k++) {
-      let best = -1, bd = Infinity;
+      let bj = -1, bd = Infinity;
       const rc = cur * n;
       for (let j = 0; j < n; j++) {
         if (used[j]) continue;
         const d = D[rc + j];
-        if (d < bd) { bd = d; best = j; }
+        if (d < bd) { bd = d; bj = j; }
       }
-      used[best] = 1;
-      tour[k] = best;
-      cur = best;
+      used[bj] = 1;
+      init[idx++] = bj;
+      cur = bj;
     }
-
-    runLS(tour, 30, 5);
-
+    localSearch(init);
     const len = tourLen(tour);
     if (len < bestLen) {
       bestLen = len;
-      bestTour = tour;
+      for (let i = 0; i < n; i++) bestTour[i] = tour[i];
     }
   }
 
-  const ILS_MS = 200;
-  const tStart = Date.now();
-  const KMAX = 3000;
-
-  for (let r = 0; r < KMAX; r++) {
-    let fam;
-    if (n < 6) fam = 2;
-    else if (r < 4) fam = 0;
-    else if (r < 8) fam = 1;
-    else if (r < 12) fam = 2;
-    else fam = r % 2;
-
-    if (r >= 12 && Date.now() - tStart > ILS_MS) break;
-
-    const perturbed = new Array(n);
+  // ---- ILS: double bridge kick + record-to-record acceptance ----
+  const curTour = new Int32Array(n);
+  for (let i = 0; i < n; i++) curTour[i] = bestTour[i];
+  const pert = new Int32Array(n);
+  const t0 = Date.now();
+  const BUDGET = 300;
+  const EPS = 0.01;
+  let sinceImp = 0;
+  for (let it = 0; it < 100000; it++) {
+    if ((it & 7) === 7 && Date.now() - t0 >= BUDGET) break;
+    for (let i = 0; i < n; i++) pert[i] = curTour[i];
+    const p = 1 + Math.floor(Math.random() * (n - 3));
+    const q = p + 1 + Math.floor(Math.random() * (n - p - 2));
+    const r = q + 1 + Math.floor(Math.random() * (n - q - 1));
     let idx = 0;
-    if (fam === 2) {
-      if (n > 2) {
-        const i = 1 + Math.floor(Math.random() * (n - 2));
-        const j = i + 1 + Math.floor(Math.random() * (n - i - 1));
-        for (let p = 0; p < n; p++) perturbed[p] = bestTour[p];
-        let lo = i, hi = j;
-        while (lo < hi) {
-          const tmp = perturbed[lo]; perturbed[lo] = perturbed[hi]; perturbed[hi] = tmp;
-          lo++; hi--;
-        }
-      } else {
-        for (let p = 0; p < n; p++) perturbed[p] = bestTour[p];
-      }
-    } else {
-      const c1 = 1 + Math.floor(Math.random() * (n - 4));
-      const c2 = c1 + 1 + Math.floor(Math.random() * (n - c1 - 3));
-      const c3 = c2 + 1 + Math.floor(Math.random() * (n - c2 - 2));
-      if (fam === 0) {
-        for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
-      } else {
-        for (let i = 0; i <= c1; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c3 + 1; i < n; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c1 + 1; i <= c2; i++) perturbed[idx++] = bestTour[i];
-        for (let i = c2 + 1; i <= c3; i++) perturbed[idx++] = bestTour[i];
-      }
-    }
-
-    runLS(perturbed, 10, 3);
-
-    const len = tourLen(perturbed);
+    for (let i = 0; i < p; i++) pert[idx++] = curTour[i];
+    for (let i = q; i < r; i++) pert[idx++] = curTour[i];
+    for (let i = p; i < q; i++) pert[idx++] = curTour[i];
+    for (let i = r; i < n; i++) pert[idx++] = curTour[i];
+    localSearch(pert);
+    const len = tourLen(tour);
     if (len < bestLen) {
       bestLen = len;
-      bestTour = perturbed;
+      for (let i = 0; i < n; i++) bestTour[i] = tour[i];
+      sinceImp = 0;
+    } else sinceImp++;
+    if (len < bestLen * (1 + EPS)) {
+      for (let i = 0; i < n; i++) curTour[i] = tour[i];
+    } else if (sinceImp >= 200) {
+      for (let i = 0; i < n; i++) curTour[i] = bestTour[i];
+      sinceImp = 0;
     }
   }
 
-  return bestTour;
+  // ---- final exhaustive polish (true 2-opt + or-opt local optimum) ----
+  useAll = true;
+  localSearch(bestTour);
+  const out = new Array(n);
+  for (let i = 0; i < n; i++) out[i] = tour[i];
+  return out;
 }

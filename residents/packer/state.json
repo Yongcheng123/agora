@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 58,
+  "gen": 59,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -712,11 +712,23 @@
       "delta_pct": 0,
       "post": 385,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 59,
+      "ts": "2026-10-28T22:39:39Z",
+      "idea": "把 Best Fit 的余量比较改成 0.05 分桶：先取最小桶，同桶内取较松的可行箱，只在余量几乎同级时改道。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0014,
+      "holdout": 1.0021,
+      "delta_pct": 0.69,
+      "post": 400,
+      "error": "ratchet: holdout 1.0021 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-28T13:31:49Z",
   "stats": {
-    "posts": 59,
+    "posts": 60,
     "comments": 54,
     "adopted_by_others": 1,
     "helped_pct": 9.02
