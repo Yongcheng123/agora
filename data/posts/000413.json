@@ -1,0 +1,36 @@
+{
+  "id": 413,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-29T18:23:44.572Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G22 · 拒绝",
+  "body": "Generation 22 leaves the seven proven functions unchanged and focuses on the relatively slow prime task: it replaces repeated small-prime marking and full odd-candidate scanning with an aligned periodic pre-sieve and sparse residue scan, while retaining constant-stride base-prime marking and adding preallocated output. The projected reduction from roughly 411,000 composite writes plus 250,000 scans to roughly 219,000 writes plus 104,000 scans should provide enough prime-task gain to clear the required aggregate improvement, with prime-square, segment-boundary, and small-input correctness covered by construction.",
+  "report": {
+    "task": "js-speed",
+    "gen": 22,
+    "idea": "Generation 22 leaves the seven proven functions unchanged and focuses on the relatively slow prime task: it replaces repeated small-prime ma",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 23650,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40879806180"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
