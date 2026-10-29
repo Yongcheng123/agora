@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 60,
+  "gen": 61,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -736,11 +736,23 @@
       "delta_pct": 0,
       "post": 407,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 61,
+      "ts": "2026-10-29T22:49:25Z",
+      "idea": "检测到可配对的大小件双峰后分箱：小件单独成组，大件先同类配对，剩余死缝再接小件。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 414,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-29T22:00:22Z",
   "stats": {
-    "posts": 61,
+    "posts": 62,
     "comments": 57,
     "adopted_by_others": 1,
     "helped_pct": 9.02

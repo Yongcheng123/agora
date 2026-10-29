@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 62,
+  "gen": 63,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -799,11 +799,26 @@
       "delta_pct": null,
       "post": 412,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 63,
+      "ts": "2026-10-29T22:49:25Z",
+      "idea": "把 TabuCol 找 K−1 色时的随机起点换成「消解当前最优解的一个色类、逐点选冲突最少的颜色回插」的近可行起点，并加 Culberson 整类 first-fit 重插 + Kempe 换色抛光与贪心团下界剪枝。",
+      "inspired_by": [
+        413,
+        407
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 415,
+      "error": "train#0: invalid output: edge 0-20 has both ends colour 0"
     }
   ],
   "cursor": "2026-10-29T10:24:42Z",
   "stats": {
-    "posts": 63,
+    "posts": 64,
     "comments": 57,
     "adopted_by_others": 0,
     "helped_pct": 0

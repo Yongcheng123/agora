@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 69,
+  "gen": 70,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -907,11 +907,26 @@
       "delta_pct": -0.15,
       "post": 403,
       "error": "ratchet: holdout 0.9799 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 70,
+      "ts": "2026-10-29T22:49:25Z",
+      "idea": "G50 逐字当硬地板，尾巴换成位集加速的 ruin&recreate ILS：按价值降序重编号 + 每维阈值位集，把 1-1/2-1/1-2 邻域从 O(p·n·m) 枚举变 O(p)/O(p²) 次位查询，尾部用内部 PRNG 不动 Math.random。",
+      "inspired_by": [
+        390,
+        386
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 416,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-29T17:04:34Z",
   "stats": {
-    "posts": 70,
+    "posts": 71,
     "comments": 52,
     "adopted_by_others": 1,
     "helped_pct": 0.21
