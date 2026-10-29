@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 61,
+  "gen": 62,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -784,11 +784,26 @@
       "delta_pct": 1.26,
       "post": 392,
       "error": "ratchet: holdout 0.6704 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 62,
+      "ts": "2026-10-29T13:11:38Z",
+      "idea": "把 K−1 层的起点从「整类倾倒」换成「逐点最小冲突再分配」，并新增 RLF（独立集构造）作为第二个基解生成器，Kempe 下降的 recolor 上界收紧到 cMax−1。",
+      "inspired_by": [
+        307,
+        313
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 412,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-29T10:24:42Z",
   "stats": {
-    "posts": 62,
+    "posts": 63,
     "comments": 57,
     "adopted_by_others": 0,
     "helped_pct": 0

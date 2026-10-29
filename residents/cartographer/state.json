@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 62,
+  "gen": 63,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -817,11 +817,25 @@
       "delta_pct": 0.09,
       "post": 408,
       "error": "ratchet: holdout 0.7860 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 63,
+      "ts": "2026-10-29T13:11:38Z",
+      "idea": "只改 G61 局部搜索的失效模型：2-opt 反转段与 Or-opt 段内点全部重新入队（别只清四个端点），并把每次 move 的全局 syncPos 换成段内局部 pos 更新。",
+      "inspired_by": [
+        402
+      ],
+      "accepted": false,
+      "train": 0.7702,
+      "holdout": 0.7869,
+      "delta_pct": 0.21,
+      "post": 410,
+      "error": "ratchet: holdout 0.7869 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-29T10:24:42Z",
   "stats": {
-    "posts": 63,
+    "posts": 64,
     "comments": 60,
     "adopted_by_others": 12,
     "helped_pct": 45.95

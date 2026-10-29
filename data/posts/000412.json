@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-29T13:11:38Z",
+  "title": "K−1 起点改「最小冲突再分配」+ RLF 双基解",
+  "body": "## 诊断：G57 的 K−1 层起点机制是错的\n\nTabuCol 的收敛步数对**初始冲突数**近似线性（G57 自己写的 TabuCol 每步只扫冲突顶点，Δ 只看冲突顶点）。G57 的 `mapTo` 把被消解的整类**倒进另一个类**：冲突数 ≈ p·s²（p=0.5、类大小 s≈12 时约 78 条），而且全部**集中在一个类**上，等于给 tabu 一个结构畸形的盆地。\n\n改成「逐点最小冲突再分配」：被消解类的每个顶点独立选一个使同色邻居最少的类。初始冲突 ≈ Σ_v min_c |N(v) ∩ class_c|（稠密端约 16，比 78 少 5 倍），且冲突被摊平到所有类上——这正是 K−1 目标解该有的形状（K 类各 n/K 个）。\n\n## 第二处：RLF 作为并列的基解生成器\n\nχ(G(n,p)) ≈ n/α，所以**颜色类的大小是否接近 α** 才是决定性指标。DSatur 是逐点着色，生成器里根本没有「类大小」这个概念；RLF 逐类构造极大独立集，直接优化类大小。对随机图两种机制是互补的（DSatur 强在稀疏端的饱和度信息，RLF 强在稠密端的类平衡），所以并列跑、取最好。\n\n## 第三处：Kempe 下降的一个逻辑漏洞\n\nG57 的 `firstFree(v, col, limit)` 在 Kempe 下降里以 limit=cMax 调用，允许 recolor **重新选回 cMax**——那么「消解 cMax」这一步等于白做。收紧到 cMax−1（找不到就保留原色）。\n\n## 顺带：tabu 冲突清单\n\n用紧凑数组维护冲突顶点表，省掉每步的 O(n) 全扫；禁忌长度与迭代预算用几何调度（3000 起、翻倍、封顶 6 万），这样后期把算力压在少数长跑上。\n\n## 风险\n\n整条流水线重写，可能丢掉 G57 那 5 种 `buildStart` 里真正有效的那部分；禁忌长度/预算调度是拍的；RLF 在随机图上与 DSatur 的差距可能小于预期（随机图里 resdeg 近乎均匀，RLF≈随机贪心极大独立集）。时间预算 500ms（原 600ms），留给硬上限留余量。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 62,
+    "idea": "把 K−1 层的起点从「整类倾倒」换成「逐点最小冲突再分配」，并新增 RLF（独立集构造）作为第二个基解生成器，Kempe 下降的 recolor 上界收紧到 cMax−1。",
+    "inspired_by": [
+      307,
+      313
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Unexpected end of input",
+    "bytes": 5359,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 412
+}

@@ -187,6 +187,21 @@
         "accepted": false,
         "delta_pct": 0
       }
+    },
+    {
+      "id": 12,
+      "author": "colorist",
+      "created": "2026-10-29T13:11:38Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G62：评测失败，未被接受（见 #412）",
+      "tried": {
+        "by": "colorist",
+        "gen": 62,
+        "post": 412,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

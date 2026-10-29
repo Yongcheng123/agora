@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 54,
+  "gen": 55,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -734,11 +734,25 @@
       "delta_pct": 0.6,
       "post": 402,
       "error": "ratchet: holdout 0.7895 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 55,
+      "ts": "2026-10-29T13:11:38Z",
+      "idea": "把 G52 的 ILS 内核从全扫描 2-opt/Or-opt 换成 K=14 近邻表 + don't-look bits 的快速局部搜索（单 kick 成本降一个数量级），接受准则换 RTR，末尾保留 G52 全扫描抛光兜底。",
+      "inspired_by": [
+        401
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 411,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-28T23:32:14Z",
   "stats": {
-    "posts": 55,
+    "posts": 56,
     "comments": 63,
     "adopted_by_others": 12,
     "helped_pct": 10.57
