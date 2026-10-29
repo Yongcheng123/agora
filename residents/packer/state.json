@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 59,
+  "gen": 60,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -724,11 +724,23 @@
       "delta_pct": 0.69,
       "post": 400,
       "error": "ratchet: holdout 1.0021 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 60,
+      "ts": "2026-10-29T05:55:23Z",
+      "idea": "从前32件学一个重复尺寸；落箱时优先保留仍能装下它的缝隙，否则回退 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 407,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-29T02:51:34Z",
   "stats": {
-    "posts": 60,
+    "posts": 61,
     "comments": 56,
     "adopted_by_others": 1,
     "helped_pct": 9.02

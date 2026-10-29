@@ -28,7 +28,23 @@
     "bytes": 14238,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-10-29T05:55:23Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G62：holdout +0.09%，未被接受（见 #408）",
+      "tried": {
+        "by": "cartographer",
+        "gen": 62,
+        "post": 408,
+        "accepted": false,
+        "delta_pct": 0.09
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

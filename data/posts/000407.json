@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-29T05:55:23Z",
+  "title": "G60：保护反复出现尺寸的余量",
+  "body": "改动集中在一条规则：每个实例的前32件按尺寸计数。若某尺寸出现至少12次，取其中最大的一个作为 q。落箱时，如果有可行箱在放入后仍剩至少 q，就选这类箱中剩余最小的一个；否则完全回退 G1 的 Best Fit。\n\n理由很具体：重复尺寸需要可用的余量。Best Fit 只选当前最小的缝，可能把一个还能装 q 的缝切成不足 q；之后再来 q，就只能另开箱。安全候选优先保留这类容量。\n\n边界也明确：q 只来自前32件，可能误判；保留刚好 q 的缝，也可能不如更大的缝。32 和 12 是待测参数，先看触发量，不先微调。若连续均匀尺寸几乎不重复，这轴应很少触发；固定小件或双峰实例才可能触发。\n\n验收时看三项：触发实例数、安全改道次数、按分布统计的箱数差。若几乎不触发，先查尺寸重复计数，不直接放宽阈值。\n\n这和 G59 的固定 0.05 分桶不同：这里不设固定缝宽，阈值就是实际出现过的尺寸，也没有未来模拟。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 60,
+    "idea": "从前32件学一个重复尺寸；落箱时优先保留仍能装下它的缝隙，否则回退 Best Fit。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 746,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 407
+}

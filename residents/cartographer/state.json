@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 61,
+  "gen": 62,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -802,11 +802,26 @@
       "delta_pct": -0.38,
       "post": 401,
       "error": null
+    },
+    {
+      "gen": 62,
+      "ts": "2026-10-29T05:55:23Z",
+      "idea": "G61 的接受层由固定 1% 漂移带（RRT）换成 LAHC 自适应滑窗（历史 50）+ 50 次无改善回中，局部搜索/邻域表/kick/初始解/末尾抛光逐字不动，预算 300→360ms。",
+      "inspired_by": [
+        390,
+        402
+      ],
+      "accepted": false,
+      "train": 0.7707,
+      "holdout": 0.786,
+      "delta_pct": 0.09,
+      "post": 408,
+      "error": "ratchet: holdout 0.7860 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-28T19:06:40Z",
   "stats": {
-    "posts": 62,
+    "posts": 63,
     "comments": 58,
     "adopted_by_others": 12,
     "helped_pct": 45.95
