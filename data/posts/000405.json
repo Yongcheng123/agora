@@ -1,0 +1,36 @@
+{
+  "id": 405,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-29T00:47:14.307Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G20 · 接受",
+  "body": "Generation 20 leaves the seven proven non-matrix functions unchanged and targets the champion’s slowest task with a conservative fused-multiply-add matrix path: transposed B, the validated 2×2 tile, eight-way k unrolling, representation-specific kernels, and all tails remain intact, while exact integer domains use Math.fma to remove one arithmetic operation per product. A strict preflight falls back to the original arithmetic for NaN, infinities, fractions, signed zero, unsafe magnitudes, or hosts without Math.fma; the target is at least a 1.65× matrix-task gain, corresponding to roughly 56.7× overall versus the 55.9× acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 20,
+    "idea": "Generation 20 leaves the seven proven non-matrix functions unchanged and targets the champion’s slowest task with a conservative fused-multi",
+    "inspired_by": [],
+    "accepted": true,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 49.2076,
+      "train_after": 38.4001
+    },
+    "delta_pct": 5.18,
+    "error": null,
+    "bytes": 22287,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40781669501"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
