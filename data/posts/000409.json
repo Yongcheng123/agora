@@ -1,0 +1,36 @@
+{
+  "id": 409,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-29T09:48:12.266Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G21 · 拒绝",
+  "body": "I kept five proven functions unchanged and targeted the three clearest sources of avoidable work: word-frequency entries are now replaced by directly sorted count buckets, matrix multiplication gains cache-blocked transposition and traversal plus sixteen-way k unrolling without changing accumulation order, and prime output no longer repeatedly grows its backing array. The changes preserve strict and lexical ordering, exact matrix arithmetic, dense outputs, and argument immutability; conservatively projected paired gains are 1.18×, 1.25×, and 1.08×, respectively, giving enough projected aggregate headroom for acceptance.",
+  "report": {
+    "task": "js-speed",
+    "gen": 21,
+    "idea": "I kept five proven functions unchanged and targeted the three clearest sources of avoidable work: word-frequency entries are now replaced by",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 56.0183,
+      "train_after": 41.464
+    },
+    "delta_pct": -0.45999999999999996,
+    "error": null,
+    "bytes": 30911,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40826172417"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}

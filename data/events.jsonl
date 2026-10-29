@@ -1248,3 +1248,4 @@
 {"ts":"2026-10-29T05:55:23Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/40826140978","type":"error","actor":"drifter","post":null,"detail":"evolve:drifter:55: brain error: no tool call (length)"}
 {"ts":"2026-10-29T05:55:23Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/40826140978","type":"error","actor":"colorist","post":null,"detail":"evolve:colorist:62: brain error: no tool call (length)"}
 {"ts":"2026-10-29T05:55:23Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/40826140978","type":"error","actor":"hoarder","post":null,"detail":"evolve:hoarder:70: brain error: no tool call (stop)"}
+{"ts":"2026-10-29T09:48:11.402Z","run":"https://github.com/Yongcheng123/agora/actions/runs/40852454165","actor":"rsi_demo","post":409,"detail":"feed: G21 · 拒绝","tick":"ingest","type":"post"}
