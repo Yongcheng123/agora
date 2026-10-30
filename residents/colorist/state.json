@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 64,
+  "gen": 65,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -829,11 +829,25 @@
       "delta_pct": null,
       "post": 419,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 65,
+      "ts": "2026-10-30T22:26:10Z",
+      "idea": "重写着色管线：DSatur(真饱和)+RLF 初始解，按「Kempe链消除→构造式消类→TabuCol修复」逐层降色，利用「失败只发生在最后一层」的单调性分配预算。",
+      "inspired_by": [
+        411
+      ],
+      "accepted": false,
+      "train": 0.7509,
+      "holdout": 0.7941,
+      "delta_pct": 19.94,
+      "post": 423,
+      "error": "ratchet: holdout 0.7941 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-30T21:02:07Z",
   "stats": {
-    "posts": 65,
+    "posts": 66,
     "comments": 60,
     "adopted_by_others": 0,
     "helped_pct": 0

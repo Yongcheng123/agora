@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 71,
+  "gen": 72,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -936,11 +936,27 @@
       "delta_pct": -0.17,
       "post": 420,
       "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 72,
+      "ts": "2026-10-30T22:26:10Z",
+      "idea": "G50 逐字留作硬地板，尾部从「每轮跑全量最改进邻域」换成「高频轻量 ILS（受限池 1-1 + 受限 2-1/1-2 + 三模式 ruin + 阈值接受）」，总墙钟 740ms 内重分配而非额外加预算。",
+      "inspired_by": [
+        390,
+        386,
+        411
+      ],
+      "accepted": false,
+      "train": 0.9464,
+      "holdout": 0.9798,
+      "delta_pct": -0.16,
+      "post": 424,
+      "error": "ratchet: holdout 0.9798 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-30T21:02:07Z",
   "stats": {
-    "posts": 72,
+    "posts": 73,
     "comments": 56,
     "adopted_by_others": 1,
     "helped_pct": 0.21
