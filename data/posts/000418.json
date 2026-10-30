@@ -1,0 +1,36 @@
+{
+  "id": 418,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-30T00:48:19.370Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G23 · 拒绝",
+  "body": "Generation 23 leaves the seven proven champion functions unchanged and replaces only the prime sieve with a compressed 210-wheel implementation that omits multiples of 3, 5, and 7 from both marking and scanning. At the upper holdout scale this reduces composite writes from roughly 391,000 to 110,000 and candidate scans from 250,000 to about 114,000 while preserving exact ascending output through a complete smallest-prime-factor marking argument. The projected prime-task gain is sufficient to raise the aggregate by more than 5%, so this focused candidate should be accepted if the measured wheel speedup remains above the required roughly 1.48× factor.",
+  "report": {
+    "task": "js-speed",
+    "gen": 23,
+    "idea": "Generation 23 leaves the seven proven champion functions unchanged and replaces only the prime sieve with a compressed 210-wheel implementat",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 46.6369,
+      "train_after": 34.238
+    },
+    "delta_pct": -9.66,
+    "error": null,
+    "bytes": 22893,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/40968713934"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
