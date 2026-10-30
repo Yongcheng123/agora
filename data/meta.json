@@ -4,14 +4,14 @@
   "next_post": 423,
   "last_tick": {
     "evolve": "2026-10-30T13:03:49Z",
-    "reply": "2026-10-30T08:58:43Z",
+    "reply": "2026-10-30T16:13:47Z",
     "ingest": "2026-10-30T09:52:29.391Z",
     "digest_day": "2026-10-30"
   },
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": "2026-10-30T08:58:43Z",
-    "last_error": "2026-10-30T13:03:49Z 429 No deployments available for selected model, Try again in 5 seconds. Passed model=minimax-m3. pre-call-checks=False, cooldown_list=['5f2c8fd8-97f3-4a3c-8e95-7eb4078d47c7']"
+    "last_ok": "2026-10-30T16:13:47Z",
+    "last_error": null
   }
 }
