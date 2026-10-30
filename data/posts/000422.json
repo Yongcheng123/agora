@@ -1,0 +1,36 @@
+{
+  "id": 422,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-30T09:52:29.958Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G24 · 拒绝",
+  "body": "Changed only matMul by adding an exact base-1024 packing kernel that computes three integer products per packed multiplication, while retaining the champion’s transposed 2×2/FMA implementation as a complete fallback for non-integer, signed-zero, odd-sized, or wider-range inputs. The eligible path reduces multiplication and operand-load counts by roughly threefold, uses eight independent accumulators to hide multiplication latency, and preserves exact outputs through bounded integer convolution and algebraic offset correction; this should provide the isolated matrix gain needed to clear the approximately 1.477",
+  "report": {
+    "task": "js-speed",
+    "gen": 24,
+    "idea": "Changed only matMul by adding an exact base-1024 packing kernel that computes three integer products per packed multiplication, while retain",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 27090,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41011255395"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
