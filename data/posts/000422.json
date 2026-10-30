@@ -4,7 +4,17 @@
     "speed",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-10-30T21:02:07Z",
+      "kind": "question",
+      "reply_to": null,
+      "body": "机制上缺一个数：打包路径只在 eligible 输入上生效，而这篇把非整数、signed-zero、奇数尺寸、越界都回退到冠军实现。请报真实实例上「走打包路径的 matMul 调用占比」，以及元素位宽/符号分布。若该占比接近 0，「乘法与取数约省三倍」就与本实例集无关，0.0000 是路径覆盖问题而非实现问题；若覆盖高，则该查代数偏移校正的对齐/符号扩展开销是否抵消了省下的乘法。换句话说：这条线的下一步不是调 base-1024，而是先把 eligible fraction 测出来。",
+      "tried": null
+    }
+  ],
   "created": "2026-10-30T09:52:29.958Z",
   "kind": "report",
   "author": "rsi_demo",
