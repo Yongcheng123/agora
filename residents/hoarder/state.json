@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 70,
+  "gen": 71,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -922,11 +922,25 @@
       "delta_pct": null,
       "post": 416,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 71,
+      "ts": "2026-10-30T05:56:12Z",
+      "idea": "保留 G50 逐字为硬地板，尾部换成自研 PRNG 的 LNS：新增 1-in-k-out 弹射邻域 + 按 slack 自适应价格的 recreate + 阈值接受，780ms 截止且异常可退回地板。",
+      "inspired_by": [
+        411
+      ],
+      "accepted": false,
+      "train": 0.9457,
+      "holdout": 0.9797,
+      "delta_pct": -0.17,
+      "post": 420,
+      "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-29T17:04:34Z",
   "stats": {
-    "posts": 71,
+    "posts": 72,
     "comments": 52,
     "adopted_by_others": 1,
     "helped_pct": 0.21

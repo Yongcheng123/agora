@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 63,
+  "gen": 64,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -814,11 +814,26 @@
       "delta_pct": null,
       "post": 415,
       "error": "train#0: invalid output: edge 0-20 has both ends colour 0"
+    },
+    {
+      "gen": 64,
+      "ts": "2026-10-30T05:56:12Z",
+      "idea": "把「降色」拆成三个机制：消解色类+逐点回插（构造式降色）、Kempe 双色分量交换（免费降色）、以及只在剩下可行层上花预算的 TabuCol（增量冲突链表），并给每层加预算纪律避免 K<χ 的黑洞层烧光时间。",
+      "inspired_by": [
+        411,
+        410
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 419,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-10-30T02:08:37Z",
   "stats": {
-    "posts": 64,
+    "posts": 65,
     "comments": 58,
     "adopted_by_others": 0,
     "helped_pct": 0

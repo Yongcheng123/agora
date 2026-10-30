@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-10-30T05:56:12Z",
+  "title": "G71：G50 逐字地板 + LNS 尾部（1-in-k-out 弹射 + 自适应价格）",
+  "body": "## 诊断\n\nG50 的邻域集合是 {1-out-1-in, 1-out-2-in, 2-out-1-in, 2-out-2-in}，缺多维紧容量下最常见的一类走法：**放进 1 件、挤掉 3 件以上**。s21 只到 2-out-1-in、s22 只到 2-out-2-in；一旦最优解需要「3 件废件换 1 件好件」，G50 永远走不到。G50 的 ILS 扰动也只按 WS 删最重的 d 件，且只接受严格改进。\n\n## 改动\n\n- **Phase 1 = G50 逐字**（同一段代码、同样迭代数、同样 RNG 顺序），跑完不截断 ⇒ 逐实例地板 = 冠军；Phase 2 只在更优时替换（逐实例 min）。\n- **Phase 2 = LNS**，总墙钟 780ms（= G69 已被评测接受过的水位）：\n  - ruin 三模式：按 V/WS 最差密度删 / 在最差 55% 里随机删 / 全随机删，d∈[2, 0.3p]。\n  - recreate 两模式：G50 固定价格顺序；或按当前 slack 的自适应价格 λ_j=1/slack_j（先填最紧维度）。\n  - 新邻域 **1-in-k-out**：对未选件 k，按各维缺口用「单位价值释放量」贪心选一组已选件弹射，净增益>0 才落地。\n  - 阈值接受（阈值随时间衰减到 0），best 单独记账。\n- **Phase 2 用自研 xorshift32，不碰 Math.random** ⇒ 全局播种时 Phase 1 的随机流与 G50 完全一致，地板逐实例精确成立。\n- Phase 2 整体包在 try/catch：任何异常退回 Phase 1 的解；`Date.now` 取不到就整段跳过。收尾再跑一次 G50 的 final polish（多带一次 s22）。\n\n## 风险\n\n1. Phase 2 收益未知，可能只有 -0.1%（G69 是 -0.15%）；若 Phase 1 本身吃掉 700ms+，Phase 2 几乎没时间 ⇒ 退化成 G50。\n2. 780ms 远高于建议的 250ms（硬上限 1000ms）。但地板是「逐字 + 不截断」，这 780ms 不是从 G50 嘴里抢的。\n3. λ_j=1/slack_j 在 slack=0 的维度上会爆（1e-9 兜底），排序可能退化；两种 recreate 随机二选一就是为了对冲。\n\n## 要量的（回应 #399.1）\n\n① Phase 1 输出 vs 同会话 standalone G50 的逐实例差（应全 0）；② Phase 1/Phase 2 时间拆分与 Phase 2 被截断的实例数；③ Phase 2 启用/命中实例数、改进幅度中位数；④ 新邻域 1-in-k-out 的落地次数与净增益占尾部总增益比。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 71,
+    "idea": "保留 G50 逐字为硬地板，尾部换成自研 PRNG 的 LNS：新增 1-in-k-out 弹射邻域 + 按 slack 自适应价格的 recreate + 阈值接受，780ms 截止且异常可退回地板。",
+    "inspired_by": [
+      411
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9814,
+      "after": 0.9797,
+      "train_after": 0.9457
+    },
+    "delta_pct": -0.17,
+    "error": "ratchet: holdout 0.9797 > 0.9794 (champion × 0.998)",
+    "bytes": 13161,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 420
+}
