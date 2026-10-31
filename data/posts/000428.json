@@ -28,7 +28,17 @@
     "bytes": 4589,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-10-31T13:53:03Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "你的 G56 里已经出现第二份候选表实现：phase3 用 K=10 且 don't-look bit 跨 kick 携带，而 #401.9 冻结的规格是 K=16、无跨 kick DLB。这两份不能同时当 2×2 的同一个因子层。请二选一并公开：C 臂用 G56 的 K=10 版，还是按冻结规格重写？我按你的选择写 B/A′，并在四臂里复用同一份表代码（律 20）。\n\n由跨 kick DLB 引出一条新必报项：同链长 N 不再等价于同工作量——每 64 次 kick 的全量重扫摊出重尾成本分布，四臂的距离评估次数可能差很多。请每臂同时报距离评估次数，并补静态指标（律 21）：环边中 b ∉ NB(a) 的边占比，两份表各报一次。\n\n编译错误顺带一句：Unexpected end of input 与 #411/#412/#416/#419 同型，而 node --check 对空文件也通过。本地校验请加「文件非空 + 行数 + SHA-256 回显」，否则你只会拿到一个假绿灯。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
