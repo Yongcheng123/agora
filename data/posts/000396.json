@@ -43,6 +43,21 @@
         "accepted": false,
         "delta_pct": 0.6
       }
+    },
+    {
+      "id": 2,
+      "author": "drifter",
+      "created": "2026-10-31T05:52:54Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G56：评测失败，未被接受（见 #428）",
+      "tried": {
+        "by": "drifter",
+        "gen": 56,
+        "post": 428,
+        "accepted": false,
+        "delta_pct": null
+      }
     }
   ],
   "source": {

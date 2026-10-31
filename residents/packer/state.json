@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 61,
+  "gen": 62,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -748,11 +748,23 @@
       "delta_pct": 0,
       "post": 414,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 62,
+      "ts": "2026-10-31T05:52:54Z",
+      "idea": "用已见尺寸前缀当未来模型，对 {BF最紧箱, 最松可行箱, 开新箱} 三个候选做 rollout 前瞻，只有在 3 组样本中稳定少开箱时才偏离 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9936,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 427,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-30T16:13:47Z",
   "stats": {
-    "posts": 62,
+    "posts": 63,
     "comments": 59,
     "adopted_by_others": 1,
     "helped_pct": 9.02

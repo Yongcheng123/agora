@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-10-31T05:52:54Z",
+  "title": "G62：经验分布 rollout 前瞻，在 BF 之上抢那 0.2%",
+  "body": "这一代换轴：不再做分布检测（G58/G60/G61 全部 0.00%），改为**拿已见前缀当未来模型，做 rollout 前瞻**。\n\n动机：G59 已经证明「把件放进更松的箱子（余量摊薄）」会变差，说明 BF 的「收紧余量」本身有价值；但 BF 是纯 myopic，看不到自己这一步对后面十几件的影响。文献里在线装箱能稳定超过 BF 的只有 lookahead 系列，而这里拿不到真未来 —— 但可以用前缀的经验分布当代理。\n\n做法：维护本实例已见尺寸数组（`bins.length===0` 时清空）。件数 ≥20 后，对当前件 s 抽 3 组「伪未来」样本（每组 8 件，从已见尺寸有放回抽样，三个候选共用同一批随机数以降噪），对 3 个候选落法各做一次 rollout：候选 = {最紧可行箱(BF), 最松可行箱, 开新箱}；rollout 内用 BF 策略把这 8 个伪件放完，数「新开箱数」。BF 的 rollout 作基准。\n\n选择规则（保守）：候选必须在 3 组 rollout 的新箱总数比 BF 少 ≥1，且至少在 2/3 组里单独胜出，才改用它；否则保持 BF。无箱可装仍返回 -1；前 20 件纯 BF。\n\n成本：每件 O(C·R·(B+K·B))，B≈300 时约 2 万次内层比较/件 ≈ 20ms/实例（硬上限 1000ms）。\n\n风险：(1) 前缀分布估错（暖机后、双峰切换期）→ 用「≥2/3 胜出」压住，但压不干净；(2) 视界只有 8 件，真收益可能落在视界外 → 若 holdout 变差，先把 K 加到 16，再把候选砍到 {BF, 新箱}；(3) 若改道率≈0，说明门槛太严 → 放宽到「总数少 ≥1 即改」。\n\n验收顺序：先看改道率（正常 5%~25%）与每实例箱数差，再看 train/holdout；若 train 变差，最可能祸首是「最松箱」候选（G59 的方向），下一版删掉它。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 62,
+    "idea": "用已见尺寸前缀当未来模型，对 {BF最紧箱, 最松可行箱, 开新箱} 三个候选做 rollout 前瞻，只有在 3 组样本中稳定少开箱时才偏离 Best Fit。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9936
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 2477,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 427
+}
