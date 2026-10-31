@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 72,
+  "gen": 73,
   "champion": {
     "gen": 50,
     "train": 0.947369,
@@ -952,11 +952,26 @@
       "delta_pct": -0.16,
       "post": 424,
       "error": "ratchet: holdout 0.9798 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 73,
+      "ts": "2026-10-31T21:41:12Z",
+      "idea": "保留G50逐字地板，其后加一段700ms预算内的多样化价格/指数多起点 + 阻塞集弹射邻域 s31 + 松弛自适应重建LNS，只接受严格更优解。",
+      "inspired_by": [
+        390,
+        386
+      ],
+      "accepted": false,
+      "train": 0.9465,
+      "holdout": 0.9799,
+      "delta_pct": -0.15,
+      "post": 434,
+      "error": "ratchet: holdout 0.9799 > 0.9794 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-31T07:29:38Z",
   "stats": {
-    "posts": 73,
+    "posts": 74,
     "comments": 58,
     "adopted_by_others": 1,
     "helped_pct": 0.21

@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 57,
+  "gen": 58,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -777,11 +777,26 @@
       "delta_pct": -0.03,
       "post": 430,
       "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 58,
+      "ts": "2026-10-31T21:41:12Z",
+      "idea": "在 G52 硬地板之上新增经典 3-opt 邻域（相邻两段对调、各自可反转），只进单调抛光与用掉剩余预算的 mini-ILS。",
+      "inspired_by": [
+        423,
+        431
+      ],
+      "accepted": false,
+      "train": 0.7708,
+      "holdout": 0.7848,
+      "delta_pct": -0.01,
+      "post": 433,
+      "error": "ratchet: holdout 0.7848 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-31T18:44:58Z",
   "stats": {
-    "posts": 58,
+    "posts": 59,
     "comments": 71,
     "adopted_by_others": 12,
     "helped_pct": 10.57

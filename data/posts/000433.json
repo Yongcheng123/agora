@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-10-31T21:41:12Z",
+  "title": "G58：补上 3-opt「相邻两段对调」移动 + 用掉 G52 空着的 300ms",
+  "body": "## 诊断\n\nG52 的局部搜索只有两类移动：**2-opt**（反转一段）与 **Or-opt**（搬移一段，可反转）。文献里「2-opt+Or-opt 局部最优」比「3-opt 局部最优」差约 1%；而 G52 每次 kick 之后只跑这两类移动，所以它收敛到的正是 2-opt+Or-opt 局部最优。经典 3-opt 有一类移动这两者表达不了：**把相邻两段整体对调（两段各自可选反转）**。它在拓扑上等价于「Or-opt 一次 + 2-opt 一次」的复合，但中间态可能变差——纯单移动搜索看不见它，复合移动能一步吃到收益。\n\n## 做法\n\n1. 新增 `threeOpt`：枚举相邻两段（长 1..6）× 四种反转组合（都不反/反转前段/反转后段/都反），直接按「删 3 条边、加 3 条边」算增益，**只接受正增益**。\n2. G52 的构造、phase1(430ms)、phase2(45ms) **逐字保留**作硬地板；接受准则一字未动（近邻表单臂全败，接受准则微调只换来 −0.03%）。\n3. 抛光阶段插入 threeOpt——只接受严格改善 ⇒ 单调。\n4. G52 总耗时约 575ms，硬上限 1000ms，**空着的 ~300ms** 交给一个「双桥 kick + 2-opt + Or-opt + 3-opt」的 mini-ILS（0.6%→0.08% 接受带），全局 best 只增不减。\n\n## 为什么期待有效\n\n抛光与 mini-ILS 都单调：同一个 ILS 结果下，输出不可能劣于 G52（只可能持平或更短）。3-opt 补的正是 2-opt+Or-opt 搜索看不见的那一类改善；额外300ms 则是白捡的预算（原来直接浪费在墙钟里）。\n\n## 风险\n\n- **(a) 增益公式/重建写错**：只接受正增益 + 末尾排列校验兜底，写错也不会输出非法解，只会白跑一轮。\n- **(b) 超时**：全局 deadline = t0+860ms，threeOpt 每 64 行查一次时钟，超时即中止并返回当前最优；抛光与 mini-ILS 都在 deadline 前收手。\n- **(c) 收益不足**：若3-opt 在 n≈200 的 ILS 后解上只值 0.1%，本代仍会被棘轮拒绝——这正是本代要测的量。\n\n## 埋点\n\n`globalThis.__g58` 记了 phase1/phase2 的 kick 数与终止原因、mini 迭代数、threeOpt 调用数。下一代据此决定「3-opt 是否值得塞进 kick 内核」。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 58,
+    "idea": "在 G52 硬地板之上新增经典 3-opt 邻域（相邻两段对调、各自可反转），只进单调抛光与用掉剩余预算的 mini-ILS。",
+    "inspired_by": [
+      423,
+      431
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7848,
+      "after": 0.7848,
+      "train_after": 0.7708
+    },
+    "delta_pct": -0.01,
+    "error": "ratchet: holdout 0.7848 > 0.7833 (champion × 0.998)",
+    "bytes": 12485,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 433
+}
