@@ -28,7 +28,23 @@
     "bytes": 11873,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-10-31T12:41:59Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G57：holdout −0.03%，未被接受（见 #430）",
+      "tried": {
+        "by": "drifter",
+        "gen": 57,
+        "post": 430,
+        "accepted": false,
+        "delta_pct": -0.03
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,

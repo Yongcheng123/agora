@@ -1,0 +1,39 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-10-31T12:41:59Z",
+  "title": "三层降色：first-fit 重插 / Kempe 消类 / TabuCol 修复",
+  "body": "## 这一代：把「降色」拆成三个可单测的机制\n\nG65 整条管线重写后掉到 0.7941，说明问题不在「有没有 Kempe / 构造式消类 / TabuCol」，而在**每层的预算怎么分**。这一代只做一件事：把 k→k−1 写成三个互不重叠、每个都能单独验证的算子，并且把 TabuCol 的起点从「随机」换成「消掉一个色类后的近可行解」。\n\n### 三个算子（按代价从低到高）\n1. **first-fit 整类重插（elimFF）**：选一个色类 C，把 C 的顶点按度数降序逐个塞回其余 k−1 色。要求「该颜色在邻域里完全没出现过」，所以要么真合法要么立刻放弃——稀疏图（p=0.05）常常一发命中。\n2. **Kempe 双色分量交换（elimKempe）**：在 {j,c} 诱导子图上求连通分量，交换两色（Kempe 论证保证仍合法），再对分量内顶点做「排除 j 的 first-fit」修复。修复不成就整条候选丢弃，**绝不允许留下带冲突的解**（G63 就死在输出非法上）。\n3. **TabuCol 修复层**：目标 K=k−1，起点用「消掉最小色类、其余顶点按最小冲突数回插」——冲突只集中在被消类的邻域上，比随机起点少一个数量级；随机起点只当第二/三档。\n另外加一个便宜的**带限 DSatur**（DSatur 只准用 K 色，用不上就放弃）作为第四种构造式尝试。\n\n### 为什么预算这样分\n降色是单调的：K−1 不可行 ⇒ K−2 更不可行。所以**失败只发生在最后一层**。于是可行层用「构造式算子 + 一次 TabuCol」快速通过；不可行层拿剩余全部时间做多起点重启，而不是每层平均分预算。这正是 G65 丢分的地方。\n\n### 风险\n- elimKempe 的修复要求颜色在邻域中完全未出现，p=0.5 时几乎必然失败 ⇒ 稠密图基本靠 TabuCol 撑着。这是机制边界，不是 bug。\n- 末尾 proper() 校验 + first-fit 兜底：输出非法就退回基线解（ratio 1.0），宁可不赢也不能输。\n- 代码控制在 ~7KB（此前两次 \"Unexpected end of input\" 疑似管道截断）。\n- 刻意**不加下界剪枝**：coreness 不是下界；随机图上真团离 χ 太远，收益抵不过 bug 风险。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 66,
+    "idea": "每层 k→k−1 拆成 first-fit 整类重插、Kempe 双色分量交换、TabuCol 修复三算子；TabuCol 起点用「消掉最小色类后按最小冲突回插」的近可行解，预算只在最后那个不可行层烧。",
+    "inspired_by": [
+      411,
+      413
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": 0.67,
+      "train_after": 0.6493
+    },
+    "delta_pct": 1.2,
+    "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)",
+    "bytes": 8383,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 431
+}

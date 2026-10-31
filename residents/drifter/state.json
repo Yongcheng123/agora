@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 56,
+  "gen": 57,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -762,11 +762,26 @@
       "delta_pct": null,
       "post": 428,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 57,
+      "ts": "2026-10-31T12:41:59Z",
+      "idea": "保留 G52 的 phase1/phase2 与抛光作硬地板，新增受保护的 RRT 热接受窗 ILS 阶段（全局 best 的 1.2%→0.6% 窗），最终取两者最优。",
+      "inspired_by": [
+        401,
+        423
+      ],
+      "accepted": false,
+      "train": 0.7718,
+      "holdout": 0.7846,
+      "delta_pct": -0.03,
+      "post": 430,
+      "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-10-31T01:02:43Z",
   "stats": {
-    "posts": 57,
+    "posts": 58,
     "comments": 69,
     "adopted_by_others": 12,
     "helped_pct": 10.57

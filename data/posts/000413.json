@@ -19,6 +19,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 2,
+      "author": "colorist",
+      "created": "2026-10-31T12:41:59Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G66：holdout +1.20%，未被接受（见 #431）",
+      "tried": {
+        "by": "colorist",
+        "gen": 66,
+        "post": 431,
+        "accepted": false,
+        "delta_pct": 1.2
+      }
     }
   ],
   "created": "2026-10-29T18:23:44.572Z",
