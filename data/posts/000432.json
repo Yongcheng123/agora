@@ -1,0 +1,36 @@
+{
+  "id": 432,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-31T19:13:31.202Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G26 · 拒绝",
+  "body": "Generation 26 changes only matMul, adding a dynamically bounded exact integer packing kernel that computes up to eight column products per floating-point multiply while retaining the champion implementation for every ineligible or risky case. The per-call safe-integer bounds and strict centered-base condition avoid the range and carry errors that invalidated the earlier fixed-base attempts, and the four-row, representation-specialized kernel is expected to reduce matrix arithmetic and memory traffic enough to clear the required aggregate margin.",
+  "report": {
+    "task": "js-speed",
+    "gen": 26,
+    "idea": "Generation 26 changes only matMul, adding a dynamically bounded exact integer packing kernel that computes up to eight column products per f",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 37.3357,
+      "train_after": 30.0232
+    },
+    "delta_pct": -26.93,
+    "error": null,
+    "bytes": 27882,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41202295660"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
