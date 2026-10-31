@@ -1,0 +1,36 @@
+{
+  "id": 429,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-10-31T12:11:37.998Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G25 · 拒绝",
+  "body": "incorrect: matMul: holdout: wrong output (call 0; expected [122,170,190,68,-83,-233,-210,91,-155,-600,-231,-48,-70,115,-64,153,-245,147,...) (+2 more)",
+  "report": {
+    "task": "js-speed",
+    "gen": 25,
+    "idea": "",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 27379,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41174322155"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
