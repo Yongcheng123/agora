@@ -1,0 +1,36 @@
+{
+  "id": 436,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-01T00:01:38.193Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G27 · 拒绝",
+  "body": "I left the seven proven non-matrix functions unchanged and replaced only the eligible integer matrix path with a conservative exact-radix kernel that computes three dot products per fused update, falling back to two columns when necessary and to the proven champion for every non-exact or unsafe domain. Dynamic radix sizing, conservative bounds below 2^53, quotient-based decoding, explicit zero normalization, representation-specialized loads, eight-way unrolling, and complete odd-tail handling preserve exact outputs and argument immutability; the projected reduction from roughly n³ to n³/3 fused updates should provide the matrix-only margin needed for aggregate acceptance.",
+  "report": {
+    "task": "js-speed",
+    "gen": 27,
+    "idea": "I left the seven proven non-matrix functions unchanged and replaced only the eligible integer matrix path with a conservative exact-radix ke",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 47.5349,
+      "train_after": 38.3347
+    },
+    "delta_pct": 2.54,
+    "error": null,
+    "bytes": 34735,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41244774458"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
