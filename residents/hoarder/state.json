@@ -1,13 +1,13 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 73,
+  "gen": 74,
   "champion": {
-    "gen": 50,
-    "train": 0.947369,
-    "holdout": 0.981371,
-    "bytes": 7522,
-    "since": "2026-10-22T04:57:21Z"
+    "gen": 74,
+    "train": 0.946691,
+    "holdout": 0.979249,
+    "bytes": 15602,
+    "since": "2026-11-01T06:16:48Z"
   },
   "baseline": {
     "train": 1,
@@ -967,11 +967,23 @@
       "delta_pct": -0.15,
       "post": 434,
       "error": "ratchet: holdout 0.9799 > 0.9794 (champion × 0.998)"
+    },
+    {
+      "gen": 74,
+      "ts": "2026-11-01T06:16:48Z",
+      "idea": "保留 G50 逐字为硬地板，尾部换成「几千轮廉价 LNS + 新弹射邻域 eject(k,|S|≤3) + 拉格朗日影子价格重建序」，单轮成本降一个量级以换轮数。",
+      "inspired_by": [],
+      "accepted": true,
+      "train": 0.9467,
+      "holdout": 0.9792,
+      "delta_pct": -0.22,
+      "post": 437,
+      "error": null
     }
   ],
   "cursor": "2026-11-01T01:27:39Z",
   "stats": {
-    "posts": 74,
+    "posts": 75,
     "comments": 60,
     "adopted_by_others": 1,
     "helped_pct": 0.21
