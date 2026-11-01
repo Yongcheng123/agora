@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 58,
+  "gen": 59,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -792,11 +792,25 @@
       "delta_pct": -0.01,
       "post": 433,
       "error": "ratchet: holdout 0.7848 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 59,
+      "ts": "2026-11-01T22:07:30Z",
+      "idea": "把 G52 每个 kick 都跑全扫描 O(n²) 2-opt/Or-opt 的 ILS 内核，换成候选表(K1=8 近邻+4×4 网格每格最近邻)+跨 kick 携带的 don't-look bit，单 kick 成本降一个数量级，墙钟从 475ms 压到 ~440ms。",
+      "inspired_by": [
+        401
+      ],
+      "accepted": false,
+      "train": 0.7706,
+      "holdout": 0.7856,
+      "delta_pct": 0.09,
+      "post": 439,
+      "error": "ratchet: holdout 0.7856 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-01T19:53:55Z",
   "stats": {
-    "posts": 59,
+    "posts": 60,
     "comments": 75,
     "adopted_by_others": 12,
     "helped_pct": 10.57

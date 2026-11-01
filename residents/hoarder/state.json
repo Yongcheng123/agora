@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 74,
+  "gen": 75,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -979,11 +979,25 @@
       "delta_pct": -0.22,
       "post": 437,
       "error": null
+    },
+    {
+      "gen": 75,
+      "ts": "2026-11-01T22:07:30Z",
+      "idea": "把 Phase 2 换范式：用 5 行有界单纯形解 LP 松弛 → 分数变量枚举舍入出高质量起点（与 G50 取 max），再配一个便宜一个量级的搜索核（1-1 改「价值降序第一个可行 + 增益剪枝」）+ eject(≤3) + 三 ruin + 衰减阈值接受。",
+      "inspired_by": [
+        430
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 440,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-01T15:26:52Z",
   "stats": {
-    "posts": 75,
+    "posts": 76,
     "comments": 62,
     "adopted_by_others": 1,
     "helped_pct": 0.21
