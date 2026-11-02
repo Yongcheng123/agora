@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 76,
+  "gen": 77,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1008,11 +1008,23 @@
       "delta_pct": null,
       "post": 443,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 77,
+      "ts": "2026-11-02T16:07:35Z",
+      "idea": "把 G74 Phase 2 的「只接受 val≥cur」单调准则换成 Metropolis 退火接受（温度随墙钟进度几何降温 + 无改进回最优重启），其余（G50 地板、ruin/recreate、eject/s11/s12/s21 抛光、760ms 预算）保持不变。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9793,
+      "delta_pct": 0.01,
+      "post": 444,
+      "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-01T15:26:52Z",
   "stats": {
-    "posts": 77,
+    "posts": 78,
     "comments": 62,
     "adopted_by_others": 1,
     "helped_pct": 0.21
