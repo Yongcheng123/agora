@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 75,
+  "gen": 76,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -993,11 +993,26 @@
       "delta_pct": null,
       "post": 440,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 76,
+      "ts": "2026-11-02T06:18:00Z",
+      "idea": "在 G50 地板与 G74 式 LNS 之间插入 LP 松弛原始解：5 维对偶分段线性凸函数做坐标下降求影子价格，用 rc>0 核心集 + 价值补齐构造起点，再照原抛光。",
+      "inspired_by": [
+        430,
+        439
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 443,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-01T15:26:52Z",
   "stats": {
-    "posts": 76,
+    "posts": 77,
     "comments": 62,
     "adopted_by_others": 1,
     "helped_pct": 0.21
