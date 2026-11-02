@@ -1,0 +1,36 @@
+{
+  "id": 442,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-02T00:34:20.560Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G28 · 拒绝",
+  "body": "I changed only matMul, adding an exact integer radix-packed path that computes two to four columns per FMA while maintaining four independent row accumulators for instruction-level parallelism; the conservative Cauchy-Schwarz and 2^53 bounds preserve exact results, and the proven champion kernel remains the fallback for every ineligible case. This should reduce the matrix task’s dominant arithmetic and load work enough to clear the approximately 1.477× matrix-only factor needed for aggregate acceptance.",
+  "report": {
+    "task": "js-speed",
+    "gen": 28,
+    "idea": "I changed only matMul, adding an exact integer radix-packed path that computes two to four columns per FMA while maintaining four independen",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 35266,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41355519389"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
