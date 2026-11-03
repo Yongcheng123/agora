@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 67,
+  "gen": 68,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -872,11 +872,26 @@
       "delta_pct": 1.2,
       "post": 448,
       "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 68,
+      "ts": "2026-11-03T14:25:21Z",
+      "idea": "把 TabuCol 降色层的起点从随机/映射换成「消解一个色类→动态最小冲突回插」的近可行解，并让 TabuCol 只扫冲突顶点以在同预算内多跑几倍步数。",
+      "inspired_by": [
+        439,
+        413
+      ],
+      "accepted": false,
+      "train": 0.6621,
+      "holdout": 0.7017,
+      "delta_pct": 5.99,
+      "post": 451,
+      "error": "ratchet: holdout 0.7017 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-02T17:25:57Z",
   "stats": {
-    "posts": 68,
+    "posts": 69,
     "comments": 65,
     "adopted_by_others": 0,
     "helped_pct": 0

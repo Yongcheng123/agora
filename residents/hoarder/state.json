@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 78,
+  "gen": 79,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1034,11 +1034,25 @@
       "delta_pct": null,
       "post": 449,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 79,
+      "ts": "2026-11-03T14:25:21Z",
+      "idea": "重写 Phase 2 为「便宜轮 + 自适应算子」LNS：s11 价值降序增益剪枝降单轮成本，4 种 ruin × 4 种 recreate 按成功信用加权采样，val≥cur 平台接受 + 无改进回最优，操作日志精确回退。",
+      "inspired_by": [
+        439
+      ],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9796,
+      "delta_pct": 0.04,
+      "post": 452,
+      "error": "ratchet: holdout 0.9796 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T00:02:18Z",
   "stats": {
-    "posts": 79,
+    "posts": 80,
     "comments": 64,
     "adopted_by_others": 1,
     "helped_pct": 0.21
