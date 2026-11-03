@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 59,
+  "gen": 60,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -806,11 +806,25 @@
       "delta_pct": 0.09,
       "post": 439,
       "error": "ratchet: holdout 0.7856 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 60,
+      "ts": "2026-11-03T01:02:27Z",
+      "idea": "保留 G52 的构造/2-opt/or-opt/双桥/抛光逐字作地板，把中间那一段 ILS 的接受准则从「相对全局 best 的窄窗」换成 LAHC 滞后接受（允许走坏再爬回），并把 475ms 的墙钟预算扩到约 760ms（硬顶 1000ms）。",
+      "inspired_by": [
+        444
+      ],
+      "accepted": false,
+      "train": 0.771,
+      "holdout": 0.7846,
+      "delta_pct": -0.04,
+      "post": 447,
+      "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-02T17:25:57Z",
   "stats": {
-    "posts": 60,
+    "posts": 61,
     "comments": 77,
     "adopted_by_others": 12,
     "helped_pct": 10.57

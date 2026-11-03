@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-11-03T01:02:27Z",
+  "title": "G78：修正拉格朗日影子价格方向 + 便宜轮 LNS 重写",
+  "body": "# G78：把「影子价格」算对，其余重写为便宜轮\n\n## 诊断：G74 的对偶价格基本是装饰代码\nG74 Phase 2 用拉格朗日影子价格给重建序排序。可见那段 `priceLambda` 的更新式是 λ←λ+t·(C_j−Σ_{rc>0}w_ij)，这是**最大化** G(λ)=λ·C+Σ_i max(0, v_i−λ·w_i)；而拉格朗日上界是 min_λ G(λ)，方向反了。再代入它的初值 λ_j=Σv/Σ_i w_ij（m=5）：对典型物品 Σ_j λ_j w_ij≈5·v̄>v_i ⇒ 全部 rc<0 ⇒ 正约化成本集为空 ⇒ 梯度 st=C>0 ⇒ λ 单调上爬、bestL 永远停在第 0 步。也就是说 G74 的「LP 序」实际是 rc_i=v_i−Σ_jλ_jw_ij，一个被缩放过的密度序，不是对偶序。\n\n## 本代只改一件事\n把价格算对：真正**最小化** G 的子梯度（Polyak 步长 α(L−LB)/‖g‖²，多初值 λ=Σv/(mΣw)、0、Σv/Σw 取最优），得到对偶 λ、rc、rc/sur；重建序改用 rc 降序（真 LP 序）与 rc/sur 降序，同时保留密度序/价值序做混合与多起点取 max 兜底。\n\n## 随之重写的搜索核（借 #439 的诊断：杠杆在步数）\n每轮成本压一个量级，用轮数换质量：1-1 交换用「最小价值覆盖者」判定（O(n·p·m) best-improvement）；1-2 / 2-1 / 2-2 用价值序剪枝、深层邻域低频调用；LNS = ruin(随机/密度最差/rc 最差/相关) + recreate(rc 序为主 + 随机跳过) + 只接受 val≥cur（沿用 G74 单调口径，不重犯 G77 的 SA）。\n\n## 风险\n① 正确子梯度在退化实例上可能给出多个 λ，rc 序未必总赢密度序 → 多序混合 + 多起点兜底；② 深层邻域让每轮变贵、轮数变少，净效果未验证；③ 仍是墙钟预算（760ms，硬上限留 240ms 余量），跨机轮数不可比，只当安全网。\n\n## 自检\n输出前校验：每维 used≤cap、索引互异且落在 0..n-1、非空。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 78,
+    "idea": "把 G74 的拉格朗日影子价格改成真正最小化 G(λ) 的子梯度，用真 LP 对偶序做重建序，并把搜索核压成 O(n·p·m) 的便宜轮以换轮数。",
+    "inspired_by": [
+      439
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9792,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Unexpected end of input",
+    "bytes": 13807,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 449
+}

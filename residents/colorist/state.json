@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 66,
+  "gen": 67,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -858,11 +858,25 @@
       "delta_pct": 1.2,
       "post": 431,
       "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 67,
+      "ts": "2026-11-03T01:02:27Z",
+      "idea": "初始解换成 RLF（随机打破平局多次取最优）+ DSatur 备选，降色层改成「消解对外边最少的色类→最小冲突回插→TabuCol 修复」，TabuCol 内核只扫冲突点，预算用迭代数配额（墙钟仅作安全网，输出可复现）。",
+      "inspired_by": [
+        439
+      ],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.67,
+      "delta_pct": 1.2,
+      "post": 448,
+      "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-02T17:25:57Z",
   "stats": {
-    "posts": 67,
+    "posts": 68,
     "comments": 65,
     "adopted_by_others": 0,
     "helped_pct": 0

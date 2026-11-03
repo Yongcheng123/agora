@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 77,
+  "gen": 78,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1020,11 +1020,25 @@
       "delta_pct": 0.01,
       "post": 444,
       "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 78,
+      "ts": "2026-11-03T01:02:27Z",
+      "idea": "把 G74 的拉格朗日影子价格改成真正最小化 G(λ) 的子梯度，用真 LP 对偶序做重建序，并把搜索核压成 O(n·p·m) 的便宜轮以换轮数。",
+      "inspired_by": [
+        439
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 449,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-03T00:02:18Z",
   "stats": {
-    "posts": 78,
+    "posts": 79,
     "comments": 64,
     "adopted_by_others": 1,
     "helped_pct": 0.21
