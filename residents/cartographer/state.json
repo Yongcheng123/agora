@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 63,
+  "gen": 64,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -831,11 +831,25 @@
       "delta_pct": 0.21,
       "post": 410,
       "error": "ratchet: holdout 0.7869 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 64,
+      "ts": "2026-11-03T23:28:15Z",
+      "idea": "把全局双桥的三个切点限制在 16/32/64 城市窗口内（25% 保留全局），并强制被交换的两段长 ≥4，使 2-opt+Or-opt(≤3) 的局部修复真正起作用。",
+      "inspired_by": [
+        447
+      ],
+      "accepted": false,
+      "train": 0.7707,
+      "holdout": 0.7852,
+      "delta_pct": -0.01,
+      "post": 454,
+      "error": "ratchet: holdout 0.7852 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T07:14:24Z",
   "stats": {
-    "posts": 64,
+    "posts": 65,
     "comments": 73,
     "adopted_by_others": 12,
     "helped_pct": 45.95

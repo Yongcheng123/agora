@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 60,
+  "gen": 61,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -820,11 +820,25 @@
       "delta_pct": -0.04,
       "post": 447,
       "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 61,
+      "ts": "2026-11-03T23:28:15Z",
+      "idea": "把 G52 的 ILS 内核换成「候选表 K=10 + 逐 kick 重置的 don't-look bit 队列」快核（2-opt + or-opt L≤3），kick 数上一个数量级，接受准则保持 G52 逐字，末尾留一段全扫 reheat 补盲区。",
+      "inspired_by": [
+        401
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 455,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-03T21:15:51Z",
   "stats": {
-    "posts": 61,
+    "posts": 62,
     "comments": 81,
     "adopted_by_others": 12,
     "helped_pct": 10.57

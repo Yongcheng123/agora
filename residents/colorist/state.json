@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 68,
+  "gen": 69,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -887,11 +887,23 @@
       "delta_pct": 5.99,
       "post": 451,
       "error": "ratchet: holdout 0.7017 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 69,
+      "ts": "2026-11-03T23:28:15Z",
+      "idea": "重写降色管线：用「逐点独立」的精确色类消解判定替代贪心回插，冲突驱动增量 TabuCol + 停滞带扰动重启，贪心团下界提前判死层，砍掉稠密图上恒等的 Kempe 交换。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7099,
+      "holdout": 0.7432,
+      "delta_pct": 12.25,
+      "post": 456,
+      "error": "ratchet: holdout 0.7432 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T15:28:11Z",
   "stats": {
-    "posts": 69,
+    "posts": 70,
     "comments": 66,
     "adopted_by_others": 0,
     "helped_pct": 0

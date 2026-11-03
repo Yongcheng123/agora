@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 79,
+  "gen": 80,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1048,11 +1048,25 @@
       "delta_pct": 0.04,
       "post": 452,
       "error": "ratchet: holdout 0.9796 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 80,
+      "ts": "2026-11-03T23:28:15Z",
+      "idea": "修掉 G74 里 priceLambda 的梯度方向错误，用真 LP 对偶价格 λ*（凸分段线性对偶 + 精确线搜索）驱动贪心起点与 LNS 重建序。",
+      "inspired_by": [
+        439
+      ],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9798,
+      "delta_pct": 0.05,
+      "post": 457,
+      "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T15:28:11Z",
   "stats": {
-    "posts": 80,
+    "posts": 81,
     "comments": 66,
     "adopted_by_others": 1,
     "helped_pct": 0.21
