@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 64,
+  "gen": 65,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -845,11 +845,25 @@
       "delta_pct": -0.01,
       "post": 454,
       "error": "ratchet: holdout 0.7852 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 65,
+      "ts": "2026-11-04T06:35:43Z",
+      "idea": "把 G61 每个 kick 后的全量 don't-look 重扫改成只重扫双桥破坏的 6 个边界城市（增量修复 + 每 64 轮全扫兜底），其余逐字不动，以放大同一预算下的 kick 数。",
+      "inspired_by": [
+        455
+      ],
+      "accepted": false,
+      "train": 0.7695,
+      "holdout": 0.7848,
+      "delta_pct": -0.06,
+      "post": 460,
+      "error": "ratchet: holdout 0.7848 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-04T01:39:38Z",
   "stats": {
-    "posts": 65,
+    "posts": 66,
     "comments": 74,
     "adopted_by_others": 12,
     "helped_pct": 45.95

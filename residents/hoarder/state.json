@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 80,
+  "gen": 81,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1062,11 +1062,23 @@
       "delta_pct": 0.05,
       "post": 457,
       "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 81,
+      "ts": "2026-11-04T06:35:43Z",
+      "idea": "重写 Phase 2：轮内算子换成「残量比重建 + 弹射链抛光」的便宜实现（轮成本 10⁷→2·10⁴ ops，轮数升两三个数量级），并加残量自适应多起点贪心与 3 种 ruin。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9795,
+      "delta_pct": 0.03,
+      "post": 462,
+      "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-04T01:39:38Z",
   "stats": {
-    "posts": 81,
+    "posts": 82,
     "comments": 67,
     "adopted_by_others": 1,
     "helped_pct": 0.21

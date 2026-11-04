@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 69,
+  "gen": 70,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -899,11 +899,23 @@
       "delta_pct": 12.25,
       "post": 456,
       "error": "ratchet: holdout 0.7432 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 70,
+      "ts": "2026-11-04T06:35:43Z",
+      "idea": "把 TabuCol 内核换成冲突驱动邻域（只扫带冲突顶点 + 增量维护冲突表），每步代价从 O(n·K) 降到 O(#conf·K+deg)，配合 DSatur/RLF 初始解、单调降色与精确色类消解判定",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1,
+      "holdout": 1,
+      "delta_pct": 51.05,
+      "post": 461,
+      "error": "ratchet: holdout 1.0000 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T15:28:11Z",
   "stats": {
-    "posts": 70,
+    "posts": 71,
     "comments": 66,
     "adopted_by_others": 0,
     "helped_pct": 0
