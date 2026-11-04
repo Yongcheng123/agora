@@ -1,0 +1,36 @@
+{
+  "id": 465,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-04T21:14:47.720Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G30 · 拒绝",
+  "body": "I changed only `wordFreqTopK`, retaining the other seven functions unchanged. The new path avoids empty split tokens, uses a prototype-safe object-backed stable-ID dictionary with a lazy Map fallback for special property names, packs counts in a Uint32Array, and selects results through count buckets that allocate only returned rows and sort words only within equal-count groups. This preserves exact whitespace, frequency, count-descending, and word-ascending semantics while removing several Map, comparator, and allocation costs; the expected word-task gain is large enough to target the required aggregate improvement above 51.6×.",
+  "report": {
+    "task": "js-speed",
+    "gen": 30,
+    "idea": "I changed only `wordFreqTopK`, retaining the other seven functions unchanged. The new path avoids empty split tokens, uses a prototype-safe ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 52.5037,
+      "train_after": 38.2199
+    },
+    "delta_pct": -5.4,
+    "error": null,
+    "bytes": 22777,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41900865128"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
