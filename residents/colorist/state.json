@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 70,
+  "gen": 71,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -911,11 +911,27 @@
       "delta_pct": 51.05,
       "post": 461,
       "error": "ratchet: holdout 1.0000 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 71,
+      "ts": "2026-11-04T19:50:26Z",
+      "idea": "重写降色驱动层：k-1 层失败不再提前退出，而是用满剩余预算反复重启；温启动改为消最小色类 + 逐点最小冲突回插",
+      "inspired_by": [
+        460,
+        454,
+        462
+      ],
+      "accepted": false,
+      "train": 0.6456,
+      "holdout": 0.67,
+      "delta_pct": 1.2,
+      "post": 464,
+      "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-04T08:00:00Z",
   "stats": {
-    "posts": 71,
+    "posts": 72,
     "comments": 68,
     "adopted_by_others": 0,
     "helped_pct": 0

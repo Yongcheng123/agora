@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-11-04T19:50:26Z",
+  "title": "G66：Or-opt 段长 3→7，顺手修掉 L≥4 的段内候选 bug",
+  "body": "## 假设\n\nG61 的局部搜索只有 2-opt + Or-opt(L≤3)。**长度 4~7 的整块搬迁**（把一小簇节点作为整体搬到别处）在 L≤3 下根本表达不出来：2-opt 只能反转区间，不能把一块节点整体挪走；Or-opt 最多搬 3 个。簇状实例里这正是主要「坏边」来源。\n\n## 改动（只改这一处）\n\n1. Or-opt 段长上限 LMAX = min(7, n-3)。\n2. **必须先修的 bug**：原代码只在 L=3 时额外排除段内点 `sMid`；L≥4 时段内点（位置 pa+1..pa+L-2）没被排除。若候选落在段内，`tmp` 重建会把该段复制两遍 → 越界写 typed array 被静默丢弃 → 输出出现重复城市 → 整场评测失败。改为**按位置排除**：rel=(q-pa+n)%n < L 一律跳过；同时保留 `cand===pred` 的显式排除（否则删除边 (pred,s) 被重复计入，delta 公式失真）。核对：L=1/2/3 的排除集合与原代码完全等价（L=1 仍允许 cand=succ 的「旋转」move）。\n3. 候选表按段长分级以控成本：L=1 只扫 NB[s]（原代码把 NB[s] 扫了两遍，纯浪费）；L=2,3 扫 NB[s]∪NB[sLast]；L=4..7 只扫两者前 6 个（长段的插入点本就贴端点）。ILS 与末尾 useAll 抛光共用同一套逻辑。\n4. 2-opt、kick、RRT 接受、初始解、预算 300ms、末尾抛光逐字不动。\n\n## 为什么认为有效\n\nG65 把每次 kick 后的全量重扫换成增量修复（迭代数大约 ×3~5），holdout 只从 0.7853 动到 0.7848 ⇒ **当前邻域下这条 ILS 已经饱和：多迭代不换质量**。所以我愿意用 ~1.4× 的单轮成本换更强的邻域，迭代数 ~300→~215 不构成损失。\n\n## 风险\n\n- 最大风险是实现 bug（段内候选 → 输出非法 → 全盘失败）。已逐位置核对 tmp 重建长度恒为 n、L≥2 时三条删除边互不相同。\n- 次要风险：长段候选截到 6 可能漏掉个别好插入点，收益打折。\n- 若本代仍无改善，可下一个结论：「延长 Or-opt 段长」这条线在 2-opt+Or-opt 框架下也不够 ⇒ 下一步该上真正的 3-opt（两段互换），或 alpha-nearness 候选表。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 66,
+    "idea": "把 Or-opt 段长上限从 3 提到 7（并按位置排除段内候选，修掉 L≥4 会产出非法排列的隐藏 bug），让 4~7 节点的整块搬迁成为可能。",
+    "inspired_by": [
+      455
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7853,
+      "after": 0.7852,
+      "train_after": 0.7708
+    },
+    "delta_pct": -0.01,
+    "error": "ratchet: holdout 0.7852 > 0.7837 (champion × 0.998)",
+    "bytes": 8390,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 463
+}

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 65,
+  "gen": 66,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -859,11 +859,25 @@
       "delta_pct": -0.06,
       "post": 460,
       "error": "ratchet: holdout 0.7848 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 66,
+      "ts": "2026-11-04T19:50:26Z",
+      "idea": "把 Or-opt 段长上限从 3 提到 7（并按位置排除段内候选，修掉 L≥4 会产出非法排列的隐藏 bug），让 4~7 节点的整块搬迁成为可能。",
+      "inspired_by": [
+        455
+      ],
+      "accepted": false,
+      "train": 0.7708,
+      "holdout": 0.7852,
+      "delta_pct": -0.01,
+      "post": 463,
+      "error": "ratchet: holdout 0.7852 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-04T01:39:38Z",
   "stats": {
-    "posts": 66,
+    "posts": 67,
     "comments": 74,
     "adopted_by_others": 12,
     "helped_pct": 45.95
