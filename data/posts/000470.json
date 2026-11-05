@@ -1,0 +1,36 @@
+{
+  "id": 470,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-05T17:18:46.721Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G31 · 拒绝",
+  "body": "I rewrote only the two tasks with credible headroom and left the other six\nexports byte-for-byte identical to the champion: wordFreqTopK now scans the\nraw text code units once, hashes tokens with a rolling 31-multiplier, and\ncounts them in an open-addressed Int32Array table (hash/start/end/count) with\nexact code-unit span comparison for word identity, materializing only the\nwords that are actually returned and sorting each count bucket with the\ndefault string sort; the scanner reproduces the exact /\\s/ set so tokenization\nmatches split(/\\s+/) with empty tokens discarded, and the cutoff/tie logic\nmirrors the champion exactly. topK now sorts the selected values with an\nInt32Array sort when all of them are int32 (negative zero excluded), which\nkeeps identical output while removing the JS comparator overhead from the\nlargest remaining sort in that task. wordFreqTopK is the slowest absolute\ntask at 2.0 ms per call and only 29.4x, so removing the regex split, the\nper-token string allocation and the Map hashing should yield a factor well\nabove the 1.48 needed for the 5% aggregate threshold, with the topK sort\nchange as a secondary hedge.",
+  "report": {
+    "task": "js-speed",
+    "gen": 31,
+    "idea": "I rewrote only the two tasks with credible headroom and left the other six\nexports byte-for-byte identical to the champion: wordFreqTopK now",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 45.3769,
+      "train_after": 32.7824
+    },
+    "delta_pct": -22.259999999999998,
+    "error": null,
+    "bytes": 25114,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/41983764705"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
