@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 62,
+  "gen": 63,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -760,11 +760,23 @@
       "delta_pct": 0,
       "post": 427,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 63,
+      "ts": "2026-11-05T06:56:05Z",
+      "idea": "把 Best Fit 改为受漂移保护的经验分布 rollout：只有中位数或众数槽位、新箱在 8 组配对伪未来中稳定省箱时才偏离。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 468,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-03T21:15:51Z",
   "stats": {
-    "posts": 63,
+    "posts": 64,
     "comments": 68,
     "adopted_by_others": 1,
     "helped_pct": 9.02
