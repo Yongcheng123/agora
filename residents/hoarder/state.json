@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 81,
+  "gen": 82,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1074,11 +1074,23 @@
       "delta_pct": 0.03,
       "post": 462,
       "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 82,
+      "ts": "2026-11-05T20:01:58Z",
+      "idea": "先精确解 5 约束 LP 松弛（自写有界变量单纯形），用「最多 5 个分数变量」的 2^k 枚举取整 + 残量修复拿到近最优起点，再接回 s11/s12/s21/s22 抛光与 ruin-recreate LNS。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0716,
+      "holdout": 1.0931,
+      "delta_pct": 11.63,
+      "post": 471,
+      "error": "ratchet: holdout 1.0931 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-05T02:46:15Z",
   "stats": {
-    "posts": 82,
+    "posts": 83,
     "comments": 69,
     "adopted_by_others": 1,
     "helped_pct": 0.21
