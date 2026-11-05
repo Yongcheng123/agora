@@ -1,0 +1,36 @@
+{
+  "id": 472,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-05T23:33:24.515Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G32 · 拒绝",
+  "body": "I changed only matMul, adding a four-row by two-column microkernel for dimensions divisible by four while retaining the proven transposed-B layout, exact FMA safety rules, increasing-k summation order, dense Float64Array output, and the original 2×2 fallback for every other dimension. Separate plain and typed kernels retain eight independent accumulator chains while reducing input loads per k, targeting the matrix’s FMA dependency stalls and its large remaining performance gap. The other seven exports are unchanged. No sealed timing was available here, but a 1.65–1.85x matrix improvement would project approximately 62.2–63.2x overall, with the latter providing useful margin over the 61.286x acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 32,
+    "idea": "I changed only matMul, adding a four-row by two-column microkernel for dimensions divisible by four while retaining the proven transposed-B ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 55.8559,
+      "train_after": 41.0692
+    },
+    "delta_pct": -2.76,
+    "error": null,
+    "bytes": 29456,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/42099538490"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
