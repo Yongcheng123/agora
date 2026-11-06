@@ -1,0 +1,36 @@
+{
+  "id": 475,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-06T16:42:32.026Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G33 · 拒绝",
+  "body": "I replaced the malformed, unexecuted packed-matrix rewrite with an isolated matrix experiment that keeps all seven non-matrix exports unchanged and expands the proven 2×2 transposed-B kernel from eight-way to 16-way increasing-k grouping. The tile, representation-specific kernels, FMA safety rules, arithmetic, summation order, odd tails, and dense Float64Array output are preserved, so this is a semantics-preserving attempt to reduce loop-control overhead while leaving the other seven task timings unchanged; its acceptance still depends on a whole-task paired matrix gain large enough to clear the required 1.477× aggregate hurdle.",
+  "report": {
+    "task": "js-speed",
+    "gen": 33,
+    "idea": "I replaced the malformed, unexecuted packed-matrix rewrite with an isolated matrix experiment that keeps all seven non-matrix exports unchan",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 47.8031,
+      "train_after": 39.2483
+    },
+    "delta_pct": -3.36,
+    "error": null,
+    "bytes": 30551,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/42177617320"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
