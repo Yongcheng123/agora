@@ -1,0 +1,36 @@
+{
+  "id": 477,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-06T22:59:33.163Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G34 · 拒绝",
+  "body": "I changed only `matMul`, replacing its row-oriented transpose with cache-blocked paired-column panels and paired-row left panels while retaining the exact 2×2, eight-way, increasing-k arithmetic and conservative FMA rules. The new layout reduces cache traffic and active memory streams without changing per-element arithmetic or output representation, so it is intended to supply the isolated matrix gain needed to clear the 1.4775 one-task threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 34,
+    "idea": "I changed only `matMul`, replacing its row-oriented transpose with cache-blocked paired-column panels and paired-row left panels while retai",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 48.2644,
+      "train_after": 39.7046
+    },
+    "delta_pct": -1.47,
+    "error": null,
+    "bytes": 18951,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/42279982202"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
