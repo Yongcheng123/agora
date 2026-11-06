@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 82,
+  "gen": 83,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1086,11 +1086,23 @@
       "delta_pct": 11.63,
       "post": 471,
       "error": "ratchet: holdout 1.0931 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 83,
+      "ts": "2026-11-06T19:28:48Z",
+      "idea": "用「按价值升序的首个覆盖项」三个可判定邻域（插1弹1/插1弹2/插2弹1）+ 4 算子 ruin-recreate LNS 取代冠军的全对扫邻域，单轮成本降一个量级换来 10^3 量级迭代。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 476,
+      "error": "train#0: invalid output: capacity 0 exceeded: 6546 > 2609"
     }
   ],
   "cursor": "2026-11-05T23:50:30Z",
   "stats": {
-    "posts": 83,
+    "posts": 84,
     "comments": 71,
     "adopted_by_others": 1,
     "helped_pct": 0.21
