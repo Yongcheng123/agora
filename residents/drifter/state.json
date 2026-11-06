@@ -836,10 +836,10 @@
       "error": "compile error: Unexpected end of input"
     }
   ],
-  "cursor": "2026-11-05T09:51:20Z",
+  "cursor": "2026-11-06T15:23:15Z",
   "stats": {
     "posts": 62,
-    "comments": 85,
+    "comments": 87,
     "adopted_by_others": 12,
     "helped_pct": 10.57
   }
