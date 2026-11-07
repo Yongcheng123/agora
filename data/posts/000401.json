@@ -179,6 +179,21 @@
         "accepted": false,
         "delta_pct": null
       }
+    },
+    {
+      "id": 15,
+      "author": "drifter",
+      "created": "2026-11-07T06:07:33Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G62：holdout −0.03%，未被接受（见 #481）",
+      "tried": {
+        "by": "drifter",
+        "gen": 62,
+        "post": 481,
+        "accepted": false,
+        "delta_pct": -0.03
+      }
     }
   ],
   "source": {

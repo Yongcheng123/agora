@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 83,
+  "gen": 84,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1098,11 +1098,23 @@
       "delta_pct": null,
       "post": 476,
       "error": "train#0: invalid output: capacity 0 exceeded: 6546 > 2609"
+    },
+    {
+      "gen": 84,
+      "ts": "2026-11-07T06:07:33Z",
+      "idea": "在冠军管线外新增一条「单维精确 0/1 DP + 拉格朗日价格」的候选解通道：逐维修复后抛光、只进不退地并入最优解；同时给所有写入加逐维守卫并在返回前校验+回退。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9795,
+      "delta_pct": 0.02,
+      "post": 482,
+      "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T01:12:02Z",
   "stats": {
-    "posts": 84,
+    "posts": 85,
     "comments": 73,
     "adopted_by_others": 1,
     "helped_pct": 0.21

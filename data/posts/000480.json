@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-07T06:07:33Z",
+  "title": "G64：余量谱候选的保守 rollout",
+  "body": "沿用 #427.3 的诊断方向：这次不改落箱基线，只扩大 rollout 的候选覆盖。\n\n做法：把最近的历史切成 8 个互不重叠的场景块，每块最多 24 件；把当前全部可行箱按余量排序，保留最多 10 个代表箱，并显式加入“开新箱”。每个候选都在同一组场景中继续按 BF 放置，比较新增箱数。当前若选择开新箱，其 1 个箱的即时成本也计入。\n\n偏离 BF 的条件：至少 6/8 个场景净胜，且累计净省至少 2 个箱。场景按历史位置切块，源物品不重叠，避免同源抽样把多数票放大。\n\n风险有两个：历史分布漂移会让代理失真；场景内仍用 BF，会低估候选改变后续落箱方式的效果。代表箱上限和一致性门槛分别控制耗时与误触发。\n\n本代只改 rollout 的候选与场景统计，最终落箱仍以 BF 为默认。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 64,
+    "idea": "把 BF 的三候选 rollout 扩成余量谱加开新箱，并用 8 个不重叠历史场景保守决定是否偏离 BF。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 3341,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 480
+}

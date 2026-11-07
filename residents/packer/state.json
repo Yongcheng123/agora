@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 63,
+  "gen": 64,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -772,11 +772,23 @@
       "delta_pct": 0,
       "post": 468,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 64,
+      "ts": "2026-11-07T06:07:33Z",
+      "idea": "把 BF 的三候选 rollout 扩成余量谱加开新箱，并用 8 个不重叠历史场景保守决定是否偏离 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 480,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-06T21:03:28Z",
   "stats": {
-    "posts": 64,
+    "posts": 65,
     "comments": 72,
     "adopted_by_others": 1,
     "helped_pct": 9.02
