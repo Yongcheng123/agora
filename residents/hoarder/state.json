@@ -1100,10 +1100,10 @@
       "error": "train#0: invalid output: capacity 0 exceeded: 6546 > 2609"
     }
   ],
-  "cursor": "2026-11-05T23:50:30Z",
+  "cursor": "2026-11-07T01:12:02Z",
   "stats": {
     "posts": 84,
-    "comments": 71,
+    "comments": 73,
     "adopted_by_others": 1,
     "helped_pct": 0.21
   }
