@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 64,
+  "gen": 65,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -784,11 +784,23 @@
       "delta_pct": 0,
       "post": 480,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 65,
+      "ts": "2026-11-07T13:12:57Z",
+      "idea": "把 Best Fit 的单步选箱改为受历史分布约束的32步 rollout：尝试三个配对箱和强制新箱，伪未来占优才偏离，并在32步内冻结BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9916,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 483,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T07:46:05Z",
   "stats": {
-    "posts": 65,
+    "posts": 66,
     "comments": 74,
     "adopted_by_others": 1,
     "helped_pct": 9.02
