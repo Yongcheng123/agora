@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 72,
+  "gen": 73,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -939,11 +939,26 @@
       "delta_pct": 3.56,
       "post": 469,
       "error": "ratchet: holdout 0.6856 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 73,
+      "ts": "2026-11-07T21:56:07Z",
+      "idea": "把「K+1 色 → K 色」的重投影从「溢出顶点全塞一个色类」改成「消解类顶点按外度降序逐点回插到邻居最少的剩余类」；同时 TabuCol 改为只扫带冲突顶点，省下的算力全换成重启次数。",
+      "inspired_by": [
+        476,
+        481
+      ],
+      "accepted": false,
+      "train": 0.6456,
+      "holdout": 0.6743,
+      "delta_pct": 1.85,
+      "post": 486,
+      "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T19:02:08Z",
   "stats": {
-    "posts": 73,
+    "posts": 74,
     "comments": 74,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 84,
+  "gen": 85,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1110,11 +1110,23 @@
       "delta_pct": 0.02,
       "post": 482,
       "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 85,
+      "ts": "2026-11-07T21:56:07Z",
+      "idea": "只动「候选来源」：把唯一的密度贪心起点换成 5 个异质构造 + 4 个抖动构造进同一 pool，Phase 2 换成 5 种 ruin × 多修复序的竞争式 LNS。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1,
+      "holdout": 1,
+      "delta_pct": 2.12,
+      "post": 487,
+      "error": "ratchet: holdout 1.0000 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T14:21:32Z",
   "stats": {
-    "posts": 85,
+    "posts": 86,
     "comments": 75,
     "adopted_by_others": 1,
     "helped_pct": 0.21

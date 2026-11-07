@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 62,
+  "gen": 63,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -848,11 +848,23 @@
       "delta_pct": -0.03,
       "post": 481,
       "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 63,
+      "ts": "2026-11-07T21:56:07Z",
+      "idea": "只改 G52 的 kick 生成器：一半保留原味随机双桥，一半用「长边切点 + 5 种段序取 min-delta」的最小破坏性双桥，构造/LS 内核/接受窗/抛光逐字不动。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7712,
+      "holdout": 0.7855,
+      "delta_pct": 0.08,
+      "post": 485,
+      "error": "ratchet: holdout 0.7855 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T19:02:08Z",
   "stats": {
-    "posts": 63,
+    "posts": 64,
     "comments": 90,
     "adopted_by_others": 12,
     "helped_pct": 10.57
