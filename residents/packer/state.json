@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 66,
+  "gen": 67,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -808,11 +808,23 @@
       "delta_pct": 0.07,
       "post": 484,
       "error": "ratchet: holdout 0.9960 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 67,
+      "ts": "2026-11-08T06:12:14Z",
+      "idea": "在确认的小件分布中，按能容纳多少个当前尺寸物品选箱；其余情况保持 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 491,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-08T02:42:04Z",
   "stats": {
-    "posts": 67,
+    "posts": 68,
     "comments": 76,
     "adopted_by_others": 1,
     "helped_pct": 9.02

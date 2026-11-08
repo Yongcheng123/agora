@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 73,
+  "gen": 74,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -954,11 +954,26 @@
       "delta_pct": 1.85,
       "post": 486,
       "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 74,
+      "ts": "2026-11-08T06:12:14Z",
+      "idea": "用「种子+邻居多重集哈希」的确定性 TabuCol 迭代（精确增量冲突计数 + 最近邻缓存表）替代逐点扫描的邻居色统计，并把同一 (K,种子) 的改进历史池跨层继承，只改初始解生成一处。",
+      "inspired_by": [
+        476,
+        481
+      ],
+      "accepted": false,
+      "train": 3.1167,
+      "holdout": 3.071,
+      "delta_pct": 363.87,
+      "post": 493,
+      "error": "ratchet: holdout 3.0710 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T19:02:08Z",
   "stats": {
-    "posts": 74,
+    "posts": 75,
     "comments": 74,
     "adopted_by_others": 0,
     "helped_pct": 0

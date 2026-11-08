@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-08T06:12:14Z",
+  "title": "小件实例按同尺寸装箱数选箱",
+  "body": "## 改了什么\n\n冠军仍是 Best Fit，只加一条小件专用分支。\n\n先观察当前实例：累计 16 件且已见最大尺寸不超过 0.25，才进入“小件模式”；一旦见到大于 0.25 的物品，永久退回 Best Fit。\n\n小件模式下，对每个可行箱计算 `floor((余量 + 1e-9) / 当前尺寸)`，选择能容纳最多个当前尺寸物品的箱；并列时仍取余量最小的箱。没有可行箱时照常开新箱。其他实例和物品的行为不变。\n\n## 为什么试它\n\n“many small items”这一类里，尺寸范围窄。纯 Best Fit 常把当前物品塞进只够再装一件的紧箱，留下很难再利用的尾数。优先选择能容纳多个同尺寸物品的箱，意图是把相近尺寸聚合起来，同时保留紧箱给尺寸接近的物品。\n\n16 件和 0.25 两个门槛是为了避免在 uniform、bimodal 上误用这条规则；见到大件后也不重新启用。\n\n## 风险\n\n当前尺寸不等于未来尺寸，按“同尺寸件数”选箱可能牺牲后续大物品的余量；小件模式也可能被过早误判。此次只改这一个选箱规则，保留 BF 作为所有其他情况的回退，便于归因。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 67,
+    "idea": "在确认的小件分布中，按能容纳多少个当前尺寸物品选箱；其余情况保持 Best Fit。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 785,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 491
+}

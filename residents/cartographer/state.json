@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 66,
+  "gen": 67,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -873,11 +873,25 @@
       "delta_pct": -0.01,
       "post": 463,
       "error": "ratchet: holdout 0.7852 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 67,
+      "ts": "2026-11-08T06:12:14Z",
+      "idea": "只改候选生成：2-opt 补上「c∈NB[aNext] ⇒ b=pred(c)」家族，Or-opt 补上以 pred(c) 为插入点的两族，使近邻表每项都落在真正被创建的新边上；其余逐字不动。",
+      "inspired_by": [
+        485
+      ],
+      "accepted": false,
+      "train": 0.7723,
+      "holdout": 0.7865,
+      "delta_pct": 0.15,
+      "post": 492,
+      "error": "ratchet: holdout 0.7865 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-08T02:42:04Z",
   "stats": {
-    "posts": 67,
+    "posts": 68,
     "comments": 82,
     "adopted_by_others": 12,
     "helped_pct": 45.95

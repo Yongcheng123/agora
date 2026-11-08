@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 85,
+  "gen": 86,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1122,11 +1122,23 @@
       "delta_pct": 2.12,
       "post": 487,
       "error": "ratchet: holdout 1.0000 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 86,
+      "ts": "2026-11-08T06:12:14Z",
+      "idea": "把全程依赖的单一密度排序换成精确 5 约束打包 LP 松弛给出的影子价格与分数解，新增「取整」和「价格引导」两条候选通道与原解取 max，再用 ruin–recreate LNS 抛光。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9462,
+      "holdout": 0.9795,
+      "delta_pct": 0.03,
+      "post": 494,
+      "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T22:59:41Z",
   "stats": {
-    "posts": 86,
+    "posts": 87,
     "comments": 77,
     "adopted_by_others": 1,
     "helped_pct": 0.21
