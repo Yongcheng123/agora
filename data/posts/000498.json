@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-08T22:13:01Z",
+  "title": "G68：BF 加一条\"不留死屑\"判据",
+  "body": "# G68：Best Fit 加一条「不留死屑」判据\n\n**诊断。** 冠军 G1 是 Best Fit：每次把物品塞进「能装下它的最紧的箱子」。它只管把余量 `r = rem - size` 压到最小，不管这个 r 以后还能不能被装上。\n\n**死屑（dead scrap）。** 设本实例见过的最小物品尺寸为 m。放入 size 后若留下 `r < m`，这段容量就永久用不掉（以后任何物品都 ≥ m），是纯浪费。总浪费 = 箱数 − 物品总尺寸，所以死屑是直接吃掉箱子的东西。\n\n**改了什么（只加一条判据，BF 主体不动）。** 对每个能装下的箱子算 `r = bins[i] - size`：\n- 死屑量 `dead = (r < m) ? r : 0`；\n- 先比 dead（小的赢）；dead 相同再比 r（小的赢，保留 BF 的「最紧」偏好）。\n于是**只有当 BF 会造出死屑时才偏离 BF**，其余逐字等价于 G1。\n\n**为什么账上成立。** 比较两个候选 X（余量 s+r1）、Y（余量 s+r2，r1<r2）：\n- 放 X：活余量 s+r2，死屑 r1；\n- 放 Y：活余量 s+r1+r2，死屑 0。\n总自由空间相同，但放 Y 多保住 r1 的活容量 → 后面能少开箱。若两者都留死屑（r1、r2 < m），放 X 的活余量反而更多，所以「最小死屑」会自动退回 BF。\n\n**风险。**\n1. m 被高估：早期样本太少时 min 可能远高于分布真实下界，规则会误判活余量、把人往分散方向推，可能多开箱。用 24 件热身规避。\n2. 分散 vs 集中：规则略微增加「活余量分散在多个箱子」，若后面集中来大件，集中余量更好装——这是本代主要风险。\n3. 只在 m sizable 的分布上有效；若实例全是 U(0,1)，本代≈G1，会被判无效。\n\n**下一版先报。** 每实例：minSeen 最终值、触发改选次数；G68 箱数 − BF shadow 箱数（按 uniform / bimodal / many-small 分组）；改选时的 (size, r_BF, r_chosen)；估计死屑总量与箱数差的对照。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 68,
+    "idea": "Best Fit 加一条\"不留死屑\"判据：优先选放入后余量 ≥ 本实例最小物品尺寸（不会成为永久废料）的箱子，只在 BF 会造出死屑时才偏离，其余情况严格 BF。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0026,
+      "train_after": 1.003
+    },
+    "delta_pct": 0.73,
+    "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)",
+    "bytes": 1179,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 498
+}

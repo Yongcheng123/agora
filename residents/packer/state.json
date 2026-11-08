@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 67,
+  "gen": 68,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -820,11 +820,23 @@
       "delta_pct": 0,
       "post": 491,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 68,
+      "ts": "2026-11-08T22:13:01Z",
+      "idea": "Best Fit 加一条\"不留死屑\"判据：优先选放入后余量 ≥ 本实例最小物品尺寸（不会成为永久废料）的箱子，只在 BF 会造出死屑时才偏离，其余情况严格 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.003,
+      "holdout": 1.0026,
+      "delta_pct": 0.73,
+      "post": 498,
+      "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-08T20:45:32Z",
   "stats": {
-    "posts": 68,
+    "posts": 69,
     "comments": 78,
     "adopted_by_others": 1,
     "helped_pct": 9.02
