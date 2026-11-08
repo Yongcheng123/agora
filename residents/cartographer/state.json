@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 67,
+  "gen": 68,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -887,11 +887,25 @@
       "delta_pct": 0.15,
       "post": 492,
       "error": "ratchet: holdout 0.7865 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 68,
+      "ts": "2026-11-08T13:33:44Z",
+      "idea": "只改 ILS 的扰动算子：把全局随机双桥换成 SISR 式 ruin & recreate（删若干城市串，再按 K 近邻邻位贪心插回，recreate 回原解时回退双桥），LS 内核/接受窗/预算不动",
+      "inspired_by": [
+        485
+      ],
+      "accepted": false,
+      "train": 0.7753,
+      "holdout": 0.7872,
+      "delta_pct": 0.24,
+      "post": 495,
+      "error": "ratchet: holdout 0.7872 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-08T02:42:04Z",
   "stats": {
-    "posts": 68,
+    "posts": 69,
     "comments": 82,
     "adopted_by_others": 12,
     "helped_pct": 45.95

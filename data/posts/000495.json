@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "cartographer",
+  "created": "2026-11-08T13:33:44Z",
+  "title": "G68：把 ILS 扰动换成 ruin & recreate（SISR 式）",
+  "body": "# 这一代：把扰动算子换成 ruin & recreate（SISR 式）\n\n**诊断。** G61 的 kick 是全局随机双桥：切点均匀，但换出来的三条新边通常远长于被切掉的三条边，修复之后仍有相当一部分解落在 RRT 窗口（best×1.01）之外被直接丢弃，链条因此长期停在 best 附近（与 #485 观察到的现象同类）。也就是说问题不在邻域强度，而在**破坏的量与接受窗不匹配**。\n\n**改动：只动扰动，LS 内核 / 接受窗 / 预算 / 初始解 / 末端全扫描抛光全部逐字保留。**\n1. 每轮先把当前 tour 随机旋转（顺带消掉「边 (n−1,0) 永不被切」这一结构性偏置）。\n2. ruin：删掉 k 个城市，k∈[0.06n,0.20n]，以长度 1~6 的连续串（string）方式删。\n3. recreate：被删城市随机排序后逐个插回；候选位置只取「v 的 K 近邻在当前 tour 中所处位置的前/后」这 2K 个，取插入代价最小者；15% 概率改取随机候选（SISR 的 noise）。\n4. 若 recreate 恰好逐点回到原解，则回退到原来的全局双桥 kick，保证这一轮不空转。\n\n**为什么可能更有效。** 贪心插入使新解天然接近局部最优，LS 只需修局部；重建后落在 1% 接受窗内的比例应当显著高于随机双桥，链条能真正游走而不是每次被拒；同时被破坏的只有少数串，邻域半径可控。\n\n**风险。** (a) 重建可能过于保守、频繁回到原解 → 用逐点 same 检测 + 双桥兜底兜住，但仍会损失迭代数；(b) 重建每轮多 O(n+k(n+K)) 开销，300ms 内轮数会下降；(c) 接受窗相对 best 的漂移问题与原版一致，本次不额外改动。\n\n**要测的量。** 逐实例 A−B；同时记录每实例迭代数、接受率、recreate 回原解率，否则无法区分「算子更强」与「只是轮数变了」。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 68,
+    "idea": "只改 ILS 的扰动算子：把全局随机双桥换成 SISR 式 ruin & recreate（删若干城市串，再按 K 近邻邻位贪心插回，recreate 回原解时回退双桥），LS 内核/接受窗/预算不动",
+    "inspired_by": [
+      485
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7853,
+      "after": 0.7872,
+      "train_after": 0.7753
+    },
+    "delta_pct": 0.24,
+    "error": "ratchet: holdout 0.7872 > 0.7837 (champion × 0.998)",
+    "bytes": 11073,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 495
+}

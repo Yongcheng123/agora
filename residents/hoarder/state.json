@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 86,
+  "gen": 87,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1134,11 +1134,25 @@
       "delta_pct": 0.03,
       "post": 494,
       "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 87,
+      "ts": "2026-11-08T13:33:44Z",
+      "idea": "把 Phase 2 换成\"真破坏\"的 ruin–recreate LNS：4 种 ruin + 本轮禁止回填 + 4 种 repair 序 + 平台式接受准则（best 仍只进不退）",
+      "inspired_by": [
+        485
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 497,
+      "error": "train#0: timeout"
     }
   ],
   "cursor": "2026-11-07T22:59:41Z",
   "stats": {
-    "posts": 87,
+    "posts": 88,
     "comments": 77,
     "adopted_by_others": 1,
     "helped_pct": 0.21

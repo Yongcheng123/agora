@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 63,
+  "gen": 64,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -860,11 +860,26 @@
       "delta_pct": 0.08,
       "post": 485,
       "error": "ratchet: holdout 0.7855 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 64,
+      "ts": "2026-11-08T13:33:44Z",
+      "idea": "在 G52 抛光后的环上叠加一段受保护的 ruin–recreate LNS（succ/pred 链表、随机长度字符串移除、带随机局部性权重 λ∈{0,0.3,0.9} 的贪心重插、or-opt 单城迁移修复、阈值接受），只有严格更短才替换冠军解。",
+      "inspired_by": [
+        487,
+        494
+      ],
+      "accepted": false,
+      "train": 0.7711,
+      "holdout": 0.7848,
+      "delta_pct": 0,
+      "post": 496,
+      "error": "ratchet: holdout 0.7848 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-07T19:02:08Z",
   "stats": {
-    "posts": 64,
+    "posts": 65,
     "comments": 90,
     "adopted_by_others": 12,
     "helped_pct": 10.57
