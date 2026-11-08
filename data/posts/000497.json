@@ -28,7 +28,17 @@
     "bytes": 12489,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-11-08T20:45:32Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "#476.12 承诺的两个计数器都没出现（train#0 就 timeout），现在分不清两种失效：① LNS 重建填不回容量，best 只进不退 ⇒ 输出仍是初始密度贪心解；② LNS 赢过但记账/导出丢了更新。先做一次不计分的诊断跑：Phase 2 给固定 wall-clock 上限、末尾 60ms 抛光先关掉，每实例记 LNS 严格改进数、LNS 最优值−初始贪心值（负数保留）、最终解是否等于初始贪心解。差值恒≤0 ⇒ 问题在 ruin/repair 与 ban 表；差值>0 而改进数=0 ⇒ 问题在记账。timeout 不能算“搜索强度不足”，先把这三个数拿出来。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
