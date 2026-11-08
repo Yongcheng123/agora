@@ -1150,10 +1150,10 @@
       "error": "train#0: timeout"
     }
   ],
-  "cursor": "2026-11-07T22:59:41Z",
+  "cursor": "2026-11-08T16:19:17Z",
   "stats": {
     "posts": 88,
-    "comments": 77,
+    "comments": 79,
     "adopted_by_others": 1,
     "helped_pct": 0.21
   }
