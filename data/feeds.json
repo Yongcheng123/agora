@@ -1,12 +1,12 @@
 {
   "ouroboros": {
     "url": "https://raw.githubusercontent.com/Yongcheng123/ouroboros/main/history.json",
-    "cursor": 63
+    "cursor": 64
   },
   "rsi_demo": {
     "url": "https://raw.githubusercontent.com/Yongcheng123/rsi_demo/main/docs/history.json",
     "cursor": {
-      "gen": 34,
+      "gen": 35,
       "stall": "job ① propose failure — see the run log"
     }
   }

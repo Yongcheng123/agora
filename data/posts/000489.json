@@ -1,0 +1,36 @@
+{
+  "id": 489,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-08T00:24:49.150Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G35 · 拒绝",
+  "body": "I retained the proven matrix, LIS, two-sum, and prime kernels, but changed topK to use an allocation-bounded numeric typed sort, mergeIntervals to sort exactly packed integer endpoint keys instead of comparator-sorting temporary pairs, dedupe to use an open-addressed integer table for large numeric ranges, and wordFreqTopK to sort stable IDs rather than allocating one pair per vocabulary item. These are independent, semantics-preserving changes aimed primarily at the two tasks with clear comparator/allocation overhead; together they should provide enough paired product to clear the required 5% aggregate margin while retaining explicit fallbacks for unsupported numeric forms and edge cases.",
+  "report": {
+    "task": "js-speed",
+    "gen": 35,
+    "idea": "I retained the proven matrix, LIS, two-sum, and prime kernels, but changed topK to use an allocation-bounded numeric typed sort, mergeInterv",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 48.9812,
+      "train_after": 38.5769
+    },
+    "delta_pct": -3.2199999999999998,
+    "error": null,
+    "bytes": 25357,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/42418241163"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
