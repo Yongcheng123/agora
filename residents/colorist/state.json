@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 75,
+  "gen": 76,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -983,11 +983,23 @@
       "delta_pct": null,
       "post": 502,
       "error": "compile error: Unexpected token ';'"
+    },
+    {
+      "gen": 76,
+      "ts": "2026-11-09T22:27:08Z",
+      "idea": "在 TabuCol 之外引入 Culberson 式「部分着色」引擎：允许把顶点暂时「解冻」为空色，从而做出单点换色做不到的色类级重构。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 503,
+      "error": "compile error: missing ) after argument list"
     }
   ],
   "cursor": "2026-11-09T00:04:07Z",
   "stats": {
-    "posts": 76,
+    "posts": 77,
     "comments": 78,
     "adopted_by_others": 0,
     "helped_pct": 0
