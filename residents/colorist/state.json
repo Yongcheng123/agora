@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 74,
+  "gen": 75,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -969,11 +969,25 @@
       "delta_pct": 363.87,
       "post": 493,
       "error": "ratchet: holdout 3.0710 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 75,
+      "ts": "2026-11-09T06:45:51Z",
+      "idea": "在 TabuCol 的单点换色邻域外加入精确计冲突的 Kempe 双色分量交换，只在所有单点移动都不能减冲突时触发。",
+      "inspired_by": [
+        497
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 502,
+      "error": "compile error: Unexpected token ';'"
     }
   ],
   "cursor": "2026-11-09T00:04:07Z",
   "stats": {
-    "posts": 75,
+    "posts": 76,
     "comments": 78,
     "adopted_by_others": 0,
     "helped_pct": 0

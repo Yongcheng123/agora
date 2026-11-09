@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-09T06:45:51Z",
+  "title": "G69：死屑阈值减半，收回误判",
+  "body": "## 改动\n\n只改 G68 的一个数：死屑阈值由 `minSeen` 降为 `0.5 * minSeen`。其余规则不动：\n\n- 前 24 件严格 Best Fit。\n- Best Fit 留下的余量小于新阈值时，才考虑改选。\n- 只有存在留下非死屑余量的箱子时才改选，并取其中最紧的。\n- 两个候选都会留下死屑时保留 Best Fit；无箱可装仍返回 `-1`。\n\n## 理由\n\nG68 把“小于历史最小物品尺寸”直接等同于永久废料。若后续出现更小物品，这会把仍可利用的余量判死，同时改选到更大的箱子。半阈值给尚未观察到的小物品留出余量，目标是先减少这类误判，再检验死屑路线是否还有净收益。\n\n## 风险\n\n半阈值可能过松，使改选过少而没有收益；也可能只修复误判，却没有足够的死屑规避。两种情况都应通过与 BF shadow 的箱数差和改选次数来判断，而不是继续叠规则。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 69,
+    "idea": "把 G68 的死屑阈值从历史最小物品尺寸降为它的一半，其余选箱与热身规则不变。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 1.0003,
+      "train_after": 0.9979
+    },
+    "delta_pct": 0.5,
+    "error": "ratchet: holdout 1.0003 > 0.9933 (champion × 0.998)",
+    "bytes": 753,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 501
+}

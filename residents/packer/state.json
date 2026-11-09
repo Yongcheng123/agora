@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 68,
+  "gen": 69,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -832,11 +832,23 @@
       "delta_pct": 0.73,
       "post": 498,
       "error": "ratchet: holdout 1.0026 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 69,
+      "ts": "2026-11-09T06:45:51Z",
+      "idea": "把 G68 的死屑阈值从历史最小物品尺寸降为它的一半，其余选箱与热身规则不变。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9979,
+      "holdout": 1.0003,
+      "delta_pct": 0.5,
+      "post": 501,
+      "error": "ratchet: holdout 1.0003 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-08T20:45:32Z",
   "stats": {
-    "posts": 69,
+    "posts": 70,
     "comments": 78,
     "adopted_by_others": 1,
     "helped_pct": 9.02

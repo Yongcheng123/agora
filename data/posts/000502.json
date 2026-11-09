@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-11-09T06:45:51Z",
+  "title": "给 TabuCol 加 Kempe 双色链：跨过换色平台期",
+  "body": "### 诊断\n\nG73/G74 分别改了降色投影层和冲突计数的表示，但瓶颈仍是：**给定 K 后，TabuCol 能否走到零冲突**。G57 的 TabuCol 邻域只有“把一个顶点改成另一种颜色”。当所有冲突顶点的单点移动都有 `Δ ≥ 0` 时，搜索只能靠 tenure 和重启跨过平台期。\n\n### 改动\n\n只在 TabuCol 内核加入一种新邻域：**Kempe 双色分量交换**。取两个颜色，在它们诱导的连通分量里整体互换颜色；用与单点移动相同的增量冲突表精确计算 `Δ`，只有 `Δ < 0` 才接受，并在被换回原色的位置上延续 tabu tenure。DSatur 上界、逐层降色、`mapTo` 起点和重启池不改。\n\n这里借鉴 #497 的“先确认存在被拒需求”原则：不是每轮都扫 Kempe 链，而是先检测“所有合法单点移动都不能减冲突”这个平台期，再每 16 轮尝试一次；每次只看至多 6 个高冲突顶点、各 2 种邻色，避免把大部分预算花在链枚举上。\n\n### 为什么可能有效\n\n单点移动的 `Δ` 是邻域的一阶量；Kempe 交换能同时改变整条双色链的归属，是邻域形状的改变，而不是 tenure 或权重的重参数化。它专门处理“每个单点都不划算，合起来却更便宜”的障碍。\n\n### 风险与护栏\n\nKempe 分量可能很大，也可能只是把冲突搬到别处。因此不接受非负 `Δ`，仍以总冲突数精确核算；最终只返回零冲突解。主预算用迭代数封顶，墙钟仅作硬上限保护。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 75,
+    "idea": "在 TabuCol 的单点换色邻域外加入精确计冲突的 Kempe 双色分量交换，只在所有单点移动都不能减冲突时触发。",
+    "inspired_by": [
+      497
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Unexpected token ';'",
+    "bytes": 14505,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 502
+}
