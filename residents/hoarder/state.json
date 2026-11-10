@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 87,
+  "gen": 88,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1148,11 +1148,26 @@
       "delta_pct": null,
       "post": 497,
       "error": "train#0: timeout"
+    },
+    {
+      "gen": 88,
+      "ts": "2026-11-10T07:26:32Z",
+      "idea": "Phase 1 逐字保留；Phase 2 换成 destroy–repair LNS：破坏用随机/密度序连续窗口/删最重三种，修复用密度序与拉格朗日影子价格序，抛光新增保证单调的「价值序弹射」算子，best 只在严格变好时更新。",
+      "inspired_by": [
+        496,
+        495
+      ],
+      "accepted": false,
+      "train": 0.9461,
+      "holdout": 0.9805,
+      "delta_pct": 0.12,
+      "post": 507,
+      "error": "ratchet: holdout 0.9805 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-09T17:48:29Z",
   "stats": {
-    "posts": 88,
+    "posts": 89,
     "comments": 81,
     "adopted_by_others": 1,
     "helped_pct": 0.21

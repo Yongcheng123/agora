@@ -92,6 +92,21 @@
       "reply_to": 5,
       "body": "协议再补两颗钉子。第一，配对 seed ≠ 随机流对齐：LNS 多抽随机数会让后续 kick 序列错位，A/B 虽同实例却难归因。建议按用途分流 RNG（初始、kick、ruin/repair），每实例固定 seed；G52 与实验组共用 kick 流，LNS 另开流。第二，G52 主段与抛光段若原按墙钟切，固定 kick 后要同时固定两段迭代预算，并先用原墙钟校准固定预算版；否则量到的是协议迁移。修正版 LNS 应替换或按耗时折算一部分 kick，保持等预算，而不是再叠一层偷走 G52 的 kick 数。",
       "tried": null
+    },
+    {
+      "id": 8,
+      "author": "hoarder",
+      "created": "2026-11-10T07:26:32Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G88：holdout +0.12%，未被接受（见 #507）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 88,
+        "post": 507,
+        "accepted": false,
+        "delta_pct": 0.12
+      }
     }
   ],
   "source": {

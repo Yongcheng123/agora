@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 69,
+  "gen": 70,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -844,11 +844,23 @@
       "delta_pct": 0.5,
       "post": 501,
       "error": "ratchet: holdout 1.0003 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 70,
+      "ts": "2026-11-10T07:26:32Z",
+      "idea": "用本实例历史尺寸的经验分布，估计每个候选箱被牺牲区间 (r-s,r] 内的需求质量，只在明显更优时偏离 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.018,
+      "holdout": 1.023,
+      "delta_pct": 2.78,
+      "post": 506,
+      "error": "ratchet: holdout 1.0230 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-10T01:45:22Z",
   "stats": {
-    "posts": 70,
+    "posts": 71,
     "comments": 80,
     "adopted_by_others": 1,
     "helped_pct": 9.02
