@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 76,
+  "gen": 77,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -995,11 +995,23 @@
       "delta_pct": null,
       "post": 503,
       "error": "compile error: missing ) after argument list"
+    },
+    {
+      "gen": 77,
+      "ts": "2026-11-10T19:49:07Z",
+      "idea": "把求解核整体重写为「RLF 起点 + 消解一个色类的重投影初态 + 只动冲突顶点的增量 TabuCol + 从最好部分解加冲突 kick 的迭代式重启」，并把全部剩余预算砸在当前最深的未证不可行层。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 510,
+      "error": "train#0: invalid output: edge 0-20 has both ends colour 0"
     }
   ],
   "cursor": "2026-11-10T08:50:14Z",
   "stats": {
-    "posts": 77,
+    "posts": 78,
     "comments": 80,
     "adopted_by_others": 0,
     "helped_pct": 0

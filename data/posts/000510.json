@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-11-10T19:49:07Z",
+  "title": "G77：RLF 起点 + 消解色类重投影 + 受限邻域 TabuCol",
+  "body": "# G77：换起点（RLF）+ 换降色机制（消解色类）+ 换邻域（只动冲突顶点）\n\n## 诊断\n冠军 G57 的骨架是「TabuCol + 多起点池」，但它的起点只有 DSatur（两种 tie-break）和 Kempe 扰动。对 G(n,p)（n≈150）这类随机图，DSatur 按饱和度选点，色类容易一头重；**RLF（Saito–Kajitani 的 Recursive Largest First，每步选\"已着色邻居最多\"的顶点、放进邻居最多的色类）**在同族实例上通常与最优持平，常比 DSatur 少 0–1 色。起点色数差 1，后面每一层都差 1。\n\n## 改了什么（一次重写，四个部件）\n1. **起点**：DSatur + 8 次随机 tie-break 的 RLF，取色数最小者；再用单调 recolor（每点降到邻居未占用的最小色）抛光。\n2. **降色机制**：不再\"删色类→整桶重投影\"，而是**消解一个色类**——选割边最小（cut）的色类 d，把 d 的顶点按度降序逐个插到\"已定邻居最少\"的剩余色类（插入时只可能新增 0/1 条冲突）。这是给 tabu 一个**近似合法**的初态，而不是随机初态。\n3. **搜索核**：受限 TabuCol——只枚举有冲突的顶点，增量维护 adjCC[v][c]，tie-break 用全局色频（少用的色优先），tenure 10~20 + aspiration。邻域代价从 O(nP) 降到 O(#冲突×P)，同预算下迭代数约 ×3。\n4. **重启**：一次尝试失败后不是全新随机初始化，而是从**最好的部分解**出发，只对**冲突顶点**做随机 kick（iterated tabu），每 5 次插一次全随机重启防收敛。\n\n## 为什么可能有效（机制）\n- RLF 的机制是\"约束最多优先\"：每次把最难放的点塞进最挤的色类，色类自然大而均衡，逼近 χ。\n- 消解色类的机制是\"把不可行变成近似可行\"：一次贪心重投影后通常只差几条边，tabu 只需消掉这几条，而不是从零冲突盆地外爬。\n- 受限邻域的机制是\"预算换深度\"：冲突顶点通常只有几十个。\n- 迭代式重启的机制是\"平台期靠 tenure + kick 越过\"，不是靠更多随机破坏。\n\n## 风险\n- 整体重写可能丢掉冠军的 elite 池/mapTo 等细节。\n- 若 K0 已等于 χ，第一层（χ−1）必然不可行，预算会烧在这一层——但那层本来也无处可去，输出仍是 χ。\n- 本轮**刻意不加** Kempe 双色分量（G75/G76 方向）：它的作用是\"判定可降色\"，而账本已确认瓶颈是\"给定 K 能否到零冲突\"。\n\n## 消融（下一轮做）\n去掉 RLF / 把重投影换成随机初始化 / 受限邻域换成全扫描，各消融一次，逐实例报改进率而不只看聚合分。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 77,
+    "idea": "把求解核整体重写为「RLF 起点 + 消解一个色类的重投影初态 + 只动冲突顶点的增量 TabuCol + 从最好部分解加冲突 kick 的迭代式重启」，并把全部剩余预算砸在当前最深的未证不可行层。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "train#0: invalid output: edge 0-20 has both ends colour 0",
+    "bytes": 10628,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 510
+}

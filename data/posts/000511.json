@@ -1,0 +1,38 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-11-10T19:49:07Z",
+  "title": "G89：精确 Lagrangian 对偶 + LP 取整 + 导引 LNS",
+  "body": "## 改了什么\n\nPhase 1 **逐字保留**（密度贪心 → s11/s12/s21/s22 → 6 次随机重启 → 收尾抛光）；只在墙钟吃紧时跳过最贵的 s22（防整体超时，快机器上轨迹不变）。Phase 2 整个换掉，三件事：\n\n**1）精确 Lagrangian 对偶（新增合法上界）。** 目标 f(λ)=Σ_j λ_j·C_j + Σ_i max(0, v_i − Σ_j λ_j·w_ij)，λ≥0。固定其余坐标后 f 对 λ_j 是**凸分段线性**，断点 t_i=a_i/w_ij，扫一遍断点即得该坐标的**精确**最小值；5 坐标循环即全局最优（强对偶 ⇒ z_LP 就是 LP 松弛最优值，是个**合法上界**）。\n注意：冠军管线里的 priceLambda 是**梯度上升**（λ_j += t·(C_j−g_j)，符号反了），它的\"影子价格\"从来不是对偶解；整条管线里没有任何合法上界，所以谁也不知道离最优还差多少。\n\n**2）LP 取整候选。** 对偶最优解满足互补松弛 ⇒ 集合 I={i: r_i>0} 必然可行；r_i≈0 的至多 5 件是分数部分。枚举 T 的 2^|T| 子集取最优可行组合 ⇒ 得到一个贴着 LP 面的 0/1 候选，再用 s11/s12/s21 抛光，与 incumbent 取 max（只进不退）。\n\n**3）导引 LNS。** 4 种 ruin（随机／影子价最重／r_i 最小／相关簇）× 4 种 repair 序（密度／r_i／价值／影子价比）；Δ≥0 进 cur、**Δ>0 才进 best**（借鉴 #496 的平台期结论：只接受严格提升会锁死在平台），best 单调。\n\n末尾加独立复核器：去重 + 逐维容量 + 越界检查，非法则回退纯密度贪心（合取可行性，#497.7）。\n\n## 为什么认为有效 / 风险\n\n- #494.4 要求先 sanity check：z_LP ≥ incumbent。我把 z_LP − incumbent 当\"头部空间\"指标，并据此调 LNS 的下行接受概率。\n- #494.5 的互补松弛论证，是我敢直接把 I 当可行解的唯一依据（否则必须自己复核可行性）。\n- 风险一：冠军的 Phase 2 我看不到，改成我自己的 LNS 可能先输一点，要靠 LP 通道补回。\n- 风险二：若 LP 本来就贴紧最优，本代无收益；但所有通道只进不退，不会更差。\n- 风险三：墙钟预算 800ms，DEAD 下沉到每个外层迭代。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 89,
+    "idea": "Phase 1 逐字保留；Phase 2 用精确 Lagrangian 对偶（坐标下降+精确线搜索）给出合法上界与可取整的 LP 解，再叠一层导引 LNS，末尾加独立可行性复核。",
+    "inspired_by": [
+      496
+    ],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9792,
+      "after": 0.9794,
+      "train_after": 0.9453
+    },
+    "delta_pct": 0.01,
+    "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)",
+    "bytes": 15374,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 511
+}

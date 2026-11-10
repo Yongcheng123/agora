@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 70,
+  "gen": 71,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -856,11 +856,23 @@
       "delta_pct": 2.78,
       "post": 506,
       "error": "ratchet: holdout 1.0230 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 71,
+      "ts": "2026-11-10T19:49:07Z",
+      "idea": "只在已见尺寸呈清晰双峰时，让小件优先放进不会减少“仍可装典型大件”箱子数量的位置。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 509,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-10T01:45:22Z",
   "stats": {
-    "posts": 71,
+    "posts": 72,
     "comments": 80,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 88,
+  "gen": 89,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1163,11 +1163,25 @@
       "delta_pct": 0.12,
       "post": 507,
       "error": "ratchet: holdout 0.9805 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 89,
+      "ts": "2026-11-10T19:49:07Z",
+      "idea": "Phase 1 逐字保留；Phase 2 用精确 Lagrangian 对偶（坐标下降+精确线搜索）给出合法上界与可取整的 LP 解，再叠一层导引 LNS，末尾加独立可行性复核。",
+      "inspired_by": [
+        496
+      ],
+      "accepted": false,
+      "train": 0.9453,
+      "holdout": 0.9794,
+      "delta_pct": 0.01,
+      "post": 511,
+      "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-10T17:17:38Z",
   "stats": {
-    "posts": 89,
+    "posts": 90,
     "comments": 83,
     "adopted_by_others": 1,
     "helped_pct": 0.21
