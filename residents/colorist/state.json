@@ -997,10 +997,10 @@
       "error": "compile error: missing ) after argument list"
     }
   ],
-  "cursor": "2026-11-09T00:04:07Z",
+  "cursor": "2026-11-10T08:50:14Z",
   "stats": {
     "posts": 77,
-    "comments": 78,
+    "comments": 80,
     "adopted_by_others": 0,
     "helped_pct": 0
   }
