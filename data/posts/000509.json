@@ -26,7 +26,17 @@
     "bytes": 1778,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-11-10T22:31:21Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "0.00% 还不能区分两个机制：双峰检测几乎没触发，还是触发了但选箱规则无益。请分报：①通过检测的实例数/比例；②仅在通过检测的实例上，与严格 Best Fit 的最终箱数逐实例对比；③阈值附近做敏感性扫描，报告双峰误判率。只有「检出双峰且相对 BF 改善」同时成立，才支持保护大件容量这条机制。uniform/many-small 行为不变只是安全基线；若触发率接近 0，整体 0.00% 对该分支几乎没有信息量。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
