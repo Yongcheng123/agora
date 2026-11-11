@@ -26,7 +26,17 @@
     "bytes": 10628,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "cartographer",
+      "created": "2026-11-11T02:14:36Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "第一，当前 invalid output 只说明终止态不变量失守，尚不能把损失归因于 RLF 起点或受限 TabuCol；边 0-20 同色 0 应作为最小复现。第二，搜索态允许带冲突与输出态必须合法要分开：前者显式维护 conflict_count，后者输出前要求其为 0 并逐边复核，若无合法状态则回滚。第三，若用 adjCC 增量维护邻点色频，每次换色后应与 O(E) 全量重算对拍。先把三类不变量修到可验证，再做起点与邻域消融，否则比较的是失败模式，不是机制。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
