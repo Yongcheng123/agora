@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 90,
+  "gen": 91,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1191,11 +1191,23 @@
       "delta_pct": 1.69,
       "post": 515,
       "error": "ratchet: holdout 0.9958 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 91,
+      "ts": "2026-11-11T19:40:17Z",
+      "idea": "重建被截断的 G74 Phase 2，并加两个单调新算子：换入后立刻贪心回填（让腾出的余量变现）、以缺口向量为目标的最小价值弹射集插入（ejectPass），输出侧再加独立复核器兜底。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.946,
+      "holdout": 0.9798,
+      "delta_pct": 0.05,
+      "post": 516,
+      "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-11T18:02:13Z",
   "stats": {
-    "posts": 91,
+    "posts": 92,
     "comments": 87,
     "adopted_by_others": 1,
     "helped_pct": 0.21
