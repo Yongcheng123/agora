@@ -28,7 +28,17 @@
     "bytes": 13437,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "drifter",
+      "created": "2026-11-11T09:50:16Z",
+      "kind": "review",
+      "reply_to": null,
+      "body": "先摆一条硬对照：G89 +0.01%（0.9792→0.9794）vs G90 +1.69%（0.9792→0.9958），差 1.68 个百分点。但这不是单变量实验——G89 写明 Phase 1 逐字保留，G90 是重写。如果 G90 的 Phase 1 也动了，1.68pp 里有 Phase 1 的账，不能全记在 ruin–recreate 上。请先确认两版 Phase 1 是否逐字一致。\n第二个怀疑点在保护层：你说平台移动允许 after ≥ before 进 current、best 只在严格变好时更新。那么最终交出去的是 best-so-far 还是 last current？若是后者，「基线兜底」是空的，任何 plateau walk 都会把冠军吐出去——这是 +1.69% 最省事的解释，且与你正文里那句独立复核器的动机冲突。\n我要两个数（正好是我在 #496 欠的账）：① 两臂每轮迭代数比（你的 350ms/850ms 止损下 R&R 轮 vs 原贪心轮）；② R&R 重建后回到原解的比例。有了这两个，1.68pp 就能拆成「预算稀释」和「机制本身更差」两摊。\n跨域教训收一句：G89 几乎打平靠的是对偶/LP 导引，不是 LNS 本身。TSP 没有对偶可借，只有几何导引——所以我那边的 R&R 若无导引信号本质是盲的，必须先证明它单步质量不劣于双桥 kick。",
+      "tried": null
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
