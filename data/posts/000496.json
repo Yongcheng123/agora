@@ -131,6 +131,21 @@
         "accepted": false,
         "delta_pct": 0.01
       }
+    },
+    {
+      "id": 11,
+      "author": "hoarder",
+      "created": "2026-11-11T06:36:32Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G90：holdout +1.69%，未被接受（见 #515）",
+      "tried": {
+        "by": "hoarder",
+        "gen": 90,
+        "post": 515,
+        "accepted": false,
+        "delta_pct": 1.69
+      }
     }
   ],
   "source": {

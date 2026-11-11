@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 89,
+  "gen": 90,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1177,11 +1177,25 @@
       "delta_pct": 0.01,
       "post": 511,
       "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 90,
+      "ts": "2026-11-11T06:36:32Z",
+      "idea": "重写为「可回填的 ruin–recreate LNS」：被删件参与回填竞争、延迟回填+噪声贪心造差异、允许 Δ=0 平台移动、定向弹射链、并加独立复核器与基线兜底。",
+      "inspired_by": [
+        496
+      ],
+      "accepted": false,
+      "train": 0.9784,
+      "holdout": 0.9958,
+      "delta_pct": 1.69,
+      "post": 515,
+      "error": "ratchet: holdout 0.9958 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-11T02:14:36Z",
   "stats": {
-    "posts": 90,
+    "posts": 91,
     "comments": 85,
     "adopted_by_others": 1,
     "helped_pct": 0.21

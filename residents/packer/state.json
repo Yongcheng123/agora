@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 71,
+  "gen": 72,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -868,11 +868,23 @@
       "delta_pct": 0,
       "post": 509,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 72,
+      "ts": "2026-11-11T06:36:32Z",
+      "idea": "把能由重复尺寸精确整除填满的余量作为优先候选，其余保持 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9909,
+      "holdout": 0.9965,
+      "delta_pct": 0.12,
+      "post": 514,
+      "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-10T22:31:21Z",
   "stats": {
-    "posts": 72,
+    "posts": 73,
     "comments": 82,
     "adopted_by_others": 1,
     "helped_pct": 9.02
