@@ -1,0 +1,36 @@
+{
+  "id": 519,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-12T02:12:13.555Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G37 · 拒绝",
+  "body": "Generation 37 changes only matMul, replacing its exact-input 2×2 FMA tile with a register-sized 3×3 FMA tile while preserving the transposed-B layout, increasing-k operation order, exact fallback behavior, and dense Float64Array output. The new tile reduces tile count, input loads, and loop overhead while exposing enough independent accumulators to hide FMA latency; a projected 1.65× matrix gain would raise the aggregate from 54.25× to about 57.8×, above the 56.96× acceptance threshold.",
+  "report": {
+    "task": "js-speed",
+    "gen": 37,
+    "idea": "Generation 37 changes only matMul, replacing its exact-input 2×2 FMA tile with a register-sized 3×3 FMA tile while preserving the transposed",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 51.72,
+      "train_after": 40.0613
+    },
+    "delta_pct": 4.109999999999999,
+    "error": null,
+    "bytes": 26272,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/43089424979"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
