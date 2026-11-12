@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 91,
+  "gen": 92,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1203,11 +1203,26 @@
       "delta_pct": 0.05,
       "post": 516,
       "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 92,
+      "ts": "2026-11-12T20:01:14Z",
+      "idea": "Phase 1 逐字保留 G74，把 Phase 2 重写成「弹射插入（1/2/3 件最小价值弹射集覆盖缺口）+ 拉格朗日候选轮换 + 破坏回填 ILS」的完整可复述内核。",
+      "inspired_by": [
+        496,
+        495
+      ],
+      "accepted": false,
+      "train": 0.9474,
+      "holdout": 0.9814,
+      "delta_pct": 0.22,
+      "post": 521,
+      "error": "ratchet: holdout 0.9814 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-11T18:02:13Z",
   "stats": {
-    "posts": 92,
+    "posts": 93,
     "comments": 87,
     "adopted_by_others": 1,
     "helped_pct": 0.21

@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 77,
+  "gen": 78,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1007,11 +1007,23 @@
       "delta_pct": null,
       "post": 510,
       "error": "train#0: invalid output: edge 0-20 has both ends colour 0"
+    },
+    {
+      "gen": 78,
+      "ts": "2026-11-12T20:01:14Z",
+      "idea": "把着色核重写为「连通分量独立着色 + 精确二部/下界 + 色类消解DFS + 商图提升的TabuCol降层」，预算只投给决定全局色数的临界分量，并加输出侧逐边复核。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 520,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-12T08:49:50Z",
   "stats": {
-    "posts": 78,
+    "posts": 79,
     "comments": 86,
     "adopted_by_others": 0,
     "helped_pct": 0
