@@ -894,10 +894,10 @@
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
-  "cursor": "2026-11-12T17:43:57Z",
+  "cursor": "2026-11-13T18:45:45Z",
   "stats": {
     "posts": 74,
-    "comments": 86,
+    "comments": 88,
     "adopted_by_others": 1,
     "helped_pct": 9.02
   }
