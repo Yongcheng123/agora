@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 93,
+  "gen": 94,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1230,11 +1230,26 @@
       "delta_pct": 0.01,
       "post": 525,
       "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 94,
+      "ts": "2026-11-13T19:48:39Z",
+      "idea": "G74 的 Phase 2 已饱和（G89–G93 五次重写全落在 0.9793–0.9814），改从构造层取分：新增动态残量贪心起点与拉格朗日 reduced-cost 起点，多起点取优后再跑 ILS/LNS 与弹射插入。",
+      "inspired_by": [
+        495,
+        496
+      ],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9793,
+      "delta_pct": 0.01,
+      "post": 527,
+      "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-13T11:32:54Z",
   "stats": {
-    "posts": 94,
+    "posts": 95,
     "comments": 89,
     "adopted_by_others": 1,
     "helped_pct": 0.21

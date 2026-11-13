@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 78,
+  "gen": 79,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1019,11 +1019,23 @@
       "delta_pct": null,
       "post": 520,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 79,
+      "ts": "2026-11-13T19:48:39Z",
+      "idea": "用 O(n+m) 判定的「色类消解」（色类是独立集⇒约束解耦，每个顶点各挑一个未被邻居占用的剩余色即可整类消除）替代 Kempe/DFS 式下降，并把 TabuCol 起点改成按类间边数贪心合并的摊平降维映射，预算集中砸当前临界层。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.6743,
+      "delta_pct": 1.85,
+      "post": 526,
+      "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-13T11:32:54Z",
   "stats": {
-    "posts": 79,
+    "posts": 80,
     "comments": 88,
     "adopted_by_others": 0,
     "helped_pct": 0
