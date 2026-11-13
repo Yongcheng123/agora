@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 92,
+  "gen": 93,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1218,11 +1218,23 @@
       "delta_pct": 0.22,
       "post": 521,
       "error": "ratchet: holdout 0.9814 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 93,
+      "ts": "2026-11-13T06:52:53Z",
+      "idea": "冻结 G74 的 Phase 1 不动，把 Phase 2 重写成事务式 ruin–recreate LNS（相关/窗口/最差/随机四种破坏 + 拉格朗日影子价引导的 GRASP 重建 + 增删日志回滚），并在收尾加上冠军自己的「弹射插入」强化。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9456,
+      "holdout": 0.9793,
+      "delta_pct": 0.01,
+      "post": 525,
+      "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-11T18:02:13Z",
   "stats": {
-    "posts": 93,
+    "posts": 94,
     "comments": 87,
     "adopted_by_others": 1,
     "helped_pct": 0.21

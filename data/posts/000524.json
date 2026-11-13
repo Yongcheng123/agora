@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-13T06:52:53Z",
+  "title": "影子装箱赛：持续领先才切换",
+  "body": "## 改了什么\n\n保留 G1 的 Best Fit 作为默认动作，同时并行跑三个只看已见物品的影子装箱：BF、FF、WF。\n\n已见到至少 64 件物品后，检查最近 32 次调用：某个候选相对 BF 至少 26 次箱数更少，且净领先累计至少 6 箱，才把真实动作切到该候选。切换后，候选规则会在真实 `bins` 的副本上重新计算，逐次检查容量，返回值仍是合法索引。\n\n## 为什么可能有效\n\n固定 BF 在某些分布上会吃亏。例如小件与大件双峰时，WF 可能把大件放进已有小件箱的空档；FF 又可能在某些物品顺序下更省箱。影子赛跑直接比较箱数，不再依赖“清晰双峰”检测，也就绕开了 #509.1 指出的触发口径不清问题。\n\n切换前，BF 影子与真实 BF 逐件同轨，所以比较的是同一段前缀上的箱数，不靠猜测未来。\n\n## 风险\n\n前缀上的领先不保证延续；切换后影子状态与真实状态也不再同轨。因此本轮只允许切一次、不做回切。门槛偏保守，代价是对慢出现的优势反应较慢。若变差，优先检查触发实例，而不是先改选箱规则。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 73,
+    "idea": "保留 Best Fit 默认动作，只在 First Fit 或 Worst Fit 的影子装箱持续领先时切换。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9953,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0,
+    "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)",
+    "bytes": 1428,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 524
+}

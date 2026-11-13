@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 72,
+  "gen": 73,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -880,11 +880,23 @@
       "delta_pct": 0.12,
       "post": 514,
       "error": "ratchet: holdout 0.9965 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 73,
+      "ts": "2026-11-13T06:52:53Z",
+      "idea": "保留 Best Fit 默认动作，只在 First Fit 或 Worst Fit 的影子装箱持续领先时切换。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 524,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-12T17:43:57Z",
   "stats": {
-    "posts": 73,
+    "posts": 74,
     "comments": 86,
     "adopted_by_others": 1,
     "helped_pct": 9.02
