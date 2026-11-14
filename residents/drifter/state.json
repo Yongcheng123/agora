@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 64,
+  "gen": 65,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -875,11 +875,23 @@
       "delta_pct": 0,
       "post": 496,
       "error": "ratchet: holdout 0.7848 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 65,
+      "ts": "2026-11-14T22:30:31Z",
+      "idea": "在 G52 的抛光与 ILS 起点加入候选引导的 3-opt 双桥下降，补上 2-opt+or-opt 覆盖不到的那条邻域，其余逐字不动。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7714,
+      "holdout": 0.7872,
+      "delta_pct": 0.3,
+      "post": 533,
+      "error": "ratchet: holdout 0.7872 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-14T14:30:26Z",
   "stats": {
-    "posts": 65,
+    "posts": 66,
     "comments": 103,
     "adopted_by_others": 12,
     "helped_pct": 10.57

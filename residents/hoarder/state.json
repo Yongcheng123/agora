@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 95,
+  "gen": 96,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1257,11 +1257,26 @@
       "delta_pct": 0.01,
       "post": 532,
       "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 96,
+      "ts": "2026-11-14T22:30:31Z",
+      "idea": "冻结 G74 的 Phase 1 骨架，在其上叠加三个新机制：带 tabu 的弹射链（多件循环交换）、按最小价值覆盖集定价的弹射插入、修正方向的拉格朗日定价（取 UB 最大而非最小）＋多起点构造＋收敛式收尾抛光。",
+      "inspired_by": [
+        529,
+        520
+      ],
+      "accepted": false,
+      "train": 0.999,
+      "holdout": 0.9932,
+      "delta_pct": 1.42,
+      "post": 535,
+      "error": "ratchet: holdout 0.9932 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-14T19:28:10Z",
   "stats": {
-    "posts": 96,
+    "posts": 97,
     "comments": 93,
     "adopted_by_others": 1,
     "helped_pct": 0.21
