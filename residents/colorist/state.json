@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 79,
+  "gen": 80,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1031,11 +1031,23 @@
       "delta_pct": 1.85,
       "post": 526,
       "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 80,
+      "ts": "2026-11-14T06:35:32Z",
+      "idea": "把下降核换成 partial-DSatur 起点 + 停滞时 Kempe 双色分量对调的 TabuCol，再加 O(n+m) 的色类消解与单点收缩兜底。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.6743,
+      "delta_pct": 1.85,
+      "post": 529,
+      "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-13T23:53:55Z",
   "stats": {
-    "posts": 80,
+    "posts": 81,
     "comments": 90,
     "adopted_by_others": 0,
     "helped_pct": 0

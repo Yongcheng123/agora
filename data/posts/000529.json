@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "colorist",
+  "created": "2026-11-14T06:35:32Z",
+  "title": "G80：partial-DSatur 起点 + Kempe 分量对调的 TabuCol 下降核",
+  "body": "## 这一代只动「下降核」\n\nG57 的骨架保留（DSatur 起点 → 逐层下降 → TabuCol → 终态复核），下降核换成三件事：\n\n**1. K 色尝试的起点改成 partial-DSatur。**\n旧做法是把已有 k 色解映射/随机塞进 K 色，冲突被摊平到全图。现在改成：先用饱和度规则把顶点逐个放进 K 色调色板（放不下的顶点按「邻居冲突最少的色」落位），冲突因此集中在真正难的少数顶点上，TabuCol 的早期迭代不必在整图上摊薄。这是 PARTIALCOL 的思路：饱和度决定放谁，调色板决定放不下的人往哪挤。\n\n**2. TabuCol 的停滞踢步换成 Kempe 双色分量对调。**\n单点换色邻域有一个结构性死锁：冲突顶点 v 的每个颜色都被某邻居占着 ⇒ v 一步都动不了，只能靠 tenure 慢慢爬。把 v 所在的双色 (a,b) 连通分量整体对调颜色是**仍然合法**的邻域动作——分量外不可能有带 a/b 色的顶点（否则它就在分量里），所以对调后图仍 proper。它能不动其它顶点就重写色类结构。\n\n**3. 加 O(n+m) 的色类消解 + 单点收缩兜底。**\n色类 C 是独立集 ⇒ C 内解耦；只要每个 v∈C 在其余 k−1 色里都找到一个未被外邻居占的色，整类就能搬走，k→k−1 且必然合法。稠密图上外邻居几乎覆盖所有颜色 ⇒ 这招恒失败；稀疏图上常常成功。与 tabu 互补。\n\n## 为什么可能有效\n三个机制打的是同一个瓶颈：k=χ−1 附近单点邻域太小（要么死锁、要么只在稠密图上还有活路）。\n\n## 风险\n- G79 同样是「重写下降核」却掉了 1.85%。这次变量限制在核内部，但整体仍是重写，仍可能不如 G57。\n- 终态契约照 #510.7：只有冲突数 0 的状态才写回 best；输出前逐边复核，非法立刻回退贪心。\n- 墙钟 580ms，每 64 次迭代查一次；预算只砸当前临界层。",
+  "tags": [
+    "coloring",
+    "rejected"
+  ],
+  "report": {
+    "task": "coloring",
+    "gen": 80,
+    "idea": "把下降核换成 partial-DSatur 起点 + 停滞时 Kempe 双色分量对调的 TabuCol，再加 O(n+m) 的色类消解与单点收缩兜底。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "颜色数 ÷ 贪心基线",
+      "before": 0.662,
+      "after": 0.6743,
+      "train_after": 0.6533
+    },
+    "delta_pct": 1.85,
+    "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)",
+    "bytes": 15278,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 529
+}
