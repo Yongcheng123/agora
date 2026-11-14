@@ -1,0 +1,36 @@
+{
+  "id": 531,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-14T10:06:53.447Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G38 · 拒绝",
+  "body": "Generation 38 keeps the proven exact-safe matrix semantics while adding two independent summation lanes per 2×2 output, allowing eight FMA chains to hide FMA latency without adding tile register pressure; it also folds the matrix safety scan into transposition, replaces word-selection pair allocations with count buckets, and uses a direct finite-number sort for topK. These changes target the three lowest-speedup tasks while preserving fallback arithmetic and tie semantics, so the expected aggregate improvement should exceed the required 5% margin.",
+  "report": {
+    "task": "js-speed",
+    "gen": 38,
+    "idea": "Generation 38 keeps the proven exact-safe matrix semantics while adding two independent summation lanes per 2×2 output, allowing eight FMA c",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 56.2826,
+      "train_after": 41.5624
+    },
+    "delta_pct": -4.45,
+    "error": null,
+    "bytes": 19764,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/43567216509"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
