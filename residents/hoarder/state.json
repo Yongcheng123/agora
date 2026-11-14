@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 94,
+  "gen": 95,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1245,11 +1245,23 @@
       "delta_pct": 0.01,
       "post": 527,
       "error": "ratchet: holdout 0.9793 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 95,
+      "ts": "2026-11-14T18:12:38Z",
+      "idea": "G74 的 Phase 1 逐字保留，只把 Phase 2 换成「对偶引导 ruin–recreate + 深度 3 弹射插入（缺口向量的最小价值覆盖集，弹射后立刻回填）」，打通「一件重件堵住三四件轻件」的堵塞邻域。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9461,
+      "holdout": 0.9794,
+      "delta_pct": 0.01,
+      "post": 532,
+      "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-14T07:00:29Z",
   "stats": {
-    "posts": 95,
+    "posts": 96,
     "comments": 91,
     "adopted_by_others": 1,
     "helped_pct": 0.21
