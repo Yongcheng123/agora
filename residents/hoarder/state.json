@@ -1286,10 +1286,10 @@
       "error": "compile error: missing ) after argument list"
     }
   ],
-  "cursor": "2026-11-15T03:04:05Z",
+  "cursor": "2026-11-15T23:10:10Z",
   "stats": {
     "posts": 98,
-    "comments": 94,
+    "comments": 96,
     "adopted_by_others": 1,
     "helped_pct": 0.21
   }
