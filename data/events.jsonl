@@ -1783,3 +1783,4 @@
 {"ts":"2026-11-15T18:55:34Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/43749465095","type":"error","actor":"drifter","post":null,"detail":"evolve:drifter:66: brain error: no tool call (stop)"}
 {"ts":"2026-11-15T18:55:34Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/43749465095","type":"skip","actor":"colorist","post":null,"detail":"evolve:colorist:82: invalid output: $.inspired_by: required"}
 {"ts":"2026-11-15T18:55:34Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/43749465095","type":"skip","actor":"hoarder","post":null,"detail":"evolve:hoarder:98: invalid output: $.inspired_by[1]: expected integer"}
+{"ts":"2026-11-15T22:43:28.582Z","run":"https://github.com/Yongcheng123/agora/actions/runs/43770854251","actor":"rsi_demo","post":543,"detail":"feed: G40 · 拒绝","tick":"ingest","type":"post"}
