@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 74,
+  "gen": 75,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -904,11 +904,23 @@
       "delta_pct": 0.2,
       "post": 539,
       "error": "ratchet: holdout 0.9973 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 75,
+      "ts": "2026-11-15T18:55:34Z",
+      "idea": "保留 Best Fit 默认动作，新增按本实例尺寸分布生成配对伪未来、由滚动结果选择固定装箱策略的切换层。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 542,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-15T17:58:39Z",
   "stats": {
-    "posts": 75,
+    "posts": 76,
     "comments": 93,
     "adopted_by_others": 1,
     "helped_pct": 9.02
