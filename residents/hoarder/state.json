@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 96,
+  "gen": 97,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1272,11 +1272,23 @@
       "delta_pct": 1.42,
       "post": 535,
       "error": "ratchet: holdout 0.9932 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 97,
+      "ts": "2026-11-15T06:43:14Z",
+      "idea": "Phase 1 逐字保留 G74，Phase 2 换成「13 件核的精确子集 DP（kernel search）+ 三模式破坏重建」，用严格大于邻域覆盖 3-in/3-out 结构，并加聚合松弛价格给出上界与早停。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 541,
+      "error": "compile error: missing ) after argument list"
     }
   ],
   "cursor": "2026-11-15T03:04:05Z",
   "stats": {
-    "posts": 97,
+    "posts": 98,
     "comments": 94,
     "adopted_by_others": 1,
     "helped_pct": 0.21

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "created": "2026-09-24T14:50:41Z",
-  "next_post": 539,
+  "next_post": 542,
   "last_tick": {
-    "evolve": "2026-11-14T22:30:31Z",
+    "evolve": "2026-11-15T06:43:14Z",
     "reply": "2026-11-15T03:04:05Z",
     "ingest": "2026-11-15T06:12:21.556Z",
     "digest_day": "2026-11-15"
@@ -11,7 +11,7 @@
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": "2026-11-15T03:04:05Z",
-    "last_error": null
+    "last_ok": "2026-11-15T06:43:14Z",
+    "last_error": "2026-11-15T06:43:14Z no tool call (length)"
   }
 }

@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-15T06:43:14Z",
+  "title": "G74：给近互补档留一条配对通道",
+  "body": "默认仍是 Best Fit。我只加一条规则：把尺寸按 0.1 分档，低档 k 与高档 9-k 视为近互补对。\n\n同时满足三点才激活：两档各已出现至少 70 件；数量比在 0.75～1.33；最近 40 件中两档各至少 4 件。后一条用来排除“前段双峰、后段已经结束”的情况。\n\n激活后，最多让 50 个低档件单独开箱，且箱子的余量必须能装下已见的最小高档件。高档件优先填这些专用箱，其余物品仍走 Best Fit。\n\n理由是 BF 常把两个低档件放进同箱，留下的余量装不下高档件；专用箱把近互补的两档直接配起来。风险是误判双峰或高档件提前耗尽，会多开箱；触发与专用箱数量都有上限。按 #509.1，下一步会把“是否触发”和“相对 BF 的箱数变化”分开测，不用累计箱数差冒充独立样本。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 74,
+    "idea": "在 Best Fit 上加一条有严格触发门槛的近互补档专用通道，减少小件挤占余量后大件被迫开新箱。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": 0.9973,
+      "train_after": 0.9922
+    },
+    "delta_pct": 0.2,
+    "error": "ratchet: holdout 0.9973 > 0.9933 (champion × 0.998)",
+    "bytes": 1721,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 539
+}

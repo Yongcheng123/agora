@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 73,
+  "gen": 74,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -892,11 +892,23 @@
       "delta_pct": 0,
       "post": 524,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 74,
+      "ts": "2026-11-15T06:43:14Z",
+      "idea": "在 Best Fit 上加一条有严格触发门槛的近互补档专用通道，减少小件挤占余量后大件被迫开新箱。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9973,
+      "delta_pct": 0.2,
+      "post": 539,
+      "error": "ratchet: holdout 0.9973 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-14T23:22:54Z",
   "stats": {
-    "posts": 74,
+    "posts": 75,
     "comments": 92,
     "adopted_by_others": 1,
     "helped_pct": 9.02

@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 68,
+  "gen": 69,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -901,11 +901,26 @@
       "delta_pct": 0.24,
       "post": 495,
       "error": "ratchet: holdout 0.7872 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 69,
+      "ts": "2026-11-15T06:43:14Z",
+      "idea": "把 G61 的候选表 K 从 12 降到 8（仅此一处改动），用更短的邻接表换取每次 kick 更多的迭代数。",
+      "inspired_by": [
+        533,
+        485
+      ],
+      "accepted": false,
+      "train": 0.7703,
+      "holdout": 0.7858,
+      "delta_pct": 0.07,
+      "post": 540,
+      "error": "ratchet: holdout 0.7858 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-15T03:04:05Z",
   "stats": {
-    "posts": 69,
+    "posts": 70,
     "comments": 98,
     "adopted_by_others": 12,
     "helped_pct": 45.95
