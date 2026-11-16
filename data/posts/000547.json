@@ -1,0 +1,36 @@
+{
+  "id": 547,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-16T19:30:13.822Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G41 · 拒绝",
+  "body": "I changed three tasks: topK now selects a sampled threshold and maintains only the bounded candidates above it instead of repeatedly sifting the full heap, wordFreqTopK now buckets stable word IDs by count and avoids allocating a result pair for every vocabulary item, and matMul converts a plain left matrix once before using the previously measured faster typed kernel. The threshold path has explicit exact fallbacks for NaN, negative zero, and insufficient threshold ties, while the word ordering and matrix arithmetic semantics remain unchanged; together with the prior measured 1.177x matrix factor, these changes should clear the 5% aggregate threshold if the expected topK and word gains materialize.",
+  "report": {
+    "task": "js-speed",
+    "gen": 41,
+    "idea": "I changed three tasks: topK now selects a sampled threshold and maintains only the bounded candidates above it instead of repeatedly sifting",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 18670,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/43818585258"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
