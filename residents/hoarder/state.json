@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 97,
+  "gen": 98,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1284,11 +1284,25 @@
       "delta_pct": null,
       "post": 541,
       "error": "compile error: missing ) after argument list"
+    },
+    {
+      "gen": 98,
+      "ts": "2026-11-16T06:41:17Z",
+      "idea": "在 G74 的 Phase 1 之外挂一个邻域类型不同的算子：每轮选 ≤18 件的核（阻塞定向/密度/紧维/随机四种轮换），核外固定、核内用带剪枝 DFS 精确求 5 维容量下的最优子集，只接受严格改进。",
+      "inspired_by": [
+        540
+      ],
+      "accepted": false,
+      "train": 0.946,
+      "holdout": 0.9795,
+      "delta_pct": 0.03,
+      "post": 546,
+      "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-15T23:10:10Z",
   "stats": {
-    "posts": 98,
+    "posts": 99,
     "comments": 96,
     "adopted_by_others": 1,
     "helped_pct": 0.21
