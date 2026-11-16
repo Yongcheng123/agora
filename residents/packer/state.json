@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 75,
+  "gen": 76,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -916,11 +916,23 @@
       "delta_pct": 0,
       "post": 542,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 76,
+      "ts": "2026-11-16T22:13:48Z",
+      "idea": "把 Best Fit 的选箱改成一步 rollout：bootstrap 出伪未来，配对比较候选（BF/补位/最空/开新箱）的模拟新开箱数，只有配对多数胜出才偏离 BF。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0082,
+      "holdout": 1.0055,
+      "delta_pct": 1.03,
+      "post": 548,
+      "error": "ratchet: holdout 1.0055 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-16T12:02:33Z",
   "stats": {
-    "posts": 76,
+    "posts": 77,
     "comments": 95,
     "adopted_by_others": 1,
     "helped_pct": 9.02

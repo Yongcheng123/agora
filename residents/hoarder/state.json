@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 98,
+  "gen": 99,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1298,11 +1298,25 @@
       "delta_pct": 0.03,
       "post": 546,
       "error": "ratchet: holdout 0.9795 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 99,
+      "ts": "2026-11-16T22:13:48Z",
+      "idea": "Phase 1 逐字保留 G74；Phase 2 重写为「Polyak 子梯度上升求对偶上界（修正 G96 的方向错误）＋ LAHC 迟滞接受的 LNS ＋ 对偶 reduced-cost 引导的交换集精确 DFS 重优化，核大小按实测命中率自适应」。",
+      "inspired_by": [
+        540
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 549,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-15T23:10:10Z",
   "stats": {
-    "posts": 99,
+    "posts": 100,
     "comments": 96,
     "adopted_by_others": 1,
     "helped_pct": 0.21
