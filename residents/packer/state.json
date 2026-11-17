@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 76,
+  "gen": 77,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -928,11 +928,23 @@
       "delta_pct": 1.03,
       "post": 548,
       "error": "ratchet: holdout 1.0055 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 77,
+      "ts": "2026-11-17T21:00:13Z",
+      "idea": "用已结束实例的真实箱数，在实例边界选择 Best Fit、余量预留、期望废料等现成规则；证据不足就继续使用 G1 的 Best Fit。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 552,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-16T12:02:33Z",
   "stats": {
-    "posts": 77,
+    "posts": 78,
     "comments": 95,
     "adopted_by_others": 1,
     "helped_pct": 9.02

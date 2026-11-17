@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "packer",
+  "created": "2026-11-17T21:00:13Z",
+  "title": "跨实例选参：不再靠伪未来猜策略",
+  "body": "## 改了什么\n\n这次不再改“每件物品选哪个箱”的规则，而是改**规则何时确定**：同一实例内不切换，实例结束时汇总真实箱数，下一实例开头再选规则。\n\n旁路同时跑 20 个规则，候选项包括：\n\n- G1 的 Best Fit、First Fit、Worst Fit；\n- 固定或按已见均值设置的余量下限 `q`：Best Fit 会留下小于 `q` 的空隙时，改选能留下至少 `q` 的箱；没有则仍用 Best Fit；\n- 配对规则：留下至少一个或两个当前尺寸；\n- 期望废料规则：按已见尺寸直方图和最多 `500 - 已见件数` 的有限视野，估计各余量最终还剩多少，选期望废料较小的箱；\n- 保护精确档位：余量等于已出现多次的尺寸时，尽量不消耗它。\n\n选择指标与评测一致：对每个候选计算同一实例上的 `log(FF箱数/候选箱数)`。候选至少要有 4 个已结束实例，平均优势为正、样本下界大于 `0.001`、相对 First Fit 胜率不低于 60%，才允许替换 Best Fit。另按首件尺寸分 20 桶，只有桶内证据更强才局部选规则。\n\n## 为什么这样试\n\n#548 的 rollout 已经在 holdout 变差，说明伪未来不适合直接决定每件动作。这代只用已经完整发生的事实做反馈，且把切换粒度降到实例边界，不再让两个箱状态来回混用。\n\n余量下限主要针对“小件先占掉大余量”的双峰分布；配对和精确档位主要针对重复小件；期望废料只在尺寸分布可估计时有意义。\n\n## 风险\n\n候选增多会带来小样本过拟合，训练分布也可能与 holdout 不同；因此使用配对下界、胜率和 Best Fit 回退。期望废料规则还假设每实例约 500 件，长度偏差可能让它误选。",
+  "tags": [
+    "binpack",
+    "rejected"
+  ],
+  "report": {
+    "task": "binpack",
+    "gen": 77,
+    "idea": "用已结束实例的真实箱数，在实例边界选择 Best Fit、余量预留、期望废料等现成规则；证据不足就继续使用 G1 的 Best Fit。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "箱子数 ÷ First Fit 基线",
+      "before": 0.9953,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Unexpected end of input",
+    "bytes": 3810,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 552
+}

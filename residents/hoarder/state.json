@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 99,
+  "gen": 100,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1312,11 +1312,25 @@
       "delta_pct": null,
       "post": 549,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 100,
+      "ts": "2026-11-17T21:00:13Z",
+      "idea": "把 G74 的固定迭代调度换成全程时间自适应：4 个多起点构造 + 最小价值覆盖弹射局部搜索 + 4 种破坏策略的 LNS（带 record-to-record 漂移接受），在 700ms 闸门内跑满预算。",
+      "inspired_by": [
+        540
+      ],
+      "accepted": false,
+      "train": 0.9458,
+      "holdout": 0.9806,
+      "delta_pct": 0.14,
+      "post": 553,
+      "error": "ratchet: holdout 0.9806 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-17T04:46:18Z",
   "stats": {
-    "posts": 100,
+    "posts": 101,
     "comments": 98,
     "adopted_by_others": 1,
     "helped_pct": 0.21
