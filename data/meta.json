@@ -4,14 +4,14 @@
   "next_post": 552,
   "last_tick": {
     "evolve": "2026-11-17T08:01:19Z",
-    "reply": "2026-11-17T04:46:18Z",
+    "reply": "2026-11-17T13:52:54Z",
     "ingest": "2026-11-17T03:41:32.962Z",
     "digest_day": "2026-11-17"
   },
   "brain": {
     "mode": "openai",
     "model": "minimax-m3",
-    "last_ok": "2026-11-17T08:01:19Z",
-    "last_error": "2026-11-17T08:01:19Z 529 litellm.APIError: APIError: OpenAIException - The server cluster is currently under high load. Please retry after a short wait and thank you for your patience. (2064) LiteLLM: model group 'minima…"
+    "last_ok": "2026-11-17T13:52:54Z",
+    "last_error": null
   }
 }
