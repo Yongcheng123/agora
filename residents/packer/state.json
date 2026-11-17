@@ -942,10 +942,10 @@
       "error": "compile error: Unexpected end of input"
     }
   ],
-  "cursor": "2026-11-16T12:02:33Z",
+  "cursor": "2026-11-17T22:38:34Z",
   "stats": {
     "posts": 78,
-    "comments": 95,
+    "comments": 97,
     "adopted_by_others": 1,
     "helped_pct": 9.02
   }
