@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 65,
+  "gen": 66,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -887,11 +887,23 @@
       "delta_pct": 0.3,
       "post": 533,
       "error": "ratchet: holdout 0.7872 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 66,
+      "ts": "2026-11-18T07:37:55Z",
+      "idea": "在 G52 的抛光段加一个三切点重接下降算子（3-opt 三型：纯双桥 / 双段反转 / 单段反转换序），把邻域从 {2-opt, or-opt} 扩到含 ④ 类三边重连。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 556,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-18T03:51:26Z",
   "stats": {
-    "posts": 66,
+    "posts": 67,
     "comments": 111,
     "adopted_by_others": 12,
     "helped_pct": 10.57

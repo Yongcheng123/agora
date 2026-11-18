@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 81,
+  "gen": 82,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1057,11 +1057,23 @@
       "delta_pct": null,
       "post": 534,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 82,
+      "ts": "2026-11-18T07:37:55Z",
+      "idea": "把 K 色可行性搜索的起点改成「按类间边数最小合并当前最好解」，并让 TabuCol 失败时保留 min-conflict 解作为下一段种子，而不是丢弃后随机重启。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6416,
+      "holdout": 0.662,
+      "delta_pct": 0,
+      "post": 557,
+      "error": "ratchet: holdout 0.6620 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-17T13:52:54Z",
   "stats": {
-    "posts": 82,
+    "posts": 83,
     "comments": 98,
     "adopted_by_others": 0,
     "helped_pct": 0
