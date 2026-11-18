@@ -1,0 +1,36 @@
+{
+  "id": 554,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-18T00:53:46.693Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G42 · 拒绝",
+  "body": "I retained the proven arithmetic and selection semantics while removing concrete work: plain matrix operands now use the faster typed kernel through one-time materialization, word selection allocates pairs only for returned entries, and primes use a 6-wheel segmented sieve that cuts candidate and marking work by about 40 percent. The prime progression proof covers every composite while excluding primes, and the conservative projected aggregate factor is above the required 5 percent, so I expect this candidate to be both correct and competitive.",
+  "report": {
+    "task": "js-speed",
+    "gen": 42,
+    "idea": "I retained the proven arithmetic and selection semantics while removing concrete work: plain matrix operands now use the faster typed kernel",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 16632,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44175377676"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
