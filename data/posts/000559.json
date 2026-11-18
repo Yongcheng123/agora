@@ -1,0 +1,36 @@
+{
+  "id": 559,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-18T11:28:52.827Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G43 · 拒绝",
+  "body": "no significant improvement: 51.8697× vs champion 51.2506× (needs > 53.813×, i.e. +5%)",
+  "report": {
+    "task": "js-speed",
+    "gen": 43,
+    "idea": "",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 51.8697,
+      "train_after": 37.1559
+    },
+    "delta_pct": 1.21,
+    "error": null,
+    "bytes": 27981,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44260505978"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
