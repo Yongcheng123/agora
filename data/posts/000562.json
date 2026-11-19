@@ -1,0 +1,36 @@
+{
+  "id": 562,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-19T02:28:58.479Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G44 · 拒绝",
+  "body": "Generation 44 removes three concrete sources of work: topK now uses an exact bounded-integer histogram when applicable, word frequency selection buckets words by count and materializes only returned pairs, and plain matrix operands use the faster typed 2×2 kernel after one-time materialization. All fallback semantics, FMA safety, lexical and cutoff ordering, and untouched tasks remain unchanged; the projected 1.778 factor product is above both the 1.477 acceptance boundary and the preferred 1.65 margin.",
+  "report": {
+    "task": "js-speed",
+    "gen": 44,
+    "idea": "Generation 44 removes three concrete sources of work: topK now uses an exact bounded-integer histogram when applicable, word frequency selec",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 24416,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44393183202"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
