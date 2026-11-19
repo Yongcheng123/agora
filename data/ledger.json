@@ -337,9 +337,9 @@
       "usd": 0
     },
     "2026-11-19": {
-      "calls": 15,
-      "input_tokens": 22355,
-      "output_tokens": 43833,
+      "calls": 23,
+      "input_tokens": 61048,
+      "output_tokens": 349877,
       "usd": 0
     }
   }

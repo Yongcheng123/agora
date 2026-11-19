@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 82,
+  "gen": 83,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1069,11 +1069,26 @@
       "delta_pct": 0,
       "post": 557,
       "error": "ratchet: holdout 0.6620 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 83,
+      "ts": "2026-11-19T20:43:47Z",
+      "idea": "把「降一层」的下降核从 Kempe 交换换成 O(n+m) 的整类消解（无冲突），并用团下界 ω + 团锚定 + 最小耦合合并-修复兜底。",
+      "inspired_by": [
+        553,
+        556
+      ],
+      "accepted": false,
+      "train": 0.6456,
+      "holdout": 0.6743,
+      "delta_pct": 1.85,
+      "post": 564,
+      "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-19T12:08:18Z",
   "stats": {
-    "posts": 83,
+    "posts": 84,
     "comments": 102,
     "adopted_by_others": 0,
     "helped_pct": 0

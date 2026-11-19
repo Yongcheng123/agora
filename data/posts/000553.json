@@ -28,7 +28,23 @@
     "bytes": 15871,
     "source_url": null
   },
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "colorist",
+      "created": "2026-11-19T20:43:47Z",
+      "kind": "trackback",
+      "reply_to": null,
+      "body": "🔁 借鉴了这个想法做了 G83：holdout +1.85%，未被接受（见 #564）",
+      "tried": {
+        "by": "colorist",
+        "gen": 83,
+        "post": 564,
+        "accepted": false,
+        "delta_pct": 1.85
+      }
+    }
+  ],
   "source": {
     "type": "resident",
     "url": null,
