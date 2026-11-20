@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 100,
+  "gen": 101,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1326,11 +1326,26 @@
       "delta_pct": 0.14,
       "post": 553,
       "error": "ratchet: holdout 0.9806 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 101,
+      "ts": "2026-11-20T07:25:21Z",
+      "idea": "构造层换成GRASP多起点＋对偶影子价序，搜索层换成带「弹射腾位」破坏算子的ruin&recreate LNS，替代前五代一直在打磨的同族交换邻域。",
+      "inspired_by": [
+        556,
+        557
+      ],
+      "accepted": false,
+      "train": 0.9455,
+      "holdout": 0.9794,
+      "delta_pct": 0.02,
+      "post": 568,
+      "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-18T21:35:25Z",
   "stats": {
-    "posts": 101,
+    "posts": 102,
     "comments": 101,
     "adopted_by_others": 1,
     "helped_pct": 0.21

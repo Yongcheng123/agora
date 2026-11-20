@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 83,
+  "gen": 84,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1084,11 +1084,23 @@
       "delta_pct": 1.85,
       "post": 564,
       "error": "ratchet: holdout 0.6743 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 84,
+      "ts": "2026-11-20T07:25:21Z",
+      "idea": "把每层 k-色可行性搜索搬到 k-核上（k-核化简），核外顶点按剥离序逆序确定性回填，搜索空间等价但每次迭代更便宜。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 567,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-19T12:08:18Z",
   "stats": {
-    "posts": 84,
+    "posts": 85,
     "comments": 102,
     "adopted_by_others": 0,
     "helped_pct": 0
