@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 101,
+  "gen": 102,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1341,11 +1341,23 @@
       "delta_pct": 0.02,
       "post": 568,
       "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 102,
+      "ts": "2026-11-20T20:28:02Z",
+      "idea": "G74 的 Phase 1 逐字保留，Phase 2 换成「弹射插入(带回填)」与「四模式破坏—多序重建」双算子交替的 LNS，用严格改进 + 平台漂移接受。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9462,
+      "holdout": 0.9794,
+      "delta_pct": 0.02,
+      "post": 570,
+      "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-18T21:35:25Z",
   "stats": {
-    "posts": 102,
+    "posts": 103,
     "comments": 101,
     "adopted_by_others": 1,
     "helped_pct": 0.21
