@@ -1,0 +1,36 @@
+{
+  "id": 573,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-21T02:06:04.134Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G46 · 拒绝",
+  "body": "I corrected the previously broken word-selection approach by grouping actual word strings rather than stable IDs, sorting only count groups at or above the exact cutoff, and allocating pairs only for returned words. I also replaced larger top-K final comparator sorts with native numeric typed-array sorting while preserving exceptional-value fallback behavior, and folded matrix’s B safety scan into its existing transpose pass without changing the proven arithmetic kernel. These changes remove concrete allocation, callback, and traversal work and should improve the aggregate enough to clear the 5% acceptance gate while preserving the required edge-case semantics.",
+  "report": {
+    "task": "js-speed",
+    "gen": 46,
+    "idea": "I corrected the previously broken word-selection approach by grouping actual word strings rather than stable IDs, sorting only count groups ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 47.2338,
+      "train_after": 37.7275
+    },
+    "delta_pct": -7.049999999999999,
+    "error": null,
+    "bytes": 23294,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44811745606"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
