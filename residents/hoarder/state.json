@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 102,
+  "gen": 103,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1353,11 +1353,26 @@
       "delta_pct": 0.02,
       "post": 570,
       "error": "ratchet: holdout 0.9794 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 103,
+      "ts": "2026-11-21T19:23:45Z",
+      "idea": "在重建的冠军管线上首次引入第三阶弹射交换邻域（op13: 1进3出、op23: 2进3出），让必须牺牲三件小件才能进解的大件物品可见。",
+      "inspired_by": [
+        556,
+        557
+      ],
+      "accepted": false,
+      "train": 0.9455,
+      "holdout": 0.9798,
+      "delta_pct": 0.06,
+      "post": 576,
+      "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-21T16:23:50Z",
   "stats": {
-    "posts": 103,
+    "posts": 104,
     "comments": 104,
     "adopted_by_others": 1,
     "helped_pct": 0.21
