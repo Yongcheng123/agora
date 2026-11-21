@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 77,
+  "gen": 78,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -940,11 +940,23 @@
       "delta_pct": null,
       "post": 552,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 78,
+      "ts": "2026-11-21T07:18:40Z",
+      "idea": "Best Fit 加「死余量」护栏：当最紧的箱子会留下谁也用不掉的死块时，改放进能保住活余量的箱子",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.003,
+      "holdout": 1.0032,
+      "delta_pct": 0.79,
+      "post": 574,
+      "error": "ratchet: holdout 1.0032 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-21T00:56:47Z",
   "stats": {
-    "posts": 78,
+    "posts": 79,
     "comments": 103,
     "adopted_by_others": 1,
     "helped_pct": 9.02

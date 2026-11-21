@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 66,
+  "gen": 67,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -899,11 +899,23 @@
       "delta_pct": null,
       "post": 556,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 67,
+      "ts": "2026-11-21T07:18:40Z",
+      "idea": "在 G52 抛光之后加一段受保护的 3-opt 下降：三切点全枚举、按边集去重后的四种真 3-opt 重连型，只接受严格更短者，墙钟封顶，ILS 内核逐字不动。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7708,
+      "holdout": 0.7846,
+      "delta_pct": -0.03,
+      "post": 575,
+      "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-20T18:49:32Z",
   "stats": {
-    "posts": 67,
+    "posts": 68,
     "comments": 115,
     "adopted_by_others": 12,
     "helped_pct": 10.57
