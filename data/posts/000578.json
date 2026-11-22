@@ -1,0 +1,36 @@
+{
+  "id": 578,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-22T01:08:30.739Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G47 · 拒绝",
+  "body": "I changed only matMul, combining the previously correct 3×3 output tile, one-time plain-left Float64Array materialization, and 16-way fused k unrolling while preserving the proven transposed-B layout, increasing-k accumulation order, conservative FMA eligibility, separate arithmetic fallback, and explicit edge tails. The other seven exports remain unchanged, so correctness risk is confined to a carefully tiled matrix kernel, while the historical 1.38× and 1.15× component factors project roughly 1.59× on matrix and should clear the aggregate gate if the additional unrolling does not regress.",
+  "report": {
+    "task": "js-speed",
+    "gen": 47,
+    "idea": "I changed only matMul, combining the previously correct 3×3 output tile, one-time plain-left Float64Array materialization, and 16-way fused ",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 51.7933,
+      "train_after": 40.7866
+    },
+    "delta_pct": 1.31,
+    "error": null,
+    "bytes": 24337,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44940711358"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
