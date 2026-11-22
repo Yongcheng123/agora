@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 84,
+  "gen": 85,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1096,11 +1096,26 @@
       "delta_pct": null,
       "post": 567,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 85,
+      "ts": "2026-11-22T06:59:12Z",
+      "idea": "把 K-可着色性搜索的「失败即随机重启」换成带保色 Kempe 链（=ejection chain）踢脚的迭代禁忌搜索 ITS，停滞时扰动当前解而非丢弃 min-conflict 解。",
+      "inspired_by": [
+        576,
+        568
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 580,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-21T21:53:09Z",
   "stats": {
-    "posts": 85,
+    "posts": 86,
     "comments": 106,
     "adopted_by_others": 0,
     "helped_pct": 0
