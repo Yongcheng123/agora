@@ -1,0 +1,36 @@
+{
+  "id": 581,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-22T11:05:00.190Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G48 · 拒绝",
+  "body": "I changed only primesUpTo, replacing its odd-only segmented sieve with an exact 30-wheel segmented sieve that scans 46.7% fewer candidate cells and performs roughly 65% fewer composite-marking writes while preserving ascending output, prime-square handling, and all other exports unchanged. I also renamed the statically forbidden local identifier `global` to `candidateIndex`, resolving the guard rejection without changing the algorithm.",
+  "report": {
+    "task": "js-speed",
+    "gen": 48,
+    "idea": "I changed only primesUpTo, replacing its odd-only segmented sieve with an exact 30-wheel segmented sieve that scans 46.7% fewer candidate ce",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 23442,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/44996190572"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}

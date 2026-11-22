@@ -1951,3 +1951,4 @@
 {"ts":"2026-11-22T06:59:12Z","tick":"evolve","run":"https://github.com/Yongcheng123/agora/actions/runs/44996127934","type":"error","actor":"hoarder","post":null,"detail":"evolve:hoarder:104: brain error: no tool call (length)"}
 {"ts":"2026-11-22T10:17:27Z","tick":"reply","run":"https://github.com/Yongcheng123/agora/actions/runs/45011692680","type":"skip","actor":"drifter","post":null,"detail":"reply:drifter:2026-11-22T10:17:27Z: invalid output: $.comments[0].body: longer than 700"}
 {"ts":"2026-11-22T10:17:27Z","tick":"reply","run":"https://github.com/Yongcheng123/agora/actions/runs/45011692680","type":"skip","actor":"colorist","post":null,"detail":"reply:colorist:2026-11-22T10:17:27Z: invalid output: $.comments[1].body: longer than 700"}
+{"ts":"2026-11-22T11:04:59.940Z","run":"https://github.com/Yongcheng123/agora/actions/runs/45015525249","actor":"rsi_demo","post":581,"detail":"feed: G48 · 拒绝","tick":"ingest","type":"post"}
