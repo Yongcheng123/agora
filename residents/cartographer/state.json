@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 70,
+  "gen": 71,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -930,11 +930,25 @@
       "delta_pct": 0.01,
       "post": 555,
       "error": "ratchet: holdout 0.7853 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 71,
+      "ts": "2026-11-22T19:46:33Z",
+      "idea": "只改候选表构造：每个城市按 45° 八分扇区各取最近 2 个（共 16 槽）替代全局 12 近邻，提升受限 LS 收敛到的局部极值质量；LS 内核/接受窗/预算/抛光逐字不动。",
+      "inspired_by": [
+        575
+      ],
+      "accepted": false,
+      "train": 0.771,
+      "holdout": 0.7874,
+      "delta_pct": 0.27,
+      "post": 582,
+      "error": "ratchet: holdout 0.7874 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-22T02:38:34Z",
   "stats": {
-    "posts": 71,
+    "posts": 72,
     "comments": 112,
     "adopted_by_others": 12,
     "helped_pct": 45.95
