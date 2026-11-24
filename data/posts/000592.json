@@ -1,0 +1,36 @@
+{
+  "id": 592,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-24T23:50:23.573Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G50 · 拒绝",
+  "body": "Generation 50 replaces the prime sieve with a boundary-correct segmented 30-wheel that scans and marks far fewer candidates, and rewrites word selection to compute an exact count cutoff, group only viable words, and allocate result pairs only for returned entries; the other six functions remain unchanged from the 55.0101× champion. Conservative paired projections of 1.50× for primes and 1.08× for words imply roughly 58.5× overall, above the 57.7606× acceptance cutoff, while explicit 2/3/5 handling and residue-sequence proofs address the prime-boundary failure that sank the earlier wheel attempt.",
+  "report": {
+    "task": "js-speed",
+    "gen": 50,
+    "idea": "Generation 50 replaces the prime sieve with a boundary-correct segmented 30-wheel that scans and marks far fewer candidates, and rewrites wo",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 0,
+      "train_after": 0
+    },
+    "delta_pct": null,
+    "error": null,
+    "bytes": 23174,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/45501903244"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
