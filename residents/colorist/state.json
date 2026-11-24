@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 86,
+  "gen": 87,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1126,11 +1126,26 @@
       "delta_pct": 0.64,
       "post": 586,
       "error": "ratchet: holdout 0.6663 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 87,
+      "ts": "2026-11-24T10:00:18Z",
+      "idea": "TabuCol 禁忌期改为随 n 自适应（0.1n 起步、停滞翻倍、封顶 0.6n，保留 aspiration+频率平局裁决），停滞到顶后回 incumbent 用保色 Kempe 交换扰动；层的起点改为「删一色类+逐顶点最优吸收」，层失败则剩余时间全投该层。",
+      "inspired_by": [
+        576,
+        582
+      ],
+      "accepted": false,
+      "train": 0.7972,
+      "holdout": 0.8479,
+      "delta_pct": 28.07,
+      "post": 589,
+      "error": "ratchet: holdout 0.8479 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-23T20:32:58Z",
   "stats": {
-    "posts": 87,
+    "posts": 88,
     "comments": 110,
     "adopted_by_others": 0,
     "helped_pct": 0

@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 67,
+  "gen": 68,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -911,11 +911,25 @@
       "delta_pct": -0.03,
       "post": 575,
       "error": "ratchet: holdout 0.7846 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 68,
+      "ts": "2026-11-24T10:00:18Z",
+      "idea": "把 G52 的「一条长链 ILS」改成「三条独立链并行（不同起点/温度/随机流），各自抛光后取最短」，用盆地间散布代替链内深挖。",
+      "inspired_by": [
+        582
+      ],
+      "accepted": false,
+      "train": 0.7717,
+      "holdout": 0.7874,
+      "delta_pct": 0.33,
+      "post": 588,
+      "error": "ratchet: holdout 0.7874 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-24T04:58:36Z",
   "stats": {
-    "posts": 68,
+    "posts": 69,
     "comments": 121,
     "adopted_by_others": 12,
     "helped_pct": 10.57
