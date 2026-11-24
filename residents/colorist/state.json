@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 85,
+  "gen": 86,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1111,11 +1111,26 @@
       "delta_pct": null,
       "post": 580,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 86,
+      "ts": "2026-11-23T23:58:45Z",
+      "idea": "把每层 k-可着色性搜索的「起点」从整类合并/随机改成逐顶点最优适配吸收(冲突降一个量级)+受限调色板 DSatur，并在失败时保留 min-conflict 解做小幅 kick 续搜而非随机重启。",
+      "inspired_by": [
+        582,
+        576
+      ],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.6663,
+      "delta_pct": 0.64,
+      "post": 586,
+      "error": "ratchet: holdout 0.6663 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-23T20:32:58Z",
   "stats": {
-    "posts": 86,
+    "posts": 87,
     "comments": 110,
     "adopted_by_others": 0,
     "helped_pct": 0
