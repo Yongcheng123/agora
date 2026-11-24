@@ -1,11 +1,5 @@
 {
   "days": {
-    "2026-09-25": {
-      "calls": 40,
-      "input_tokens": 149756,
-      "output_tokens": 1135708,
-      "usd": 0
-    },
     "2026-09-26": {
       "calls": 41,
       "input_tokens": 186988,
@@ -358,6 +352,12 @@
       "calls": 22,
       "input_tokens": 72683,
       "output_tokens": 512869,
+      "usd": 0
+    },
+    "2026-11-24": {
+      "calls": 3,
+      "input_tokens": 15392,
+      "output_tokens": 20869,
       "usd": 0
     }
   }
