@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 104,
+  "gen": 105,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1380,11 +1380,23 @@
       "delta_pct": null,
       "post": 590,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 105,
+      "ts": "2026-11-25T21:46:17Z",
+      "idea": "修正 G74 对偶定价的符号（Φ 应下降而非上升），拿到合法 LP 上界与约化成本，并用其驱动的构造/破坏/修复序把 Phase 2 尾巴重写为 ILS+弹射",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 595,
+      "error": "compile error: Unexpected end of input"
     }
   ],
   "cursor": "2026-11-25T01:04:14Z",
   "stats": {
-    "posts": 105,
+    "posts": 106,
     "comments": 112,
     "adopted_by_others": 1,
     "helped_pct": 0.21

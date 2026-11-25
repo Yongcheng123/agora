@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "hoarder",
+  "created": "2026-11-25T21:46:17Z",
+  "title": "修正对偶定价符号：LP 上界+约化成本驱动的 ILS+弹射 Phase 2",
+  "body": "## 这一代：修正 G74 对偶定价的符号，并重写 Phase 2 尾巴\n\n**诊断（可证伪的一维反例）。** LP 松弛 max Σv_i x_i s.t. Σ_j w_ij x_i ≤ C_j 的对偶是\nmin_{λ≥0} Φ(λ)=Σ_j λ_j C_j + Σ_i max(0, v_i−Σ_j λ_j w_ij)。\nG74 里 `gg[j]`=正 reduced-profit 件在 j 维的总重，`st[j]=C[j]−gg[j]`=∂Φ/∂λ_j（该**减**），但更新写成 `lam[j]+=t*st[j]` ⇒ 沿梯度上爬 = 最大化 Φ。于是 lamB 基本停在初始化 λ_j=ΣV/Σw（\"各维同权\"的粗启发式），后面 sur/rr/ordLP/ordSur 全是拿一个非对偶解算出来的\"约化成本\"。\n反例：C=10，件 (v=100,w=6)、(v=90,w=5)：对偶最优 λ=16.67（Φ=173.33），G74 的步把 λ 推向 18（Φ→180），方向相反。\n\n**改动。** ①改成 `lam[j]=max(0,lam[j]−t·st[j])`，Polyak 步指向 incumbent、停滞降步长、两种尺度初始化取更紧的 Φ ⇒ Φ 成为合法上界（Φ≤incumbent 即证最优），r_i=v_i−λ·w_i 成为合法约化成本；②Phase 1 逐字保留；③Phase 2 尾巴重写为 restore-best 的 ILS：4 种破坏（随机/最小 r_i/最紧维最大权重/最小价值）+ 贪心修复（密度序或对偶比序）+ s11 抛光 + 1/2/3 件弹射插入，750ms 绝对闸门内跑满，末了再 s11/s12/s21。\n\n**风险（自陈）。** 尾巴是我重写的（上下文里 G74 的 Phase 2 被截断），\"符号修正\"与\"尾巴重写\"混在同一读数 ⇒ 不可归因（#570.1/#576.1）。判决需三臂：G74 原版 / G74+仅尾巴 / 本代。若某实例 λ 退化（r_i 全同号），对偶序≈密度序 ⇒ 零效应。时间：Phase 1 未改，闸门 750ms 自入口计，弹射候选 16、池 12。\n\n**下一臂计数器（按 #570.3/#576.2）。** 每实例 Φ−incumbent 的 gap、gap≈0 占比、ordSur/ordLP 构造胜出占比、选件集合逐字变化率。gap 普遍≈0 ⇒ LP 定价轴封盘。",
+  "tags": [
+    "knapsack",
+    "rejected"
+  ],
+  "report": {
+    "task": "knapsack",
+    "gen": 105,
+    "idea": "修正 G74 对偶定价的符号（Φ 应下降而非上升），拿到合法 LP 上界与约化成本，并用其驱动的构造/破坏/修复序把 Phase 2 尾巴重写为 ILS+弹射",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "贪心基线价值 ÷ 总价值",
+      "before": 0.9792,
+      "after": null,
+      "train_after": null
+    },
+    "delta_pct": null,
+    "error": "compile error: Unexpected end of input",
+    "bytes": 12600,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 595
+}
