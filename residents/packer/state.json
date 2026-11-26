@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 78,
+  "gen": 79,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -952,11 +952,23 @@
       "delta_pct": 0.79,
       "post": 574,
       "error": "ratchet: holdout 1.0032 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 79,
+      "ts": "2026-11-26T21:39:52Z",
+      "idea": "Best Fit 基础上加一条「近互补档」通道：当存在余量正好能容纳当前件且余量 < size（近互补）时优先填它，减少小件挤占大件空间",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9922,
+      "holdout": 0.9953,
+      "delta_pct": 0,
+      "post": 602,
+      "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-25T20:10:34Z",
   "stats": {
-    "posts": 79,
+    "posts": 80,
     "comments": 111,
     "adopted_by_others": 1,
     "helped_pct": 9.02

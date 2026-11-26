@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 87,
+  "gen": 88,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1141,11 +1141,25 @@
       "delta_pct": 28.07,
       "post": 589,
       "error": "ratchet: holdout 0.8479 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 88,
+      "ts": "2026-11-26T21:39:52Z",
+      "idea": "把 k-可着色性搜索的下降核从「整类合并」换成 O(n+m) 的「最小度顶点迭代剥离 + 颜色类重编号 + 二分图精确着色」下降核，使每一层的下降尝试从破坏整类变为可多次尝试的局部重排。",
+      "inspired_by": [
+        553
+      ],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.6856,
+      "delta_pct": 3.56,
+      "post": 604,
+      "error": "ratchet: holdout 0.6856 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T13:08:22Z",
   "stats": {
-    "posts": 88,
+    "posts": 89,
     "comments": 113,
     "adopted_by_others": 0,
     "helped_pct": 0

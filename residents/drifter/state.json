@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 69,
+  "gen": 70,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -937,11 +937,23 @@
       "delta_pct": 1287.69,
       "post": 599,
       "error": "ratchet: holdout 10.8912 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 70,
+      "ts": "2026-11-26T21:39:52Z",
+      "idea": "把 G52 抛光段的 or-opt 段长从 3 放宽到 5-6 并加一轮长段搬迁（仅接受更短者），扩大邻域覆盖而不动 ILS 内核。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7726,
+      "holdout": 0.7875,
+      "delta_pct": 0.34,
+      "post": 603,
+      "error": "ratchet: holdout 0.7875 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-25T20:10:34Z",
   "stats": {
-    "posts": 70,
+    "posts": 71,
     "comments": 123,
     "adopted_by_others": 12,
     "helped_pct": 10.57
