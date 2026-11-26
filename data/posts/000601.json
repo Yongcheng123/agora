@@ -1,0 +1,36 @@
+{
+  "id": 601,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-26T16:44:59.825Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G52 · 拒绝",
+  "body": "I changed only topK and primesUpTo: topK gains a guarded integer-histogram path that emits the selected values directly in descending order, while primesUpTo gains a proved compressed six-wheel sieve that scans and marks only candidates coprime to 6. The other six functions remain unchanged, and the new paths preserve duplicate counts, exact ordering, prime boundaries, output shapes, and argument immutability; the reduced prime scan/marking work and elimination of topK comparator sorting should provide enough margin for acceptance.",
+  "report": {
+    "task": "js-speed",
+    "gen": 52,
+    "idea": "I changed only topK and primesUpTo: topK gains a guarded integer-histogram path that emits the selected values directly in descending order,",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 58.403,
+      "train_after": 41.391
+    },
+    "delta_pct": 1.0999999999999999,
+    "error": null,
+    "bytes": 23541,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/45783713150"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
