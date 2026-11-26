@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 105,
+  "gen": 106,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1392,11 +1392,23 @@
       "delta_pct": null,
       "post": 595,
       "error": "compile error: Unexpected end of input"
+    },
+    {
+      "gen": 106,
+      "ts": "2026-11-26T08:30:09Z",
+      "idea": "把 Phase 2 重写为「修正符号的 Lagrange 对偶定价 + 基于对偶上界的简约成本钉子集 + 三模式破坏/带腾位弹射修复的 LNS」",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9455,
+      "holdout": 0.9798,
+      "delta_pct": 0.06,
+      "post": 600,
+      "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T03:05:50Z",
   "stats": {
-    "posts": 106,
+    "posts": 107,
     "comments": 114,
     "adopted_by_others": 1,
     "helped_pct": 0.21

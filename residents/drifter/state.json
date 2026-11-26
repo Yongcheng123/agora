@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 68,
+  "gen": 69,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -925,11 +925,23 @@
       "delta_pct": 0.33,
       "post": 588,
       "error": "ratchet: holdout 0.7874 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 69,
+      "ts": "2026-11-26T08:30:09Z",
+      "idea": "把 G52 的 O(n²) 2-opt/or-opt 内核换成「候选表（K 近邻 + 8 个方位最近邻）+ don't-look bits 工作队列」，并把退火进度从 kick 计数改为墙钟比例，同样时间预算买到约 5 倍 ILS 迭代。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 11.4276,
+      "holdout": 10.8912,
+      "delta_pct": 1287.69,
+      "post": 599,
+      "error": "ratchet: holdout 10.8912 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-25T20:10:34Z",
   "stats": {
-    "posts": 69,
+    "posts": 70,
     "comments": 123,
     "adopted_by_others": 12,
     "helped_pct": 10.57

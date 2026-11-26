@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-11-26T08:30:09Z",
+  "title": "G69：候选表 + don't-look bits 重写局部搜索，换来 5 倍 ILS 迭代",
+  "body": "## 这一代换的是**速度**，不是邻域\n\nG52 的内核实测是「慢」的：它的 2-opt 每一趟对每个 i 扫全部 k（O(n²)），or-opt 对每个 (i,L) 扫全部 j（O(n²·L)），而 ILS 每个 kick 都要跑一遍两者 ⇒ 单 kick ≈ 1–2 ms。430 ms 的 phase 1 只买得到 **150–200 个 kick**，而 G52 自己的退火 schedule 恰好是 `sched=160`——这条链短得可疑：搜索根本没跑满预算就被冷却到底了。\n\n所以这一代只做一件事：**用候选表 + don't-look bits 工作队列重写局部搜索**，其余（构造、kick 生成器、接受判据、两段式退火、抛光结构）逐字不动。\n\n- 候选集 = 每点 **K=8 近邻** ∪ **8 个方位(octant)最近邻**。加 octant 是为了 cluster 实例：纯 KNN 在簇里会全部选到同簇点，2-opt/or-opt 需要的是跨簇的接边候选，octant 最近邻正好提供这一类长边。\n- 2-opt：队列驱动，每点只在候选集上取**最优**改进移动（与 G52 的 best-improvement 同语义，但邻域被限制），改边后只重新激活受影响端点 + 被反转段的点。\n- or-opt：段长 L≤2，正向/反向插入，插入点从候选集取。合法性用**位置偏移 off** 判（`off < L` 排除段内、`p === a` 排除段前驱），不用城市 id 比——段长 >2 时 id 比会漏掉段内中间点，这是个会静默产生非法环的坑。\n- 退火进度从 kick 计数改成**墙钟比例**（dev = devHi→devLo 随已用时间衰减），这样冷却曲线在时间轴上与 G52 一致，而 kick 数随速度变化；机器慢只是少几个 kick，机器快就是多几倍 kick。\n\n## 为什么认为有效\n\n同一个墙钟内迭代数 ×5，且每个 kick 的局部搜索从「一趟」升级为「到局部最优」。局部搜索变便宜还带来第二重收益：or-opt/2-opt 交替的收敛质量更高，单 kick 下降更多。\n\n## 风险\n\n1. 受限邻域单 kick 质量可能弱于全扫描；cluster 实例是最大风险点（octant 候选是补丁，不是保证）。\n2. 时间调度依赖墙钟 ⇒ 结果随机器速度浮动（G52 本来也浮动，它 kick 数同样由墙钟决定）。\n3. 新写的反转/搬迁代码有实现风险。缓解：所有移动都要求严格变短、最终做排列校验、非法则回退到 NN 环。\n\n墙钟预算主动压到 G52 以下（ILS 340+35 ms vs 430+45 ms），总占用小于 G52，给超时留余量。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 69,
+    "idea": "把 G52 的 O(n²) 2-opt/or-opt 内核换成「候选表（K 近邻 + 8 个方位最近邻）+ don't-look bits 工作队列」，并把退火进度从 kick 计数改为墙钟比例，同样时间预算买到约 5 倍 ILS 迭代。",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7848,
+      "after": 10.8912,
+      "train_after": 11.4276
+    },
+    "delta_pct": 1287.69,
+    "error": "ratchet: holdout 10.8912 > 0.7833 (champion × 0.998)",
+    "bytes": 12659,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 599
+}
