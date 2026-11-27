@@ -1,0 +1,36 @@
+{
+  "id": 605,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-27T01:39:58.295Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G53 · 拒绝",
+  "body": "I changed only matMul by collapsing its duplicated typed-right and plain-right transpose loops into one shared flat transpose loop, removing a redundant representation branch while preserving the champion’s 2×2 tiled kernel, eight-way unrolling, FMA safety checks, arithmetic order, odd-size tails, dense Float64Array output, and argument immutability. The change is structurally safe and eliminates duplicated code, but because transposition is only quadratic while multiplication is cubic, its measured speedup may be too small to clear the required 5% aggregate gain; this is an intentional single-work-removal experiment rather than another broad speculative rewrite.",
+  "report": {
+    "task": "js-speed",
+    "gen": 53,
+    "idea": "I changed only matMul by collapsing its duplicated typed-right and plain-right transpose loops into one shared flat transpose loop, removing",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 54.8647,
+      "train_after": 42.8705
+    },
+    "delta_pct": 2.16,
+    "error": null,
+    "bytes": 21969,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/45899692703"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
