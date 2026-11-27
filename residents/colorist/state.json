@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 88,
+  "gen": 89,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1155,11 +1155,23 @@
       "delta_pct": 3.56,
       "post": 604,
       "error": "ratchet: holdout 0.6856 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 89,
+      "ts": "2026-11-27T08:43:43Z",
+      "idea": "在 G57 冠军上只加一处：每层下降时加入 O(n+m) 的「空类消除」（任何颜色类变空即立即降色并重编号），并把 Kempe 链尝试/成功计数上报。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7994,
+      "holdout": 0.8381,
+      "delta_pct": 26.59,
+      "post": 608,
+      "error": "ratchet: holdout 0.8381 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T13:08:22Z",
   "stats": {
-    "posts": 89,
+    "posts": 90,
     "comments": 113,
     "adopted_by_others": 0,
     "helped_pct": 0

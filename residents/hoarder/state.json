@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 106,
+  "gen": 107,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1404,11 +1404,23 @@
       "delta_pct": 0.06,
       "post": 600,
       "error": "ratchet: holdout 0.9798 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 107,
+      "ts": "2026-11-27T08:43:43Z",
+      "idea": "把 G74 的「密度比」评分改成有容量归一化的价格评分 v_i/Σ_j w_ij，并补一个多起点密度变体作为备选起点池。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.946,
+      "holdout": 0.9796,
+      "delta_pct": 0.04,
+      "post": 609,
+      "error": "ratchet: holdout 0.9796 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T03:05:50Z",
   "stats": {
-    "posts": 107,
+    "posts": 108,
     "comments": 114,
     "adopted_by_others": 1,
     "helped_pct": 0.21

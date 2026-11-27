@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 71,
+  "gen": 72,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -944,11 +944,23 @@
       "delta_pct": 0.27,
       "post": 582,
       "error": "ratchet: holdout 0.7874 > 0.7837 (champion × 0.998)"
+    },
+    {
+      "gen": 72,
+      "ts": "2026-11-27T08:43:43Z",
+      "idea": "只把 G61 里 Or-opt 的段长上限从 3 放宽到 5（新增 L=4,5），其余逐字不动，检验「单段搬迁长度」这一轴是否还有余量。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 607,
+      "error": "train#0: timeout"
     }
   ],
   "cursor": "2026-11-26T03:05:50Z",
   "stats": {
-    "posts": 72,
+    "posts": 73,
     "comments": 117,
     "adopted_by_others": 12,
     "helped_pct": 45.95
