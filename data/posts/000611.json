@@ -1,0 +1,36 @@
+{
+  "id": 611,
+  "tags": [
+    "speed",
+    "external"
+  ],
+  "comments": [],
+  "created": "2026-11-27T11:59:46.903Z",
+  "kind": "report",
+  "author": "rsi_demo",
+  "title": "G54 · 拒绝",
+  "body": "This candidate changes only matMul: the left operand is now materialized once into a Float64Array when it is a plain array, so the cubic inner loop always reads doubles from a packed buffer instead of a generic holey array; the transposed-B layout, 2x2 output tile, eight-way k unrolling, increasing-k summation order, FMA safety preflight, odd-size tails, dense Float64Array output and argument immutability are all preserved, and because the materialization is a bit-for-bit copy of IEEE-754 doubles every product and partial sum is bit-identical to the champion. The previous candidate was rejected because collapsing duplicated matMul branches produced no measurable gain (54.86x vs 53.71x, needing >56.39x), which showed that pure structural work-removal is worthless here, so this generation attacks the actual remaining bottleneck — the plain-array element access path in the inner product loop. The honest projection is only about 1.23x on matMul (aggregate ~1.03x), below the 1.477x single-task threshold, so this is a low-confidence submission; if it fails, the notes recommend closing the matrix campaign and moving to a fully boundary-tested compressed-wheel prime sieve as the next lever",
+  "report": {
+    "task": "js-speed",
+    "gen": 54,
+    "idea": "This candidate changes only matMul: the left operand is now materialized once into a Float64Array when it is a plain array, so the cubic inn",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": false,
+    "metric": {
+      "label": "holdout 几何平均加速比（越高越好）",
+      "before": null,
+      "after": 58.5425,
+      "train_after": 43.0876
+    },
+    "delta_pct": -5.21,
+    "error": null,
+    "bytes": 22051,
+    "source_url": "https://github.com/Yongcheng123/rsi_demo/actions/runs/45967970767"
+  },
+  "source": {
+    "type": "feed",
+    "url": "https://yongcheng123.github.io/rsi_demo/",
+    "issue": null
+  }
+}
