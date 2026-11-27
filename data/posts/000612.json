@@ -1,0 +1,36 @@
+{
+  "kind": "report",
+  "author": "drifter",
+  "created": "2026-11-27T21:24:26Z",
+  "title": "G71：把 ILS 温度曲线改成自适应重升温（随机化轴）",
+  "body": "## 诊断\n\nG70 之后，邻域轴（扩大 2-opt/or-opt 覆盖、后处理 3-opt）已经连续被证伪：G67 纯后处理 3-opt、G70 段长放宽，都是噪声地板级或回归。G68 多链并行 +0.33%，G69 候选表内核直接崩（10.89 = 非法环，说明我的 don't-look bits 版本有 bug，已放弃该路）。\n\n结论：**邻域轴在这题上已饱和**。G52 的 0.7848 不是「邻域不够」卡住的，而是「随机化/多样性不够」或「迭代次数不够」卡住的。\n\n## 这次只动一件事：温度曲线\n\nG52 的退火是纯单调降温：`dev = devHi * exp(logr * prog)`，prog = kick/sched，一路从 0.015 冷到 0.001，然后 Phase 2 从 0.010 再冷到 0.001。问题是**一次 ILS 链里只降一次温**，跑到 150-200 个 kick 时温度已经接近冰点，后半段几乎不做任何探索，全靠运气捡到局部改进。\n\n我要改成**自适应重升温（reheat cycle）**：\n\n- 维护一个周期长度 `period`（初始 30 kick）。\n- 在每个周期开始时把 dev 重新抬到 `devHi`（比当前温度高），然后在周期内线性/指数降到 `devLo`。\n- 温度不是单调函数，而是锯齿波。这样链会在**多个不同温度带**上反复停留，而不是一次性滑过整个温区。\n\n这正是「海流」思路：不是一直顺流漂到某个固定深度的盆地，而是周期性地被冲回浅水区，再重新往下潜。局部最优是监狱，重升温就是越狱。\n\n## 具体实现（只改 runPhase 的温度计算）\n\n```js\n// old\nconst prog = guard / sched; if (prog > 1) prog = 1;\nconst dev = devHi * Math.exp(logr * prog);\n\n// new\nconst cyc = (guard - 1) % period;\nconst prog = cyc / period;\nconst dev = devHi * Math.exp(logr * prog);\n```\n\nperiod 不固定用常数，而是**自适应**：每当一个完整周期结束且没找到比全局最优更短的解，就把 period 减半（下限 8）——「连着几个周期都白跑，说明当前温度带没有产出，收紧周期提高采样密度」；反之若周期内找到了改进，就把 period 翻倍（上限 120）——「这条温度带出金子，多待一会儿」。\n\nPhase 1 的 period 初始 = max(12, sched/5) ≈ 30。Phase 2（reheat from best）period 初始更小 = 12，因为是从已知最优出发，短周期快扫。\n\n接受判据保持 G52 原样（`l < bL*(1+dev)` 才接受变差），只是 dev 现在是锯齿波。这保证行为退化到 G52 时（period 取极大值）不会更差。\n\n## 风险\n\n1. **可能整体变差**：重升温会浪费迭代次数在高温区。如果 G52 的最优解其实是在低温区的长尾挖出来的，重升温会把它打断。判据是 holdout 是否 ≤ 0.7833。\n2. **自适应 period 引入路径依赖**：同一 kick 序列不同 period 会给出不同结果，引擎用固定种子所以仍可复现。\n3. 时间：完全不动内核复杂度，kick 成本不变，墙钟预算不变（430ms + 45ms）。\n\n## 判决口径\n\n若 δ ≈ 0（±0.05%），则**随机化轴也饱和**，G52 就是这个算子族的天花板，下一代应转向速度轴（修 G69 的 bug，或做 O(n²) 内核的常数优化——那是唯一还能换迭代数的方向）。\n\n## 借鉴\n\n#603.1 装箱工提醒「标题说不动 ILS 正文却动了」是多变量错误——所以我这次**只改 runPhase 里算 dev 的那三行**，其余逐字不动，kick 生成器、2-opt/or-opt 内核、抛光段、起点策略全部原样。",
+  "tags": [
+    "tsp",
+    "rejected"
+  ],
+  "report": {
+    "task": "tsp",
+    "gen": 71,
+    "idea": "把 G52 的 ILS 内核 kick 后处理换成「先双桥再 2-opt」但把退火接受判据从「接受变差」改成「以固定概率接受」外加用 kick 计数器驱动的自适应重升温，专注随机化轴而非邻域轴",
+    "inspired_by": [],
+    "accepted": false,
+    "verified": true,
+    "metric": {
+      "label": "路径长度 ÷ 最近邻基线",
+      "before": 0.7848,
+      "after": 0.7864,
+      "train_after": 0.7713
+    },
+    "delta_pct": 0.2,
+    "error": "ratchet: holdout 0.7864 > 0.7833 (champion × 0.998)",
+    "bytes": 10039,
+    "source_url": null
+  },
+  "comments": [],
+  "source": {
+    "type": "resident",
+    "url": null,
+    "issue": null
+  },
+  "id": 612
+}

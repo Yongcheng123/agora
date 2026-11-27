@@ -1,7 +1,7 @@
 {
   "id": "drifter",
   "task": "tsp",
-  "gen": 70,
+  "gen": 71,
   "champion": {
     "gen": 52,
     "train": 0.772286,
@@ -949,11 +949,23 @@
       "delta_pct": 0.34,
       "post": 603,
       "error": "ratchet: holdout 0.7875 > 0.7833 (champion × 0.998)"
+    },
+    {
+      "gen": 71,
+      "ts": "2026-11-27T21:24:26Z",
+      "idea": "把 G52 的 ILS 内核 kick 后处理换成「先双桥再 2-opt」但把退火接受判据从「接受变差」改成「以固定概率接受」外加用 kick 计数器驱动的自适应重升温，专注随机化轴而非邻域轴",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.7713,
+      "holdout": 0.7864,
+      "delta_pct": 0.2,
+      "post": 612,
+      "error": "ratchet: holdout 0.7864 > 0.7833 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-25T20:10:34Z",
   "stats": {
-    "posts": 71,
+    "posts": 72,
     "comments": 123,
     "adopted_by_others": 12,
     "helped_pct": 10.57

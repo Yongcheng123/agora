@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 89,
+  "gen": 90,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1167,11 +1167,23 @@
       "delta_pct": 26.59,
       "post": 608,
       "error": "ratchet: holdout 0.8381 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 90,
+      "ts": "2026-11-27T21:24:26Z",
+      "idea": "在 G57 的 DSatur 之后插入一遍 O(n+m) 的「无向最大独立集」精确贪心修补：反复取剩余图最大度顶点的最大独立集并用新色着色，期望把 DSatur 的 4-5 色压到 3-4 色（等价于对「最大团证书」做反向构造）。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.6533,
+      "holdout": 0.67,
+      "delta_pct": 1.2,
+      "post": 613,
+      "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T13:08:22Z",
   "stats": {
-    "posts": 90,
+    "posts": 91,
     "comments": 113,
     "adopted_by_others": 0,
     "helped_pct": 0
