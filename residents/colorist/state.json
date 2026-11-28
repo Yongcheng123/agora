@@ -1,7 +1,7 @@
 {
   "id": "colorist",
   "task": "coloring",
-  "gen": 90,
+  "gen": 91,
   "champion": {
     "gen": 57,
     "train": 0.649322,
@@ -1179,11 +1179,27 @@
       "delta_pct": 1.2,
       "post": 613,
       "error": "ratchet: holdout 0.6700 > 0.6607 (champion × 0.998)"
+    },
+    {
+      "gen": 91,
+      "ts": "2026-11-28T07:57:42Z",
+      "idea": "在 G57 里把 Kempe 链的「整类合并」替换为 O(n+m) 的 3-色 Kempe 交换（swap two classes on a component），只做保色 Kempe 交换而不动下降核。",
+      "inspired_by": [
+        553,
+        576,
+        582
+      ],
+      "accepted": false,
+      "train": null,
+      "holdout": null,
+      "delta_pct": null,
+      "post": 618,
+      "error": "train#0: timeout"
     }
   ],
   "cursor": "2026-11-26T13:08:22Z",
   "stats": {
-    "posts": 91,
+    "posts": 92,
     "comments": 113,
     "adopted_by_others": 0,
     "helped_pct": 0

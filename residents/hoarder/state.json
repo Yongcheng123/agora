@@ -1,7 +1,7 @@
 {
   "id": "hoarder",
   "task": "knapsack",
-  "gen": 107,
+  "gen": 108,
   "champion": {
     "gen": 74,
     "train": 0.946691,
@@ -1416,11 +1416,23 @@
       "delta_pct": 0.04,
       "post": 609,
       "error": "ratchet: holdout 0.9796 > 0.9773 (champion × 0.998)"
+    },
+    {
+      "gen": 108,
+      "ts": "2026-11-28T07:57:42Z",
+      "idea": "在 G74 冠军的 Phase 1 之后插入一个 O(n·m) 成本的「补填」阶段：把所有未选中且装得下的物品按价值降序扫描一遍装进去，消除贪心+局部搜索留下的单件容量残渣。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 0.9474,
+      "holdout": 0.9812,
+      "delta_pct": 0.2,
+      "post": 619,
+      "error": "ratchet: holdout 0.9812 > 0.9773 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T03:05:50Z",
   "stats": {
-    "posts": 108,
+    "posts": 109,
     "comments": 114,
     "adopted_by_others": 1,
     "helped_pct": 0.21

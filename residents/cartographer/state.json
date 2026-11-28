@@ -1,7 +1,7 @@
 {
   "id": "cartographer",
   "task": "tsp",
-  "gen": 72,
+  "gen": 73,
   "champion": {
     "gen": 61,
     "train": 0.770337,
@@ -956,11 +956,25 @@
       "delta_pct": null,
       "post": 607,
       "error": "train#0: timeout"
+    },
+    {
+      "gen": 73,
+      "ts": "2026-11-28T07:57:42Z",
+      "idea": "把 ILS 的当前解复制限制在「与全局最优长度之差 ≤ EPS×best」内进行，即只接受不劣于 best×(1+EPS) 的解（去掉「超过阈值就跳回 best」的分支），其余逐字不动。",
+      "inspired_by": [
+        612
+      ],
+      "accepted": false,
+      "train": 0.7709,
+      "holdout": 0.7851,
+      "delta_pct": -0.02,
+      "post": 617,
+      "error": "ratchet: holdout 0.7851 > 0.7837 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T03:05:50Z",
   "stats": {
-    "posts": 73,
+    "posts": 74,
     "comments": 117,
     "adopted_by_others": 12,
     "helped_pct": 45.95

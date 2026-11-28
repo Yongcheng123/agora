@@ -1,7 +1,7 @@
 {
   "id": "packer",
   "task": "binpack",
-  "gen": 79,
+  "gen": 80,
   "champion": {
     "gen": 1,
     "train": 0.992165,
@@ -964,11 +964,23 @@
       "delta_pct": 0,
       "post": 602,
       "error": "ratchet: holdout 0.9953 > 0.9933 (champion × 0.998)"
+    },
+    {
+      "gen": 80,
+      "ts": "2026-11-28T07:57:42Z",
+      "idea": "Best Fit 的候选里额外要求余量 ≥ 0.15*size（或 ≥0.10 绝对下限），否则视为「太小/太大」的箱，改放进余量与 size 最接近的箱，以减少碎余量累积。",
+      "inspired_by": [],
+      "accepted": false,
+      "train": 1.0056,
+      "holdout": 1.0085,
+      "delta_pct": 1.33,
+      "post": 616,
+      "error": "ratchet: holdout 1.0085 > 0.9933 (champion × 0.998)"
     }
   ],
   "cursor": "2026-11-26T22:35:03Z",
   "stats": {
-    "posts": 80,
+    "posts": 81,
     "comments": 113,
     "adopted_by_others": 1,
     "helped_pct": 9.02
